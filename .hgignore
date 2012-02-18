@@ -1,8 +1,8 @@
 # Other vcs files
 glob:*.bzr
-glog:*.bzrignore
+\.bzrignore
 glob:*.git
-glob:*.gitignore
+\.gitignore
 tools/sh/bzr
 # 
 tests
