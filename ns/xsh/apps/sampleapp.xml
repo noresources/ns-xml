@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<p:program xmlns:p="http://xsd.nore.fr/program" version="2.0">
+	<p:name>sampleapp</p:name>
+	<p:author>Renaud Guillard</p:author>
+	<p:version>1.0</p:version>
+	<p:documentation>
+		<p:abstract>Sample application with all kind of options</p:abstract>
+	</p:documentation>
+	<p:ui>
+		<p:label>Sample application</p:label>
+	</p:ui>
+	<p:options>
+		<p:switch>
+			<p:databinding>
+				<p:variable>displayHelp</p:variable>
+			</p:databinding>
+			<p:names>
+				<p:long>help</p:long>
+			</p:names>
+			<p:ui mode="disabled" />
+		</p:switch>
+		<p:argument>
+			<p:databinding>
+				<p:variable>uiArg</p:variable>
+			</p:databinding>
+			<p:names>
+				<p:long>ui-only</p:long>
+			</p:names>
+			<p:ui mode="hidden">
+				<p:value>ui argument</p:value>
+			</p:ui>
+		</p:argument>
+		<p:argument>
+			<p:databinding>
+				<p:variable>standardArg</p:variable>
+			</p:databinding>
+			<p:names>
+				<p:long>standard-arg</p:long>
+			</p:names>
+			<p:ui mode="default" />
+		</p:argument>
+		<p:switch>
+			<p:databinding>
+				<p:variable>gswitch</p:variable>
+			</p:databinding>
+			<p:documentation>
+				<p:abstract>Simple switch</p:abstract>
+			</p:documentation>
+			<p:names>
+				<p:short>s</p:short>
+				<p:long>simpleswitch</p:long>
+			</p:names>
+		</p:switch>
+
+		<p:group>
+			<p:ui>
+				<p:label>A group with only one element</p:label>
+			</p:ui>
+			<p:options>
+				<p:switch>
+					<p:databinding>
+						<p:variable>grpSwitch</p:variable>
+					</p:databinding>
+					<p:names>
+						<p:long>switch-alone-in-group</p:long>
+					</p:names>
+				</p:switch>
+			</p:options>
+		</p:group>
+
+		<p:group type="exclusive">
+			<p:documentation>
+				<p:abstract>Arguments group</p:abstract>
+			</p:documentation>
+			<p:databinding>
+				<p:variable>globalArgumentsGroup</p:variable>
+			</p:databinding>
+			<p:options>
+				<p:argument>
+					<p:databinding>
+						<p:variable>garg</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Basic argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>basic-argument</p:long>
+					</p:names>
+				</p:argument>
+
+				<p:argument>
+					<p:databinding>
+						<p:variable>gsarg</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>String argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>string-argument</p:long>
+					</p:names>
+					<p:type>
+						<p:string />
+					</p:type>
+				</p:argument>
+
+				<p:argument>
+					<p:databinding>
+						<p:variable>dgarg</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Argument (with default value)</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>argument-with-default</p:long>
+					</p:names>
+					<p:default>Default value</p:default>
+				</p:argument>
+
+				<p:argument>
+					<p:databinding>
+						<p:variable>gnarg</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Numeric argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>numeric-argument</p:long>
+					</p:names>
+					<p:type>
+						<p:number />
+					</p:type>
+				</p:argument>
+
+				<p:argument>
+					<p:databinding>
+						<p:variable>gn2arg</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Float argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>float-argument</p:long>
+					</p:names>
+					<p:type>
+						<p:number min="1.0" max="10.0" decimal="2" />
+					</p:type>
+				</p:argument>
+			</p:options>
+		</p:group>
+
+		<p:argument>
+			<p:databinding>
+				<p:variable>gfarg</p:variable>
+			</p:databinding>
+			<p:documentation>
+				<p:abstract>File argument</p:abstract>
+			</p:documentation>
+			<p:names>
+				<p:long>existing-file-argument</p:long>
+			</p:names>
+			<p:type>
+				<p:path exist="true" />
+			</p:type>
+		</p:argument>
+
+		<p:argument>
+			<p:databinding>
+				<p:variable>gFarg</p:variable>
+			</p:databinding>
+			<p:documentation>
+				<p:abstract>Folder argument</p:abstract>
+			</p:documentation>
+			<p:names>
+				<p:long>rw-folder-argument</p:long>
+			</p:names>
+			<p:type>
+				<p:path access="rw">
+					<p:kinds>
+						<p:folder />
+					</p:kinds>
+				</p:path>
+			</p:type>
+		</p:argument>
+
+		<p:argument>
+			<p:databinding>
+				<p:variable>gmfarg</p:variable>
+			</p:databinding>
+			<p:documentation>
+				<p:abstract>Mixed selection of kinds</p:abstract>
+			</p:documentation>
+			<p:names>
+				<p:long>mixed-fskind-argument</p:long>
+			</p:names>
+			<p:type>
+				<p:path access="rw">
+					<p:kinds>
+						<p:file />
+						<p:socket />
+						<p:folder />
+						<p:symlink />
+					</p:kinds>
+				</p:path>
+			</p:type>
+		</p:argument>
+
+		<p:group>
+			<p:documentation>
+				<p:abstract>Multi argument options</p:abstract>
+			</p:documentation>
+			<p:options>
+				<p:multiargument>
+					<p:databinding>
+						<p:variable>gma</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Multi argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>multi-argument</p:long>
+					</p:names>
+				</p:multiargument>
+
+				<p:multiargument>
+					<p:databinding>
+						<p:variable>gmsa</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Multi select argument</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>multi-select-argument</p:long>
+					</p:names>
+					<p:select restrict="true">
+						<p:option>First option</p:option>
+						<p:option>Second option</p:option>
+					</p:select>
+				</p:multiargument>
+
+				<p:multiargument>
+					<p:databinding>
+						<p:variable>gmaxml</p:variable>
+					</p:databinding>
+					<p:documentation>
+						<p:abstract>Xml files</p:abstract>
+					</p:documentation>
+					<p:names>
+						<p:long>multi-xml</p:long>
+					</p:names>
+					<p:type>
+						<p:path>
+							<p:patterns>
+								<p:pattern>
+									<p:name>Xml files</p:name>
+									<p:rules>
+										<p:rule>
+											<p:endWith>.xml</p:endWith>
+										</p:rule>
+										<p:rule>
+											<p:endWith>.xsd</p:endWith>
+										</p:rule>
+										<p:rule>
+											<p:endWith>.xsl</p:endWith>
+										</p:rule>
+										<p:rule>
+											<p:endWith>.xul</p:endWith>
+										</p:rule>
+									</p:rules>
+								</p:pattern>
+							</p:patterns>
+						</p:path>
+					</p:type>
+				</p:multiargument>
+			</p:options>
+		</p:group>
+
+		<p:argument>
+			<p:names>
+				<p:long>hostname</p:long>
+				<p:short>H</p:short>
+			</p:names>
+			<p:type>
+				<p:hostname />
+			</p:type>
+		</p:argument>
+
+		<p:argument>
+			<p:names>
+				<p:long>simple-pattern-sh</p:long>
+				<p:short>P</p:short>
+			</p:names>
+			<p:type>
+				<p:path access="x">
+					<p:patterns>
+						<p:pattern>
+							<p:name>Shell files</p:name>
+							<p:rules>
+								<p:rule>
+									<p:endWith>.sh</p:endWith>
+								</p:rule>
+								<p:rule>
+									<p:endWith>.run</p:endWith>
+								</p:rule>
+							</p:rules>
+						</p:pattern>
+					</p:patterns>
+				</p:path>
+			</p:type>
+		</p:argument>
+
+		<p:argument>
+			<p:databinding>
+				<p:variable>strictEnum</p:variable>
+			</p:databinding>
+			<p:names>
+				<p:long>strict-enum</p:long>
+				<p:short>E</p:short>
+			</p:names>
+			<p:select restrict="true">
+				<p:option>Option A</p:option>
+				<p:option>Value B</p:option>
+				<p:option>Item C</p:option>
+				<p:option>ItemD with space</p:option>
+			</p:select>
+			<p:default>Value B</p:default>
+		</p:argument>
+
+		<p:argument>
+			<p:databinding>
+				<p:variable>nonStrictEnum</p:variable>
+			</p:databinding>
+			<p:names>
+				<p:long>non-strict-enum</p:long>
+				<p:short>e</p:short>
+			</p:names>
+			<p:select>
+				<p:option>nOptionA</p:option>
+				<p:option>nValueB</p:option>
+				<p:option>nItemC</p:option>
+				<p:option>nItemD with space</p:option>
+			</p:select>
+		</p:argument>
+	</p:options>
+
+	<p:subcommands>
+		<p:subcommand>
+			<p:name>sub</p:name>
+			<p:options>
+				<p:switch>
+					<p:names>
+						<p:long>switch</p:long>
+						<p:long>sc-switch</p:long>
+					</p:names>
+				</p:switch>
+				<p:argument>
+					<p:databinding>
+						<p:variable>subFile</p:variable>
+					</p:databinding>
+					<p:names>
+						<p:long>sc-existing-file-argument</p:long>
+					</p:names>
+					<p:type>
+						<p:path exist="true" />
+					</p:type>
+				</p:argument>
+				<p:argument>
+					<p:databinding>
+						<p:variable>subEnum</p:variable>
+					</p:databinding>
+					<p:names>
+						<p:long>sc-strict-enum</p:long>
+					</p:names>
+					<p:select restrict="true">
+						<p:option>OptionA</p:option>
+						<p:option>ValueB</p:option>
+						<p:option>ItemC</p:option>
+					</p:select>
+				</p:argument>
+			</p:options>
+			<p:values>
+				<p:other>
+					<p:type>
+						<p:path />
+					</p:type>
+				</p:other>
+			</p:values>
+		</p:subcommand>
+		<p:subcommand>
+			<p:name>help</p:name>
+			<p:documentation>
+				<p:abstract>Help about other sub commands</p:abstract>
+			</p:documentation>
+			<p:values>
+				<p:value>
+					<p:documentation>
+						<p:abstract>Subcommand name</p:abstract>
+					</p:documentation>
+					<p:select restrict="true">
+						<p:option>sub</p:option>
+						<p:option>help</p:option>
+					</p:select>
+				</p:value>
+			</p:values>
+		</p:subcommand>
+	</p:subcommands>
+
+	<p:values>
+		<p:value>
+			<p:type>
+				<p:path access="rw" />
+			</p:type>
+			<p:documentation>
+				<p:abstract>File value</p:abstract>
+			</p:documentation>
+		</p:value>
+
+		<p:value>
+			<p:documentation>
+				<p:abstract>Mixed value</p:abstract>
+			</p:documentation>
+		</p:value>
+
+		<p:value>
+			<p:documentation>
+				<p:abstract>Selection</p:abstract>
+			</p:documentation>
+			<p:select>
+				<p:option>A</p:option>
+				<p:option>B</p:option>
+			</p:select>
+		</p:value>
+
+		<p:other>
+			<p:documentation>
+				<p:abstract>Other</p:abstract>
+			</p:documentation>
+		</p:other>
+	</p:values>
+</p:program>

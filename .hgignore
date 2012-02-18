@@ -1,0 +1,19 @@
+# Other vcs files
+glob:*.bzr
+glog:*.bzrignore
+glob:*.git
+glob:*.gitignore
+tools/sh/bzr
+# 
+tests
+# Symbolic links used in Eclipse project
+scripts/eclipse/Tools
+scripts/eclipse/XPCOM
+scripts/eclipse/Resources
+scripts/eclipse/Tests
+scripts/eclipse/Shell
+scripts/eclipse/XBL
+scripts/eclipse/BUGS
+scripts/eclipse/XSD
+scripts/eclipse/XSLT
+scripts/eclipse/XSH

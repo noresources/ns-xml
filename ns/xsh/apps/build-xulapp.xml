@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0">
+	<prg:name>build-xulapp</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>2.0</prg:version>
+	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:documentation>
+		<prg:abstract>Build (or update) a xul application launcher</prg:abstract>
+	</prg:documentation>
+	<prg:ui>
+		<prg:label>Command line front-end builder</prg:label>
+	</prg:ui>
+	<prg:options>
+		<prg:switch id="help">
+			<prg:databinding>
+				<prg:variable>displayHelp</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Display the command documentation &amp; options</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>h</prg:short>
+				<prg:long>help</prg:long>
+			</prg:names>
+			<prg:ui mode="disabled" />
+		</prg:switch>
+
+		<prg:argument id="outputfolder" required="true">
+			<prg:databinding>
+				<prg:variable>outputPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Output folder path for the XUL application structure</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>o</prg:short>
+				<prg:long>output</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:folder />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+
+		<prg:argument id="xmlDesc" required="true">
+			<prg:databinding>
+				<prg:variable>xmlProgramDescriptionPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Program description file</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>x</prg:short>
+				<prg:long>xml-description</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+					<prg:patterns>
+						<prg:pattern>
+							<prg:name>Xml file</prg:name>
+							<prg:rules>
+								<prg:rule>
+									<prg:endWith>.xml</prg:endWith>
+								</prg:rule>
+							</prg:rules>
+						</prg:pattern>
+					</prg:patterns>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+		<prg:group type="exclusive" required="true">
+			<prg:databinding>
+				<prg:variable>launcherMode</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Launcher mode</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument id="launcherModeXsh">
+					<prg:databinding>
+						<prg:variable>launcherModeXsh</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generated shell script from the given template</prg:abstract>
+					</prg:documentation>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:file />
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+					<prg:names>
+						<prg:short>s</prg:short>
+						<prg:long>shell</prg:long>
+					</prg:names>
+				</prg:argument>
+				<prg:argument id="launcherModeExistingCommand">
+					<prg:databinding>
+						<prg:variable>launcherModeExistingCommand</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Launch the given existing command</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>command</prg:long>
+						<prg:short>c</prg:short>
+					</prg:names>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
+
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>update</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:short>u</prg:short>
+				<prg:long>update</prg:long>
+			</prg:names>
+			<prg:documentation>
+				<prg:abstract>Update application if folder already exists</prg:abstract>
+			</prg:documentation>
+		</prg:switch>
+
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>User interface</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>windowWidth</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>window-width</prg:long>
+						<prg:short>W</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:number min="50" max="2048" />
+					</prg:type>
+				</prg:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>windowHeight</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>window-height</prg:long>
+						<prg:short>H</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:number min="50" max="2048" />
+					</prg:type>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>debugMode</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Add debug options into the built interface</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:short>d</prg:short>
+						<prg:long>debug</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
+
+		<!-- Userdata -->
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>User data</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>userInitializationScript</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>User-defined post-initialization script</prg:abstract>
+						<prg:details>
+							A Javascript file loaded after the main ui object initialization
+							stage
+							<prg:endl />
+							If a onInitialize() function is available, it will be
+							called with the main ui object as the first argument
+							<prg:endl />
+							The script is copied in the chrome/content directory and is
+							available through the following url
+							<prg:block>chrome://&lt;xulAppName&gt;/content/&lt;xulAppName&gt;-user.js
+							</prg:block>
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>init-script</prg:long>
+						<prg:short>j</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:file />
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>Javascript file</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.js</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>userDataPaths</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Additional resources</prg:abstract>
+						<prg:details>
+							A list of path or file to add in the application bundle.
+							<prg:endl />
+							These items are copied in the chrome/userdata folder of the
+							application bundle and a new
+							resource url is avalailable
+							(resource://userdata/...)
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>resources</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:file />
+								<prg:folder />
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+				</prg:multiargument>
+			</prg:options>
+		</prg:group>
+
+		<!-- ns path -->
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>ns-xml options</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>nsxmlPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ns-xml source path</prg:abstract>
+						<prg:details>Location of the ns folder of ns-xml package
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>ns-xml-path</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path>
+							<prg:kinds>
+								<prg:folder />
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>ns folder</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>ns</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+					<prg:ui mode="hidden">
+						<prg:value>../chrome/ns</prg:value>
+					</prg:ui>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>nsxmlPathRelative</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ns source path is relative this program path</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>ns-xml-path-relative</prg:long>
+					</prg:names>
+					<prg:ui mode="hidden">
+					</prg:ui>
+				</prg:switch>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>nsxmlAdditionalSources</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Add other ns-xml folder</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>ns-xml-add</prg:long>
+					</prg:names>
+					<prg:select restrict="true">
+						<prg:option>sh</prg:option>
+						<prg:option>xsl</prg:option>
+						<prg:option>xsd</prg:option>
+					</prg:select>
+				</prg:multiargument>
+			</prg:options>
+		</prg:group>
+
+	</prg:options>
+</prg:program>

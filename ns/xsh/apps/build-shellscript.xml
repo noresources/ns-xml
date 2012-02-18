@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0">
+	<prg:name>build-shellscript</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>2.0</prg:version>
+	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:documentation>
+		<prg:abstract>Shell script builder which use XML description file to automatically generate command line processing and help messages</prg:abstract>
+	</prg:documentation>
+	<prg:ui>
+		<prg:label>Shellscript builder</prg:label>
+	</prg:ui>
+	<prg:options>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>ns-xml source path options</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>nsxmlPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ns-xml source path</prg:abstract>
+						<prg:details>Location of the ns folder of ns-xml package
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>ns-xml-path</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path>
+							<prg:kinds>
+								<prg:folder />
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>ns folder</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>ns</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+					<prg:ui mode="hidden">
+						<prg:value>../chrome/ns</prg:value>
+					</prg:ui>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>nsxmlPathRelative</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ns source path is relative this program path</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>ns-xml-path-relative</prg:long>
+					</prg:names>
+					<prg:ui mode="hidden">
+					</prg:ui>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
+
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>xmlProgramDescriptionPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Program description file</prg:abstract>
+				<prg:details>If the program description file is provided, the xml file will be validated
+					before any XSLT processing
+				</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>x</prg:short>
+				<prg:long>xml-description</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+
+		<prg:argument required="true">
+			<prg:databinding>
+				<prg:variable>xmlShellFileDescriptionPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>XML shell file</prg:abstract>
+				<prg:details>
+					A xml file following the bash XML schema
+					<prg:endl>
+						The file may include a XML program definition
+					</prg:endl>
+				</prg:details>
+			</prg:documentation>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+					<prg:patterns>
+						<prg:pattern>
+							<prg:name>Xml shell file</prg:name>
+							<prg:rules>
+								<prg:rule>
+									<prg:endWith>.xsh</prg:endWith>
+								</prg:rule>
+							</prg:rules>
+						</prg:pattern>
+					</prg:patterns>
+				</prg:path>
+			</prg:type>
+			<prg:names>
+				<prg:short>s</prg:short>
+				<prg:long>shell</prg:long>
+			</prg:names>
+		</prg:argument>
+
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>debugMode</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Generate debug messages in help and command line parsing functions</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>d</prg:short>
+				<prg:long>debug</prg:long>
+			</prg:names>
+		</prg:switch>
+
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>displayHelp</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>This help</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>h</prg:short>
+				<prg:long>help</prg:long>
+			</prg:names>
+		</prg:switch>
+
+		<prg:argument required="true">
+			<prg:databinding>
+				<prg:variable>outputScriptFilePath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Output file path</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>o</prg:short>
+				<prg:long>output</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path>
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+
+	</prg:options>
+</prg:program>

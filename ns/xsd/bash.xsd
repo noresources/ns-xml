@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Describe bash script elements -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+xmlns:prg="http://xsd.nore.fr/program" 
+xmlns:sh="http://xsd.nore.fr/bash" 
+targetNamespace="http://xsd.nore.fr/bash" 
+elementFormDefault="qualified">
+
+	<import namespace="http://xsd.nore.fr/program" schemaLocation="program/2.0/program.xsd" />
+	
+	<complexType name="functionParameterType">
+		<attribute name="name" type="string" />
+	</complexType>
+
+	<simpleType name="plainCodeType">
+		<annotation>
+			<documentation xml:lang="en">A portion of code</documentation>
+		</annotation>
+		<restriction base="string">
+		</restriction>
+	</simpleType>
+
+	<simpleType name="interpreterPathType">
+		<restriction base="string">
+		</restriction>
+	</simpleType>
+
+	<complexType name="functionType">
+		<sequence minOccurs="1" maxOccurs="1">
+			<element name="parameter" type="sh:functionParameterType" minOccurs="0" maxOccurs="unbounded" />
+			<element name="body" minOccurs="1" maxOccurs="1" type="sh:plainCodeType" />
+		</sequence>
+		<attribute name="name">
+			<annotation>
+				<documentation>Function name</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="programType">
+		<annotation>
+			<documentation xml:lang="en">A bash shell script</documentation>
+		</annotation>
+		<sequence>
+			<element name="info" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element ref="prg:program" />
+					</sequence>
+				</complexType>
+			</element>
+			<element ref="sh:functions" minOccurs="0" maxOccurs="1" />
+			<element name="code" type="sh:plainCodeType" minOccurs="1" maxOccurs="1" />
+		</sequence>
+		<attribute name="interpreter" type="sh:interpreterPathType" use="optional" />
+	</complexType>
+
+	<element name="code" type="sh:plainCodeType">
+		<annotation>
+			<documentation xml:lang="en">A plain text code chunk</documentation>
+		</annotation>
+	</element>
+	
+	<element name="function" type="sh:functionType" />
+
+	<element name="functions">
+		<annotation>
+			<documentation xml:lang="en">A set of bash functions</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="sh:function" minOccurs="1" maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="program">
+		<annotation>
+			<documentation xml:lang="en">Bash program</documentation>
+		</annotation>
+	</element>
+
+</schema>

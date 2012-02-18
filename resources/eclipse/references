@@ -1,0 +1,9 @@
+ns/xsd;XSD
+ns/xbl;XBL
+ns/xsl;XSLT
+ns/xpcom;XPCOM
+tools;Tools
+resources;Resources
+tests;Tests
+ns/sh;Shell
+ns/xsh;XSH

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sh:functions xmlns:sh="http://xsd.nore.fr/bash">
+	<sh:function name="ns_isdir">
+		<sh:parameter name="path" />
+		<sh:body><![CDATA[
+[ ! -z "${path}" ] && [ -d "${path}" ]
+		]]></sh:body>
+	</sh:function>
+	<sh:function name="ns_issymlink">
+		<sh:parameter name="path" />
+		<sh:body><![CDATA[
+[ ! -z "${path}" ] && [ -L "${path}" ]
+		]]></sh:body>
+	</sh:function>
+	<sh:function name="ns_realpath">
+		<sh:body>
+			body
+		</sh:body>
+	</sh:function>
+	<sh:function name="ns_realpath" >
+		<sh:parameter name="path" />
+		<sh:body><![CDATA[
+local cwd="$(pwd)"
+[ -d "${path}" ] && cd "${path}" && path="."
+while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+
+if [ -d "${path}" ]
+then
+	path="$( cd -P "$( dirname "${path}" )" && pwd )"
+else
+	path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+fi
+
+cd "${cwd}" 1>/dev/null 2>&1
+echo "${path}"
+		]]></sh:body>
+	</sh:function>
+</sh:functions>
