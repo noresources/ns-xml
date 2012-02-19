@@ -15,11 +15,6 @@
 	<param name="prg.xsh.defaultInterpreter">
 		<text>/bin/bash</text>
 	</param>
-
-	<template match="text()">
-		<value-of select="normalize-space(.)" />
-	</template>
-
 	<template match="/sh:program">
 		<text>#!</text>
 		<choose>
@@ -27,7 +22,7 @@
 				<value-of select="normalize-space(./@interpreter)" />
 			</when>
 			<otherwise>
-				<value-of select="$prg.xsh.defaultInterpreter" />
+				<value-of select="normalize-space($prg.xsh.defaultInterpreter)" />
 			</otherwise>
 		</choose>
 

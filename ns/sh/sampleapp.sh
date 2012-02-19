@@ -1,6 +1,4 @@
-#!
-		/bin/bash
-	
+#!/bin/bash
 # ####################################
 # Author: Renaud Guillard
 # Version: 1.0

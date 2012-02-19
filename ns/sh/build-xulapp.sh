@@ -1,6 +1,4 @@
-#!
-		/bin/bash
-	
+#!/bin/bash
 # ####################################
 # Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)
 # Author: Renaud Guillard
