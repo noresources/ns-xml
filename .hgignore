@@ -6,6 +6,7 @@ glob:*.git
 tools/sh/bzr
 # 
 tests
+resources/bzr
 # Symbolic links used in Eclipse project
 scripts/eclipse/Tools
 scripts/eclipse/XPCOM

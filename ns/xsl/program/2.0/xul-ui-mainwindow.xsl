@@ -1,1088 +1,1092 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
 <!-- Create a bash completion script for the program -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<import href="./xul-ui-base.xsl" />
+	<xsl:import href="./xul-ui-base.xsl" />
 
-	<output method="xml" encoding="utf-8" indent="yes" />
+	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 
-	<strip-space elements="*" />
+	<xsl:strip-space elements="*" />
 
-	<param name="prg.xul.windowWidth" select="1024" />
-	<param name="prg.xul.windowHeight" select="768" />
+	<xsl:param name="prg.xul.windowWidth" select="1024" />
+	<xsl:param name="prg.xul.windowHeight" select="768" />
 
 	<!-- Option label (using the best element available) -->
-	<template name="prg.xul.optionLabel">
-		<param name="optionNode" select="." />
-		<choose>
-			<when test="$optionNode/prg:ui/prg:label">
-				<value-of select="normalize-space($optionNode/prg:ui/prg:label/text())" />
-			</when>
-			<when test="$optionNode/prg:documentation/prg:abstract">
-				<value-of select="normalize-space($optionNode/prg:documentation/prg:abstract/text())" />
-			</when>
-			<when test="$optionNode/prg:names/prg:long">
-				<value-of select="normalize-space($optionNode/prg:names/prg:long/text())" />
-			</when>
-			<when test="$optionNode/prg:databinding/prg:variable">
-				<value-of select="normalize-space($optionNode/prg:databinding/prg:variable/text())" />
-			</when>
-			<when test="$optionNode/prg:names/prg:short">
-				<value-of select="normalize-space($optionNode/prg:names/prg:short/text())" />
-			</when>
-			<otherwise>
-				<call-template name="prg.optionId">
-					<with-param name="optionNode" select="$optionNode" />
-				</call-template>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.xul.optionLabel">
+		<xsl:param name="optionNode" select="." />
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:ui/prg:label">
+				<xsl:value-of select="normalize-space($optionNode/prg:ui/prg:label/text())" />
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:documentation/prg:abstract">
+				<xsl:value-of select="normalize-space($optionNode/prg:documentation/prg:abstract/text())" />
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:names/prg:long">
+				<xsl:value-of select="normalize-space($optionNode/prg:names/prg:long/text())" />
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:databinding/prg:variable">
+				<xsl:value-of select="normalize-space($optionNode/prg:databinding/prg:variable/text())" />
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:names/prg:short">
+				<xsl:value-of select="normalize-space($optionNode/prg:names/prg:short/text())" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.xul.valueLabel">
-		<param name="valueNode" select="." />
-		<param name="index" />
-		<choose>
-			<when test="$valueNode/prg:documentation/prg:abstract">
-				<value-of select="$valueNode/prg:documentation/prg:abstract" />
-			</when>
-			<otherwise>
-				<choose>
-					<when test="$valueNode/self::other">
-						<text>Other</text>
-					</when>
-					<otherwise>
-						<value-of select="$index" />
-					</otherwise>
-				</choose>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.xul.valueLabel">
+		<xsl:param name="valueNode" select="." />
+		<xsl:param name="index" />
+		<xsl:choose>
+			<xsl:when test="$valueNode/prg:documentation/prg:abstract">
+				<xsl:value-of select="$valueNode/prg:documentation/prg:abstract" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="$valueNode/self::other">
+						<xsl:text>Other</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$index" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.xul.fsButtonDialogMode">
-		<param name="pathNode" />
+	<xsl:template name="prg.xul.fsButtonDialogMode">
+		<xsl:param name="pathNode" />
 
-		<variable name="kindsNode" select="$pathNode/prg:kinds" />
-		<variable name="isFolderOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:folder" />
-		<variable name="isFileOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:file" />
+		<xsl:variable name="kindsNode" select="$pathNode/prg:kinds" />
+		<xsl:variable name="isFolderOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:folder" />
+		<xsl:variable name="isFileOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:file" />
 
-		<choose>
-			<when test="$isFolderOnly">
-				<attribute name="dialogmode">folder</attribute>
-			</when>
-			<when test="not($pathNode/@exist) and $isFileOnly">
-				<attribute name="dialogmode">save</attribute>
-			</when>
+		<xsl:choose>
+			<xsl:when test="$isFolderOnly">
+				<xsl:attribute name="dialogmode">folder</xsl:attribute>
+			</xsl:when>
+			<xsl:when test="not($pathNode/@exist) and $isFileOnly">
+				<xsl:attribute name="dialogmode">save</xsl:attribute>
+			</xsl:when>
 			<!-- Default behavior in other cases -->
-		</choose>
-	</template>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Escape text to be used as an attribute value -->
-	<template name="prg.xul.attributeEscapedValue">
-		<param name="value" select="." />
-		<call-template name="str.replaceAll">
-			<with-param name="text" select="$value" />
-			<with-param name="replace">
-				<text>"</text>
-			</with-param>
-			<with-param name="by">
-				<text>\&quot;</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.xul.attributeEscapedValue">
+		<xsl:param name="value" select="." />
+		<xsl:call-template name="str.replaceAll">
+			<xsl:with-param name="text" select="$value" />
+			<xsl:with-param name="replace">
+				<xsl:text>"</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="by">
+				<xsl:text>\&quot;</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Control of the left column of the grid row -->
-	<template name="prg.xul.optionLabelControl">
-		<param name="optionNode" select="." />
+	<xsl:template name="prg.xul.optionLabelControl">
+		<xsl:param name="optionNode" select="." />
 
-		<variable name="parentOptionNode" select="$optionNode/../.." />
-		<variable name="optionId">
-			<call-template name="prg.optionId">
-				<with-param name="optionNode" select="$optionNode" />
-			</call-template>
-		</variable>
+		<xsl:variable name="parentOptionNode" select="$optionNode/../.." />
+		<xsl:variable name="optionId">
+			<xsl:call-template name="prg.optionId">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<element name="xul:hbox">
-			<if test="$optionNode/self::prg:group">
-				<element name="xul:radiogroup">
-					<attribute name="id">
-						<value-of select="$optionId" />
-						<text>:group</text>
-					</attribute>
-				</element>
-			</if>
-			<element name="xul:label">
-				<attribute name="value">
-					<call-template name="prg.xul.optionLabel">
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
-				</attribute>
-				<attribute name="id">
-					<value-of select="$optionId" />
-					<text>:label</text>
-				</attribute>
-			</element>
-			<element name="xul:checkbox">
-				<attribute name="label">
-					<call-template name="prg.xul.optionLabel">
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
-				</attribute>
-				<attribute name="id">
-					<value-of select="$optionId" />
-					<text>:checkbox</text>
-				</attribute>
-			</element>
-			<element name="xul:radio">
-				<attribute name="label">
-					<call-template name="prg.xul.optionLabel">
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
-				</attribute>
-				<attribute name="id">
-					<value-of select="$optionId" />
-					<text>:radio</text>
-				</attribute>
-				<attribute name="group">
-					<call-template name="prg.optionId">
-						<with-param name="optionNode" select="$parentOptionNode" />
-					</call-template>
-					<text>:group</text>
-				</attribute>
-			</element>
-			<element name="xul:box">
-				<attribute name="id">
-					<call-template name="prg.optionId">
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
-				</attribute>
-				<attribute name="class">
-					<choose>
-						<when test="$optionNode/self::prg:group">
-							<text>groupOption</text>
-						</when>
-						<when test="$optionNode/self::prg:argument">
-							<text>argumentOption</text>
-						</when>
-						<when test="$optionNode/self::prg:multiargument">
-							<text>multiargumentOption</text>
-						</when>
-						<otherwise>
-							<text>switchOption</text>
-						</otherwise>
-					</choose>
-				</attribute>
-				<if test="$optionNode[@required = 'true']">
-					<attribute name="required">true</attribute>
-				</if>
-				<if test="$parentOptionNode">
-					<attribute name="parentId">
-						<call-template name="prg.optionId">
-							<with-param name="optionNode" select="$parentOptionNode" />
-						</call-template>
-					</attribute>
-				</if>
-				<if test="$optionNode/self::prg:group and $optionNode/@type">
-					<attribute name="groupType"><value-of select="$optionNode/@type" /></attribute>
-				</if>
-				<if test="$optionNode[self::prg:argument or self::prg:multiargument]">
-					<attribute name="valueControlId">
-						<call-template name="prg.optionId">
-							<with-param name="optionNode" select="$optionNode" />
-						</call-template>
-						<text>:value</text>
-					</attribute>
-				</if>
-			</element>
-		</element>
-	</template>
+		<xsl:element name="xul:hbox">
+			<xsl:if test="$optionNode/self::prg:group">
+				<xsl:element name="xul:radiogroup">
+					<xsl:attribute name="id">
+						<xsl:value-of select="$optionId" />
+						<xsl:text>:group</xsl:text>
+					</xsl:attribute>
+				</xsl:element>
+			</xsl:if>
+			<xsl:element name="xul:label">
+				<xsl:attribute name="value">
+					<xsl:call-template name="prg.xul.optionLabel">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:attribute>
+				<xsl:attribute name="id">
+					<xsl:value-of select="$optionId" />
+					<xsl:text>:label</xsl:text>
+				</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xul:checkbox">
+				<xsl:attribute name="label">
+					<xsl:call-template name="prg.xul.optionLabel">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:attribute>
+				<xsl:attribute name="id">
+					<xsl:value-of select="$optionId" />
+					<xsl:text>:checkbox</xsl:text>
+				</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xul:radio">
+				<xsl:attribute name="label">
+					<xsl:call-template name="prg.xul.optionLabel">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:attribute>
+				<xsl:attribute name="id">
+					<xsl:value-of select="$optionId" />
+					<xsl:text>:radio</xsl:text>
+				</xsl:attribute>
+				<xsl:attribute name="group">
+					<xsl:call-template name="prg.optionId">
+						<xsl:with-param name="optionNode" select="$parentOptionNode" />
+					</xsl:call-template>
+					<xsl:text>:group</xsl:text>
+				</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xul:box">
+				<xsl:attribute name="id">
+					<xsl:call-template name="prg.optionId">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:attribute>
+				<xsl:attribute name="class">
+					<xsl:choose>
+						<xsl:when test="$optionNode/self::prg:group">
+							<xsl:text>groupOption</xsl:text>
+						</xsl:when>
+						<xsl:when test="$optionNode/self::prg:argument">
+							<xsl:text>argumentOption</xsl:text>
+						</xsl:when>
+						<xsl:when test="$optionNode/self::prg:multiargument">
+							<xsl:text>multiargumentOption</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>switchOption</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:attribute>
+				<xsl:if test="$optionNode[@required = 'true']">
+					<xsl:attribute name="required">true</xsl:attribute>
+				</xsl:if>
+				<xsl:if test="$parentOptionNode">
+					<xsl:attribute name="parentId">
+						<xsl:call-template name="prg.optionId">
+							<xsl:with-param name="optionNode" select="$parentOptionNode" />
+						</xsl:call-template>
+					</xsl:attribute>
+				</xsl:if>
+				<xsl:if test="$optionNode/self::prg:group and $optionNode/@type">
+					<xsl:attribute name="groupType"><xsl:value-of select="$optionNode/@type" /></xsl:attribute>
+				</xsl:if>
+				<xsl:if test="$optionNode[self::prg:argument or self::prg:multiargument]">
+					<xsl:attribute name="valueControlId">
+						<xsl:call-template name="prg.optionId">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+						<xsl:text>:value</xsl:text>
+					</xsl:attribute>
+				</xsl:if>
+			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- A series of attributes used by textbox for autocompletion -->
-	<template name="prg.xul.textboxAutocompleAtributes">
-		<param name="selectNode" />
-		<attribute name="type">autocomplete</attribute>
-		<attribute name="autocompletesearch">ns-value-autocomplete</attribute>
-		<attribute name="autocompletesearchparam">
-			<text>[</text>
-			<for-each select="$selectNode/*">
-				<text>&quot;</text>
-				<call-template name="str.replaceAll">
-					<with-param name="text" select="." />
-					<with-param name="replace">"</with-param>
-					<with-param name="by">\&quot;</with-param>
-				</call-template>
-				<text>&quot;</text>
-				<if test="position() != last()">
-					<text>, </text>
-				</if>
-			</for-each>
-			<text>]</text>
-		</attribute>
-	</template>
+	<xsl:template name="prg.xul.textboxAutocompleAtributes">
+		<xsl:param name="selectNode" />
+		<xsl:attribute name="type">autocomplete</xsl:attribute>
+		<xsl:attribute name="autocompletesearch">ns-value-autocomplete</xsl:attribute>
+		<xsl:attribute name="autocompletesearchparam">
+			<xsl:text>[</xsl:text>
+			<xsl:for-each select="$selectNode/*">
+				<xsl:text>&quot;</xsl:text>
+				<xsl:call-template name="str.replaceAll">
+					<xsl:with-param name="text" select="." />
+					<xsl:with-param name="replace">"</xsl:with-param>
+					<xsl:with-param name="by">\&quot;</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text>&quot;</xsl:text>
+				<xsl:if test="position() != last()">
+					<xsl:text>, </xsl:text>
+				</xsl:if>
+			</xsl:for-each>
+			<xsl:text>]</xsl:text>
+		</xsl:attribute>
+	</xsl:template>
 
 	<!-- Construct the file filters for a fsbutton -->
-	<template name="prg.xul.fsButtonFilterAttribute">
-		<param name="patternsNode" />
-		<attribute name="filters">
-			<for-each select="$patternsNode/prg:pattern">
-				<call-template name="prg.xul.attributeEscapedValue">
-					<with-param name="value" select="prg:name" />
-				</call-template>
-				<text>|</text>
-				<for-each select="prg:rules/prg:rule">
-					<choose>
-						<when test="prg:startWith">
-							<value-of select="prg:startWith" /><text>*</text>
-						</when>
-						<when test="prg:endWith">
-							<text>*</text><value-of select="prg:endWith" />
-						</when>
-						<otherwise>
-							<text>*</text><value-of select="prg:contains" /><text>*</text>
-						</otherwise>
-					</choose>
-					<if test="position() != last()">
-						<text>;</text>
-					</if>
-				</for-each>
-				<if test="position() != last()">
-					<text>|</text>
-				</if>
-			</for-each>
-		</attribute>
-	</template>
+	<xsl:template name="prg.xul.fsButtonFilterAttribute">
+		<xsl:param name="patternsNode" />
+		<xsl:attribute name="filters">
+			<xsl:for-each select="$patternsNode/prg:pattern">
+				<xsl:call-template name="prg.xul.attributeEscapedValue">
+					<xsl:with-param name="value" select="prg:name" />
+				</xsl:call-template>
+				<xsl:text>|</xsl:text>
+				<xsl:for-each select="prg:rules/prg:rule">
+					<xsl:choose>
+						<xsl:when test="prg:startWith">
+							<xsl:value-of select="prg:startWith" /><xsl:text>*</xsl:text>
+						</xsl:when>
+						<xsl:when test="prg:endWith">
+							<xsl:text>*</xsl:text><xsl:value-of select="prg:endWith" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>*</xsl:text><xsl:value-of select="prg:contains" /><xsl:text>*</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:if test="position() != last()">
+						<xsl:text>;</xsl:text>
+					</xsl:if>
+				</xsl:for-each>
+				<xsl:if test="position() != last()">
+					<xsl:text>|</xsl:text>
+				</xsl:if>
+			</xsl:for-each>
+		</xsl:attribute>
+	</xsl:template>
 
 	<!-- Convert a prg:select to menuitems for a menulist -->
-	<template name="prg.xul.selectToMenuItems">
-		<param name="selectNode" />
-		<param name="selectedIndex" />
-		<for-each select="$selectNode/*">
-			<element name="xul:menuitem">
-				<attribute name="label"><value-of select="." /></attribute>
-				<attribute name="value"><value-of select="." /></attribute>
-				<if test="normalize-space($selectNode/../prg:default/text()) = normalize-space(text())">
-					<attribute name="selected">true</attribute>
-				</if>
-				<if test="position() = $selectedIndex">
-					<attribute name="selected">true</attribute>
-				</if>
-			</element>
-		</for-each>
-	</template>
+	<xsl:template name="prg.xul.selectToMenuItems">
+		<xsl:param name="selectNode" />
+		<xsl:param name="selectedIndex" />
+		<xsl:for-each select="$selectNode/*">
+			<xsl:element name="xul:menuitem">
+				<xsl:attribute name="label"><xsl:value-of select="." /></xsl:attribute>
+				<xsl:attribute name="value"><xsl:value-of select="." /></xsl:attribute>
+				<xsl:if test="normalize-space($selectNode/../prg:default/text()) = normalize-space(text())">
+					<xsl:attribute name="selected">true</xsl:attribute>
+				</xsl:if>
+				<xsl:if test="position() = $selectedIndex">
+					<xsl:attribute name="selected">true</xsl:attribute>
+				</xsl:if>
+			</xsl:element>
+		</xsl:for-each>
+	</xsl:template>
 
-	<template name="prg.xul.optionLabelColumn">
-		<param name="level" select="0" />
-		<param name="optionNode" select="." />
+	<xsl:template name="prg.xul.optionLabelColumn">
+		<xsl:param name="level" select="0" />
+		<xsl:param name="optionNode" select="." />
 
-		<element name="xul:hbox">
-			<element name="xul:spacer">
-				<attribute name="width"><value-of select="$level * 10" /></attribute>
-			</element>
-			<call-template name="prg.xul.optionLabelControl">
-				<with-param name="optionNode" select="$optionNode" />
-			</call-template>
-		</element>
-	</template>
+		<xsl:element name="xul:hbox">
+			<xsl:element name="xul:spacer">
+				<xsl:attribute name="width"><xsl:value-of select="$level * 10" /></xsl:attribute>
+			</xsl:element>
+			<xsl:call-template name="prg.xul.optionLabelControl">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- Add a dummy (hidden) radio button to handle optional group case -->
-	<template name="prg.xul.groupValueControl">
-		<param name="node" select="." />
+	<xsl:template name="prg.xul.groupValueControl">
+		<xsl:param name="node" select="." />
 
-		<variable name="prg.optionId">
-			<call-template name="prg.optionId">
-				<with-param name="optionNode" select="$node" />
-			</call-template>
-		</variable>
+		<xsl:variable name="prg.optionId">
+			<xsl:call-template name="prg.optionId">
+				<xsl:with-param name="optionNode" select="$node" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<element name="xul:radio">
-			<attribute name="id">
-				<value-of select="$optionId" />
-				<text>:dummyradio</text>
-			</attribute>
+		<xsl:element name="xul:radio">
+			<xsl:attribute name="id">
+				<xsl:value-of select="$optionId" />
+				<xsl:text>:dummyradio</xsl:text>
+			</xsl:attribute>
 			<!-- <attribute name="hidden">true</attribute> -->
-			<attribute name="group">
-				<value-of select="$optionId" />
-				<text>:group</text>
-			</attribute>
-		</element>
-	</template>
+			<xsl:attribute name="group">
+				<xsl:value-of select="$optionId" />
+				<xsl:text>:group</xsl:text>
+			</xsl:attribute>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- Construct value control (single argument or anonymous value -->
-	<template name="prg.xul.singleValueControl">
-		<param name="node" select="." />
-		<param name="valueIndex" />
+	<xsl:template name="prg.xul.singleValueControl">
+		<xsl:param name="node" select="." />
+		<xsl:param name="valueIndex" />
 
-		<variable name="controlId">
-			<choose>
-				<when test="$node/self::prg:argument">
-					<call-template name="prg.optionId">
-						<with-param name="optionNode" select="$node" />
-					</call-template>
-				</when>
-				<when test="$node/self::prg:value">
-					<call-template name="prg.xul.valueId">
-						<with-param name="valueNode" select="$node" />
-						<with-param name="index" select="$valueIndex" />
-					</call-template>
-				</when>
-			</choose>
-			<text>:value</text>
-		</variable>
-		<variable name="label">
-			<choose>
-				<when test="$node/self::prg:argument">
-					<call-template name="prg.xul.optionLabel">
-						<with-param name="optionNode" select="$node" />
-					</call-template>
-				</when>
-				<when test="$node/self::prg:value">
-					<call-template name="prg.xul.valueLabel">
-						<with-param name="valueNode" select="$node" />
-						<with-param name="index" select="$valueIndex" />
-					</call-template>
-				</when>
-			</choose>
-		</variable>
-		<variable name="typeNode" select="$node/prg:type" />
-		<variable name="defaultNode" select="$node/prg:default" />
-		<variable name="selectNode" select="$node/prg:select" />
+		<xsl:variable name="controlId">
+			<xsl:choose>
+				<xsl:when test="$node/self::prg:argument">
+					<xsl:call-template name="prg.optionId">
+						<xsl:with-param name="optionNode" select="$node" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$node/self::prg:value">
+					<xsl:call-template name="prg.xul.valueId">
+						<xsl:with-param name="valueNode" select="$node" />
+						<xsl:with-param name="index" select="$valueIndex" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:text>:value</xsl:text>
+		</xsl:variable>
+		<xsl:variable name="label">
+			<xsl:choose>
+				<xsl:when test="$node/self::prg:argument">
+					<xsl:call-template name="prg.xul.optionLabel">
+						<xsl:with-param name="optionNode" select="$node" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$node/self::prg:value">
+					<xsl:call-template name="prg.xul.valueLabel">
+						<xsl:with-param name="valueNode" select="$node" />
+						<xsl:with-param name="index" select="$valueIndex" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="typeNode" select="$node/prg:type" />
+		<xsl:variable name="defaultNode" select="$node/prg:default" />
+		<xsl:variable name="selectNode" select="$node/prg:select" />
 
-		<choose>
-			<when test="$node/prg:select[@restrict = 'true']">
-				<element name="xul:box">
-					<attribute name="id"><value-of select="$controlId" /></attribute>
-					<attribute name="class">argumentMenuValue</attribute>
-					<call-template name="prg.xul.selectToMenuItems">
-						<with-param name="selectNode" select="$selectNode" />
-					</call-template>
-				</element>
-			</when>
-			<when test="($typeNode/prg:number)">
-				<variable name="numberNode" select="$typeNode/prg:number" />
-				<element name="xul:box">
-					<attribute name="class">argumentNumberValue</attribute>
-					<attribute name="id"><value-of select="$controlId" /></attribute>
-					<if test="$numberNode/@min">
-						<attribute name="min">
-							<value-of select="$numberNode/@min" />
-						</attribute>
-					</if>
-					<if test="$numberNode/@max">
-						<attribute name="max">
-							<value-of select="$numberNode/@max" />
-						</attribute>
-					</if>
-					<if test="$numberNode/@decimal">
-						<attribute name="decimal">
-							<value-of select="$numberNode/@decimal" />
-						</attribute>
-					</if>
-					<if test="$defaultNode">
-						<attribute name="default">
-							<value-of select="$defaultNode" />
-						</attribute>
-					</if>
-				</element>
-			</when>
-			<when test="$typeNode/prg:path">
-				<variable name="pathNode" select="$typeNode/prg:path" />
-				<element name="xul:box">
-					<attribute name="class">argumentPathValue</attribute>
-					<attribute name="id"><value-of select="$controlId" /></attribute>
-					<attribute name="dialogtitle">
-						<value-of select="$label"></value-of>
-					</attribute>
-					<if test="$defaultNode">
-						<attribute name="default">
-							<value-of select="$defaultNode" />
-						</attribute>
-					</if>
-					<if test="$selectNode">
-						<call-template name="prg.xul.textboxAutocompleAtributes">
-							<with-param name="selectNode" select="$selectNode" />
-						</call-template>
-					</if>
-					<if test="$pathNode/prg:patterns">
-						<call-template name="prg.xul.fsButtonFilterAttribute">
-							<with-param name="patternsNode" select="$pathNode/prg:patterns" />
-						</call-template>
-					</if>
-					<call-template name="prg.xul.fsButtonDialogMode">
-						<with-param name="pathNode" select="$pathNode" />
-					</call-template>
-				</element>
-			</when>
-			<when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
-				<element name="xul:box">
-					<attribute name="class">argumentTextValue</attribute>
-					<attribute name="id"><value-of select="$controlId" /></attribute>
-					<if test="$defaultNode">
-						<attribute name="default">
-							<value-of select="$defaultNode" />
-						</attribute>
-					</if>
-					<if test="$selectNode">
-						<call-template name="prg.xul.textboxAutocompleAtributes">
-							<with-param name="selectNode" select="$selectNode" />
-						</call-template>
-					</if>
-				</element>
-			</when>
-		</choose>
-	</template>
+		<xsl:choose>
+			<xsl:when test="$node/prg:select[@restrict = 'true']">
+				<xsl:element name="xul:box">
+					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
+					<xsl:attribute name="class">argumentMenuValue</xsl:attribute>
+					<xsl:call-template name="prg.xul.selectToMenuItems">
+						<xsl:with-param name="selectNode" select="$selectNode" />
+					</xsl:call-template>
+				</xsl:element>
+			</xsl:when>
+			<xsl:when test="($typeNode/prg:number)">
+				<xsl:variable name="numberNode" select="$typeNode/prg:number" />
+				<xsl:element name="xul:box">
+					<xsl:attribute name="class">argumentNumberValue</xsl:attribute>
+					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
+					<xsl:if test="$numberNode/@min">
+						<xsl:attribute name="min">
+							<xsl:value-of select="$numberNode/@min" />
+						</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$numberNode/@max">
+						<xsl:attribute name="max">
+							<xsl:value-of select="$numberNode/@max" />
+						</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$numberNode/@decimal">
+						<xsl:attribute name="decimal">
+							<xsl:value-of select="$numberNode/@decimal" />
+						</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$defaultNode">
+						<xsl:attribute name="default">
+							<xsl:value-of select="$defaultNode" />
+						</xsl:attribute>
+					</xsl:if>
+				</xsl:element>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:path">
+				<xsl:variable name="pathNode" select="$typeNode/prg:path" />
+				<xsl:element name="xul:box">
+					<xsl:attribute name="class">argumentPathValue</xsl:attribute>
+					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
+					<xsl:attribute name="dialogtitle">
+						<xsl:value-of select="$label"></xsl:value-of>
+					</xsl:attribute>
+					<xsl:if test="$defaultNode">
+						<xsl:attribute name="default">
+							<xsl:value-of select="$defaultNode" />
+						</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$selectNode">
+						<xsl:call-template name="prg.xul.textboxAutocompleAtributes">
+							<xsl:with-param name="selectNode" select="$selectNode" />
+						</xsl:call-template>
+					</xsl:if>
+					<xsl:if test="$pathNode/prg:patterns">
+						<xsl:call-template name="prg.xul.fsButtonFilterAttribute">
+							<xsl:with-param name="patternsNode" select="$pathNode/prg:patterns" />
+						</xsl:call-template>
+					</xsl:if>
+					<xsl:call-template name="prg.xul.fsButtonDialogMode">
+						<xsl:with-param name="pathNode" select="$pathNode" />
+					</xsl:call-template>
+				</xsl:element>
+			</xsl:when>
+			<xsl:when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
+				<xsl:element name="xul:box">
+					<xsl:attribute name="class">argumentTextValue</xsl:attribute>
+					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
+					<xsl:if test="$defaultNode">
+						<xsl:attribute name="default">
+							<xsl:value-of select="$defaultNode" />
+						</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="$selectNode">
+						<xsl:call-template name="prg.xul.textboxAutocompleAtributes">
+							<xsl:with-param name="selectNode" select="$selectNode" />
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:element>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.xul.multiValueControl">
-		<param name="node" select="." />
-		<param name="valueIndex" />
+	<xsl:template name="prg.xul.multiValueControl">
+		<xsl:param name="node" select="." />
+		<xsl:param name="valueIndex" />
 
-		<variable name="controlId">
-			<choose>
-				<when test="$node/self::prg:multiargument">
-					<call-template name="prg.optionId">
-						<with-param name="optionNode" select="$node" />
-					</call-template>
-				</when>
-				<when test="$node/self::prg:other">
-					<call-template name="prg.xul.valueId">
-						<with-param name="valueNode" select="$node" />
-						<with-param name="index" select="$valueIndex" />
-					</call-template>
-				</when>
-			</choose>
-			<text>:value</text>
-		</variable>
+		<xsl:variable name="controlId">
+			<xsl:choose>
+				<xsl:when test="$node/self::prg:multiargument">
+					<xsl:call-template name="prg.optionId">
+						<xsl:with-param name="optionNode" select="$node" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$node/self::prg:other">
+					<xsl:call-template name="prg.xul.valueId">
+						<xsl:with-param name="valueNode" select="$node" />
+						<xsl:with-param name="index" select="$valueIndex" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:text>:value</xsl:text>
+		</xsl:variable>
 
-		<variable name="label">
-			<choose>
-				<when test="$node/self::prg:multiargument">
-					<call-template name="prg.xul.optionLabel">
-						<with-param name="optionNode" select="$node" />
-					</call-template>
-				</when>
-				<when test="$node/self::prg:other">
-					<call-template name="prg.xul.valueLabel">
-						<with-param name="valueNode" select="$node" />
-					</call-template>
-				</when>
-			</choose>
-		</variable>
+		<xsl:variable name="label">
+			<xsl:choose>
+				<xsl:when test="$node/self::prg:multiargument">
+					<xsl:call-template name="prg.xul.optionLabel">
+						<xsl:with-param name="optionNode" select="$node" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$node/self::prg:other">
+					<xsl:call-template name="prg.xul.valueLabel">
+						<xsl:with-param name="valueNode" select="$node" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
 
-		<variable name="proxyId">
-			<value-of select="$controlId" />
-			<text>:proxy</text>
-		</variable>
+		<xsl:variable name="proxyId">
+			<xsl:value-of select="$controlId" />
+			<xsl:text>:proxy</xsl:text>
+		</xsl:variable>
 
-		<variable name="inputId">
-			<value-of select="$controlId" />
-			<text>:input</text>
-		</variable>
+		<xsl:variable name="inputId">
+			<xsl:value-of select="$controlId" />
+			<xsl:text>:input</xsl:text>
+		</xsl:variable>
 
-		<variable name="typeNode" select="$node/prg:type" />
-		<variable name="defaultNode" select="$node/prg:default" />
-		<variable name="selectNode" select="$node/prg:select" />
+		<xsl:variable name="typeNode" select="$node/prg:type" />
+		<xsl:variable name="defaultNode" select="$node/prg:default" />
+		<xsl:variable name="selectNode" select="$node/prg:select" />
 
-		<element name="xul:grid">
-			<attribute name="flex">1</attribute>
-			<element name="xul:columns">
-				<element name="xul:column">
-					<attribute name="flex">1</attribute>
-				</element>
-				<element name="xul:column" />
-			</element>
-			<element name="xul:rows">
-				<variable name="useSingleRow" select="$typeNode/prg:path and not($selectNode/@restrict)" />
-				<if test="not($useSingleRow)">
-					<element name="xul:row">
-						<choose>
-							<when test="$selectNode[@restrict = 'true']">
-								<element name="xul:box">
-									<attribute name="class">argumentMenuValue</attribute>
-									<attribute name="id"><value-of select="$inputId" /></attribute>
-									<call-template name="prg.xul.selectToMenuItems">
-										<with-param name="selectNode" select="$selectNode" />
-										<with-param name="selectedIndex" select="1" />
-									</call-template>
-								</element>
-							</when>
-							<when test="($typeNode/prg:number)">
-								<variable name="numberNode" select="$typeNode/prg:number" />
+		<xsl:element name="xul:grid">
+			<xsl:attribute name="flex">1</xsl:attribute>
+			<xsl:element name="xul:columns">
+				<xsl:element name="xul:column">
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
+				<xsl:element name="xul:column" />
+			</xsl:element>
+			<xsl:element name="xul:rows">
+				<xsl:variable name="useSingleRow" select="$typeNode/prg:path and not($selectNode/@restrict)" />
+				<xsl:if test="not($useSingleRow)">
+					<xsl:element name="xul:row">
+						<xsl:choose>
+							<xsl:when test="$selectNode[@restrict = 'true']">
+								<xsl:element name="xul:box">
+									<xsl:attribute name="class">argumentMenuValue</xsl:attribute>
+									<xsl:attribute name="id"><xsl:value-of select="$inputId" /></xsl:attribute>
+									<xsl:call-template name="prg.xul.selectToMenuItems">
+										<xsl:with-param name="selectNode" select="$selectNode" />
+										<xsl:with-param name="selectedIndex" select="1" />
+									</xsl:call-template>
+								</xsl:element>
+							</xsl:when>
+							<xsl:when test="($typeNode/prg:number)">
+								<xsl:variable name="numberNode" select="$typeNode/prg:number" />
 
-								<element name="xul:box">
-									<attribute name="class">argumentNumberValue</attribute>
-									<attribute name="id"><value-of select="$inputId" /></attribute>
-									<if test="$numberNode/@min">
-										<attribute name="min"><value-of select="$numberNode/@min" /></attribute>
-									</if>
-									<if test="$numberNode/@max">
-										<attribute name="max"><value-of select="$numberNode/@max" /></attribute>
-									</if>
-									<if test="$numberNode/@decimal">
-										<attribute name="decimal"><value-of select="$numberNode/@decimal" /></attribute>
-									</if>
-									<if test="$defaultNode">
-										<attribute name="default"><value-of select="$defaultNode/prg:default" /></attribute>
-									</if>
-								</element>
-							</when>
-							<when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
-								<element name="xul:box">
-									<attribute name="class">argumentTextValue</attribute>
-									<attribute name="id"><value-of select="$inputId" /></attribute>
-									<if test="$defaultNode">
-										<attribute name="default"><value-of select="$defaultNode" /></attribute>
-									</if>
-									<if test="$selectNode">
-										<call-template name="prg.xul.textboxAutocompleAtributes">
-											<with-param name="selectNode" select="$selectNode" />
-										</call-template>
-									</if>
-								</element>
-							</when>
-						</choose>
-						<element name="xul:button">
-							<attribute name="label">Add</attribute>
-							<attribute name="oncommand">
-								<value-of select="$prg.xul.js.mainWindowInstanceName" /><text>.addInputToMultiValue('</text>
-								<value-of select="$controlId" /><text>');</text>
-							</attribute>
-						</element>
-					</element>
-				</if>
-				<element name="xul:row">
-					<element name="xul:box">
-						<attribute name="flex">1</attribute>
-						<attribute name="class">multiargumentListbox</attribute>
-						<attribute name="id"><value-of select="$controlId" /></attribute>
-					</element>
-					<element name="xul:vbox">
-						<if test="$useSingleRow">
-							<variable name="pathNode" select="$typeNode/prg:path" />
-							<element name="xul:box">
-								<attribute name="class">fsbutton</attribute>
-								<attribute name="label">Add...</attribute>
-								<attribute name="onchange">
-									<text>document.getElementById('</text><value-of select="$proxyId" /><text>').addElement(this.value);</text>
-								</attribute>
-								<if test="$pathNode/prg:patterns">
-									<call-template name="prg.xul.fsButtonFilterAttribute">
-										<with-param name="patternsNode" select="$pathNode/prg:patterns" />
-									</call-template>
-								</if>
-								<call-template name="prg.xul.fsButtonDialogMode">
-									<with-param name="pathNode" select="$pathNode" />
-								</call-template>
-							</element>
-						</if>
-						<element name="xul:box">
-							<attribute name="class">itemarrangementbuttonbox</attribute>
-							<attribute name="id"><value-of select="$proxyId" /></attribute>
-							<attribute name="targetId"><value-of select="$controlId" /></attribute>
-						</element>
-					</element>
-				</element>
-			</element>
-		</element>
-	</template>
+								<xsl:element name="xul:box">
+									<xsl:attribute name="class">argumentNumberValue</xsl:attribute>
+									<xsl:attribute name="id"><xsl:value-of select="$inputId" /></xsl:attribute>
+									<xsl:if test="$numberNode/@min">
+										<xsl:attribute name="min"><xsl:value-of select="$numberNode/@min" /></xsl:attribute>
+									</xsl:if>
+									<xsl:if test="$numberNode/@max">
+										<xsl:attribute name="max"><xsl:value-of select="$numberNode/@max" /></xsl:attribute>
+									</xsl:if>
+									<xsl:if test="$numberNode/@decimal">
+										<xsl:attribute name="decimal"><xsl:value-of select="$numberNode/@decimal" /></xsl:attribute>
+									</xsl:if>
+									<xsl:if test="$defaultNode">
+										<xsl:attribute name="default"><xsl:value-of select="$defaultNode/prg:default" /></xsl:attribute>
+									</xsl:if>
+								</xsl:element>
+							</xsl:when>
+							<xsl:when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
+								<xsl:element name="xul:box">
+									<xsl:attribute name="class">argumentTextValue</xsl:attribute>
+									<xsl:attribute name="id"><xsl:value-of select="$inputId" /></xsl:attribute>
+									<xsl:if test="$defaultNode">
+										<xsl:attribute name="default"><xsl:value-of select="$defaultNode" /></xsl:attribute>
+									</xsl:if>
+									<xsl:if test="$selectNode">
+										<xsl:call-template name="prg.xul.textboxAutocompleAtributes">
+											<xsl:with-param name="selectNode" select="$selectNode" />
+										</xsl:call-template>
+									</xsl:if>
+								</xsl:element>
+							</xsl:when>
+						</xsl:choose>
+						<xsl:element name="xul:button">
+							<xsl:attribute name="label">Add</xsl:attribute>
+							<xsl:attribute name="oncommand">
+								<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.addInputToMultiValue('</xsl:text>
+								<xsl:value-of select="$controlId" /><xsl:text>');</xsl:text>
+							</xsl:attribute>
+						</xsl:element>
+					</xsl:element>
+				</xsl:if>
+				<xsl:element name="xul:row">
+					<xsl:element name="xul:box">
+						<xsl:attribute name="flex">1</xsl:attribute>
+						<xsl:attribute name="class">multiargumentListbox</xsl:attribute>
+						<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
+					</xsl:element>
+					<xsl:element name="xul:vbox">
+						<xsl:if test="$useSingleRow">
+							<xsl:variable name="pathNode" select="$typeNode/prg:path" />
+							<xsl:element name="xul:box">
+								<xsl:attribute name="class">fsbutton</xsl:attribute>
+								<xsl:attribute name="label">Add...</xsl:attribute>
+								<xsl:attribute name="onchange">
+									<xsl:text>document.getElementById('</xsl:text><xsl:value-of select="$proxyId" /><xsl:text>').addElement(this.value);</xsl:text>
+								</xsl:attribute>
+								<xsl:if test="$pathNode/prg:patterns">
+									<xsl:call-template name="prg.xul.fsButtonFilterAttribute">
+										<xsl:with-param name="patternsNode" select="$pathNode/prg:patterns" />
+									</xsl:call-template>
+								</xsl:if>
+								<xsl:call-template name="prg.xul.fsButtonDialogMode">
+									<xsl:with-param name="pathNode" select="$pathNode" />
+								</xsl:call-template>
+							</xsl:element>
+						</xsl:if>
+						<xsl:element name="xul:box">
+							<xsl:attribute name="class">itemarrangementbuttonbox</xsl:attribute>
+							<xsl:attribute name="id"><xsl:value-of select="$proxyId" /></xsl:attribute>
+							<xsl:attribute name="targetId"><xsl:value-of select="$controlId" /></xsl:attribute>
+						</xsl:element>
+					</xsl:element>
+				</xsl:element>
+			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- Construct the value control (if any) for an option -->
-	<template name="prg.xul.optionValueColumn">
-		<param name="level" select="0" />
-		<param name="optionNode" select="." />
+	<xsl:template name="prg.xul.optionValueColumn">
+		<xsl:param name="level" select="0" />
+		<xsl:param name="optionNode" select="." />
 
-		<choose>
-			<when test="$optionNode/self::prg:group">
+		<xsl:choose>
+			<xsl:when test="$optionNode/self::prg:group">
 				<!-- <call-template name="prg.xul.groupValueControl"> <with-param name="node"
 					select="$optionNode" /> </call-template> -->
-			</when>
-			<when test="$optionNode/self::prg:argument">
-				<call-template name="prg.xul.singleValueControl">
-					<with-param name="node" select="$optionNode" />
-				</call-template>
-			</when>
-			<when test="$optionNode/self::prg:multiargument">
-				<call-template name="prg.xul.multiValueControl">
-					<with-param name="node" select="$optionNode" />
-				</call-template>
-			</when>
-		</choose>
-	</template>
+			</xsl:when>
+			<xsl:when test="$optionNode/self::prg:argument">
+				<xsl:call-template name="prg.xul.singleValueControl">
+					<xsl:with-param name="node" select="$optionNode" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$optionNode/self::prg:multiargument">
+				<xsl:call-template name="prg.xul.multiValueControl">
+					<xsl:with-param name="node" select="$optionNode" />
+				</xsl:call-template>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Construct option controls (label + value) as a grid row -->
-	<template name="prg.xul.optionRow">
-		<param name="level" select="0" />
-		<param name="optionNode" select="." />
+	<xsl:template name="prg.xul.optionRow">
+		<xsl:param name="level" select="0" />
+		<xsl:param name="optionNode" select="." />
 
-		<variable name="groupOptionNodes" select="$optionNode/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+		<xsl:variable name="groupOptionNodes" select="$optionNode/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
 
 		<!-- Check empty group case -->
-		<variable name="isEmptyGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 0)" />
+		<xsl:variable name="isEmptyGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 0)" />
 
-		<variable name="isSingleElementGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 1)" />
+		<xsl:variable name="isSingleElementGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 1)" />
 
-		<choose>
+		<xsl:choose>
 			<!-- Flatten single-element groups -->
 			<!-- @todo disable 'radiobox' case in option or simulate a pseudo radiogroup -->
-			<when test="$isSingleElementGroup">
-				<call-template name="prg.xul.optionRow">
-					<with-param name="level" select="$level" />
-					<with-param name="optionNode" select="$groupOptionNodes" />
-				</call-template>
-			</when>
+			<xsl:when test="$isSingleElementGroup">
+				<xsl:call-template name="prg.xul.optionRow">
+					<xsl:with-param name="level" select="$level" />
+					<xsl:with-param name="optionNode" select="$groupOptionNodes" />
+				</xsl:call-template>
+			</xsl:when>
 
-			<when test="not($isEmptyGroup)">
-				<comment>
-					<value-of select="name($optionNode)" />
-					<text> </text>
-					<call-template name="prg.xul.optionLabel" />
-				</comment>
+			<xsl:when test="not($isEmptyGroup)">
+				<xsl:comment>
+					<xsl:value-of select="name($optionNode)" />
+					<xsl:text> </xsl:text>
+					<xsl:call-template name="prg.xul.optionLabel" />
+				</xsl:comment>
 
-				<element name="xul:row">
-					<call-template name="prg.xul.optionLabelColumn">
-						<with-param name="level" select="$level" />
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
+				<xsl:element name="xul:row">
+					<xsl:call-template name="prg.xul.optionLabelColumn">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
 
-					<call-template name="prg.xul.optionValueColumn">
-						<with-param name="level" select="$level" />
-						<with-param name="optionNode" select="$optionNode" />
-					</call-template>
-				</element>
+					<xsl:call-template name="prg.xul.optionValueColumn">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:element>
 
-				<if test="$optionNode/self::prg:group">
-					<for-each select="$groupOptionNodes">
-						<call-template name="prg.xul.optionRow">
-							<with-param name="level" select="$level + 1" />
-						</call-template>
-					</for-each>
-				</if>
-			</when>
-		</choose>
-	</template>
+				<xsl:if test="$optionNode/self::prg:group">
+					<xsl:for-each select="$groupOptionNodes">
+						<xsl:call-template name="prg.xul.optionRow">
+							<xsl:with-param name="level" select="$level + 1" />
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:if>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Construct the opiion grid fo a root prg:options node -->
-	<template name="prg.xul.optionsGrid">
-		<param name="optionsNode" select="." />
+	<xsl:template name="prg.xul.optionsGrid">
+		<xsl:param name="optionsNode" select="." />
 
-		<element name="xul:grid">
-			<attribute name="flex">1</attribute>
-			<element name="xul:columns">
-				<comment>
-					<text>Option label / Option selection</text>
-				</comment>
-				<element name="xul:column">
-					<attribute name="flex">1</attribute>
-				</element>
-				<comment>
-					<text>Option argument value(s)</text>
-				</comment>
-				<element name="xul:column">
-					<attribute name="flex">1</attribute>
-				</element>
-			</element>
-			<element name="xul:rows">
-				<for-each select="$optionsNode/*[not(prg:ui) or prg:ui[@mode = 'default']]">
-					<call-template name="prg.xul.optionRow">
-						<with-param name="level" select="0" />
-					</call-template>
-				</for-each>
-			</element>
-		</element>
-	</template>
+		<xsl:element name="xul:grid">
+			<xsl:attribute name="flex">1</xsl:attribute>
+			<xsl:element name="xul:columns">
+				<xsl:comment>
+					<xsl:text>Option label / Option selection</xsl:text>
+				</xsl:comment>
+				<xsl:element name="xul:column">
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
+				<xsl:comment>
+					<xsl:text>Option argument value(s)</xsl:text>
+				</xsl:comment>
+				<xsl:element name="xul:column">
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
+			</xsl:element>
+			<xsl:element name="xul:rows">
+				<xsl:for-each select="$optionsNode/*[not(prg:ui) or prg:ui[@mode = 'default']]">
+					<xsl:call-template name="prg.xul.optionRow">
+						<xsl:with-param name="level" select="0" />
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
-	<template name="prg.xul.anonymousValueLabelColumn">
-		<param name="valueNode" select="." />
-		<param name="index" />
-		<variable name="valueId">
-			<call-template name="prg.xul.valueId">
-				<with-param name="valueNode" select="$valueNode" />
-				<with-param name="index" select="$index" />
-			</call-template>
-		</variable>
+	<xsl:template name="prg.xul.anonymousValueLabelColumn">
+		<xsl:param name="valueNode" select="." />
+		<xsl:param name="index" />
+		<xsl:variable name="valueId">
+			<xsl:call-template name="prg.xul.valueId">
+				<xsl:with-param name="valueNode" select="$valueNode" />
+				<xsl:with-param name="index" select="$index" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<element name="xul:hbox">
-			<attribute name="class">programValue</attribute>
-			<attribute name="id">
-				<value-of select="$valueId" />
-			</attribute>
-			<attribute name="label">
-				<call-template name="prg.xul.valueLabel">
-						<with-param name="valueNode" select="$valueNode" />
-						<with-param name="index" select="$index" />
-					</call-template>				
-			</attribute>
-			<attribute name="valueControlId">
-				<value-of select="$valueId" />
-				<text>:value</text>
-			</attribute>
-			<attribute name="index">
-				<value-of select="$index" />
-			</attribute>
-		</element>
-	</template>
+		<xsl:element name="xul:hbox">
+			<xsl:attribute name="class">programValue</xsl:attribute>
+			<xsl:attribute name="id">
+				<xsl:value-of select="$valueId" />
+			</xsl:attribute>
+			<xsl:attribute name="label">
+				<xsl:call-template name="prg.xul.valueLabel">
+						<xsl:with-param name="valueNode" select="$valueNode" />
+						<xsl:with-param name="index" select="$index" />
+					</xsl:call-template>				
+			</xsl:attribute>
+			<xsl:attribute name="valueControlId">
+				<xsl:value-of select="$valueId" />
+				<xsl:text>:value</xsl:text>
+			</xsl:attribute>
+			<xsl:attribute name="index">
+				<xsl:value-of select="$index" />
+			</xsl:attribute>
+		</xsl:element>
+	</xsl:template>
 
-	<template name="prg.xul.anonymousValueValueColumn">
-		<param name="valueNode" select="." />
-		<param name="index" />
+	<xsl:template name="prg.xul.anonymousValueValueColumn">
+		<xsl:param name="valueNode" select="." />
+		<xsl:param name="index" />
 
-		<variable name="typeNode" select="$valueNode/prg:type" />
-		<variable name="selectNode" select="$valueNode/prg:select" />
+		<xsl:variable name="typeNode" select="$valueNode/prg:type" />
+		<xsl:variable name="selectNode" select="$valueNode/prg:select" />
 
-		<variable name="valueId">
-			<call-template name="prg.xul.valueId">
-				<with-param name="valueNode" select="$valueNode" />
-				<with-param name="index" select="$index"></with-param>
-			</call-template>
-		</variable>
+		<xsl:variable name="valueId">
+			<xsl:call-template name="prg.xul.valueId">
+				<xsl:with-param name="valueNode" select="$valueNode" />
+				<xsl:with-param name="index" select="$index"></xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
 
-		<choose>
-			<when test="$valueNode/self::prg:value">
-				<call-template name="prg.xul.singleValueControl">
-					<with-param name="node" select="$valueNode" />
-					<with-param name="valueIndex" select="$index" />
-				</call-template>
-			</when>
-			<when test="$valueNode/self::prg:other">
-				<call-template name="prg.xul.multiValueControl">
-					<with-param name="node" select="$valueNode" />
-					<with-param name="valueIndex" select="$index" />
-				</call-template>
-			</when>
-		</choose>
-	</template>
+		<xsl:choose>
+			<xsl:when test="$valueNode/self::prg:value">
+				<xsl:call-template name="prg.xul.singleValueControl">
+					<xsl:with-param name="node" select="$valueNode" />
+					<xsl:with-param name="valueIndex" select="$index" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$valueNode/self::prg:other">
+				<xsl:call-template name="prg.xul.multiValueControl">
+					<xsl:with-param name="node" select="$valueNode" />
+					<xsl:with-param name="valueIndex" select="$index" />
+				</xsl:call-template>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.xul.anonymousValueRow">
-		<param name="valueNode" select="." />
-		<param name="index" />
+	<xsl:template name="prg.xul.anonymousValueRow">
+		<xsl:param name="valueNode" select="." />
+		<xsl:param name="index" />
 
-		<comment>
-			<if test="$valueNode/self::prg:other">
-				<text>Other </text>
-			</if>
-			<text>Value</text>
-			<if test="$valueNode/self::prg:value">
-				<text> </text>
-				<value-of select="$index" />
-			</if>
-		</comment>
+		<xsl:comment>
+			<xsl:if test="$valueNode/self::prg:other">
+				<xsl:text>Other </xsl:text>
+			</xsl:if>
+			<xsl:text>Value</xsl:text>
+			<xsl:if test="$valueNode/self::prg:value">
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$index" />
+			</xsl:if>
+		</xsl:comment>
 
-		<element name="xul:row">
-			<call-template name="prg.xul.anonymousValueLabelColumn">
-				<with-param name="valueNode" select="$valueNode" />
-				<with-param name="index" select="$index" />
-			</call-template>
+		<xsl:element name="xul:row">
+			<xsl:call-template name="prg.xul.anonymousValueLabelColumn">
+				<xsl:with-param name="valueNode" select="$valueNode" />
+				<xsl:with-param name="index" select="$index" />
+			</xsl:call-template>
 
-			<call-template name="prg.xul.anonymousValueValueColumn">
-				<with-param name="valueNode" select="$valueNode" />
-				<with-param name="index" select="$index" />
-			</call-template>
-		</element>
-	</template>
+			<xsl:call-template name="prg.xul.anonymousValueValueColumn">
+				<xsl:with-param name="valueNode" select="$valueNode" />
+				<xsl:with-param name="index" select="$index" />
+			</xsl:call-template>
+		</xsl:element>
+	</xsl:template>
 
-	<template name="prg.xul.anonymousValueGrid">
-		<param name="valuesNode" select="." />
+	<xsl:template name="prg.xul.anonymousValueGrid">
+		<xsl:param name="valuesNode" select="." />
 
-		<element name="xul:grid">
-			<attribute name="flex">1</attribute>
-			<element name="xul:columns">
-				<comment>
-					<text>Anonymous value labels</text>
-				</comment>
-				<element name="xul:column">
-					<attribute name="flex">1</attribute>
-				</element>
-				<comment>
-					<text>Anonymous value ... value control</text>
-				</comment>
-				<element name="xul:column">
-					<attribute name="flex">1</attribute>
-				</element>
-			</element>
-			<element name="xul:rows">
-				<for-each select="$valuesNode/prg:value">
-					<call-template name="prg.xul.anonymousValueRow">
-						<with-param name="index" select="position()" />
-					</call-template>
-				</for-each>
-				<if test="$valuesNode/prg:other">
-					<call-template name="prg.xul.anonymousValueRow">
-						<with-param name="valueNode" select="$valuesNode/prg:other" />
-					</call-template>
-				</if>
-			</element>
-		</element>
-	</template>
+		<xsl:element name="xul:grid">
+			<xsl:attribute name="flex">1</xsl:attribute>
+			<xsl:element name="xul:columns">
+				<xsl:comment>
+					<xsl:text>Anonymous value labels</xsl:text>
+				</xsl:comment>
+				<xsl:element name="xul:column">
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
+				<xsl:comment>
+					<xsl:text>Anonymous value ... value control</xsl:text>
+				</xsl:comment>
+				<xsl:element name="xul:column">
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
+			</xsl:element>
+			<xsl:element name="xul:rows">
+				<xsl:for-each select="$valuesNode/prg:value">
+					<xsl:call-template name="prg.xul.anonymousValueRow">
+						<xsl:with-param name="index" select="position()" />
+					</xsl:call-template>
+				</xsl:for-each>
+				<xsl:if test="$valuesNode/prg:other">
+					<xsl:call-template name="prg.xul.anonymousValueRow">
+						<xsl:with-param name="valueNode" select="$valuesNode/prg:other" />
+					</xsl:call-template>
+				</xsl:if>
+			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- Frame for debug mode -->
-	<template name="prg.xul.debugFrame">
-		<element name="xul:hbox">
-			<element name="xul:vbox">
-				<attribute name="width">600</attribute>
+	<xsl:template name="prg.xul.debugFrame">
+		<xsl:element name="xul:hbox">
+			<xsl:element name="xul:vbox">
+				<xsl:attribute name="width">600</xsl:attribute>
 				<!-- debug frame force window size to something usable -->
-				<attribute name="height">768</attribute>
+				<xsl:attribute name="height">768</xsl:attribute>
 				<!-- console -->
-				<element name="xul:iframe">
-					<attribute name="src">chrome://global/content/console.xul</attribute>
-					<attribute name="width">600</attribute>
-					<attribute name="flex">1</attribute>
-				</element>
+				<xsl:element name="xul:iframe">
+					<xsl:attribute name="src">chrome://global/content/console.xul</xsl:attribute>
+					<xsl:attribute name="width">600</xsl:attribute>
+					<xsl:attribute name="flex">1</xsl:attribute>
+				</xsl:element>
 				<!-- Refresh buttons -->
-				<element name="xul:toolbar">
-					<element name="xul:hbox">
-						<element name="xul:button">
-							<attribute name="label">Reload</attribute>
-							<attribute name="oncommand">document.location = document.location</attribute>
-						</element>
-						<element name="xul:button">
-							<attribute name="label">Rebuild</attribute>
-							<attribute name="oncommand"><value-of select="$prg.xul.js.mainWindowInstanceName" />
-							<text>.rebuildWindow()</text>
-							</attribute>
-						</element>
-					</element>
-				</element>
-			</element>
-			<call-template name="prg.xul.mainFrame" />
-		</element>
-	</template>
+				<xsl:element name="xul:toolbar">
+					<xsl:element name="xul:hbox">
+						<xsl:element name="xul:button">
+							<xsl:attribute name="label">Reload</xsl:attribute>
+							<xsl:attribute name="oncommand">document.location = document.location</xsl:attribute>
+						</xsl:element>
+						<xsl:element name="xul:button">
+							<xsl:attribute name="label">Rebuild</xsl:attribute>
+							<xsl:attribute name="oncommand"><xsl:value-of select="$prg.xul.js.mainWindowInstanceName" />
+							<xsl:text>.rebuildWindow()</xsl:text>
+							</xsl:attribute>
+						</xsl:element>
+					</xsl:element>
+				</xsl:element>
+			</xsl:element>
+			<xsl:call-template name="prg.xul.mainFrame" />
+		</xsl:element>
+	</xsl:template>
 
-	<template name="prg.xul.mainFrame">
-		<element name="xul:vbox">
-			<attribute name="flex">1</attribute>
-			<attribute name="style">overflow: -moz-scrollbars-vertical;</attribute>
-			<attribute name="width"><value-of select="$prg.xul.windowWidth" /></attribute>
-			<attribute name="height"><value-of select="$prg.xul.windowHeight" /></attribute>
+	<xsl:template name="prg.xul.mainFrame">
+		<xsl:element name="xul:vbox">
+			<xsl:attribute name="flex">1</xsl:attribute>
+			<xsl:attribute name="style">overflow: -moz-scrollbars-vertical;</xsl:attribute>
+			<xsl:attribute name="width"><xsl:value-of select="$prg.xul.windowWidth" /></xsl:attribute>
+			<xsl:attribute name="height"><xsl:value-of select="$prg.xul.windowHeight" /></xsl:attribute>
 
 			<!-- Global options -->
-			<variable name="availableOptions" select="/prg:program/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+			<xsl:variable name="availableOptions" select="/prg:program/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
 
-			<if test="$availableOptions">
-				<element name="xul:groupbox">
-					<element name="xul:caption">
-						<element name="xul:label">
-							<attribute name="value">General options</attribute>
-						</element>
-					</element>
-					<call-template name="prg.xul.optionsGrid">
-						<with-param name="optionsNode" select="/prg:program/prg:options" />
-					</call-template>
-				</element>
-			</if>
+			<xsl:if test="$availableOptions">
+				<xsl:element name="xul:groupbox">
+					<xsl:element name="xul:caption">
+						<xsl:element name="xul:label">
+							<xsl:attribute name="value">General options</xsl:attribute>
+						</xsl:element>
+					</xsl:element>
+					<xsl:call-template name="prg.xul.optionsGrid">
+						<xsl:with-param name="optionsNode" select="/prg:program/prg:options" />
+					</xsl:call-template>
+				</xsl:element>
+			</xsl:if>
 
-			<choose>
-				<when test="$prg.xul.availableSubcommands">
-					<call-template name="prg.xul.subcommandFrame" />
-				</when>
-				<otherwise>
-					<if test="/prg:program/prg:values">
-						<element name="xul:groupbox">
-							<element name="xul:caption">
-								<element name="xul:label">
-									<attribute name="value">Values</attribute>
-								</element>
-							</element>
-							<call-template name="prg.xul.anonymousValueGrid">
-								<with-param name="valuesNode" select="/prg:program/prg:values" />
-							</call-template>
-						</element>
-					</if>
-				</otherwise>
-			</choose>
+			<xsl:choose>
+				<xsl:when test="$prg.xul.availableSubcommands">
+					<xsl:call-template name="prg.xul.subcommandFrame" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if test="/prg:program/prg:values">
+						<xsl:element name="xul:groupbox">
+							<xsl:element name="xul:caption">
+								<xsl:element name="xul:label">
+									<xsl:attribute name="value">Values</xsl:attribute>
+								</xsl:element>
+							</xsl:element>
+							<xsl:call-template name="prg.xul.anonymousValueGrid">
+								<xsl:with-param name="valuesNode" select="/prg:program/prg:values" />
+							</xsl:call-template>
+						</xsl:element>
+					</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
 
-		</element>
-	</template>
+		</xsl:element>
+	</xsl:template>
 
 	<!-- Frame displaying options & values (general and per-subcommand) -->
-	<template name="prg.xul.subcommandFrame">
-		<variable name="subcommandDeckId">
-			<text>ui:subcommandDeckId</text>
-		</variable>
+	<xsl:template name="prg.xul.subcommandFrame">
+		<xsl:variable name="subcommandDeckId">
+			<xsl:text>ui:subcommandDeckId</xsl:text>
+		</xsl:variable>
 
-		<element name="xul:vbox">
-			<element name="xul:menulist">
-				<attribute name="flex">1</attribute>
-				<attribute name="oncommand">
-					<value-of select="$prg.xul.js.mainWindowInstanceName" /><text>.subcommand = this.value;</text>
-					<text>document.getElementById('</text>
-					<value-of select="$subcommandDeckId" />
-					<text>').selectedIndex = <![CDATA[(this.selectedIndex < 1) ? 0 : (this.selectedIndex - 1);]]></text>
-					<value-of select="$prg.xul.js.mainWindowInstanceName" /><text>.updatePreview();</text>
-				</attribute>
-				<element name="xul:menupopup">
-					<element name="xul:menuitem">
-						<attribute name="label"><text>-- General --</text></attribute>
-					</element>
-					<element name="xul:menuspacer" />
-					<for-each select="$prg.xul.availableSubcommands">
-						<element name="xul:menuitem">
-							<variable name="prg.xul.subCommandLabel">
-								<call-template name="prg.xul.subCommandLabel" />
-							</variable>
-							<attribute name="label"><value-of select="$prg.xul.subCommandLabel" /></attribute>
-							<attribute name="value"><value-of select="prg:name" /></attribute>
-						</element>
-					</for-each>
-				</element>
-			</element>
+		<xsl:element name="xul:vbox">
+			<xsl:element name="xul:menulist">
+				<xsl:attribute name="flex">1</xsl:attribute>
+				<xsl:attribute name="oncommand">
+					<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.subcommand = this.value;</xsl:text>
+					<xsl:text>document.getElementById('</xsl:text>
+					<xsl:value-of select="$subcommandDeckId" />
+					<xsl:text>').selectedIndex = <![CDATA[(this.selectedIndex < 1) ? 0 : (this.selectedIndex - 1);]]></xsl:text>
+					<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.updatePreview();</xsl:text>
+				</xsl:attribute>
+				<xsl:element name="xul:menupopup">
+					<xsl:element name="xul:menuitem">
+						<xsl:attribute name="label"><xsl:text>-- General --</xsl:text></xsl:attribute>
+					</xsl:element>
+					<xsl:element name="xul:menuspacer" />
+					<xsl:for-each select="$prg.xul.availableSubcommands">
+						<xsl:element name="xul:menuitem">
+							<xsl:variable name="prg.xul.subCommandLabel">
+								<xsl:call-template name="prg.xul.subCommandLabel" />
+							</xsl:variable>
+							<xsl:attribute name="label"><xsl:value-of select="$prg.xul.subCommandLabel" /></xsl:attribute>
+							<xsl:attribute name="value"><xsl:value-of select="prg:name" /></xsl:attribute>
+						</xsl:element>
+					</xsl:for-each>
+				</xsl:element>
+			</xsl:element>
 
-			<element name="xul:deck">
-				<attribute name="selectedIndex">0</attribute>
-				<attribute name="id"><value-of select="$subcommandDeckId" /></attribute>
-				<element name="xul:vbox">
-					<if test="/prg:program/prg:values">
-						<element name="xul:groupbox">
-							<element name="xul:caption">
-								<element name="xul:label">
-									<attribute name="value">Values</attribute>
-								</element>
-							</element>
-							<call-template name="prg.xul.anonymousValueGrid">
-								<with-param name="valuesNode" select="/prg:program/prg:values" />
-							</call-template>
-						</element>
-					</if>
-				</element>
+			<xsl:element name="xul:deck">
+				<xsl:attribute name="selectedIndex">0</xsl:attribute>
+				<xsl:attribute name="id"><xsl:value-of select="$subcommandDeckId" /></xsl:attribute>
+				<xsl:element name="xul:vbox">
+					<xsl:if test="/prg:program/prg:values">
+						<xsl:element name="xul:groupbox">
+							<xsl:element name="xul:caption">
+								<xsl:element name="xul:label">
+									<xsl:attribute name="value">Values</xsl:attribute>
+								</xsl:element>
+							</xsl:element>
+							<xsl:call-template name="prg.xul.anonymousValueGrid">
+								<xsl:with-param name="valuesNode" select="/prg:program/prg:values" />
+							</xsl:call-template>
+						</xsl:element>
+					</xsl:if>
+				</xsl:element>
 
 				<!-- Sub command pages -->
-				<for-each select="$prg.xul.availableSubcommands">
-					<variable name="prg.xul.subCommandLabel">
-						<call-template name="prg.xul.subCommandLabel" />
-					</variable>
-					<element name="xul:vbox">
-						<variable name="availableOptions" select="prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
-						<if test="$availableOptions">
-							<element name="xul:groupbox">
-								<element name="xul:label">
-									<attribute name="value">
-									<value-of select="$prg.xul.subCommandLabel" /><text> options</text>
-								</attribute>
-								</element>
-								<call-template name="prg.xul.optionsGrid">
-									<with-param name="optionsNode" select="prg:options" />
-								</call-template>
-							</element>
-						</if>
-						<if test="prg:values">
-							<element name="xul:groupbox">
-								<element name="xul:caption">
-									<element name="xul:label">
-										<attribute name="value">
-									<value-of select="$prg.xul.subCommandLabel" /><text> values</text>
-								</attribute>
-									</element>
-								</element>
-								<call-template name="prg.xul.anonymousValueGrid">
-									<with-param name="valuesNode" select="prg:values" />
-								</call-template>
-							</element>
-						</if>
-					</element>
-				</for-each>
+				<xsl:for-each select="$prg.xul.availableSubcommands">
+					<xsl:variable name="prg.xul.subCommandLabel">
+						<xsl:call-template name="prg.xul.subCommandLabel" />
+					</xsl:variable>
+					<xsl:element name="xul:vbox">
+						<xsl:variable name="availableOptions" select="prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+						<xsl:if test="$availableOptions">
+							<xsl:element name="xul:groupbox">
+								<xsl:element name="xul:label">
+									<xsl:attribute name="value">
+									<xsl:value-of select="$prg.xul.subCommandLabel" /><xsl:text> options</xsl:text>
+								</xsl:attribute>
+								</xsl:element>
+								<xsl:call-template name="prg.xul.optionsGrid">
+									<xsl:with-param name="optionsNode" select="prg:options" />
+								</xsl:call-template>
+							</xsl:element>
+						</xsl:if>
+						<xsl:if test="prg:values">
+							<xsl:element name="xul:groupbox">
+								<xsl:element name="xul:caption">
+									<xsl:element name="xul:label">
+										<xsl:attribute name="value">
+									<xsl:value-of select="$prg.xul.subCommandLabel" /><xsl:text> values</xsl:text>
+								</xsl:attribute>
+									</xsl:element>
+								</xsl:element>
+								<xsl:call-template name="prg.xul.anonymousValueGrid">
+									<xsl:with-param name="valuesNode" select="prg:values" />
+								</xsl:call-template>
+							</xsl:element>
+						</xsl:if>
+					</xsl:element>
+				</xsl:for-each>
 
-			</element>
-		</element>
-	</template>
+			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
-	<template match="/">
-		<processing-instruction name="xml-stylesheet">
-			<text>type="text/css" href="chrome://global/skin/"</text>
-		</processing-instruction>
-		<call-template name="endl" />
-		<comment>
-			<text> Generation options</text>
-			<call-template name="endl" />
-			<if test="$prg.debug">
-				<text> - Debug mode</text>
-				<call-template name="endl" />
-			</if>
-		</comment>
-		<processing-instruction name="xml-stylesheet">
-			<text>type="text/css" href="chrome://</text>
-			<value-of select="$prg.xul.appName" />
-			<text>/content/</text>
-			<value-of select="$prg.xul.appName" />
-			<text>.css"</text>
-		</processing-instruction>
-		<call-template name="endl" />
-		<processing-instruction name="xul-overlay">
-			<text>href="chrome://</text>
-			<value-of select="$prg.xul.appName" />
-			<text>/content/</text>
-			<value-of select="$prg.xul.appName" />
-			<text>-overlay.xul"</text>
-		</processing-instruction>
-		<call-template name="endl" />
-		<apply-templates select="prg:program" />
-	</template>
+	<xsl:template match="/">
+		<xsl:processing-instruction name="xml-stylesheet">
+			<xsl:text>type="text/css" href="chrome://global/skin/"</xsl:text>
+		</xsl:processing-instruction>
+		<xsl:call-template name="endl" />
+		<xsl:comment>
+			<xsl:text> Generation options</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:if test="$prg.debug">
+				<xsl:text> - Debug mode</xsl:text>
+				<xsl:call-template name="endl" />
+			</xsl:if>
+		</xsl:comment>
+		<xsl:processing-instruction name="xml-stylesheet">
+			<xsl:text>type="text/css" href="chrome://</xsl:text>
+			<xsl:value-of select="$prg.xul.appName" />
+			<xsl:text>/content/</xsl:text>
+			<xsl:value-of select="$prg.xul.appName" />
+			<xsl:text>.css"</xsl:text>
+		</xsl:processing-instruction>
+		<xsl:call-template name="endl" />
+		<xsl:processing-instruction name="xul-overlay">
+			<xsl:text>href="chrome://</xsl:text>
+			<xsl:value-of select="$prg.xul.appName" />
+			<xsl:text>/content/</xsl:text>
+			<xsl:value-of select="$prg.xul.appName" />
+			<xsl:text>-overlay.xul"</xsl:text>
+		</xsl:processing-instruction>
+		<xsl:call-template name="endl" />
+		<xsl:apply-templates select="prg:program" />
+	</xsl:template>
 
-	<template match="/prg:program">
-		<element name="xul:window">
-			<attribute name="id"><value-of select="$prg.xul.appName" /><text>_window</text></attribute>
-			<attribute name="title">
-				<call-template name="prg.programDisplayName" />
-			</attribute>
-			<attribute name="xmlns:xul" namespace="whatever">http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul</attribute>
-			<attribute name="accelerated">true</attribute>
-			<attribute name="onload"><value-of select="$prg.xul.js.mainWindowInstanceName" /><text>.initialize();</text></attribute>
+	<xsl:template match="/prg:program">
+		<xsl:element name="xul:window">
+			<xsl:attribute name="id"><xsl:value-of select="$prg.xul.appName" /><xsl:text>_window</xsl:text></xsl:attribute>
+			<xsl:attribute name="title">
+				<xsl:call-template name="prg.programDisplayName" />
+			</xsl:attribute>
+			<xsl:attribute name="xmlns:xul" namespace="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul</xsl:attribute>
+			<xsl:attribute name="accelerated">true</xsl:attribute>
+			<xsl:attribute name="onload"><xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.initialize();</xsl:text></xsl:attribute>
 			<!-- Closing the main window will close the app -->
-			<attribute name="onclose"><value-of select="$prg.xul.js.applicationInstanceName" /><text>.quitApplication();</text></attribute>
-			<element name="xul:script">
-				<attribute name="type">application/javascript</attribute>
-				<attribute name="src">chrome://<value-of select="$prg.xul.appName" />/content/<value-of select="$prg.xul.appName" />.js</attribute>
-			</element>
-			<element name="xul:script"><![CDATA[
-			Components.utils.import("chrome://]]><value-of select="$prg.xul.appName" /><![CDATA[/content/]]><value-of select="$prg.xul.appName" /><![CDATA[.jsm");
+			<xsl:attribute name="onclose"><xsl:value-of select="$prg.xul.js.applicationInstanceName" /><xsl:text>.quitApplication();</xsl:text></xsl:attribute>
+			<xsl:element name="xul:script">
+				<xsl:attribute name="type">application/javascript</xsl:attribute>
+				<xsl:attribute name="src">chrome://<xsl:value-of select="$prg.xul.appName" />/content/<xsl:value-of select="$prg.xul.appName" />.js</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xul:script"><![CDATA[
+			Components.utils.import("chrome://]]><xsl:value-of select="$prg.xul.appName" /><![CDATA[/content/]]><xsl:value-of select="$prg.xul.appName" /><![CDATA[.jsm");
 			try
 			{
-				var ]]><value-of select="$prg.xul.js.mainWindowInstanceName" /><![CDATA[ = new MainWindow(]]><value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[);
+				var ]]><xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><![CDATA[ = new MainWindow(]]><xsl:value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[);
 			}
 			catch(e)
 			{
 				alert(e);
 			}
-			]]></element>
-			<element name="xul:keyset">
-				<attribute name="id">prg.ui.keyset</attribute>
-			</element>
-			<element name="xul:commandset">
-				<attribute name="id">prg.ui.commandset</attribute>
-			</element>
-			<element name="xul:menubar">
-				<attribute name="id">prg.ui.mainMenubar</attribute>
-			</element>
+			]]></xsl:element>
+			<xsl:element name="xul:keyset">
+				<xsl:attribute name="id">prg.ui.keyset</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xul:commandset">
+				<xsl:attribute name="id">prg.ui.commandset</xsl:attribute>
+			</xsl:element>
+			
+			<!-- Do not add menubar under Mac OS X (set in hidden window) -->
+			<xsl:if test="$prg.xul.platform != 'macosx'">
+				<xsl:element name="xul:menubar">
+					<xsl:attribute name="id">main-menubar</xsl:attribute>
+				</xsl:element>
+			</xsl:if>
 
-			<element name="xul:toolbar">
-				<element name="xul:hbox">
-					<attribute name="align">center</attribute>
-					<attribute name="flex">1</attribute>
-					<element name="xul:label">
-						<attribute name="value"><text>Command line: </text></attribute>
-						<attribute name="align">center</attribute>
-					</element>
-					<element name="xul:textbox">
-						<attribute name="id"><text>commandline-preview</text></attribute>
-						<attribute name="flex">1</attribute>
-						<attribute name="readonly">true</attribute>
-						<attribute name="value"><value-of select="$prg.xul.appName" /></attribute>
-					</element>
-					<element name="xul:button">
-						<attribute name="label">Execute</attribute>
-						<attribute name="oncommand">
-						<value-of select="$prg.xul.js.mainWindowInstanceName" />
-						<text>.execute()</text>
-					</attribute>
-					</element>
-				</element>
-			</element>
+			<xsl:element name="xul:toolbar">
+				<xsl:element name="xul:hbox">
+					<xsl:attribute name="align">center</xsl:attribute>
+					<xsl:attribute name="flex">1</xsl:attribute>
+					<xsl:element name="xul:label">
+						<xsl:attribute name="value"><xsl:text>Command line: </xsl:text></xsl:attribute>
+						<xsl:attribute name="align">center</xsl:attribute>
+					</xsl:element>
+					<xsl:element name="xul:textbox">
+						<xsl:attribute name="id"><xsl:text>commandline-preview</xsl:text></xsl:attribute>
+						<xsl:attribute name="flex">1</xsl:attribute>
+						<xsl:attribute name="readonly">true</xsl:attribute>
+						<xsl:attribute name="value"><xsl:value-of select="$prg.xul.appName" /></xsl:attribute>
+					</xsl:element>
+					<xsl:element name="xul:button">
+						<xsl:attribute name="label">Execute</xsl:attribute>
+						<xsl:attribute name="oncommand">
+						<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" />
+						<xsl:text>.execute()</xsl:text>
+					</xsl:attribute>
+					</xsl:element>
+				</xsl:element>
+			</xsl:element>
 
-			<choose>
-				<when test="$prg.debug">
-					<call-template name="prg.xul.debugFrame" />
-				</when>
-				<otherwise>
-					<call-template name="prg.xul.mainFrame" />
-				</otherwise>
-			</choose>
+			<xsl:choose>
+				<xsl:when test="$prg.debug">
+					<xsl:call-template name="prg.xul.debugFrame" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="prg.xul.mainFrame" />
+				</xsl:otherwise>
+			</xsl:choose>
 
-		</element>
-	</template>
-</stylesheet>
+		</xsl:element>
+	</xsl:template>
+</xsl:stylesheet>
