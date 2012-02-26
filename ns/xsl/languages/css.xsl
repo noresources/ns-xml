@@ -12,7 +12,7 @@
 	<template name="css.comment">
 		<param name="content" select="." />
 		<text>/*</text>
-		<value-of select="$content" />
+		<value-of select="normalize-space($content)" />
 		<text>*/</text>
 	</template>
 
@@ -24,12 +24,12 @@
 			<choose>
 				<when test="$indent">
 					<call-template name="code.block">
-						<with-param name="content" select="$content" />
+						<with-param name="content" select="normalize-space($content)" />
 					</call-template>
 				</when>
 				<otherwise>
 					<call-template name="endl" />
-					<value-of select="$content" />
+					<value-of select="normalize-space($content)" />
 					<call-template name="endl" />
 				</otherwise>
 			</choose>
@@ -40,19 +40,19 @@
 	<template name="css.rule">
 		<param name="name" />
 		<param name="content" />
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<call-template name="endl" />
 		<call-template name="css.block">
-			<with-param name="content" select="$content" />
+			<with-param name="content" select="normalize-space($content)" />
 		</call-template>
 	</template>
 
 	<template name="css.property">
 		<param name="name" />
 		<param name="value" />
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<text>: </text>
-		<value-of select="$value" />
+		<value-of select="normalize-space($value)" />
 		<text>;</text>
 	</template>
 

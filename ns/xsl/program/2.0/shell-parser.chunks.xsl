@@ -237,13 +237,13 @@
 							</call-template>
 						</when>
 						<otherwise>
-							<value-of select="$optionNode/prg:databinding/prg:variable" />
+							<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 							<text>=true</text>
 						</otherwise>
 					</choose>
 				</when>
 				<when test="$optionNode/self::prg:argument">
-					<value-of select="$optionNode/prg:databinding/prg:variable" />
+					<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 					<text>=</text>
 					<call-template name="sh.var">
 						<with-param name="name" select="$prg.sh.parser.vName_item" />
@@ -268,9 +268,9 @@
 
 			<!-- Set option variable -->
 			<if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable">
-				<value-of select="$groupOptionNode/prg:databinding/prg:variable" />
+				<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 				<text>="</text>
-				<value-of select="$optionNode/prg:databinding/prg:variable" />
+				<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 				<text>"</text>
 				<call-template name="endl" />
 			</if>
@@ -363,12 +363,12 @@
 						</call-template>
 						<text> = </text>
 						<call-template name="sh.var">
-							<with-param name="name" select="$optionNode/prg:databinding/prg:variable" />
+							<with-param name="name" select="normalize-space($optionNode/prg:databinding/prg:variable)" />
 							<with-param name="quoted" select="true()" />
 						</call-template>
 						<text> ] || [ </text>
 						<call-template name="sh.var">
-							<with-param name="name" select="$groupOptionNode/prg:databinding/prg:variable" />
+							<with-param name="name" select="normalize-space($groupOptionNode/prg:databinding/prg:variable)" />
 							<with-param name="quoted" select="true()" />
 							<with-param name="length" select="1" />
 						</call-template>
@@ -377,10 +377,10 @@
 					<with-param name="then">
 						<value-of select="$prg.sh.parser.fName_adderror" />
 						<text> "Another option of the group \"</text>
-						<value-of select="$groupOptionNode/prg:databinding/prg:variable" />
+						<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 						<text>\" was previously set (</text>
 						<call-template name="sh.var">
-							<with-param name="name" select="$groupOptionNode/prg:databinding/prg:variable" />
+							<with-param name="name" select="normalize-space($groupOptionNode/prg:databinding/prg:variable)" />
 						</call-template>
 						<text>)"</text>
 						<if test="$onError">
@@ -730,7 +730,7 @@
 									<with-param name="onError" select="$onError" />
 								</call-template>
 								<call-template name="sh.arrayAppend">
-									<with-param name="name" select="$optionNode/prg:databinding/prg:variable" />
+									<with-param name="name" select="normalize-space($optionNode/prg:databinding/prg:variable)" />
 									<with-param name="value">
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
@@ -808,7 +808,7 @@
 								</call-template>
 
 								<call-template name="sh.arrayAppend">
-									<with-param name="name" select="$optionNode/prg:databinding/prg:variable" />
+									<with-param name="name" select="normalize-space($optionNode/prg:databinding/prg:variable)" />
 									<with-param name="value">
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
@@ -937,17 +937,17 @@
 						<if test="$optionNode/self::prg:group and $optionNode[@required = 'true']">
 							<variable name="defaultOptionId" select="$optionNode/prg:default/@id" />
 							<variable name="defaultOptionNode" select="$optionNode/prg:options/*[@id = $defaultOptionId]" />
-							<variable name="groupVariable" select="$optionNode/prg:databinding/prg:variable" />
-							<variable name="defaultOptionVariable" select="$defaultOptionNode/prg:databinding/prg:variable" />
+							<variable name="groupVariable" select="normalize-space($optionNode/prg:databinding/prg:variable)" />
+							<variable name="defaultOptionVariable" select="normalize-space($defaultOptionNode/prg:databinding/prg:variable)" />
 
 							<if test="$groupVariable and $defaultOptionVariable">
 								<text>:</text>
-								<value-of select="$groupVariable" />
+								<value-of select="normalize-space($groupVariable)" />
 								<text>=</text>
-								<value-of select="$defaultOptionVariable" />
+								<value-of select="normalize-space($defaultOptionVariable)" />
 								<if test="$defaultOptionNode/self::prg:switch">
 									<text>;</text>
-									<value-of select="$defaultOptionVariable" />
+									<value-of select="normalize-space($defaultOptionVariable)" />
 									<text>=true</text>
 								</if>
 								<!-- recursively set option presence -->
@@ -1254,7 +1254,7 @@
 			</call-template>
 			<call-template name="endl" />
 			<for-each select="//prg:switch/prg:databinding/prg:variable">
-				<value-of select="." />
+				<apply-templates select="." />
 				<choose>
 					<when test="../@node = 'integer'">
 						<text>=0</text>
@@ -1275,7 +1275,7 @@
 			</call-template>
 			<call-template name="endl" />
 			<for-each select="//prg:argument/prg:databinding/prg:variable">
-				<value-of select="." />
+				<apply-templates select="." />
 				<text>=</text>
 				<if test="../../prg:default">
 					<text>"</text>
@@ -1296,9 +1296,9 @@
 				<variable name="defaultOptionId" select="prg:default/@id" />
 				<variable name="defaultOptionNode" select="./prg:options/*[@id = $defaultOptionId]" />
 				<if test="./prg:databinding/prg:variable and $defaultOptionNode/prg:databinding/prg:variable">
-					<value-of select="prg:databinding/prg:variable" />
+					<apply-templates select="prg:databinding/prg:variable" />
 					<text>="@</text>
-					<value-of select="$defaultOptionNode/prg:databinding/prg:variable" />
+					<apply-templates select="$defaultOptionNode/prg:databinding/prg:variable" />
 					<text>"</text>
 					<call-template name="endl" />
 				</if>

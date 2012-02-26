@@ -20,16 +20,18 @@
 			<call-template name="endl" />
 		</if>
 		<value-of select="$marker" />
-		<call-template name="str.replaceAll">
+		<call-template name="str.trim">
 			<with-param name="text">
-				<value-of select="$content" />
-			</with-param>
-			<with-param name="replace">
-				<text>&#10;</text>
-			</with-param>
-			<with-param name="by">
-				<text>&#10;</text>
-				<value-of select="$marker" />
+				<call-template name="str.replaceAll">
+					<with-param name="text" select="$content" />
+					<with-param name="replace">
+						<text>&#10;</text>
+					</with-param>
+					<with-param name="by">
+						<text>&#10;</text>
+						<value-of select="$marker" />
+					</with-param>
+				</call-template>
 			</with-param>
 		</call-template>
 		<call-template name="endl" />
@@ -47,16 +49,18 @@
 		<param name="addFinalEndl" select="true()" />
 		<call-template name="endl" />
 		<value-of select="$indentChar" />
-		<call-template name="str.replaceAll">
+		<call-template name="str.trim">
 			<with-param name="text">
-				<value-of select="$content" />
-			</with-param>
-			<with-param name="replace">
-				<text>&#10;</text>
-			</with-param>
-			<with-param name="by">
-				<text>&#10;</text>
-				<value-of select="$indentChar" />
+				<call-template name="str.replaceAll">
+					<with-param name="text" select="$content" />
+					<with-param name="replace">
+						<text>&#10;</text>
+					</with-param>
+					<with-param name="by">
+						<text>&#10;</text>
+						<value-of select="$indentChar" />
+					</with-param>
+				</call-template>
 			</with-param>
 		</call-template>
 		<if test="$addFinalEndl">

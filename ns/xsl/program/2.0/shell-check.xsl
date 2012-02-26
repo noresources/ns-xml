@@ -7,8 +7,6 @@
 	
 	<xsl:output method="text" indent="yes" encoding="utf-8" />
 	
-	<xsl:strip-space elements="*" />
-
 	<xsl:template match="/prg:program">
 		<xsl:text># Check option consitency</xsl:text>
 		<xsl:call-template name="endl" />

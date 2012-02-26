@@ -16,13 +16,11 @@
 <!-- -A hostname -> hostnames -->
 
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
-	
+
 	<import href="../../languages/shellscript.xsl" />
-	
+
 	<output method="text" indent="no" encoding="utf-8" />
-	
-	<strip-space elements="*" />
-	
+
 	<param name="prg.bash.completion.programFileExtension" />
 
 	<variable name="prg.bash.completion.completionFunctionName">
@@ -63,7 +61,7 @@
 		<param name="path" />
 		<param name="prepend" />
 		<param name="separator">
-			<text> </text>
+			<text>&#032;</text>
 		</param>
 		<param name="quoted" select="false()" />
 		<for-each select="$path">
@@ -81,6 +79,7 @@
 		</for-each>
 	</template>
 
+	<!-- Add trailing folder / to all folder results -->
 	<template name="prg.bash.completion.compreplyAddFoldersSlashes">
 		<param name="variableName">
 			<text>COMPREPLY</text>
@@ -98,7 +97,7 @@
 				<value-of select="$variableName" />
 				<text>[$i]="${</text>
 				<value-of select="$variableName" />
-				<text>[$i]}/"</text>
+				<text>[$i]%/}/"</text>
 			</with-param>
 		</call-template>
 	</template>
@@ -155,17 +154,25 @@
 			<with-param name="name" select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
 			<with-param name="content">
 				<!-- Call find command -->
-				<text>local findOptions="${1}"</text>
+				<text>local current="${1}"</text>
 				<call-template name="endl" />
-				<text>local current="${2}"</text>
+				<text>shift</text>
 				<call-template name="endl" />
+				<text>local currentLength="${#current}"</text>
+				<call-template name="endl" />
+				
 				<text>local d</text>
 				<call-template name="endl" />
 				<text>local b</text>
 				<call-template name="endl" />
+				<text>local isHomeShortcut=false</text>
+				<call-template name="endl" />
+				<text>[ "${current:0:1}" == "~" ] &amp;&amp; current="${HOME}${current:1}" &amp;&amp; isHomeShortcut=true</text>
+				<call-template name="endl" />
+				
 				<call-template name="sh.if">
 					<with-param name="condition">
-						<text>[[ "${current}" == */ ]]</text>
+						<text>[ "${current:$(expr ${currentLength} - 1)}" == "/" ]</text>
 					</with-param>
 					<with-param name="then">
 						<text>d="${current%/}"</text>
@@ -179,24 +186,43 @@
 					</with-param>
 				</call-template>
 				<call-template name="endl" />
-				<text>local files=""</text>
-				<!-- @todo check if Mac OS X 10.5 workaround is valid for other OS X and Linux -->
+				
+				<!-- version 2 -->
+				<text>local findCommand="find \"${d}\" -mindepth 1 -maxdepth 1 -name \"${b}*\" -a \\( ${@} \\)"</text>
 				<call-template name="endl" />
+				<!-- /version 2 -->
+				
+				<!-- @todo check if Mac OS X 10.5 workaround is valid for other OS X and Linux -->
+				<!-- version 1 -->
+				<!--
+				<text>local files=""</text>
+				<call-template name="endl" /> 
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>[ "$(uname)" == "Darwin" ]</text>
 					</with-param>
 					<with-param name="then">
-						<text>files="$(find "${d}" -mindepth 1 -maxdepth 1 -name "${b}*" -a \( ${findOptions} \) -print0 </text>
+						<text>files="$(find "${d}" -mindepth 1 -maxdepth 1 -name "${b}*" -a \( ${@} \) -print0 </text>
 						<text>| while read file; do printf "%q\n" "${file#./}"; done)"</text>
 					</with-param>
 					<with-param name="else">
-						<text>files="$(find "${d}" -mindepth 1 -maxdepth 1 -name "${b}*" -a \( ${findOptions} \) -printf "%p\n" </text>
+						<text>files="$(find "${d}" -mindepth 1 -maxdepth 1 -name "${b}*" -a \( ${@} \) -printf "%p\n" </text>
 						<text>| while read file; do printf "%q\n" "${file#./}"; done)"</text>
 					</with-param>
 				</call-template>
 				<call-template name="endl" />
-
+				-->
+				<!-- /version 2 -->
+				
+				<!-- version 2 -->
+				<!-- <text>eval ${findCommand}</text>
+				<call-template name="endl" /> -->
+				<text>local files="$(eval ${findCommand} | while read file; do printf "%q\n" "${file#./}"; done)"</text>
+				<call-template name="endl" />
+				<!--  <text>echo $findCommand $files > /tmp/sampleapp.sh.dbg</text>
+				<call-template name="endl" /> -->
+				<!-- /version 2 -->
+							 
 				<!-- Transform to array -->
 				<text>local IFS=$'\n'</text>
 				<call-template name="endl" />
@@ -209,9 +235,18 @@
 						<text>temporaryRepliesArray</text>
 					</with-param>
 					<with-param name="do">
-						<text>[ "${d}" != "." ] &amp;&amp; temporaryRepliesArray[$i]="${d}/$(basename "${temporaryRepliesArray[$i]}")"</text>
+						<text>local p="${temporaryRepliesArray[$i]}"</text>
 						<call-template name="endl" />
-						<text>[ -d "${temporaryRepliesArray[$i]}" ] &amp;&amp; temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]}/"</text>
+						
+						<text>[ "${d}" != "." ] &amp;&amp; p="${d}/$(basename "${p}")"</text>
+						<call-template name="endl" />
+						
+						<text>[ -d "${p}" ] &amp;&amp; p="${p%/}/"</text>
+						<call-template name="endl" />
+						
+						<text>temporaryRepliesArray[$i]="${p}"</text>
+						<call-template name="endl" />
+						
 					</with-param>
 				</call-template>
 				<call-template name="endl" />
@@ -599,17 +634,48 @@
 		</param>
 		<param name="root" />
 
-		<variable name="kinds" select="$root/prg:type/prg:path/prg:kinds" />
-
+		<variable name="pathNode" select="$root/prg:type/prg:path" />
+		<variable name="kinds" select="$pathNode/prg:kinds" />
+		<variable name="patterns" select="$pathNode/prg:patterns" />
+		
 		<variable name="findOptions">
-			<text>"</text>
-			<if test="$root/prg:type/prg:path/@access">
+			<if test="$pathNode/@access">
 				<text>$(</text>
 				<value-of select="$programGetFindPermissionOptionsFunctionName" />
-				<text> </text>
-				<value-of select="$root/prg:type/prg:path/@access" />
+				<text>&#032;</text>
+				<value-of select="$pathNode/@access" />
 				<text>) </text>
 			</if>
+			
+			<if test="$patterns and $patterns[@restrict = 'true']">
+				<for-each select="$patterns/prg:pattern">
+					<variable name="p" select="position()" />
+					<for-each select="./prg:rules/prg:rule">
+						<if test="($p != 1) or (position() != 1)">
+							<text> -o</text>
+						</if>
+						<text> -name </text>
+						<choose>
+							<when test="./prg:endWith">
+								<text>\"*</text>
+								<value-of select="./prg:endWith" />
+								<text>\"</text>
+							</when>
+							<when test="./prg:startWith">
+								<text>\"</text>
+								<value-of select="./prg:endWith" />
+								<text>*\"</text>
+							</when>
+							<when test="./prg:contains">
+								<text>\"*</text>
+								<value-of select="./prg:endWith" />
+								<text>*\"</text>
+							</when>
+						</choose>
+					</for-each>
+				</for-each>
+			</if>
+			
 			<!-- stricly search for supported kinks -->
 			<for-each select="$kinds/* [self::prg:file or self::prg:folder or self::prg:symlink]">
 				<choose>
@@ -627,20 +693,20 @@
 					<text> -o </text>
 				</if>
 			</for-each>
-			<text>"</text>
 		</variable>
 
 		<choose>
 			<when test="true()">
 				<!-- Using find command -->
 				<value-of select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
-				<text> </text>
-				<value-of select="$findOptions" />
-				<text> </text>
+				<text>&#032;</text>
 				<call-template name="sh.var">
 					<with-param name="name" select="$currentVarName" />
 					<with-param name="quoted" select="true()" />
 				</call-template>
+				<text>&#032;</text>
+				<value-of select="$findOptions" />
+				<text>&#032;</text>
 			</when>
 			<otherwise>
 				<!-- Using compgen command -->
@@ -708,7 +774,6 @@
 			<call-template name="prg.bash.completion.subCommandCompletionFunctionName" />
 		</variable>
 		<call-template name="sh.functionDefinition">
-			<with-param name="name"></with-param>
 			<with-param name="name" select="$functionName" />
 			<with-param name="content">
 				<text># Context</text>
@@ -831,7 +896,7 @@
 							<call-template name="prg.bash.completion.itemList">
 								<with-param name="path" select="$program/prg:subcommands/prg:subcommand/prg:aliases/prg:alias" />
 								<with-param name="prepend">
-									<text> </text>
+									<text>&#032;</text>
 								</with-param>
 								<with-param name="separator" />
 							</call-template>
@@ -1007,7 +1072,7 @@
 
 		<text>complete -o nospace -F </text>
 		<value-of select="$prg.bash.completion.completionFunctionName" />
-		<text> </text>
+		<text>&#032;</text>
 		<value-of select="$program/prg:name" />
 		<value-of select="$prg.bash.completion.programFileExtension" />
 		<call-template name="endl" />

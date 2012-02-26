@@ -6,8 +6,6 @@
 
 	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 
-	<xsl:strip-space elements="*" />
-
 	<xsl:template match="/">
 		<xsl:processing-instruction name="xml-stylesheet">
 			<xsl:text>type="text/css" href="chrome://global/skin/"</xsl:text>

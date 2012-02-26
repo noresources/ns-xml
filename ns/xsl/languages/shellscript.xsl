@@ -20,7 +20,11 @@
 					</when>
 					<otherwise>
 						<call-template name="endl" />
-						<value-of select="$content" />
+						<call-template name="str.trim">
+							<with-param name="text">
+								<value-of select="$content" />
+							</with-param>
+						</call-template>
 						<call-template name="endl" />
 					</otherwise>
 				</choose>
@@ -52,18 +56,18 @@
 			<text>"</text>
 		</if>
 		<text>${</text>
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<choose>
 			<when test="$index">
 				<text>[</text>
-				<value-of select="$index" />
+				<value-of select="normalize-space($index)" />
 				<text>]</text>
 			</when>
 			<when test="$start or $length">
 				<text>:</text>
 				<choose>
 					<when test="$start">
-						<value-of select="$start" />
+						<value-of select="normalize-space($start)" />
 					</when>
 					<otherwise>
 						<text>0</text>
@@ -71,7 +75,7 @@
 				</choose>
 				<if test="$length">
 					<text>:</text>
-					<value-of select="$length" />
+					<value-of select="normalize-space($length)" />
 				</if>
 			</when>
 		</choose>
@@ -87,7 +91,7 @@
 		<call-template name="sh.var">
 			<with-param name="name">
 				<text>#</text>
-				<value-of select="$name" />
+				<value-of select="normalize-space($name)" />
 			</with-param>
 			<with-param name="quoted" select="$quoted" />
 		</call-template>
@@ -96,20 +100,20 @@
 	<template name="sh.varincrement">
 		<param name="name" />
 		<param name="value" select="1" />
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<text>=$(expr </text>
 		<call-template name="sh.var">
 			<with-param name="name" select="$name" />
 		</call-template>
 		<text> + </text>
-		<value-of select="$value" />
+		<value-of select="normalize-space($value)" />
 		<text>)</text>
 	</template>
 
 	<template name="sh.arrayLength">
 		<param name="name" />
 		<text>${#</text>
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<text>[*]}</text>
 	</template>
 
@@ -117,11 +121,11 @@
 		<param name="name" />
 		<param name="index" />
 		<param name="value" />
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<text>[</text>
-		<value-of select="$index" />
+		<value-of select="normalize-space($index)" />
 		<text>]=</text>
-		<value-of select="$value" />
+		<value-of select="normalize-space($value)" />
 	</template>
 
 	<template name="sh.arrayAppend">
@@ -155,15 +159,15 @@
 		<call-template name="sh.for">
 			<with-param name="condition">
 				<text>((</text>
-				<value-of select="$indexVariableName" />
+				<value-of select="normalize-space($indexVariableName)" />
 				<text>=0;</text>
-				<value-of select="$indexVariable" />
+				<value-of select="normalize-space($indexVariable)" />
 				<text>&lt;</text>
 				<call-template name="sh.arrayLength">
 					<with-param name="name" select="$from" />
 				</call-template>
 				<text>;</text>
-				<value-of select="$indexVariableName" />
+				<value-of select="normalize-space($indexVariableName)" />
 				<text>++))</text>
 			</with-param>
 			<with-param name="do">
@@ -177,7 +181,7 @@
 								</call-template>
 							</when>
 							<otherwise>
-								<value-of select="$indexVariable" />
+								<value-of select="normalize-space($indexVariable)" />
 							</otherwise>
 						</choose>
 					</with-param>
@@ -210,15 +214,15 @@
 		<call-template name="sh.for">
 			<with-param name="condition">
 				<text>((</text>
-				<value-of select="$indexVariableName" />
+				<value-of select="normalize-space($indexVariableName)" />
 				<text>=0;</text>
-				<value-of select="$indexVariable" />
+				<value-of select="normalize-space($indexVariable)" />
 				<text>&lt;</text>
 				<call-template name="sh.arrayLength">
 					<with-param name="name" select="$name" />
 				</call-template>
 				<text>;</text>
-				<value-of select="$indexVariableName" />
+				<value-of select="normalize-space($indexVariableName)" />
 				<text>++))</text>
 			</with-param>
 			<with-param name="do" select="$do" />
@@ -230,7 +234,7 @@
 		<param name="name" />
 		<param name="content" />
 		<param name="indent" select="true()" />
-		<value-of select="$name" />
+		<value-of select="normalize-space($name)" />
 		<text>()</text>
 		<call-template name="endl" />
 		<text>{</text>
@@ -248,7 +252,7 @@
 		<param name="indent" select="true()" />
 
 		<text>while </text>
-		<value-of select="$condition" />
+		<value-of select="normalize-space($condition)" />
 		<call-template name="endl" />
 		<text>do</text>
 		<call-template name="sh.block">
@@ -266,7 +270,7 @@
 		<param name="indent" select="true()" />
 
 		<text>for </text>
-		<value-of select="$condition" />
+		<value-of select="normalize-space($condition)" />
 		<call-template name="endl" />
 		<text>do</text>
 		<call-template name="sh.block">
@@ -296,17 +300,17 @@
 
 			<with-param name="condition">
 				<text>((</text>
-				<value-of select="$variable" />
+				<value-of select="normalize-space($variable)" />
 				<text>=</text>
-				<value-of select="$init" />
+				<value-of select="normalize-space($init)" />
 				<text>;</text>
 				<call-template name="sh.var">
 					<with-param name="name" select="$variable" />
 				</call-template>
-				<value-of select="$operator" />
-				<value-of select="$limit" />
+				<value-of select="normalize-space($operator)" />
+				<value-of select="normalize-space($limit)" />
 				<text>;</text>
-				<value-of select="$variable" />
+				<value-of select="normalize-space($variable)" />
 				<choose>
 					<when test="$increment = 1">
 						<text>++</text>
@@ -317,7 +321,7 @@
 							<with-param name="name" select="$variable" />
 						</call-template>
 						<text> + </text>
-						<value-of select="$increment" />
+						<value-of select="normalize-space($increment)" />
 						<text>))</text>
 					</otherwise>
 				</choose>
@@ -334,7 +338,7 @@
 		<param name="indent" select="true()" />
 
 		<text>if </text>
-		<value-of select="$condition" />
+		<value-of select="normalize-space($condition)" />
 		<call-template name="endl" />
 		<text>then</text>
 		<call-template name="sh.block">

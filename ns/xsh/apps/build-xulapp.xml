@@ -117,6 +117,26 @@
 			</prg:options>
 		</prg:group>
 
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>targetPlatform</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Target platform</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>target-platform</prg:long>
+				<prg:long>target</prg:long>
+				<prg:short>t</prg:short>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>host</prg:option>
+				<prg:option>linux</prg:option>
+				<prg:option>macosx</prg:option>
+			</prg:select>
+			<prg:default>host</prg:default>
+		</prg:argument>
+
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>update</prg:variable>

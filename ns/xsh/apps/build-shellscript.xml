@@ -97,9 +97,8 @@
 				<prg:abstract>XML shell file</prg:abstract>
 				<prg:details>
 					A xml file following the bash XML schema
-					<prg:endl>
-						The file may include a XML program definition
-					</prg:endl>
+					<prg:endl />
+					The file may include a XML program definition
 				</prg:details>
 			</prg:documentation>
 			<prg:type>

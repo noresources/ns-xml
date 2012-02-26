@@ -5,7 +5,7 @@
 # Version: 2.0
 # 
 # Shell script builder which use XML description file to automatically generate command line processing and help messages
-# 
+#
 # Program help
 usage()
 {
@@ -27,9 +27,7 @@ Usage:
 EOFUSAGE
 }
 
-# 
-# 							Program parameter parsing
-# 						
+# Program parameter parsing
 parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
@@ -123,7 +121,6 @@ parse_setoptionpresence()
 			parser_required[${i}]=""
 			return 0
 		fi
-		
 	done
 	return 1
 }
@@ -145,7 +142,6 @@ parse_checkrequired()
 			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
-		
 	done
 	return ${c}
 }
@@ -188,7 +184,6 @@ parse_process_option()
 		then
 			return ${PARSER_OK}
 		fi
-		
 	fi
 	
 	parser_item="${parser_input[${parser_index}]}"
@@ -494,7 +489,6 @@ parse()
 		else
 			parser_subindex=$(expr ${parser_subindex} + 1)
 		fi
-		
 	done
 	
 	parse_checkrequired
@@ -509,14 +503,11 @@ parse()
 
 ns_realpath()
 {
-	
-				body
-			
+	body
 }
 ns_realpath()
 {
 	local path="${1}"
-	
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -530,7 +521,6 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
-			
 }
 
 # Global variables

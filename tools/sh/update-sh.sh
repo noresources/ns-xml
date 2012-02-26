@@ -57,6 +57,7 @@ do
 		if ! ${buildshellscript} -x ${fn}.xml -s ${f} -o ${shOut}
 		then
 			echo "Failed to update ${f}"
+			exit 1
 		fi
 	fi
 	
@@ -64,12 +65,13 @@ do
 	echo "Program schema version ${programVersion}"
 	
 	echo "Update bash completion for ${bn}.sh (${bashCompletionOutputPath}/${bn}.sh)"		
-	if xsltproc --xinclude --stringparam prg.bash.completion.programFileExtension ".sh" "${projectPath}/${bashCompletionStylesheetBasePath}/${programVersion}/${bashCompletionStylesheetFileName}" "${fn}.xml" > "${bashCompletionOutputPath}/${bn}.sh"
+	if xsltproc --xinclude --stringparam prg.bash.completion.programFileExtension ".sh" "${bashCompletionStylesheetBasePath}/${programVersion}/${bashCompletionStylesheetFileName}" "${fn}.xml" > "${bashCompletionOutputPath}/${bn}.sh"
 	then
 		rsync -lprt "${bashCompletionOutputPath}/${bn}.sh" "${bashCompletionInstallPath}"
 		completionCommands[${#completionCommands[*]}]=". \"${bashCompletionInstallPath}/${bn}.sh\""
 	else
-		echo "Error while updating bash completion for ${b}" 
+		echo "Error while updating bash completion for ${b}"
+		exit 1 
 	fi
 done
 

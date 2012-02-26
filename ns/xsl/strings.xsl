@@ -47,13 +47,13 @@
 
 	<template name="str.repeat">
 		<param name="iterations" select="1" />
-		<param name="str">&#32;
+		<param name="text">&#32;
 		</param>
-		<value-of select="$str" />
+		<value-of select="$text" />
 		<if test="$iterations > 1">
 			<call-template name="str.repeat">
 				<with-param name="iterations" select="$iterations - 1" />
-				<with-param name="str" select="$str" />
+				<with-param name="str" select="$text" />
 			</call-template>
 		</if>
 	</template>
@@ -72,7 +72,7 @@
 		<variable name="fullPrependedText">
 			<call-template name="str.repeat">
 				<with-param name="iterations" select="$level" />
-				<with-param name="str" select="$prependedText"/>
+				<with-param name="text" select="$prependedText"/>
 			</call-template>
 		</variable>
 		<value-of select="$fullPrependedText" />
@@ -89,6 +89,52 @@
 			</with-param>
 		</call-template>
 	</template>
+	
+	<template name="str.trim">
+    <param name="text" select="."/>
+    <variable name="lTrimmed">
+      <call-template name="str.trimLeft">
+        <with-param name="text" select="$text" />
+      </call-template>
+    </variable>
+    <variable name="trimmed">
+      <call-template name="str.trimRight">
+        <with-param name="text" select="$lTrimmed" />
+      </call-template>
+    </variable>
+    <value-of select="$trimmed"/>
+  </template>
+
+  <template name="str.trimLeft">
+    <param name="text" />
+    <choose>
+      <when test="starts-with($text,'&#9;') or starts-with($text,'&#10;') or starts-with($text,'&#13;') or starts-with($text,'	')">
+        <call-template name="str.trimLeft">
+          <with-param name="text" select="substring($text, 2)"/>
+        </call-template>
+      </when>
+      <otherwise>
+        <value-of select="$text"/>
+      </otherwise>
+    </choose>
+  </template>
+
+  <template name="str.trimRight">
+    <param name="text"/>
+    <variable name="last-char">
+      <value-of select="substring($text, string-length($text), 1)"/>
+    </variable>
+    <choose>
+      <when test="($last-char = '&#9;') or ($last-char = '&#10;') or ($last-char = '&#13;') or ($last-char = ' ')">
+        <call-template name="str.trimRight">
+          <with-param name="text" select="substring($text, 1, string-length($text) - 1)"/>
+        </call-template>
+      </when>
+      <otherwise>
+        <value-of select="$text"/>
+      </otherwise>
+    </choose>
+  </template>
 	
 	<variable name="str.smallCase" select="'abcdefghijklmnopqrstuvwxyz'" />
 	<variable name="str.upperCase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />

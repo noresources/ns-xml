@@ -6,9 +6,7 @@
 	<import href="shell-help.chunks.xsl" />
 	
 	<output method="text" indent="yes" encoding="utf-8" />
-	
-	<strip-space elements="*" />
-	
+		
 	<!-- Element templates -->
 	<template match="comment()" />
 

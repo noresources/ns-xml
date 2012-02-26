@@ -7,8 +7,6 @@
 
 	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 
-	<xsl:strip-space elements="*" />
-
 	<xsl:param name="prg.xul.windowWidth" select="1024" />
 	<xsl:param name="prg.xul.windowHeight" select="768" />
 
@@ -17,7 +15,7 @@
 		<xsl:param name="optionNode" select="." />
 		<xsl:choose>
 			<xsl:when test="$optionNode/prg:ui/prg:label">
-				<xsl:value-of select="normalize-space($optionNode/prg:ui/prg:label/text())" />
+				<xsl:value-of select="normalize-space($optionNode/prg:ui/prg:label)" />
 			</xsl:when>
 			<xsl:when test="$optionNode/prg:documentation/prg:abstract">
 				<xsl:value-of select="normalize-space($optionNode/prg:documentation/prg:abstract/text())" />

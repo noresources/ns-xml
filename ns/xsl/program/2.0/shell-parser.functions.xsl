@@ -966,7 +966,7 @@
 				<call-template name="endl" />
 
 				<!-- Set group default options -->
-				<for-each select="$programNode//prg:group/prg:defaultOption">
+				<for-each select="$programNode//prg:group/prg:default">
 					<variable name="groupNode" select=".." />
 					<variable name="prg.optionId" select="@id" />
 					<variable name="optionNode" select="$groupNode/prg:options/*/@id[.=$optionId]/.." />
@@ -978,13 +978,13 @@
 						<call-template name="sh.if">
 							<with-param name="condition">
 								<text>[ "${</text>
-								<value-of select="$groupNode/prg:databinding/prg:variable" />
+								<apply-templates select="$groupNode/prg:databinding/prg:variable" />
 								<text>:0:1}" = "@" ]</text>
 							</with-param>
 							<with-param name="then">
-								<value-of select="$groupNode/prg:databinding/prg:variable" />
+								<apply-templates select="$groupNode/prg:databinding/prg:variable" />
 								<text>="</text>
-								<value-of select="$optionNode/prg:databinding/prg:variable" />
+								<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 								<text>"</text>
 								<call-template name="endl" />
 								<value-of select="$prg.sh.parser.fName_setoptionpresence" />

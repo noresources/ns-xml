@@ -7,9 +7,7 @@
 	<import href="shell-parser.functions.xsl" />
 	
 	<output method="text" indent="no" encoding="utf-8" />
-	
-	<strip-space elements="*" />
-	
+		
 	<template match="/">
 		<call-template name="prg.sh.parser.main" >
 			<with-param name="programNode" select="/prg:program" />

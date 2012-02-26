@@ -7,8 +7,6 @@
 
 	<output method="text" encoding="utf-8" />
 	
-	<strip-space elements="*" />
-	
 	<param name="xbl.css.displayHeader" select="false()" />
 
 	<template match="/">

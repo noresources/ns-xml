@@ -4,7 +4,7 @@
 # Version: 1.0
 # 
 # Sample application with all kind of options
-# 
+#
 # Program help
 usage()
 {
@@ -41,7 +41,6 @@ Usage:
     sub: 
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
     help: Help about other sub commands
-    
   With global options:
     --help: 
     --ui-only: 
@@ -49,7 +48,7 @@ Usage:
     -s, --simpleswitch: Simple switch
     
     (
-    	--switch-alone-in-group: 
+    	--switch-alone-in-group:
     )
     Arguments group
     (
@@ -67,7 +66,7 @@ Usage:
     	--multi-argument: Multi argument
     	--multi-select-argument: Multi select argument
     		The argument value have to be one of the following:	
-    			First option or Second option
+    			FirstOption or Second option
     	--multi-xml: Xml files
     )
     --hostname, -H: 
@@ -81,9 +80,7 @@ Usage:
 EOFUSAGE
 }
 
-# 
-# 							Program parameter parsing
-# 						
+# Program parameter parsing
 parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
@@ -185,7 +182,6 @@ parse_setoptionpresence()
 			parser_required[${i}]=""
 			return 0
 		fi
-		
 	done
 	return 1
 }
@@ -207,7 +203,6 @@ parse_checkrequired()
 			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
-		
 	done
 	return ${c}
 }
@@ -246,7 +241,6 @@ parse_process_subcommand_option()
 			
 			case "${parser_option}" in
 			switch | sc-switch)
-				
 				parse_setoptionpresence SC_1_sub_1_switch
 				;;
 			sc-existing-file-argument)
@@ -324,7 +318,6 @@ parse_process_option()
 		then
 			return ${PARSER_OK}
 		fi
-		
 	fi
 	
 	parser_item="${parser_input[${parser_index}]}"
@@ -788,7 +781,7 @@ parse_process_option()
 			parser_optiontail=""
 			if [ -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "First option" ] || [ "${parser_item}" = "Second option" ])
+				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
@@ -802,7 +795,7 @@ parse_process_option()
 			do
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
-				if ! ([ "${parser_item}" = "First option" ] || [ "${parser_item}" = "Second option" ])
+				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
@@ -988,7 +981,6 @@ parse()
 		else
 			parser_subindex=$(expr ${parser_subindex} + 1)
 		fi
-		
 	done
 	
 	parse_checkrequired
@@ -1004,14 +996,15 @@ parse()
 dummy_function()
 {
 	local dummyParam="${1}"
-	echo Dummy
+	echo "Dummy message  with   spaces"   
+	
+			
+	echo "And blank lines"
 }
 ns_issymlink()
 {
 	local path="${1}"
-	
 	[ ! -z "${path}" ] && [ -L "${path}" ]
-			
 }
 
 if ! parse "${@}"

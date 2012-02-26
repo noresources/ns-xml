@@ -5,14 +5,14 @@
 # Version: 2.0
 # 
 # Build (or update) a xul application launcher
-# 
+#
 # Program help
 usage()
 {
 cat << EOFUSAGE
 build-xulapp: Build (or update) a xul application launcher
 Usage: 
-  build-xulapp [-h] -o <path> -x <path> (-s <path> | -c <...>) [-u] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
+  build-xulapp [-h] -o <path> -x <path> (-s <path> | -c <...>) [-t <...>] [-u] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
   With:
     -h, --help: Display the command documentation & options
     -o, --output: Output folder path for the XUL application structure
@@ -22,6 +22,9 @@ Usage:
     	-s, --shell: Generated shell script from the given template
     	--command, -c: Launch the given existing command
     )
+    --target-platform, --target, -t: Target platform
+    	The argument value have to be one of the following:	
+    		host, linux or macosx
     -u, --update: Update application if folder already exists
     User interface
     (
@@ -45,9 +48,7 @@ Usage:
 EOFUSAGE
 }
 
-# 
-# 							Program parameter parsing
-# 						
+# Program parameter parsing
 parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
@@ -89,6 +90,7 @@ outputPath=
 xmlProgramDescriptionPath=
 launcherModeXsh=
 launcherModeExistingCommand=
+targetPlatform="host"
 windowWidth=
 windowHeight=
 userInitializationScript=
@@ -147,7 +149,6 @@ parse_setoptionpresence()
 			parser_required[${i}]=""
 			return 0
 		fi
-		
 	done
 	return 1
 }
@@ -169,7 +170,6 @@ parse_checkrequired()
 			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
-		
 	done
 	return ${c}
 }
@@ -212,7 +212,6 @@ parse_process_option()
 		then
 			return ${PARSER_OK}
 		fi
-		
 	fi
 	
 	parser_item="${parser_input[${parser_index}]}"
@@ -314,6 +313,32 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_3_xml-description
 			;;
+		target-platform | target)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_item}\""
+				
+				return ${PARSER_SC_ERROR}
+			fi
+			targetPlatform="${parser_item}"
+			parse_setoptionpresence G_5_target-platform
+			;;
 		update)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -322,7 +347,7 @@ parse_process_option()
 				return ${PARSER_SC_ERROR}
 			fi
 			update=true
-			parse_setoptionpresence G_5_update
+			parse_setoptionpresence G_6_update
 			;;
 		shell)
 			# Group checks
@@ -414,7 +439,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_6_g_1_window-width;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
 		window-height)
 			# Group checks
@@ -436,7 +461,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_6_g_2_window-height;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
 		debug)
 			# Group checks
@@ -448,7 +473,7 @@ parse_process_option()
 				return ${PARSER_SC_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_6_g_3_debug;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
 			;;
 		init-script)
 			# Group checks
@@ -482,7 +507,7 @@ parse_process_option()
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_7_g_1_init-script;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
 			;;
 		resources)
 			# Group checks
@@ -531,7 +556,7 @@ parse_process_option()
 				userDataPaths[${#userDataPaths[*]}]="${parser_item}"
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
-			parse_setoptionpresence G_7_g_2_resources;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_2_resources;parse_setoptionpresence G_8_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -553,7 +578,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_8_g_1_ns-xml-path;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_9_g_1_ns-xml-path;parse_setoptionpresence G_9_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -565,7 +590,7 @@ parse_process_option()
 				return ${PARSER_SC_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_8_g_2_ns-xml-path-relative;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_9_g_2_ns-xml-path-relative;parse_setoptionpresence G_9_g
 			;;
 		ns-xml-add)
 			# Group checks
@@ -602,7 +627,7 @@ parse_process_option()
 				nsxmlAdditionalSources[${#nsxmlAdditionalSources[*]}]="${parser_item}"
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
-			parse_setoptionpresence G_8_g_3_ns-xml-add;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_9_g_3_ns-xml-add;parse_setoptionpresence G_9_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -689,9 +714,35 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_3_xml-description
 			;;
+		t)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_item}\""
+				
+				return ${PARSER_SC_ERROR}
+			fi
+			targetPlatform="${parser_item}"
+			parse_setoptionpresence G_5_target-platform
+			;;
 		u)
 			update=true
-			parse_setoptionpresence G_5_update
+			parse_setoptionpresence G_6_update
 			;;
 		s)
 			# Group checks
@@ -783,7 +834,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_6_g_1_window-width;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
 		H)
 			# Group checks
@@ -805,13 +856,13 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_6_g_2_window-height;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
 		d)
 			# Group checks
 			
 			debugMode=true
-			parse_setoptionpresence G_6_g_3_debug;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
 			;;
 		j)
 			# Group checks
@@ -845,7 +896,7 @@ parse_process_option()
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_7_g_1_init-script;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -878,7 +929,6 @@ parse()
 		else
 			parser_subindex=$(expr ${parser_subindex} + 1)
 		fi
-		
 	done
 	
 	parse_checkrequired
@@ -893,14 +943,11 @@ parse()
 
 ns_realpath()
 {
-	
-				body
-			
+	body
 }
 ns_realpath()
 {
 	local path="${1}"
-	
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -914,7 +961,6 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
-			
 }
 log()
 {
@@ -922,24 +968,19 @@ log()
 }
 info()
 {
-	
 	echo "${@}"
 	${isDebug} && log "${@}"
-			
 }
 error()
 {
-	
 	echo "${@}"
 	${isDebug} && log "${@}"
 	exit 1
-			
 }
 xml_validate()
 {
 	local schema="${1}"
 	local xml="${2}"
-	
 	local tmpOut="/tmp/xml_validate.tmp"
 	if  ! xmllint --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then
@@ -948,7 +989,6 @@ xml_validate()
 	fi
 	
 	return 0
-			
 }
 
 logFile="/tmp/$(basename "${0}").log"
@@ -959,7 +999,7 @@ scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
 programVersion="2.0"
 
-isMacOSX=false
+hostPlatform="linux"
 macOSXVersion=""
 macOSXFrameworkName="XUL.framework"
 macOSXFrameworkPath="/Library/Frameworks/${macOSXFrameworkName}"
@@ -980,7 +1020,7 @@ done
 
 if [ "$(uname)" == "Darwin" ]
 then
-	isMacOSX=true
+	hostPlatform="macosx"
 	macOSXVersion="$(sw_vers -productVersion)"
 	macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
 	macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
@@ -1004,6 +1044,11 @@ if ${displayHelp}
 then
 	usage
 	exit 0
+fi
+
+if [ "${targetPlatform}" == "host" ]
+then
+	targetPlatform="${hostPlatform}"
 fi
 
 # Guess ns-xml path
@@ -1034,7 +1079,7 @@ then
 fi  
 
 requiredTemplates="xul-ui-mainwindow xul-js-mainwindow xul-js-application get-programinfo"
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	requiredTemplates="${requiredTemplates} macosx-plist xul-ui-hiddenwindow"
 fi
@@ -1071,7 +1116,7 @@ outputPathBase="$(basename "${outputPath}")"
 [ "${outputPathBase}" != "${appName}" ] && [ "${outputPathBase}" != "${appDisplayName}" ] && outputPath="${outputPath}/${appDisplayName}"
 appRootPath="${outputPath}"
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	outputPath="${outputPath}.app"
 	appRootPath="${outputPath}/Contents/Resources"
@@ -1194,7 +1239,7 @@ MaxVersion=99.0.0" > "${appIniFile}"
 
 echo "pref(\"toolkit.defaultChromeURI\", \"chrome://${xulAppName}/content/${xulAppName}.xul\");" > "${appPrefFile}"
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	echo "pref(\"browser.hiddenWindowChromeURL\", \"chrome://${xulAppName}/content/$(basename "${appHiddenWindowXulFile}")\");" >> "${appPrefFile}" 
 fi
@@ -1233,10 +1278,8 @@ xsltOption="--stringparam prg.xul.appName ${xulAppName}"
 [ -z "${windowWidth}" ] || xsltOption="${xsltOption} --param prg.xul.windowWidth ${windowWidth}"
 [ -z "${windowHeight}" ] || xsltOption="${xsltOption} --param prg.xul.windowHeight ${windowHeight}"
  
-if ${isMacOSX}
-then
-	xsltOption="${xsltOption} --stringparam prg.xul.platform macosx" 
-fi
+xsltOption="${xsltOption} --stringparam prg.xul.platform ${targetPlatform}"
+ 
 if ${debugMode}
 then
 	xsltOption="${xsltOption} --param prg.debug \"true()\""
@@ -1254,10 +1297,10 @@ then
 	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOption})"
 fi
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	info " -- Mac OS X hidden window"
-	if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" > "${appHiddenWindowXulFile}"  
+	if ! xsltproc -o "${appHiddenWindowXulFile}" ${xsltOption} "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
 	then
 		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOption})"
 	fi 
@@ -1306,7 +1349,7 @@ else
 	[ -r "${userInitializationScriptOutputPath}" ] && rm -f "${userInitializationScriptOutputPath}" 
 fi
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	info " - Create/Update Mac OS X application bundle structure"
 	# Create structure
@@ -1318,12 +1361,20 @@ then
 	then
 		error "Error while building XUL main window code"
 	fi
-	
-	info " - Create/Update Mac OS X application launcher"
-	macOSXLauncher="${outputPath}/Contents/MacOS/xulrunner"
-	cat > "${macOSXLauncher}" << EOF
+fi
+
+info " - Create/Update application launcher"
+launcherPath=""
+if [ "${targetPlatform}" == "macosx" ]
+then
+	launcherPath="${outputPath}/Contents/MacOS/xulrunner"
+else
+	launcherPath="${outputPath}/${appName}"
+fi
+
+cat > "${launcherPath}" << EOF
 #!/bin/bash
-ns_realpath2()
+ns_realpath()
 {
 	local path="\${1}"
 	local cwd="\$(pwd)"
@@ -1342,36 +1393,61 @@ ns_realpath2()
 	cd "\${cwd}" 1>/dev/null 2>&1
 	echo "\${path}"
 }
-scriptPath="\$(ns_realpath2 "\$(dirname "\${0}")")"
-appIniPath="\$(ns_realpath2 "\${scriptPath}/../Resources/application.ini")"
-bundleName="\$(defaults read "\${scriptPath}/../Info" CFBundleName)"
-logFile="/tmp/\${bundleName}.log"
-macOSXArchitecture="\$(uname -m)"
-cmdPrefix=""
-if [ "\${macOSXArchitecture}" = "i386" ]
+buildPlatform="${targetPlatform}"
+debug=${debugMode}
+platform="linux"
+if [ "\$(uname)" == "Darwin" ]
 then
-	cmdPrefix="arch -i386"
+	platform="macosx"
 fi
 
-echo "\$(date)" > "\${logFile}"
-echo "Args: \${@}" >> "\${logFile}"
+scriptPath="\$(ns_realpath "\$(dirname "\${0}")")"
+appIniPath="\$(ns_realpath "\${scriptPath}/application.ini")"
+logFile="/tmp/\$(basename "\${0}").log"
+if [ "\${buildPlatform}" == "macosx" ]
+then
+	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
+fi
+if [ "\${platform}" == "macosx" ]
+then
+	macOSXArchitecture="\$(uname -m)"
+	cmdPrefix=""
+	if [ "\${macOSXArchitecture}" = "i386" ]
+	then
+		cmdPrefix="arch -i386"
+	fi
+fi
 
-# Trying Xul.framework
-use_framework()
+debug()
 {
-	minXulFrameworkVersion=2
-	maxXulFrameworkVersion=6
+	echo "\${@}"
+	[ \${debugMode} ] && echo "\${@}" >> "\${logFile}"
+}
+
+[ \${debugMode} ] && echo "\$(date)" > "\${logFile}"
+debug "Args: \${@}"
+
+# Trying Xul.framework (Mac OS X)
+use_framework()
+{	
+	debug use_framwork
+	
+	minXulFrameworkVersion=4
 	for xul in "/Library/Frameworks/XUL.framework" "\${HOME}/Library/Frameworks/XUL.framework"
 	do
-		echo "Check \${xul}" >> "\${logFile}"
+		debug "Check \${xul}"
 		if [ -x "\${xul}/xulrunner-bin" ]
 		then
 			xulFrameworkVersion="\$(readlink "\${xul}/Versions/Current" | cut -f 1 -d.)"
-			echo " Version: \${xulFrameworkVersion}" >> "\${logFile}"
-			if [ \${xulFrameworkVersion} -ge \${minXulFrameworkVersion} ] && [ \${xulFrameworkVersion} -le \${maxXulFrameworkVersion} ]
+			debug " Version: \${xulFrameworkVersion}"
+			if [ \${xulFrameworkVersion} -ge \${minXulFrameworkVersion} ] 
 			then
-				echo " Using \${xul}" >> "\${logFile}"
-				\${cmdPrefix} \${xul}/xulrunner-bin "\${appIniPath}"
+				debug " Using \${xul}"
+				xul="\$(ns_realpath "\${xul}/Versions/Current")"
+				PATH="\${xul}:\${PATH}"
+				debug " PATH: \${PATH}"
+				echo \${cmdPrefix} "\${xul}/xulrunner" -app "\${appIniPath}"
+				\${cmdPrefix} "\${xul}/xulrunner" -app "\${appIniPath}"
 				exit 0
 			fi
 		fi
@@ -1383,42 +1459,40 @@ use_framework()
 # Trying firefox (assumes a version >= 4)
 use_firefox()
 {
-	for ff in "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "\${HOME}/Applications/Firefox.app/Contents/MacOS/firefox-bin"
-	do
-		echo "Check \${ff}" >> "\${logFile}" 
-		if [ -x "\${ff}" ]
+	debug use_firefox
+	if [ "\${platform}" == "macosx" ]
+	then
+		for ff in "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "\${HOME}/Applications/Firefox.app/Contents/MacOS/firefox-bin"
+		do
+			debug "Check \${ff}" 
+			if [ -x "\${ff}" ]
+			then
+				debug " Using \${ff}" 
+				\${cmdPrefix} \${ff} -app "\${appIniPath}"
+				exit 0
+			fi
+		done
+	else
+		if which firefox 1>/dev/null 2>&1
 		then
-			echo " Using \${ff}" >> "\${logFile}" 
-			\${cmdPrefix} \${ff} -app "\${appIniPath}"
-			exit 0
+			firefox -app "\${appIniPath}"
+			return 0
 		fi
-	done
+	fi
 	
 	return 1
 }
 
-#use_framework || use_firefox
-use_firefox || use_framework
-
-EOF
-chmod 755 "${macOSXLauncher}"
-
-else
-# For linux
-	info " - Create/Update Linux launcher"
-	linuxLauncher="${outputPath}/${appName}"
-	cat > "${linuxLauncher}" << EOF
-#!/bin/bash
 use_xulrunner()
 {
 	for x in xulrunner xulrunner-2.0
 	do
-		if which \${x} 1>/dev/null 2>&1
+		if which "\${x}" 1>/dev/null 2>&1
 		then
 			v="\$(\${x} --gre-version | cut -f 1 -d".")"
-			if [ \${v} -ge 2 ]
+			if [ ! -z "\${v}" ] && [ \${v} -ge 2 ]
 			then
-				"\${x}" "\$(dirname "\${0}")/application.ini"
+				"\${x}" "\${appIniPath}"
 				return 0
 			fi
 		fi
@@ -1426,21 +1500,14 @@ use_xulrunner()
 	return 1
 }
 
-use_firefox()
-{
-	if which firefox 1>/dev/null 2>&1
-	then
-		firefox -app "\$(dirname "\${0}")/application.ini"
-		return 0
-	fi
-	
-	return 1
-}
-
-#use_firefox || use_xulrunner || (echo "No XUL runner binary found" && exit 1)
-use_xulrunner || use_firefox  || (echo "No XUL runner binary found" && exit 1)
-EOF
-
-chmod 755 "${linuxLauncher}"
+debug "Build platform: \${buildPlatform}"
+debug "Platform: \${platform}"
+debug "Application: \${appIniPath}"
+if [ "\${platform}" == "macosx" ]
+then
+	use_framework || use_xulrunner || use_firefox
+else 
+	use_xulrunner || use_firefox
 fi
-
+EOF
+chmod 755 "${launcherPath}"

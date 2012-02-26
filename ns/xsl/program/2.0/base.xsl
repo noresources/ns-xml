@@ -10,11 +10,17 @@
 
 	<param name="prg.debug" select="false()" />
 
+	<!-- Strip spaces -->
+	<template match="prg:variable|prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:license|prg:version|">
+		<value-of select="normalize-space(.)" />
+	</template>
+	
 	<!-- Display the given name prefixed by the value of the parameter prg.prefix -->
 	<template name="prg.prefixedName">
 		<param name="name" />
-		<value-of select="$prg.prefix" />
-		<value-of select="$name" />
+		
+		<value-of select="normalize-space($prg.prefix)" />
+		<value-of select="normalize-space($name)" />
 	</template>
 
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
@@ -35,7 +41,7 @@
 						<text>_</text>
 						<value-of select="$index" />
 						<text>_</text>
-						<value-of select="$optionNode/prg:name" />
+						<value-of select="normalize-space($optionNode/prg:name)" />
 					</when>
 					<when test="$optionNode/self::prg:program">
 						<text>G</text>
@@ -55,10 +61,10 @@
 						<text>g</text>
 					</when>
 					<when test="$optionNode/prg:names/prg:long">
-						<value-of select="$optionNode/prg:names/prg:long[1]" />
+						<apply-templates select="$optionNode/prg:names/prg:long[1]" />
 					</when>
 					<otherwise>
-						<value-of select="$optionNode/prg:names/prg:short[1]" />
+						<apply-templates select="$optionNode/prg:names/prg:short[1]" />
 					</otherwise>
 				</choose>
 			</otherwise>
@@ -69,10 +75,10 @@
 	<template name="prg.programDisplayName">
 		<choose>
 			<when test="/prg:program/prg:ui/prg:label">
-				<value-of select="/prg:program/prg:ui/prg:label" />
+				<value-of select="normalize-space(/prg:program/prg:ui/prg:label)" />
 			</when>
 			<otherwise>
-				<value-of select="/prg:program/prg:name" />
+				<value-of select="normalize-space(/prg:program/prg:name)" />
 			</otherwise>
 		</choose>
 	</template>

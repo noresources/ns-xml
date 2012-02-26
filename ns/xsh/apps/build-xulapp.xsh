@@ -46,7 +46,7 @@ scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
 programVersion="2.0"
 
-isMacOSX=false
+hostPlatform="linux"
 macOSXVersion=""
 macOSXFrameworkName="XUL.framework"
 macOSXFrameworkPath="/Library/Frameworks/${macOSXFrameworkName}"
@@ -67,7 +67,7 @@ done
 
 if [ "$(uname)" == "Darwin" ]
 then
-	isMacOSX=true
+	hostPlatform="macosx"
 	macOSXVersion="$(sw_vers -productVersion)"
 	macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
 	macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
@@ -91,6 +91,11 @@ if ${displayHelp}
 then
 	usage
 	exit 0
+fi
+
+if [ "${targetPlatform}" == "host" ]
+then
+	targetPlatform="${hostPlatform}"
 fi
 
 # Guess ns-xml path
@@ -121,7 +126,7 @@ then
 fi  
 
 requiredTemplates="xul-ui-mainwindow xul-js-mainwindow xul-js-application get-programinfo"
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	requiredTemplates="${requiredTemplates} macosx-plist xul-ui-hiddenwindow"
 fi
@@ -158,7 +163,7 @@ outputPathBase="$(basename "${outputPath}")"
 [ "${outputPathBase}" != "${appName}" ] && [ "${outputPathBase}" != "${appDisplayName}" ] && outputPath="${outputPath}/${appDisplayName}"
 appRootPath="${outputPath}"
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	outputPath="${outputPath}.app"
 	appRootPath="${outputPath}/Contents/Resources"
@@ -281,7 +286,7 @@ MaxVersion=99.0.0" > "${appIniFile}"
 
 echo "pref(\"toolkit.defaultChromeURI\", \"chrome://${xulAppName}/content/${xulAppName}.xul\");" > "${appPrefFile}"
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	echo "pref(\"browser.hiddenWindowChromeURL\", \"chrome://${xulAppName}/content/$(basename "${appHiddenWindowXulFile}")\");" >> "${appPrefFile}" 
 fi
@@ -320,10 +325,8 @@ xsltOption="--stringparam prg.xul.appName ${xulAppName}"
 [ -z "${windowWidth}" ] || xsltOption="${xsltOption} --param prg.xul.windowWidth ${windowWidth}"
 [ -z "${windowHeight}" ] || xsltOption="${xsltOption} --param prg.xul.windowHeight ${windowHeight}"
  
-if ${isMacOSX}
-then
-	xsltOption="${xsltOption} --stringparam prg.xul.platform macosx" 
-fi
+xsltOption="${xsltOption} --stringparam prg.xul.platform ${targetPlatform}"
+ 
 if ${debugMode}
 then
 	xsltOption="${xsltOption} --param prg.debug \"true()\""
@@ -341,10 +344,10 @@ then
 	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOption})"
 fi
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	info " -- Mac OS X hidden window"
-	if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" > "${appHiddenWindowXulFile}"  
+	if ! xsltproc -o "${appHiddenWindowXulFile}" ${xsltOption} "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
 	then
 		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOption})"
 	fi 
@@ -393,7 +396,7 @@ else
 	[ -r "${userInitializationScriptOutputPath}" ] && rm -f "${userInitializationScriptOutputPath}" 
 fi
 
-if ${isMacOSX}
+if [ "${targetPlatform}" == "macosx" ]
 then
 	info " - Create/Update Mac OS X application bundle structure"
 	# Create structure
@@ -405,12 +408,20 @@ then
 	then
 		error "Error while building XUL main window code"
 	fi
-	
-	info " - Create/Update Mac OS X application launcher"
-	macOSXLauncher="${outputPath}/Contents/MacOS/xulrunner"
-	cat > "${macOSXLauncher}" << EOF
+fi
+
+info " - Create/Update application launcher"
+launcherPath=""
+if [ "${targetPlatform}" == "macosx" ]
+then
+	launcherPath="${outputPath}/Contents/MacOS/xulrunner"
+else
+	launcherPath="${outputPath}/${appName}"
+fi
+
+cat > "${launcherPath}" << EOF
 #!/bin/bash
-ns_realpath2()
+ns_realpath()
 {
 	local path="\${1}"
 	local cwd="\$(pwd)"
@@ -429,36 +440,61 @@ ns_realpath2()
 	cd "\${cwd}" 1>/dev/null 2>&1
 	echo "\${path}"
 }
-scriptPath="\$(ns_realpath2 "\$(dirname "\${0}")")"
-appIniPath="\$(ns_realpath2 "\${scriptPath}/../Resources/application.ini")"
-bundleName="\$(defaults read "\${scriptPath}/../Info" CFBundleName)"
-logFile="/tmp/\${bundleName}.log"
-macOSXArchitecture="\$(uname -m)"
-cmdPrefix=""
-if [ "\${macOSXArchitecture}" = "i386" ]
+buildPlatform="${targetPlatform}"
+debug=${debugMode}
+platform="linux"
+if [ "\$(uname)" == "Darwin" ]
 then
-	cmdPrefix="arch -i386"
+	platform="macosx"
 fi
 
-echo "\$(date)" > "\${logFile}"
-echo "Args: \${@}" >> "\${logFile}"
+scriptPath="\$(ns_realpath "\$(dirname "\${0}")")"
+appIniPath="\$(ns_realpath "\${scriptPath}/application.ini")"
+logFile="/tmp/\$(basename "\${0}").log"
+if [ "\${buildPlatform}" == "macosx" ]
+then
+	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
+fi
+if [ "\${platform}" == "macosx" ]
+then
+	macOSXArchitecture="\$(uname -m)"
+	cmdPrefix=""
+	if [ "\${macOSXArchitecture}" = "i386" ]
+	then
+		cmdPrefix="arch -i386"
+	fi
+fi
 
-# Trying Xul.framework
-use_framework()
+debug()
 {
-	minXulFrameworkVersion=2
-	maxXulFrameworkVersion=6
+	echo "\${@}"
+	[ \${debugMode} ] && echo "\${@}" >> "\${logFile}"
+}
+
+[ \${debugMode} ] && echo "\$(date)" > "\${logFile}"
+debug "Args: \${@}"
+
+# Trying Xul.framework (Mac OS X)
+use_framework()
+{	
+	debug use_framwork
+	
+	minXulFrameworkVersion=4
 	for xul in "/Library/Frameworks/XUL.framework" "\${HOME}/Library/Frameworks/XUL.framework"
 	do
-		echo "Check \${xul}" >> "\${logFile}"
+		debug "Check \${xul}"
 		if [ -x "\${xul}/xulrunner-bin" ]
 		then
 			xulFrameworkVersion="\$(readlink "\${xul}/Versions/Current" | cut -f 1 -d.)"
-			echo " Version: \${xulFrameworkVersion}" >> "\${logFile}"
-			if [ \${xulFrameworkVersion} -ge \${minXulFrameworkVersion} ] && [ \${xulFrameworkVersion} -le \${maxXulFrameworkVersion} ]
+			debug " Version: \${xulFrameworkVersion}"
+			if [ \${xulFrameworkVersion} -ge \${minXulFrameworkVersion} ] 
 			then
-				echo " Using \${xul}" >> "\${logFile}"
-				\${cmdPrefix} \${xul}/xulrunner-bin "\${appIniPath}"
+				debug " Using \${xul}"
+				xul="\$(ns_realpath "\${xul}/Versions/Current")"
+				PATH="\${xul}:\${PATH}"
+				debug " PATH: \${PATH}"
+				echo \${cmdPrefix} "\${xul}/xulrunner" -app "\${appIniPath}"
+				\${cmdPrefix} "\${xul}/xulrunner" -app "\${appIniPath}"
 				exit 0
 			fi
 		fi
@@ -470,42 +506,40 @@ use_framework()
 # Trying firefox (assumes a version >= 4)
 use_firefox()
 {
-	for ff in "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "\${HOME}/Applications/Firefox.app/Contents/MacOS/firefox-bin"
-	do
-		echo "Check \${ff}" >> "\${logFile}" 
-		if [ -x "\${ff}" ]
+	debug use_firefox
+	if [ "\${platform}" == "macosx" ]
+	then
+		for ff in "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "\${HOME}/Applications/Firefox.app/Contents/MacOS/firefox-bin"
+		do
+			debug "Check \${ff}" 
+			if [ -x "\${ff}" ]
+			then
+				debug " Using \${ff}" 
+				\${cmdPrefix} \${ff} -app "\${appIniPath}"
+				exit 0
+			fi
+		done
+	else
+		if which firefox 1>/dev/null 2>&1
 		then
-			echo " Using \${ff}" >> "\${logFile}" 
-			\${cmdPrefix} \${ff} -app "\${appIniPath}"
-			exit 0
+			firefox -app "\${appIniPath}"
+			return 0
 		fi
-	done
+	fi
 	
 	return 1
 }
 
-#use_framework || use_firefox
-use_firefox || use_framework
-
-EOF
-chmod 755 "${macOSXLauncher}"
-
-else
-# For linux
-	info " - Create/Update Linux launcher"
-	linuxLauncher="${outputPath}/${appName}"
-	cat > "${linuxLauncher}" << EOF
-#!/bin/bash
 use_xulrunner()
 {
 	for x in xulrunner xulrunner-2.0
 	do
-		if which \${x} 1>/dev/null 2>&1
+		if which "\${x}" 1>/dev/null 2>&1
 		then
 			v="\$(\${x} --gre-version | cut -f 1 -d".")"
-			if [ \${v} -ge 2 ]
+			if [ ! -z "\${v}" ] && [ \${v} -ge 2 ]
 			then
-				"\${x}" "\$(dirname "\${0}")/application.ini"
+				"\${x}" "\${appIniPath}"
 				return 0
 			fi
 		fi
@@ -513,23 +547,16 @@ use_xulrunner()
 	return 1
 }
 
-use_firefox()
-{
-	if which firefox 1>/dev/null 2>&1
-	then
-		firefox -app "\$(dirname "\${0}")/application.ini"
-		return 0
-	fi
-	
-	return 1
-}
-
-#use_firefox || use_xulrunner || (echo "No XUL runner binary found" && exit 1)
-use_xulrunner || use_firefox  || (echo "No XUL runner binary found" && exit 1)
-EOF
-
-chmod 755 "${linuxLauncher}"
+debug "Build platform: \${buildPlatform}"
+debug "Platform: \${platform}"
+debug "Application: \${appIniPath}"
+if [ "\${platform}" == "macosx" ]
+then
+	use_framework || use_xulrunner || use_firefox
+else 
+	use_xulrunner || use_firefox
 fi
-
+EOF
+chmod 755 "${launcherPath}"
 ]]></sh:code>
 </sh:program>

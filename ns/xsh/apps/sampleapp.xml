@@ -1,440 +1,454 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
-<p:program xmlns:p="http://xsd.nore.fr/program" version="2.0">
-	<p:name>sampleapp</p:name>
-	<p:author>Renaud Guillard</p:author>
-	<p:version>1.0</p:version>
-	<p:documentation>
-		<p:abstract>Sample application with all kind of options</p:abstract>
-	</p:documentation>
-	<p:ui>
-		<p:label>Sample application</p:label>
-	</p:ui>
-	<p:options>
-		<p:switch>
-			<p:databinding>
-				<p:variable>displayHelp</p:variable>
-			</p:databinding>
-			<p:names>
-				<p:long>help</p:long>
-			</p:names>
-			<p:ui mode="disabled" />
-		</p:switch>
-		<p:argument>
-			<p:databinding>
-				<p:variable>uiArg</p:variable>
-			</p:databinding>
-			<p:names>
-				<p:long>ui-only</p:long>
-			</p:names>
-			<p:ui mode="hidden">
-				<p:value>ui argument</p:value>
-			</p:ui>
-		</p:argument>
-		<p:argument>
-			<p:databinding>
-				<p:variable>standardArg</p:variable>
-			</p:databinding>
-			<p:names>
-				<p:long>standard-arg</p:long>
-			</p:names>
-			<p:ui mode="default" />
-		</p:argument>
-		<p:switch>
-			<p:databinding>
-				<p:variable>gswitch</p:variable>
-			</p:databinding>
-			<p:documentation>
-				<p:abstract>Simple switch</p:abstract>
-			</p:documentation>
-			<p:names>
-				<p:short>s</p:short>
-				<p:long>simpleswitch</p:long>
-			</p:names>
-		</p:switch>
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program">
+	<prg:name>sampleapp</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>
+		
+		Sample application with all kind of options
+		
+		
+		</prg:abstract>
+	</prg:documentation>
+	<prg:ui>
+		<prg:label>
+		Sample application
+</prg:label>
+	</prg:ui>
+	<prg:options>
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>
+				displayHelp   </prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>help</prg:long>
+			</prg:names>
+			<prg:ui mode="disabled" />
+		</prg:switch>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>uiArg</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>ui-only</prg:long>
+			</prg:names>
+			<prg:ui mode="hidden">
+				<prg:value>ui argument</prg:value>
+			</prg:ui>
+		</prg:argument>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>standardArg</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>standard-arg</prg:long>
+			</prg:names>
+			<prg:ui mode="default" />
+		</prg:argument>
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>gswitch</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Simple switch</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>s</prg:short>
+				<prg:long>simpleswitch</prg:long>
+			</prg:names>
+		</prg:switch>
 
-		<p:group>
-			<p:ui>
-				<p:label>A group with only one element</p:label>
-			</p:ui>
-			<p:options>
-				<p:switch>
-					<p:databinding>
-						<p:variable>grpSwitch</p:variable>
-					</p:databinding>
-					<p:names>
-						<p:long>switch-alone-in-group</p:long>
-					</p:names>
-				</p:switch>
-			</p:options>
-		</p:group>
+		<prg:group>
+			<prg:ui>
+				<prg:label>A group with only one element</prg:label>
+			</prg:ui>
+			<prg:options>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>grpSwitch</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>switch-alone-in-group</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
 
-		<p:group type="exclusive">
-			<p:documentation>
-				<p:abstract>Arguments group</p:abstract>
-			</p:documentation>
-			<p:databinding>
-				<p:variable>globalArgumentsGroup</p:variable>
-			</p:databinding>
-			<p:options>
-				<p:argument>
-					<p:databinding>
-						<p:variable>garg</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Basic argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>basic-argument</p:long>
-					</p:names>
-				</p:argument>
+		<prg:group type="exclusive">
+			<prg:documentation>
+				<prg:abstract>Arguments group</prg:abstract>
+			</prg:documentation>
+			<prg:databinding>
+				<prg:variable>globalArgumentsGroup</prg:variable>
+			</prg:databinding>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>garg</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Basic argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>basic-argument</prg:long>
+					</prg:names>
+				</prg:argument>
 
-				<p:argument>
-					<p:databinding>
-						<p:variable>gsarg</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>String argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>string-argument</p:long>
-					</p:names>
-					<p:type>
-						<p:string />
-					</p:type>
-				</p:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>gsarg</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>String argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>string-argument</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:string />
+					</prg:type>
+				</prg:argument>
 
-				<p:argument>
-					<p:databinding>
-						<p:variable>dgarg</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Argument (with default value)</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>argument-with-default</p:long>
-					</p:names>
-					<p:default>Default value</p:default>
-				</p:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>dgarg</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Argument (with default value)</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>argument-with-default</prg:long>
+					</prg:names>
+					<prg:default>Default value</prg:default>
+				</prg:argument>
 
-				<p:argument>
-					<p:databinding>
-						<p:variable>gnarg</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Numeric argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>numeric-argument</p:long>
-					</p:names>
-					<p:type>
-						<p:number />
-					</p:type>
-				</p:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>gnarg</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Numeric argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>numeric-argument</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:number />
+					</prg:type>
+				</prg:argument>
 
-				<p:argument>
-					<p:databinding>
-						<p:variable>gn2arg</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Float argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>float-argument</p:long>
-					</p:names>
-					<p:type>
-						<p:number min="1.0" max="10.0" decimal="2" />
-					</p:type>
-				</p:argument>
-			</p:options>
-		</p:group>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>gn2arg</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Float argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>float-argument</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:number min="1.0" max="10.0" decimal="2" />
+					</prg:type>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
 
-		<p:argument>
-			<p:databinding>
-				<p:variable>gfarg</p:variable>
-			</p:databinding>
-			<p:documentation>
-				<p:abstract>File argument</p:abstract>
-			</p:documentation>
-			<p:names>
-				<p:long>existing-file-argument</p:long>
-			</p:names>
-			<p:type>
-				<p:path exist="true" />
-			</p:type>
-		</p:argument>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>gfarg</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>File argument</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>existing-file-argument</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true" />
+			</prg:type>
+		</prg:argument>
 
-		<p:argument>
-			<p:databinding>
-				<p:variable>gFarg</p:variable>
-			</p:databinding>
-			<p:documentation>
-				<p:abstract>Folder argument</p:abstract>
-			</p:documentation>
-			<p:names>
-				<p:long>rw-folder-argument</p:long>
-			</p:names>
-			<p:type>
-				<p:path access="rw">
-					<p:kinds>
-						<p:folder />
-					</p:kinds>
-				</p:path>
-			</p:type>
-		</p:argument>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>gFarg</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Folder argument</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>rw-folder-argument</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path access="rw">
+					<prg:kinds>
+						<prg:folder />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
 
-		<p:argument>
-			<p:databinding>
-				<p:variable>gmfarg</p:variable>
-			</p:databinding>
-			<p:documentation>
-				<p:abstract>Mixed selection of kinds</p:abstract>
-			</p:documentation>
-			<p:names>
-				<p:long>mixed-fskind-argument</p:long>
-			</p:names>
-			<p:type>
-				<p:path access="rw">
-					<p:kinds>
-						<p:file />
-						<p:socket />
-						<p:folder />
-						<p:symlink />
-					</p:kinds>
-				</p:path>
-			</p:type>
-		</p:argument>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>gmfarg</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Mixed selection of kinds</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>mixed-fskind-argument</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path access="rw">
+					<prg:kinds>
+						<prg:file />
+						<prg:socket />
+						<prg:folder />
+						<prg:symlink />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
 
-		<p:group>
-			<p:documentation>
-				<p:abstract>Multi argument options</p:abstract>
-			</p:documentation>
-			<p:options>
-				<p:multiargument>
-					<p:databinding>
-						<p:variable>gma</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Multi argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>multi-argument</p:long>
-					</p:names>
-				</p:multiargument>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>Multi argument options</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>gma</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Multi argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>multi-argument</prg:long>
+					</prg:names>
+				</prg:multiargument>
 
-				<p:multiargument>
-					<p:databinding>
-						<p:variable>gmsa</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Multi select argument</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>multi-select-argument</p:long>
-					</p:names>
-					<p:select restrict="true">
-						<p:option>First option</p:option>
-						<p:option>Second option</p:option>
-					</p:select>
-				</p:multiargument>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>gmsa</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Multi select argument</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>multi-select-argument</prg:long>
+					</prg:names>
+					<prg:select restrict="true">
+						<prg:option>FirstOption    </prg:option>
+						<prg:option>Second option</prg:option>
+					</prg:select>
+				</prg:multiargument>
 
-				<p:multiargument>
-					<p:databinding>
-						<p:variable>gmaxml</p:variable>
-					</p:databinding>
-					<p:documentation>
-						<p:abstract>Xml files</p:abstract>
-					</p:documentation>
-					<p:names>
-						<p:long>multi-xml</p:long>
-					</p:names>
-					<p:type>
-						<p:path>
-							<p:patterns>
-								<p:pattern>
-									<p:name>Xml files</p:name>
-									<p:rules>
-										<p:rule>
-											<p:endWith>.xml</p:endWith>
-										</p:rule>
-										<p:rule>
-											<p:endWith>.xsd</p:endWith>
-										</p:rule>
-										<p:rule>
-											<p:endWith>.xsl</p:endWith>
-										</p:rule>
-										<p:rule>
-											<p:endWith>.xul</p:endWith>
-										</p:rule>
-									</p:rules>
-								</p:pattern>
-							</p:patterns>
-						</p:path>
-					</p:type>
-				</p:multiargument>
-			</p:options>
-		</p:group>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>gmaxml</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Xml files</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>multi-xml</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>Xml files</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.xml</prg:endWith>
+										</prg:rule>
+										<prg:rule>
+											<prg:endWith>.xsd</prg:endWith>
+										</prg:rule>
+										<prg:rule>
+											<prg:endWith>.xsl</prg:endWith>
+										</prg:rule>
+										<prg:rule>
+											<prg:endWith>.xul</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:multiargument>
+			</prg:options>
+		</prg:group>
 
-		<p:argument>
-			<p:names>
-				<p:long>hostname</p:long>
-				<p:short>H</p:short>
-			</p:names>
-			<p:type>
-				<p:hostname />
-			</p:type>
-		</p:argument>
+		<prg:argument>
+			<prg:names>
+				<prg:long>hostname</prg:long>
+				<prg:short>H</prg:short>
+			</prg:names>
+			<prg:type>
+				<prg:hostname />
+			</prg:type>
+		</prg:argument>
 
-		<p:argument>
-			<p:names>
-				<p:long>simple-pattern-sh</p:long>
-				<p:short>P</p:short>
-			</p:names>
-			<p:type>
-				<p:path access="x">
-					<p:patterns>
-						<p:pattern>
-							<p:name>Shell files</p:name>
-							<p:rules>
-								<p:rule>
-									<p:endWith>.sh</p:endWith>
-								</p:rule>
-								<p:rule>
-									<p:endWith>.run</p:endWith>
-								</p:rule>
-							</p:rules>
-						</p:pattern>
-					</p:patterns>
-				</p:path>
-			</p:type>
-		</p:argument>
+		<prg:argument>
+			<prg:names>
+				<prg:long>simple-pattern-sh</prg:long>
+				<prg:short>P</prg:short>
+			</prg:names>
+			<prg:type>
+				<prg:path access="x">
+					<prg:patterns restrict="true">
+						<prg:pattern>
+							<prg:name>Shell files</prg:name>
+							<prg:rules>
+								<prg:rule>
+									<prg:endWith>.sh</prg:endWith>
+								</prg:rule>
+								<prg:rule>
+									<prg:endWith>.run</prg:endWith>
+								</prg:rule>
+								<prg:rule>
+									<prg:endWith>.xsh</prg:endWith>
+								</prg:rule>
+							</prg:rules>
+						</prg:pattern>
+					</prg:patterns>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
 
-		<p:argument>
-			<p:databinding>
-				<p:variable>strictEnum</p:variable>
-			</p:databinding>
-			<p:names>
-				<p:long>strict-enum</p:long>
-				<p:short>E</p:short>
-			</p:names>
-			<p:select restrict="true">
-				<p:option>Option A</p:option>
-				<p:option>Value B</p:option>
-				<p:option>Item C</p:option>
-				<p:option>ItemD with space</p:option>
-			</p:select>
-			<p:default>Value B</p:default>
-		</p:argument>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>
+				
+				
+				strictEnum</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>strict-enum</prg:long>
+				<prg:short>E</prg:short>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>Option A</prg:option>
+				<prg:option>Value B</prg:option>
+				<prg:option>Item C</prg:option>
+				<prg:option>ItemD with space</prg:option>
+			</prg:select>
+			<prg:default>Value B</prg:default>
+		</prg:argument>
 
-		<p:argument>
-			<p:databinding>
-				<p:variable>nonStrictEnum</p:variable>
-			</p:databinding>
-			<p:names>
-				<p:long>non-strict-enum</p:long>
-				<p:short>e</p:short>
-			</p:names>
-			<p:select>
-				<p:option>nOptionA</p:option>
-				<p:option>nValueB</p:option>
-				<p:option>nItemC</p:option>
-				<p:option>nItemD with space</p:option>
-			</p:select>
-		</p:argument>
-	</p:options>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>nonStrictEnum</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>non-strict-enum</prg:long>
+				<prg:short>e</prg:short>
+			</prg:names>
+			<prg:select>
+				<prg:option>nOptionA</prg:option>
+				<prg:option>nValueB</prg:option>
+				<prg:option>nItemC</prg:option>
+				<prg:option>nItemD with space</prg:option>
+			</prg:select>
+		</prg:argument>
+	</prg:options>
 
-	<p:subcommands>
-		<p:subcommand>
-			<p:name>sub</p:name>
-			<p:options>
-				<p:switch>
-					<p:names>
-						<p:long>switch</p:long>
-						<p:long>sc-switch</p:long>
-					</p:names>
-				</p:switch>
-				<p:argument>
-					<p:databinding>
-						<p:variable>subFile</p:variable>
-					</p:databinding>
-					<p:names>
-						<p:long>sc-existing-file-argument</p:long>
-					</p:names>
-					<p:type>
-						<p:path exist="true" />
-					</p:type>
-				</p:argument>
-				<p:argument>
-					<p:databinding>
-						<p:variable>subEnum</p:variable>
-					</p:databinding>
-					<p:names>
-						<p:long>sc-strict-enum</p:long>
-					</p:names>
-					<p:select restrict="true">
-						<p:option>OptionA</p:option>
-						<p:option>ValueB</p:option>
-						<p:option>ItemC</p:option>
-					</p:select>
-				</p:argument>
-			</p:options>
-			<p:values>
-				<p:other>
-					<p:type>
-						<p:path />
-					</p:type>
-				</p:other>
-			</p:values>
-		</p:subcommand>
-		<p:subcommand>
-			<p:name>help</p:name>
-			<p:documentation>
-				<p:abstract>Help about other sub commands</p:abstract>
-			</p:documentation>
-			<p:values>
-				<p:value>
-					<p:documentation>
-						<p:abstract>Subcommand name</p:abstract>
-					</p:documentation>
-					<p:select restrict="true">
-						<p:option>sub</p:option>
-						<p:option>help</p:option>
-					</p:select>
-				</p:value>
-			</p:values>
-		</p:subcommand>
-	</p:subcommands>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>sub</prg:name>
+			<prg:options>
+				<prg:switch>
+					<prg:names>
+						<prg:long>switch</prg:long>
+						<prg:long>sc-switch</prg:long>
+					</prg:names>
+				</prg:switch>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>subFile</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>sc-existing-file-argument</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true" />
+					</prg:type>
+				</prg:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>subEnum</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>sc-strict-enum</prg:long>
+					</prg:names>
+					<prg:select restrict="true">
+						<prg:option>OptionA</prg:option>
+						<prg:option>ValueB</prg:option>
+						<prg:option>ItemC</prg:option>
+					</prg:select>
+				</prg:argument>
+			</prg:options>
+			<prg:values>
+				<prg:other>
+					<prg:type>
+						<prg:path />
+					</prg:type>
+				</prg:other>
+			</prg:values>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>help</prg:name>
+			<prg:documentation>
+				<prg:abstract>Help about other sub commands</prg:abstract>
+			</prg:documentation>
+			<prg:values>
+				<prg:value>
+					<prg:documentation>
+						<prg:abstract>Subcommand name</prg:abstract>
+					</prg:documentation>
+					<prg:select restrict="true">
+						<prg:option>sub</prg:option>
+						<prg:option>help</prg:option>
+					</prg:select>
+				</prg:value>
+			</prg:values>
+		</prg:subcommand>
+	</prg:subcommands>
 
-	<p:values>
-		<p:value>
-			<p:type>
-				<p:path access="rw" />
-			</p:type>
-			<p:documentation>
-				<p:abstract>File value</p:abstract>
-			</p:documentation>
-		</p:value>
+	<prg:values>
+		<prg:value>
+			<prg:type>
+				<prg:path access="rw" />
+			</prg:type>
+			<prg:documentation>
+				<prg:abstract>File value</prg:abstract>
+			</prg:documentation>
+		</prg:value>
 
-		<p:value>
-			<p:documentation>
-				<p:abstract>Mixed value</p:abstract>
-			</p:documentation>
-		</p:value>
+		<prg:value>
+			<prg:documentation>
+				<prg:abstract>Mixed value</prg:abstract>
+			</prg:documentation>
+		</prg:value>
 
-		<p:value>
-			<p:documentation>
-				<p:abstract>Selection</p:abstract>
-			</p:documentation>
-			<p:select>
-				<p:option>A</p:option>
-				<p:option>B</p:option>
-			</p:select>
-		</p:value>
+		<prg:value>
+			<prg:documentation>
+				<prg:abstract>Selection</prg:abstract>
+			</prg:documentation>
+			<prg:select>
+				<prg:option>A</prg:option>
+				<prg:option>B</prg:option>
+			</prg:select>
+		</prg:value>
 
-		<p:other>
-			<p:documentation>
-				<p:abstract>Other</p:abstract>
-			</p:documentation>
-		</p:other>
-	</p:values>
-</p:program>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>Other</prg:abstract>
+			</prg:documentation>
+		</prg:other>
+	</prg:values>
+</prg:program>

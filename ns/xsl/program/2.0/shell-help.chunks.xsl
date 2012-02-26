@@ -72,7 +72,7 @@
 					<when test="$mode = 'inline'">
 						<call-template name="endl" />
 						<for-each select="$optionNode/prg:option">
-							<value-of select="." />
+							<value-of select="normalize-space(.)" />
 							<choose>
 								<when test="position() = (last() - 1)">
 									<text> or </text>
@@ -87,7 +87,7 @@
 						<for-each select="$optionNode/prg:option">
 							<call-template name="endl" />
 							<text>- </text>
-							<value-of select="." />
+							<value-of select="normalize-space(.)" />
 						</for-each>
 					</otherwise>
 				</choose>

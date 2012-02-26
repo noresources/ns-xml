@@ -5,10 +5,6 @@
 
 	<import href="base.xsl" />
 
-	<template match="text()">
-		<value-of select="normalize-space(.)" />
-	</template>
-
 	<template name="js.comment">
 		<param name="content" select="." />
 		<call-template name="code.comment">
@@ -49,7 +45,7 @@
 		<param name="content" />
 		<param name="indent" select="true()" />
 		<if test="$name">
-			<value-of select="$name" />
+			<value-of select="normalize-space($name)" />
 			<text> </text>
 		</if>
 		<text>(</text>
@@ -65,7 +61,7 @@
 		<call-template name="endl" />
 	</template>
 
-	<!-- Shell function definition -->
+	<!-- Javascript function definition -->
 	<template name="js.function">
 		<param name="name" />
 		<param name="args" />
@@ -88,7 +84,7 @@
 			<with-param name="name">
 				<text>if</text>
 			</with-param>
-			<with-param name="context" select="$condition" />
+			<with-param name="context" select="normalize-space($condition)" />
 			<with-param name="content" select="$content" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
@@ -102,7 +98,7 @@
 			<with-param name="name">
 				<text>else if</text>
 			</with-param>
-			<with-param name="context" select="$condition" />
+			<with-param name="context" select="normalize-space($condition)" />
 			<with-param name="content" select="$content" />
 			<with-param name="indent" select="$indent" />
 		</call-template>

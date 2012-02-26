@@ -4,8 +4,6 @@
 	
 	<xsl:output method="text" encoding="utf-8" />
 	
-	<xsl:strip-space elements="*" />
-	
 	<xsl:template match="/prg:program">
 		<xsl:value-of select="@version" />
 		<xsl:text>&#10;</xsl:text>

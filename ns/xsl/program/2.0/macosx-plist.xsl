@@ -7,8 +7,6 @@
 
 	<output method="xml" doctype-system="http://www.apple.com/DTDs/PropertyList-1.0.dtd" doctype-public="-//Apple Computer//DTD PLIST 1.0//EN" encoding="utf-8" indent="yes" />
 
-	<strip-space elements="*" />
-
 	<param name="prg.xul.buildID" />
 
 	<template match="/prg:program">

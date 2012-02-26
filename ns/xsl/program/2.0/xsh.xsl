@@ -3,14 +3,12 @@
 
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 
-	<import href="../../languages/bash-definitions.xsl" />
+	<import href="../../languages/bash.xsl" />
 	<import href="shell-help.chunks.xsl" />
 	<import href="shell-parser.chunks.xsl" />
 	<import href="shell-parser.functions.xsl" />
 
 	<output method="text" encoding="utf-8" />
-
-	<strip-space elements="*" />
 
 	<param name="prg.xsh.defaultInterpreter">
 		<text>/bin/bash</text>
@@ -70,7 +68,7 @@
 					<call-template name="endl" />
 					<call-template name="sh.comment">
 						<with-param name="content">
-							Program parameter parsing
+							<text>Program parameter parsing</text>
 						</with-param>
 					</call-template>
 					<call-template name="prg.sh.parser.main">

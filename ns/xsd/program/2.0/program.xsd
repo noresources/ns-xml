@@ -29,6 +29,12 @@
 		</restriction>
 	</simpleType>
 
+	<simpleType name="simpleTextType">
+		<restriction base="prg:nonEmptyString">
+			<whiteSpace value="collapse" />
+		</restriction>
+	</simpleType>
+	
 	<simpleType name="regularExpressionTypenameType">
 		<restriction base="string">
 			<enumeration value="POSIX" />
@@ -45,23 +51,14 @@
 			<documentation xml:lang="en">Documentation of an element</documentation>
 		</annotation>
 		<all minOccurs="1">
-			<element name="abstract" type="string" minOccurs="0" />
+			<element name="abstract" type="prg:simpleTextType" minOccurs="0" />
 			<element name="details" type="prg:richTextType" minOccurs="0" />
 		</all>
 	</complexType>
 
-	<simpleType name="itemIdType">
-		<annotation>
-			<documentation xml:lang="en">Item key identfier</documentation>
-		</annotation>
-		<restriction base="string">
-			<pattern value="[\w_-]+"></pattern>
-		</restriction>
-	</simpleType>
-
 	<complexType name="pathRuleType">
 		<simpleContent>
-			<extension base="string">
+			<extension base="prg:nonEmptyString">
 				<attribute name="casesensitive" type="prg:literalTrueType" use="optional" />
 			</extension>
 		</simpleContent>
@@ -92,7 +89,7 @@
 			<documentation xml:lang="en">A path pattern</documentation>
 		</annotation>
 		<all>
-			<element name="name" type="string" minOccurs="1" />
+			<element name="name" type="prg:nonEmptyString" minOccurs="1" />
 			<element name="rules" type="prg:pathPatternRulesType" minOccurs="1" />
 		</all>
 	</complexType>
@@ -123,6 +120,7 @@
 		<restriction base="string">
 			<minLength value="1" />
 			<maxLength value="3" />
+			<whiteSpace value="collapse" />
 			<!-- @todo a better regex ? -->
 			<pattern value="(r|w|x|rw|rx|wr|wx|xr|xw|rwx|rxw|wrx|wxr|xrw|xwr)" />
 		</restriction>
@@ -274,7 +272,7 @@
 			<element name="names" type="prg:optionNamesType" minOccurs="1" />
 			<element name="ui" type="prg:optionUISpecs" minOccurs="0" />
 		</all>
-		<attribute name="id" type="prg:itemIdType" use="optional" />
+		<attribute name="id" type="ID" use="optional" />
 		<attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean" />
 	</complexType>
 
@@ -290,6 +288,19 @@
 			</extension>
 		</simpleContent>
 	</complexType>
+
+	<!-- TODO
+		<complexType name="argumentOptionValueType" mixed="true">
+		<annotation>
+		<documentation xml:lang="en">
+		An element of a possible list of value for an argument option
+		</documentation>
+		</annotation>
+		<sequence>
+		<element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
+		</sequence>
+		</complexType>
+	-->
 
 	<complexType name="argumentProposedValueType">
 		<annotation>
@@ -319,7 +330,7 @@
 					<element name="names" type="prg:optionNamesType" minOccurs="1" />
 					<element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0" />
 					<element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1" />
-					<element name="default" type="string" minOccurs="0" maxOccurs="1">
+					<element name="default" type="prg:nonEmptyString" minOccurs="0" maxOccurs="1">
 						<annotation>
 							<documentation xml:lang="en">Default argument value</documentation>
 						</annotation>
@@ -327,7 +338,7 @@
 					<element name="ui" type="prg:argumentOptionUISpecs" minOccurs="0" />
 				</all>
 
-				<attribute name="id" type="prg:itemIdType" use="optional" />
+				<attribute name="id" type="ID" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
 			</extension>
 		</complexContent>
@@ -349,7 +360,7 @@
 					<element name="ui" type="prg:multiargumentOptionUISpecs" minOccurs="0" />
 				</all>
 
-				<attribute name="id" type="prg:itemIdType" use="optional" />
+				<attribute name="id" type="ID" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
 
 				<attribute name="min" use="optional" default="1">
@@ -372,20 +383,6 @@
 							<minInclusive value="1" />
 						</restriction>
 					</simpleType>
-				</attribute>
-
-				<attribute name="separator" type="string" use="optional" default=" ">
-					<annotation>
-						<documentation xml:lang="en">
-							A string used to glue mutliple value in a single
-							value string.
-							Required
-							where the
-							program does not support
-							multiple
-							value arguments
-						</documentation>
-					</annotation>
 				</attribute>
 			</extension>
 		</complexContent>
@@ -433,7 +430,7 @@
 					</element>
 
 				</all>
-				<attribute name="id" type="prg:itemIdType" use="optional" />
+				<attribute name="id" type="ID" use="optional" />
 				<attribute name="type" type="prg:actionGroupTypeEnum" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
 			</extension>
@@ -442,8 +439,8 @@
 
 	<complexType name="otherValueNodeType">
 		<annotation>
-			<documentation xml:lang="en">
-			</documentation>
+			<documentation xml:lang="en" />
+
 		</annotation>
 		<complexContent>
 			<extension base="prg:emptyType">
@@ -458,8 +455,8 @@
 
 	<complexType name="valueNodeType">
 		<annotation>
-			<documentation xml:lang="en">
-			</documentation>
+			<documentation xml:lang="en" />
+
 		</annotation>
 		<complexContent>
 			<extension base="prg:otherValueNodeType">
@@ -470,8 +467,8 @@
 
 	<complexType name="valuesNodeType">
 		<annotation>
-			<documentation xml:lang="en">
-			</documentation>
+			<documentation xml:lang="en" />
+
 		</annotation>
 		<sequence>
 			<element name="value" type="prg:valueNodeType" minOccurs="0" maxOccurs="unbounded" />
@@ -528,15 +525,19 @@
 	</complexType>
 
 	<simpleType name="variableNameType">
+		<annotation>
+			<documentation xml:lang="en">Programming language variable name</documentation>
+		</annotation>
 		<restriction base="string">
-			<whiteSpace value="collapse"></whiteSpace>
-			<pattern value="[a-zA-Z][\w_]*"></pattern>
+			<whiteSpace value="collapse" />
+			<pattern value="[a-zA-Z][\w_]*" />
 		</restriction>
 	</simpleType>
 
 	<simpleType name="shortOptionNameType">
 		<restriction base="string">
 			<length value="1" />
+			<whiteSpace value="collapse" />
 			<pattern value="[a-zA-Z0-9]" />
 		</restriction>
 	</simpleType>
@@ -547,6 +548,7 @@
 		</annotation>
 		<restriction base="string">
 			<minLength value="2" />
+			<whiteSpace value="collapse" />
 			<pattern value="[a-zA-Z0-9][\w_-]*" />
 		</restriction>
 	</simpleType>
@@ -667,10 +669,10 @@
 	<element name="program">
 		<complexType>
 			<all>
-				<element name="name" type="string" minOccurs="1" />
-				<element name="author" type="string" minOccurs="0" />
-				<element name="version" type="string" minOccurs="0" />
-				<element name="license" type="string" minOccurs="0" />
+				<element name="name" type="prg:simpleTextType" minOccurs="1" />
+				<element name="author" type="prg:nonEmptyString" minOccurs="0" />
+				<element name="version" type="prg:nonEmptyString" minOccurs="0" />
+				<element name="license" type="prg:simpleTextType" minOccurs="0" />
 				<element name="documentation" type="prg:documentationType" minOccurs="0" />
 				<element name="subcommands" type="prg:subcommandsType" minOccurs="0" />
 				<element name="options" type="prg:optionsType" minOccurs="0">

@@ -8,8 +8,6 @@
 
 	<output method="text" encoding="utf-8" />
 
-	<strip-space elements="*" />
-
 	<template match="text()">
 		<value-of select="normalize-space(.)" />
 	</template>
