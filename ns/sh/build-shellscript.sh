@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use XML description file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-d] [-h] -o <path>
+  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-d] [-h] -o <path>
   With:
     ns-xml source path options
     (
@@ -21,6 +21,7 @@ Usage:
     )
     -x, --xml-description: Program description file
     -s, --shell: XML shell file
+    --skip-validation, --no-validation, -S: Skip XML Schema validations
     -d, --debug: Generate debug messages in help and command line parsing functions
     -h, --help: This help
     -o, --output: Output file path
@@ -55,10 +56,11 @@ parser_index=${parser_startindex}
 
 
 parser_required[${#parser_required[*]}]="G_3_shell:--shell"
-parser_required[${#parser_required[*]}]="G_6_output:--output"
+parser_required[${#parser_required[*]}]="G_7_output:--output"
 # Switch options
 
 nsxmlPathRelative=false
+skipValidation=false
 debugMode=false
 displayHelp=false
 # Single argument options
@@ -159,6 +161,10 @@ parse_enumcheck()
 	done
 	return 1
 }
+parse_addvalue()
+{
+	parser_values[${#parser_values[*]}]="${1}"
+}
 parse_process_subcommand_option()
 {
 	parser_item="${parser_input[${parser_index}]}"
@@ -197,7 +203,7 @@ parse_process_option()
 	then
 		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
 		do
-			parser_values[${#parser_values[*]}]="${parser_input[${a}]}"
+			parse_addvalue "${parser_input[${a}]}"
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
@@ -220,10 +226,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -231,13 +242,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
@@ -252,10 +263,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -263,37 +279,47 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlShellFileDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_3_shell
+			;;
+		skip-validation | no-validation)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			skipValidation=true
+			parse_setoptionpresence G_4_skip-validation
 			;;
 		debug)
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_4_debug
+			parse_setoptionpresence G_5_debug
 			;;
 		help)
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_5_help
+			parse_setoptionpresence G_6_help
 			;;
 		output)
 			if [ ! -z "${parser_optiontail}" ]
@@ -304,16 +330,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_6_output
+			parse_setoptionpresence G_7_output
 			;;
 		ns-xml-path)
 			# Group checks
@@ -326,10 +357,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -344,7 +380,7 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
 			parse_setoptionpresence G_1_g_2_ns-xml-path-relative;parse_setoptionpresence G_1_g
@@ -375,10 +411,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -386,13 +427,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
@@ -407,10 +448,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -418,25 +464,29 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlShellFileDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_3_shell
 			;;
+		S)
+			skipValidation=true
+			parse_setoptionpresence G_4_skip-validation
+			;;
 		d)
 			debugMode=true
-			parse_setoptionpresence G_4_debug
+			parse_setoptionpresence G_5_debug
 			;;
 		h)
 			displayHelp=true
-			parse_setoptionpresence G_5_help
+			parse_setoptionpresence G_6_help
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -447,16 +497,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_6_output
+			parse_setoptionpresence G_7_output
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -468,14 +523,14 @@ parse_process_option()
 	then
 		case "${parser_item}" in
 		*)
-			parse_adderror "Unknown subcommand name \"${parser_item}\""
-			return ${PARSER_ERROR}
+			parse_addvalue "${parser_item}"
 			;;
 		
 		esac
 	else
-		parser_values[${#parser_values[*]}]="${parser_item}"
+		parse_addvalue "${parser_item}"
 	fi
+	return ${PARSER_OK}
 }
 parse()
 {
@@ -596,10 +651,20 @@ then
 		exit 3
 	fi
 
-	if ! xmllint --xinclude --noout --schema "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}" 1>/dev/null
+	if ! ${skipValidation} && ! xmllint --xinclude --noout --schema "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}" 1>/dev/null
 	then
-		echo "Schema error - abort"
+		echo "program schema error - abort"
 		exit 4
+	fi
+fi
+
+# Validate against bash schema
+if ! ${skipValidation}
+then
+	if ! xmllint --xinclude --noout --schema "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
+	then
+		echo "bash schema error - abort"
+		exit 5
 	fi
 fi
 
@@ -613,6 +678,6 @@ fi
 if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
-	exit 5
+	exit 6
 fi 
 chmod 755 "${outputScriptFilePath}"

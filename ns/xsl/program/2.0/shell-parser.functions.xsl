@@ -478,6 +478,24 @@
 		</call-template>
 	</template>
 
+	<!-- Check and add anonymous value -->
+	<template name="prg.sh.parser.addValueFunction">
+		<call-template name="sh.functionDefinition">
+			<with-param name="name" select="$prg.sh.parser.fName_addvalue" />
+			<with-param name="content">
+				<call-template name="sh.arrayAppend">
+					<with-param name="name" select="$prg.sh.parser.vName_values" />
+					<with-param name="value">
+						<call-template name="sh.var">
+							<with-param name="name" select="1" />
+							<with-param name="quoted" select="true()" />
+						</call-template>
+					</with-param>
+				</call-template>
+			</with-param>
+		</call-template>
+	</template>
+
 	<!-- Main function for subcommand -->
 	<template name="prg.sh.parser.subCommandOptionParseFunction">
 		<param name="programNode" select="." />
@@ -634,7 +652,7 @@
 		<variable name="onError">
 			<text>return </text>
 			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_SC_ERROR" />
+				<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
 			</call-template>
 		</variable>
 		<variable name="onSuccess">
@@ -875,16 +893,12 @@
 										<text>*</text>
 									</with-param>
 									<with-param name="content">
-										<value-of select="$prg.sh.parser.fName_adderror" />
-										<text> "Unknown subcommand name \"</text>
+										<!-- It's the first value -->
+										<value-of select="$prg.sh.parser.fName_addvalue" />
+										<text> </text>
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
-										</call-template>
-										<text>\""</text>
-										<call-template name="endl" />
-										<text>return </text>
-										<call-template name="sh.var">
-											<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
+											<with-param name="quoted" select="true()" />
 										</call-template>
 									</with-param>
 								</call-template>
@@ -897,18 +911,20 @@
 				<text>else</text>
 				<call-template name="code.block">
 					<with-param name="content">
-						<call-template name="sh.arrayAppend">
-							<with-param name="name" select="$prg.sh.parser.vName_values" />
-							<with-param name="value">
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_item" />
-									<with-param name="quoted" select="true()" />
-								</call-template>
-							</with-param>
+						<value-of select="$prg.sh.parser.fName_addvalue" />
+						<text> </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_item" />
+							<with-param name="quoted" select="true()" />
 						</call-template>
 					</with-param>
 				</call-template>
 				<text>fi</text>
+				<call-template name="endl" />
+				<text>return </text>
+				<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_OK" />
+				</call-template>
 			</with-param>
 		</call-template>
 	</template>
@@ -1065,6 +1081,7 @@
 		<call-template name="prg.sh.parser.enumCheckFunction">
 			<with-param name="programNode" select="$programNode" />
 		</call-template>
+		<call-template name="prg.sh.parser.addValueFunction" />
 		<call-template name="prg.sh.parser.subCommandOptionParseFunction">
 			<with-param name="programNode" select="$programNode" />
 		</call-template>

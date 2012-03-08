@@ -27,7 +27,7 @@ exit 1
 			<sh:parameter name="xml" />
 			<sh:body><![CDATA[
 local tmpOut="/tmp/xml_validate.tmp"
-if  ! xmllint --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
+if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 then
 	cat "${tmpOut}"
 	return 1
@@ -140,10 +140,10 @@ do
 	fi
 done
 
-# Validate xml
-if ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+# Validate program scheam
+if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 then
-	error "Schema error - abort"
+	error "program ${programVersion} XML schema error - abort"
 fi
 
 programStylesheetPath="${nsPath}/xsl/program/${programVersion}"
@@ -223,6 +223,12 @@ then
 		debugParam="--stringparam prg.debug \"true()\""
 	fi
 	
+	# Validate bash scheam
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${launcherModeXsh}"
+	then
+		error "bash XML schema error - abort"
+	fi
+		
 	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
 	launcherModeXsh="$(ns_realpath "${launcherModeXsh}")"
 	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${debugParam} "${xshXslTemplatePath}" "${launcherModeXsh}"

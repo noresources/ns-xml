@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
 <!-- Describe bash script elements -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-xmlns:prg="http://xsd.nore.fr/program" 
-xmlns:sh="http://xsd.nore.fr/bash" 
-targetNamespace="http://xsd.nore.fr/bash" 
-elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" targetNamespace="http://xsd.nore.fr/bash" elementFormDefault="qualified">
 
 	<import namespace="http://xsd.nore.fr/program" schemaLocation="program/2.0/program.xsd" />
-	
+	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="www.w3.org/XML/1998/namespace.xsd" />
+
 	<complexType name="functionParameterType">
 		<attribute name="name" type="string" />
 	</complexType>
@@ -36,6 +33,13 @@ elementFormDefault="qualified">
 				<documentation>Function name</documentation>
 			</annotation>
 		</attribute>
+		<attribute ref="xml:base">
+			<annotation>
+				<documentation>This attribute reference will allow the element to be included through XInclude.
+					XInclude may add it while processing
+				</documentation>
+			</annotation>
+		</attribute>
 	</complexType>
 
 	<complexType name="programType">
@@ -61,7 +65,7 @@ elementFormDefault="qualified">
 			<documentation xml:lang="en">A plain text code chunk</documentation>
 		</annotation>
 	</element>
-	
+
 	<element name="function" type="sh:functionType" />
 
 	<element name="functions">
@@ -72,6 +76,13 @@ elementFormDefault="qualified">
 			<sequence>
 				<element ref="sh:function" minOccurs="1" maxOccurs="unbounded" />
 			</sequence>
+			<attribute ref="xml:base">
+				<annotation>
+					<documentation>This attribute reference will allow the element to be included through XInclude.
+						XInclude may add it while processing
+					</documentation>
+				</annotation>
+			</attribute>
 		</complexType>
 	</element>
 

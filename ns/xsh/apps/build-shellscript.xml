@@ -126,6 +126,23 @@
 
 		<prg:switch>
 			<prg:databinding>
+				<prg:variable>skipValidation</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Skip XML Schema validations</prg:abstract>
+				<prg:details>The default behavior of build-shellscript is to validate the given xsh file against
+				the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. 
+				This option will disable schema validations</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>skip-validation</prg:long>
+				<prg:long>no-validation</prg:long>
+				<prg:short>S</prg:short>
+			</prg:names>
+		</prg:switch>
+
+		<prg:switch>
+			<prg:databinding>
 				<prg:variable>debugMode</prg:variable>
 			</prg:databinding>
 			<prg:documentation>

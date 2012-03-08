@@ -3,7 +3,7 @@
 # Author: Renaud Guillard
 # Version: 1.0
 # 
-# Sample application with all kind of options
+# Sample application
 #
 # Program help
 usage()
@@ -13,12 +13,12 @@ then
 case "${1}" in
 sub)
 cat << EOFSCUSAGE
-sub: 
+sub: A sub-command (sub)
 Usage: sampleapp sub [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
 With:
-  --switch, --sc-switch: 
-  --sc-existing-file-argument: 
-  --sc-strict-enum: 
+  --switch, --sc-switch: Switch of the sub command
+  --sc-existing-file-argument: Sub command file argument
+  --sc-strict-enum: Sub command argument (strict set)
   	The argument value have to be one of the following:	
   		OptionA, ValueB or ItemC
 EOFSCUSAGE
@@ -34,23 +34,23 @@ esac
 return 0
 fi
 cat << EOFUSAGE
-sampleapp: Sample application with all kind of options
+sampleapp: Sample application
 Usage: 
   sampleapp <subcommand [subcommand option(s)]> [--help] [--ui-only <...>] [--standard-arg <...>] [-s] [--switch-alone-in-group] [(--basic-argument <...> | --string-argument <string> | --argument-with-default <...> | --numeric-argument <number> | --float-argument <number>)] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
   With subcommand:
-    sub: 
+    sub: A sub-command (sub)
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
     help: Help about other sub commands
   With global options:
     --help: 
-    --ui-only: 
-    --standard-arg: 
+    --ui-only: A single argument option automatically set in the UI
+    --standard-arg: Basic argument option
     -s, --simpleswitch: Simple switch
-    
+    A useless group option
     (
-    	--switch-alone-in-group:
+    	--switch-alone-in-group: Another switch
     )
-    Arguments group
+    Exclusive option group
     (
     	--basic-argument: Basic argument
     	--string-argument: String argument
@@ -60,23 +60,27 @@ Usage:
     )
     --existing-file-argument: File argument
     --rw-folder-argument: Folder argument
-    --mixed-fskind-argument: Mixed selection of kinds
+    --mixed-fskind-argument: File, folder etc.
     Multi argument options
     (
     	--multi-argument: Multi argument
     	--multi-select-argument: Multi select argument
     		The argument value have to be one of the following:	
-    			FirstOption or Second option
+    			FirstOption, Second option or Third option
     	--multi-xml: Xml files
     )
-    --hostname, -H: 
+    --hostname, -H: Hostname
     --simple-pattern-sh, -P: 
-    --strict-enum, -E: 
+    --strict-enum, -E: Strict enumeration
     	The argument value have to be one of the following:	
     		Option A, Value B, Item C or ItemD with space
-    --non-strict-enum, -e: 
+    --non-strict-enum, -e: Non-restrictive enumeration
     	The argument can be:	
     		nOptionA, nValueB, nItemC or nItemD with space
+
+  This application demonstrates most of the
+  		possibilities offered by the program schema to define
+  		and display command line options
 EOFUSAGE
 }
 
@@ -220,6 +224,10 @@ parse_enumcheck()
 	done
 	return 1
 }
+parse_addvalue()
+{
+	parser_values[${#parser_values[*]}]="${1}"
+}
 parse_process_subcommand_option()
 {
 	parser_item="${parser_input[${parser_index}]}"
@@ -256,6 +264,11 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
+					if [ ${parser_item} = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
 				fi
 				
 				parser_subindex=0
@@ -282,6 +295,11 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
+					if [ ${parser_item} = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
 				fi
 				
 				parser_subindex=0
@@ -331,7 +349,7 @@ parse_process_option()
 	then
 		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
 		do
-			parser_values[${#parser_values[*]}]="${parser_input[${a}]}"
+			parse_addvalue "${parser_input[${a}]}"
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
@@ -350,7 +368,7 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
 			parse_setoptionpresence G_1_help
@@ -364,10 +382,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -384,10 +407,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -400,7 +428,7 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			gswitch=true
 			parse_setoptionpresence G_4_simpleswitch
@@ -414,10 +442,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -425,7 +458,7 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			gfarg="${parser_item}"
@@ -440,10 +473,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -451,13 +489,13 @@ parse_process_option()
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privileges expected for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			gFarg="${parser_item}"
@@ -472,10 +510,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -483,13 +526,13 @@ parse_process_option()
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privileges expected for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ] || [ -S "${parser_item}" ] || [ -d "${parser_item}" ] || [ -L "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			gmfarg="${parser_item}"
@@ -504,10 +547,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -524,10 +572,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -535,7 +588,7 @@ parse_process_option()
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", x privileges expected for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			
@@ -550,10 +603,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -562,7 +620,7 @@ parse_process_option()
 			then
 				parse_adderror "Invalid value for option \"${parser_item}\""
 				
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			strictEnum="${parser_item}"
 			parse_setoptionpresence G_13_strict-enum
@@ -576,10 +634,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -594,7 +657,7 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			grpSwitch=true
 			parse_setoptionpresence G_5_g_1_switch-alone-in-group;parse_setoptionpresence G_5_g
@@ -605,7 +668,7 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${garg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -616,10 +679,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -634,7 +702,7 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gsarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -645,10 +713,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -663,7 +736,7 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${dgarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -674,10 +747,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -692,7 +770,7 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gnarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -703,10 +781,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -721,7 +804,7 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gn2arg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -732,10 +815,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -754,19 +842,41 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			local parser_ma_local_count=0
+			local parser_ma_total_count=${#gma[*]}
+			if [ ${parser_ma_total_count} -ge 3 ]
+			then
+				parse_adderror "Maximum argument count reached for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
 			if [ -z "${parser_item}" ]
 			then
 				gma[${#gma[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem:0:1}" != "-" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ${parser_ma_total_count} -lt 3 ] && [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				then
+					return ${PARSER_OK}
+				fi
+				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				gma[${#gma[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
+			if [ ${parser_ma_local_count} -eq 0 ]
+			then
+				parse_adderror "At least one argument expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
 			parse_setoptionpresence G_10_g_1_multi-argument;parse_setoptionpresence G_10_g
 			;;
 		multi-select-argument)
@@ -779,31 +889,48 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			local parser_ma_local_count=0
+			local parser_ma_total_count=${#gmsa[*]}
 			if [ -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ])
+				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ] || [ "${parser_item}" = "Third option" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				gmsa[${#gmsa[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem:0:1}" != "-" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				then
+					return ${PARSER_OK}
+				fi
+				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
-				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ])
+				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ] || [ "${parser_item}" = "Third option" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				gmsa[${#gmsa[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
+			if [ ${parser_ma_local_count} -eq 0 ]
+			then
+				parse_adderror "At least one argument expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
 			parse_setoptionpresence G_10_g_2_multi-select-argument;parse_setoptionpresence G_10_g
 			;;
 		multi-xml)
@@ -816,19 +943,36 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			local parser_ma_local_count=0
+			local parser_ma_total_count=${#gmaxml[*]}
 			if [ -z "${parser_item}" ]
 			then
 				gmaxml[${#gmaxml[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem:0:1}" != "-" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				then
+					return ${PARSER_OK}
+				fi
+				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				gmaxml[${#gmaxml[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
+			if [ ${parser_ma_local_count} -eq 0 ]
+			then
+				parse_adderror "At least one argument expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
 			parse_setoptionpresence G_10_g_3_multi-xml;parse_setoptionpresence G_10_g
 			;;
 		*)
@@ -861,10 +1005,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -881,10 +1030,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -892,7 +1046,7 @@ parse_process_option()
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", x privileges expected for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			
@@ -907,10 +1061,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -919,7 +1078,7 @@ parse_process_option()
 			then
 				parse_adderror "Invalid value for option \"${parser_item}\""
 				
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			strictEnum="${parser_item}"
 			parse_setoptionpresence G_13_strict-enum
@@ -933,10 +1092,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -960,14 +1124,14 @@ parse_process_option()
 			parser_subcommand="help"
 			;;
 		*)
-			parse_adderror "Unknown subcommand name \"${parser_item}\""
-			return ${PARSER_ERROR}
+			parse_addvalue "${parser_item}"
 			;;
 		
 		esac
 	else
-		parser_values[${#parser_values[*]}]="${parser_item}"
+		parse_addvalue "${parser_item}"
 	fi
+	return ${PARSER_OK}
 }
 parse()
 {
@@ -1033,4 +1197,4 @@ then
 	([ ${#parser_values[*]} -gt 0 ] && usage "${parser_values[0]}") || usage
 fi
 
-exit 0 
+exit 0

@@ -83,10 +83,20 @@ then
 		exit 3
 	fi
 
-	if ! xmllint --xinclude --noout --schema "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}" 1>/dev/null
+	if ! ${skipValidation} && ! xmllint --xinclude --noout --schema "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}" 1>/dev/null
 	then
-		echo "Schema error - abort"
+		echo "program schema error - abort"
 		exit 4
+	fi
+fi
+
+# Validate against bash schema
+if ! ${skipValidation}
+then
+	if ! xmllint --xinclude --noout --schema "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
+	then
+		echo "bash schema error - abort"
+		exit 5
 	fi
 fi
 
@@ -100,7 +110,7 @@ fi
 if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
-	exit 5
+	exit 6
 fi 
 chmod 755 "${outputScriptFilePath}"
 ]]></sh:code>

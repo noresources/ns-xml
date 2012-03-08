@@ -38,7 +38,6 @@
 				<text>OTHER</text>
 			</otherwise>
 		</choose>
-
 	</template>
 
 </stylesheet>

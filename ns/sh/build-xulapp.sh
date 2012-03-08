@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-xulapp: Build (or update) a xul application launcher
 Usage: 
-  build-xulapp [-h] -o <path> -x <path> (-s <path> | -c <...>) [-t <...>] [-u] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
+  build-xulapp [-h] -o <path> -x <path> (-s <path> | -c <...>) [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
   With:
     -h, --help: Display the command documentation & options
     -o, --output: Output folder path for the XUL application structure
@@ -26,6 +26,7 @@ Usage:
     	The argument value have to be one of the following:	
     		host, linux or macosx
     -u, --update: Update application if folder already exists
+    --skip-validation, --no-validation, -S: Skip XML Schema validations
     User interface
     (
     	--window-width, -W: 
@@ -82,6 +83,7 @@ parser_required[${#parser_required[*]}]="G_4_g:--shell or --command"
 
 displayHelp=false
 update=false
+skipValidation=false
 debugMode=false
 nsxmlPathRelative=false
 # Single argument options
@@ -187,6 +189,10 @@ parse_enumcheck()
 	done
 	return 1
 }
+parse_addvalue()
+{
+	parser_values[${#parser_values[*]}]="${1}"
+}
 parse_process_subcommand_option()
 {
 	parser_item="${parser_input[${parser_index}]}"
@@ -225,7 +231,7 @@ parse_process_option()
 	then
 		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
 		do
-			parser_values[${#parser_values[*]}]="${parser_input[${a}]}"
+			parse_addvalue "${parser_input[${a}]}"
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
@@ -244,7 +250,7 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
 			parse_setoptionpresence G_1_help
@@ -258,10 +264,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -269,13 +280,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			outputPath="${parser_item}"
@@ -290,10 +301,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -301,13 +317,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
@@ -322,10 +338,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -334,7 +355,7 @@ parse_process_option()
 			then
 				parse_adderror "Invalid value for option \"${parser_item}\""
 				
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			targetPlatform="${parser_item}"
 			parse_setoptionpresence G_5_target-platform
@@ -344,10 +365,20 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			update=true
 			parse_setoptionpresence G_6_update
+			;;
+		skip-validation | no-validation)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			skipValidation=true
+			parse_setoptionpresence G_7_skip-validation
 			;;
 		shell)
 			# Group checks
@@ -355,7 +386,7 @@ parse_process_option()
 			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeXsh}" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -366,10 +397,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -377,13 +413,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			launcherModeXsh="${parser_item}"
@@ -396,7 +432,7 @@ parse_process_option()
 			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeExistingCommand}" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -407,10 +443,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -430,16 +471,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_1_window-width;parse_setoptionpresence G_8_g
 			;;
 		window-height)
 			# Group checks
@@ -452,16 +498,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_2_window-height;parse_setoptionpresence G_8_g
 			;;
 		debug)
 			# Group checks
@@ -470,10 +521,10 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_3_debug;parse_setoptionpresence G_8_g
 			;;
 		init-script)
 			# Group checks
@@ -486,10 +537,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -497,17 +553,17 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_9_g_1_init-script;parse_setoptionpresence G_9_g
 			;;
 		resources)
 			# Group checks
@@ -519,44 +575,61 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			local parser_ma_local_count=0
+			local parser_ma_total_count=${#userDataPaths[*]}
 			if [ -z "${parser_item}" ]
 			then
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				if ! ([ -f "${parser_item}" ] || [ -d "${parser_item}" ])
 				then
 					parse_adderror "Invalid patn type for option ${parser_option}"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				userDataPaths[${#userDataPaths[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem:0:1}" != "-" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				then
+					return ${PARSER_OK}
+				fi
+				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				if ! ([ -f "${parser_item}" ] || [ -d "${parser_item}" ])
 				then
 					parse_adderror "Invalid patn type for option ${parser_option}"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				userDataPaths[${#userDataPaths[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
-			parse_setoptionpresence G_8_g_2_resources;parse_setoptionpresence G_8_g
+			if [ ${parser_ma_local_count} -eq 0 ]
+			then
+				parse_adderror "At least one argument expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			parse_setoptionpresence G_9_g_2_resources;parse_setoptionpresence G_9_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -569,16 +642,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_9_g_1_ns-xml-path;parse_setoptionpresence G_9_g
+			parse_setoptionpresence G_10_g_1_ns-xml-path;parse_setoptionpresence G_10_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -587,10 +665,10 @@ parse_process_option()
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_9_g_2_ns-xml-path-relative;parse_setoptionpresence G_9_g
+			parse_setoptionpresence G_10_g_2_ns-xml-path-relative;parse_setoptionpresence G_10_g
 			;;
 		ns-xml-add)
 			# Group checks
@@ -602,32 +680,49 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			local parser_ma_local_count=0
+			local parser_ma_total_count=${#nsxmlAdditionalSources[*]}
 			if [ -z "${parser_item}" ]
 			then
 				if ! ([ "${parser_item}" = "sh" ] || [ "${parser_item}" = "xsl" ] || [ "${parser_item}" = "xsd" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				nsxmlAdditionalSources[${#nsxmlAdditionalSources[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem:0:1}" != "-" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				then
+					return ${PARSER_OK}
+				fi
+				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				if ! ([ "${parser_item}" = "sh" ] || [ "${parser_item}" = "xsl" ] || [ "${parser_item}" = "xsd" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_item}\""
 					
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				nsxmlAdditionalSources[${#nsxmlAdditionalSources[*]}]="${parser_item}"
+				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
+				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			done
-			parse_setoptionpresence G_9_g_3_ns-xml-add;parse_setoptionpresence G_9_g
+			if [ ${parser_ma_local_count} -eq 0 ]
+			then
+				parse_adderror "At least one argument expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			parse_setoptionpresence G_10_g_3_ns-xml-add;parse_setoptionpresence G_10_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -659,10 +754,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -670,13 +770,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			outputPath="${parser_item}"
@@ -691,10 +791,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -702,13 +807,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
@@ -723,10 +828,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -735,7 +845,7 @@ parse_process_option()
 			then
 				parse_adderror "Invalid value for option \"${parser_item}\""
 				
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			targetPlatform="${parser_item}"
 			parse_setoptionpresence G_5_target-platform
@@ -744,13 +854,17 @@ parse_process_option()
 			update=true
 			parse_setoptionpresence G_6_update
 			;;
+		S)
+			skipValidation=true
+			parse_setoptionpresence G_7_skip-validation
+			;;
 		s)
 			# Group checks
 			
 			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeXsh}" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -761,10 +875,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -772,13 +891,13 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			launcherModeXsh="${parser_item}"
@@ -791,7 +910,7 @@ parse_process_option()
 			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeExistingCommand}" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if [ ! -z "${parser_optiontail}" ]
@@ -802,10 +921,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -825,16 +949,21 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_1_window-width;parse_setoptionpresence G_8_g
 			;;
 		H)
 			# Group checks
@@ -847,22 +976,27 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
 			parser_optiontail=""
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_2_window-height;parse_setoptionpresence G_8_g
 			;;
 		d)
 			# Group checks
 			
 			debugMode=true
-			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_8_g_3_debug;parse_setoptionpresence G_8_g
 			;;
 		j)
 			# Group checks
@@ -875,10 +1009,15 @@ parse_process_option()
 				if [ ${parser_index} -ge ${parser_itemcount} ]
 				then
 					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_SC_ERROR}
+					return ${PARSER_ERROR}
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
+				if [ ${parser_item} = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					return ${PARSER_ERROR}
+				fi
 			fi
 			
 			parser_subindex=0
@@ -886,17 +1025,17 @@ parse_process_option()
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option ${parser_option}"
-				return ${PARSER_SC_ERROR}
+				return ${PARSER_ERROR}
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_9_g_1_init-script;parse_setoptionpresence G_9_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -908,14 +1047,14 @@ parse_process_option()
 	then
 		case "${parser_item}" in
 		*)
-			parse_adderror "Unknown subcommand name \"${parser_item}\""
-			return ${PARSER_ERROR}
+			parse_addvalue "${parser_item}"
 			;;
 		
 		esac
 	else
-		parser_values[${#parser_values[*]}]="${parser_item}"
+		parse_addvalue "${parser_item}"
 	fi
+	return ${PARSER_OK}
 }
 parse()
 {
@@ -982,7 +1121,7 @@ xml_validate()
 	local schema="${1}"
 	local xml="${2}"
 	local tmpOut="/tmp/xml_validate.tmp"
-	if  ! xmllint --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
+	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then
 		cat "${tmpOut}"
 		return 1
@@ -1093,10 +1232,10 @@ do
 	fi
 done
 
-# Validate xml
-if ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+# Validate program scheam
+if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 then
-	error "Schema error - abort"
+	error "program ${programVersion} XML schema error - abort"
 fi
 
 programStylesheetPath="${nsPath}/xsl/program/${programVersion}"
@@ -1176,6 +1315,12 @@ then
 		debugParam="--stringparam prg.debug \"true()\""
 	fi
 	
+	# Validate bash scheam
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${launcherModeXsh}"
+	then
+		error "bash XML schema error - abort"
+	fi
+		
 	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
 	launcherModeXsh="$(ns_realpath "${launcherModeXsh}")"
 	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${debugParam} "${xshXslTemplatePath}" "${launcherModeXsh}"

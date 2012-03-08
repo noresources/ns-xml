@@ -5,12 +5,11 @@
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
-		<prg:abstract>
-		
-		Sample application with all kind of options
-		
-		
+		<prg:abstract>Sample application
 		</prg:abstract>
+		<prg:details>This application demonstrates most of the
+		possibilities offered by the program schema to define
+		and display command line options</prg:details>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>
@@ -28,10 +27,14 @@
 			</prg:names>
 			<prg:ui mode="disabled" />
 		</prg:switch>
+		
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>uiArg</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A single argument option automatically set in the UI</prg:abstract>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>ui-only</prg:long>
 			</prg:names>
@@ -43,6 +46,10 @@
 			<prg:databinding>
 				<prg:variable>standardArg</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Basic argument option</prg:abstract>
+				<prg:details>This option will accept any kind of argument</prg:details>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>standard-arg</prg:long>
 			</prg:names>
@@ -54,6 +61,7 @@
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>Simple switch</prg:abstract>
+				<prg:details>A simple switch option (true/false)</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:short>s</prg:short>
@@ -65,11 +73,20 @@
 			<prg:ui>
 				<prg:label>A group with only one element</prg:label>
 			</prg:ui>
+			<prg:documentation>
+				<prg:abstract>A useless group option</prg:abstract>
+				<prg:details>Single-options groups will be flattened in UI</prg:details>
+			</prg:documentation>
 			<prg:options>
 				<prg:switch>
 					<prg:databinding>
 						<prg:variable>grpSwitch</prg:variable>
 					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Another switch</prg:abstract>
+						<prg:details>This swith is in a group with only one option.
+						So, the group is hidden and the option appears at the same level</prg:details>
+					</prg:documentation>
 					<prg:names>
 						<prg:long>switch-alone-in-group</prg:long>
 					</prg:names>
@@ -79,7 +96,7 @@
 
 		<prg:group type="exclusive">
 			<prg:documentation>
-				<prg:abstract>Arguments group</prg:abstract>
+				<prg:abstract>Exclusive option group</prg:abstract>
 			</prg:documentation>
 			<prg:databinding>
 				<prg:variable>globalArgumentsGroup</prg:variable>
@@ -103,6 +120,8 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>String argument</prg:abstract>
+						<prg:details>This argument expect a string, which is 
+						roughly the same thing as accepting any kind of content</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>string-argument</prg:long>
@@ -118,6 +137,8 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Argument (with default value)</prg:abstract>
+						<prg:details>A default value is proposed. If the user does not change it,
+						the option will not appear in the command line</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>argument-with-default</prg:long>
@@ -131,6 +152,8 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Numeric argument</prg:abstract>
+						<prg:details>Only numberrs are accepted as argument value.
+						A numeric argument appears as a spin box in the UI</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>numeric-argument</prg:long>
@@ -146,6 +169,8 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Float argument</prg:abstract>
+						<prg:details>Numeric argument with decimals. 
+						A minimum (1.0) and maximum (10) values are also defined</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>float-argument</prg:long>
@@ -163,6 +188,7 @@
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>File argument</prg:abstract>
+				<prg:details>An existing file argument</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>existing-file-argument</prg:long>
@@ -178,6 +204,7 @@
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>Folder argument</prg:abstract>
+				<prg:details>Expect a folder with Read/Write access</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>rw-folder-argument</prg:long>
@@ -196,7 +223,10 @@
 				<prg:variable>gmfarg</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
-				<prg:abstract>Mixed selection of kinds</prg:abstract>
+				<prg:abstract>File, folder etc.</prg:abstract>
+				<prg:details>Accept most of file system object types. 
+				On some UI and platforms, you can't select a folder in the file box if 
+				files are also accepted.</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>mixed-fskind-argument</prg:long>
@@ -216,14 +246,16 @@
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>Multi argument options</prg:abstract>
+				<prg:details>A non-exclusive group of options which accept one or more arguments</prg:details>
 			</prg:documentation>
 			<prg:options>
-				<prg:multiargument>
+				<prg:multiargument max="3">
 					<prg:databinding>
 						<prg:variable>gma</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Multi argument</prg:abstract>
+						<prg:details>A basic multi argument options</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>multi-argument</prg:long>
@@ -236,6 +268,7 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Multi select argument</prg:abstract>
+						<prg:details>Accept only a fixed set of values</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>multi-select-argument</prg:long>
@@ -243,6 +276,7 @@
 					<prg:select restrict="true">
 						<prg:option>FirstOption    </prg:option>
 						<prg:option>Second option</prg:option>
+						<prg:option>Third option</prg:option>
 					</prg:select>
 				</prg:multiargument>
 
@@ -252,6 +286,7 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Xml files</prg:abstract>
+						<prg:details>Expect a file. XML files are welcome but others are accepted</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>multi-xml</prg:long>
@@ -284,6 +319,11 @@
 		</prg:group>
 
 		<prg:argument>
+			<prg:documentation>
+				<prg:abstract>Hostname</prg:abstract>
+				<prg:details>Accept a host name. In console mode, the autocompletion will 
+				propose hosts defined in /etc/hosts.</prg:details>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>hostname</prg:long>
 				<prg:short>H</prg:short>
@@ -327,6 +367,9 @@
 				
 				strictEnum</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Strict enumeration</prg:abstract>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>strict-enum</prg:long>
 				<prg:short>E</prg:short>
@@ -344,6 +387,11 @@
 			<prg:databinding>
 				<prg:variable>nonStrictEnum</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Non-restrictive enumeration</prg:abstract>
+				<prg:details>Non restricive enumeration will only propose 
+				some values in autocompletion but will accept any other values</prg:details>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>non-strict-enum</prg:long>
 				<prg:short>e</prg:short>
@@ -360,17 +408,26 @@
 	<prg:subcommands>
 		<prg:subcommand>
 			<prg:name>sub</prg:name>
+			<prg:documentation>
+				<prg:abstract>A sub-command (sub)</prg:abstract>
+			</prg:documentation>
 			<prg:options>
 				<prg:switch>
 					<prg:names>
 						<prg:long>switch</prg:long>
 						<prg:long>sc-switch</prg:long>
 					</prg:names>
+					<prg:documentation>
+						<prg:abstract>Switch of the sub command</prg:abstract>
+					</prg:documentation>
 				</prg:switch>
 				<prg:argument>
 					<prg:databinding>
 						<prg:variable>subFile</prg:variable>
 					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Sub command file argument</prg:abstract>
+					</prg:documentation>
 					<prg:names>
 						<prg:long>sc-existing-file-argument</prg:long>
 					</prg:names>
@@ -382,6 +439,9 @@
 					<prg:databinding>
 						<prg:variable>subEnum</prg:variable>
 					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Sub command argument (strict set)</prg:abstract>
+					</prg:documentation>
 					<prg:names>
 						<prg:long>sc-strict-enum</prg:long>
 					</prg:names>
@@ -401,9 +461,13 @@
 			</prg:values>
 		</prg:subcommand>
 		<prg:subcommand>
+			<prg:ui mode="disabled">
+				<prg:label>Help sub command</prg:label>
+			</prg:ui>
 			<prg:name>help</prg:name>
 			<prg:documentation>
 				<prg:abstract>Help about other sub commands</prg:abstract>
+				<prg:details>This command is not available in UI</prg:details>
 			</prg:documentation>
 			<prg:values>
 				<prg:value>
@@ -426,18 +490,21 @@
 			</prg:type>
 			<prg:documentation>
 				<prg:abstract>File value</prg:abstract>
+				<prg:details>Anonymous values will be added to the command line after all options</prg:details>
 			</prg:documentation>
 		</prg:value>
 
 		<prg:value>
 			<prg:documentation>
 				<prg:abstract>Mixed value</prg:abstract>
+				<prg:details>This is the most basic element you can define. Not really useful</prg:details>
 			</prg:documentation>
 		</prg:value>
 
 		<prg:value>
 			<prg:documentation>
 				<prg:abstract>Selection</prg:abstract>
+				<prg:details>Like standard options, anonymous values may have a restricted or proposed list of argument values</prg:details>
 			</prg:documentation>
 			<prg:select>
 				<prg:option>A</prg:option>
@@ -448,6 +515,8 @@
 		<prg:other>
 			<prg:documentation>
 				<prg:abstract>Other</prg:abstract>
+				<prg:details>Other values after the prevous ones.
+				Act an anonymous multi-arguement option</prg:details>
 			</prg:documentation>
 		</prg:other>
 	</prg:values>

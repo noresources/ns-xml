@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Base elements of sql schema series -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xsd.nore.fr/sql"
+	xmlns:sql="http://xsd.nore.fr/sql" elementFormDefault="qualified">
+
+	<annotation>
+		<documentation xml:lang="en">
+			Basic schema types and groups
+		</documentation>
+	</annotation>
+
+	<!-- Basic types -->
+
+	<complexType name="emptyType" >
+		<annotation>
+			<documentation xml:lang="en">
+				Empty element
+			</documentation>
+		</annotation>
+	</complexType>
+
+	<simpleType name="elementNameType">
+		<annotation>
+			<documentation xml:lang="en">Represents a valid SQL element name</documentation>
+		</annotation>
+		<restriction base="string">
+			<minLength value="1" />
+			<pattern value="[^\s\[\]&quot;'`.;]+"></pattern>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="elementIdType">
+		<annotation>
+			<documentation xml:lang="en">
+				A per-element-type unique identifier. Alias of XSD NCName
+			</documentation>
+		</annotation>
+		<restriction base="NCName"/>
+	</simpleType>
+
+	<!-- Enumerations -->
+
+	<simpleType name="orderEnum">
+		<annotation>
+			<documentation xml:lang="en">Column sort order</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="ASC" />
+			<enumeration value="DESC" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="eventActionEnum">
+		<annotation>
+			<documentation xml:lang="en">Possible actions on data modification event
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="default" />
+			<enumeration value="cascade" />
+			<enumeration value="restrict" />
+			<enumeration value="noaction" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="dataAffinityEnum">
+		<annotation>
+			<documentation xml:lang="en">Data type affinity</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="integer" />
+			<enumeration value="boolean" />
+			<enumeration value="decimal" />
+			<enumeration value="datetime" />
+			<enumeration value="string" />
+			<enumeration value="binary" />
+			<enumeration value="bitset">
+				<annotation>
+					<documentation xml:lang="en">
+						A bit set is a special integer type
+						where each bit in the column value represents 
+						a flag 
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<!-- Complex types -->
+
+	<complexType name="dataFormatEnumerationType">
+		<annotation>
+			<documentation xml:lang="en">
+			</documentation>
+		</annotation>
+		<sequence minOccurs="1" maxOccurs="unbounded">
+			<element name="item" type="string"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="dataFormatType">
+		<annotation>
+			<documentation xml:lang="en">Information about a column data type</documentation>
+		</annotation>
+		<all>
+			<element name="affinity" type="sql:dataAffinityEnum"
+				maxOccurs="1" minOccurs="0" />
+			<element name="length" type="positiveInteger" maxOccurs="1"
+				minOccurs="0" />
+			<element name="decimal" type="nonNegativeInteger" maxOccurs="1"
+				minOccurs="0" />
+			<element name="enumeration" type="sql:dataFormatEnumerationType" maxOccurs="1"
+				minOccurs="0" /> 
+		</all>
+	</complexType>
+
+	<complexType name="elementDeclarationBaseType">
+		<annotation>
+			<documentation xml:lang="en">Base type for all SQL datasource elements.
+				Any element
+				have a name and may have a unique id.
+			</documentation>
+		</annotation>
+		<attribute name="name" type="sql:elementNameType" use="required" />
+		<attribute name="id" type="sql:elementIdType" use="optional" />
+	</complexType>
+
+	<complexType name="elementReferenceBaseType">
+		<annotation>
+			<documentation xml:lang="en">
+				Represents an element which refers to another by its
+				name or id
+			</documentation>
+		</annotation>
+		<attribute name="name" type="sql:elementNameType" use="optional" >
+			<annotation>
+				<documentation xml:lang="en">
+					Reference to an element name
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="id" type="IDREF" use="optional" >
+			<annotation>
+				<documentation xml:lang="en">
+					Reference to an element id
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<!-- Groups -->
+
+	<group name="valueType">
+		<annotation>
+			<documentation xml:lang="en">
+				User provided value. The value can be pre-formatted or not
+			</documentation>
+		</annotation>
+		<choice>
+	 		<element name="integer" type="integer" />
+	 		<element name="boolean" type="boolean" />
+	 		<element name="datetime" type="dateTime" />
+	 		<element name="string" type="string">
+				<annotation>
+					<documentation xml:lang="en">
+						A non-formatted text string. The given element value
+						will be formatted (quotes, escape characters, ...)
+						according to datasource type
+					</documentation>
+				</annotation>
+			</element>
+	 		<element name="null" type="sql:emptyType">
+				<annotation>
+					<documentation xml:lang="en">
+						Specify that the value is NULL
+					</documentation>
+				</annotation>
+			</element>
+			<element name="number" type="decimal">
+				<annotation>
+					<documentation xml:lang="en">
+						An arbitrary number
+					</documentation>
+				</annotation>
+			</element>
+			<element name="base64Binary" type="base64Binary">
+				<annotation>
+					<documentation xml:lang="en">
+						A binary value using base64 encoding
+					</documentation>
+				</annotation>
+			</element>
+			<element name="hexBinary" type="hexBinary">
+				<annotation>
+					<documentation xml:lang="en">
+						A binary value using hexBinary two character (ex: "AF") per byte
+					</documentation>
+				</annotation>
+			</element>
+			<element name="value" type="string">
+				<annotation>
+					<documentation xml:lang="en">
+						A user-formatted value. The value will be given to
+						the datasource 'As is'
+					</documentation>
+				</annotation>
+			</element>
+		</choice>
+	</group>
+
+
+</schema>

@@ -87,6 +87,24 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<variable name="prg.sh.parser.vName_ma_local_count">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>ma_local_count</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
+	<variable name="prg.sh.parser.vName_ma_total_count">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>ma_total_count</text>
+			</with-param>
+		</call-template>
+	</variable>
 
 	<variable name="prg.sh.parser.vName_subcommand">
 		<call-template name="prg.prefixedName">
@@ -242,6 +260,15 @@
 			<with-param name="name">
 				<value-of select="$prg.sh.parser.functionNamePrefix" />
 				<text>enumcheck</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
+	<variable name="prg.sh.parser.fName_addvalue">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.functionNamePrefix" />
+				<text>addvalue</text>
 			</with-param>
 		</call-template>
 	</variable>

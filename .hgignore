@@ -18,3 +18,5 @@ scripts/eclipse/BUGS
 scripts/eclipse/XSD
 scripts/eclipse/XSLT
 scripts/eclipse/XSH
+scripts/eclipse/Documentation
+scripts/eclipse/Relax NG

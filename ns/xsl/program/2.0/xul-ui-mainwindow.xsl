@@ -9,7 +9,12 @@
 
 	<xsl:param name="prg.xul.windowWidth" select="1024" />
 	<xsl:param name="prg.xul.windowHeight" select="768" />
-
+	
+	<xsl:template name="prg.xul.tooltiptext">
+		<xsl:param name="text" select="."/>
+		<xsl:value-of select="normalize-space($text)" />
+	</xsl:template>
+	
 	<!-- Option label (using the best element available) -->
 	<xsl:template name="prg.xul.optionLabel">
 		<xsl:param name="optionNode" select="." />
@@ -101,6 +106,15 @@
 		</xsl:variable>
 
 		<xsl:element name="xul:hbox">
+			<xsl:if test="$optionNode/prg:documentation/prg:details">
+				<xsl:attribute name="tooltiptext">
+					<xsl:call-template name="prg.xul.tooltiptext">
+						<xsl:with-param name="text">
+							<xsl:value-of select="$optionNode/prg:documentation/prg:details"/>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:attribute>
+			</xsl:if>
 			<xsl:if test="$optionNode/self::prg:group">
 				<xsl:element name="xul:radiogroup">
 					<xsl:attribute name="id">
@@ -346,6 +360,7 @@
 		<xsl:variable name="selectNode" select="$node/prg:select" />
 
 		<xsl:choose>
+			<!-- menu -->
 			<xsl:when test="$node/prg:select[@restrict = 'true']">
 				<xsl:element name="xul:box">
 					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
@@ -355,6 +370,7 @@
 					</xsl:call-template>
 				</xsl:element>
 			</xsl:when>
+			<!-- Spin box -->
 			<xsl:when test="($typeNode/prg:number)">
 				<xsl:variable name="numberNode" select="$typeNode/prg:number" />
 				<xsl:element name="xul:box">
@@ -382,6 +398,7 @@
 					</xsl:if>
 				</xsl:element>
 			</xsl:when>
+			<!-- File box -->
 			<xsl:when test="$typeNode/prg:path">
 				<xsl:variable name="pathNode" select="$typeNode/prg:path" />
 				<xsl:element name="xul:box">
@@ -410,7 +427,8 @@
 					</xsl:call-template>
 				</xsl:element>
 			</xsl:when>
-			<xsl:when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
+			<!-- Textbox -->
+			<xsl:otherwise>
 				<xsl:element name="xul:box">
 					<xsl:attribute name="class">argumentTextValue</xsl:attribute>
 					<xsl:attribute name="id"><xsl:value-of select="$controlId" /></xsl:attribute>
@@ -425,7 +443,7 @@
 						</xsl:call-template>
 					</xsl:if>
 				</xsl:element>
-			</xsl:when>
+			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 
@@ -492,6 +510,7 @@
 				<xsl:if test="not($useSingleRow)">
 					<xsl:element name="xul:row">
 						<xsl:choose>
+							<!-- menu -->
 							<xsl:when test="$selectNode[@restrict = 'true']">
 								<xsl:element name="xul:box">
 									<xsl:attribute name="class">argumentMenuValue</xsl:attribute>
@@ -502,6 +521,7 @@
 									</xsl:call-template>
 								</xsl:element>
 							</xsl:when>
+							<!-- spinbox -->
 							<xsl:when test="($typeNode/prg:number)">
 								<xsl:variable name="numberNode" select="$typeNode/prg:number" />
 
@@ -522,7 +542,8 @@
 									</xsl:if>
 								</xsl:element>
 							</xsl:when>
-							<xsl:when test="(not ($typeNode)) or ($typeNode[prg:string or prg:mixed])">
+							<!-- textbox -->
+							<xsl:otherwise>
 								<xsl:element name="xul:box">
 									<xsl:attribute name="class">argumentTextValue</xsl:attribute>
 									<xsl:attribute name="id"><xsl:value-of select="$inputId" /></xsl:attribute>
@@ -535,7 +556,7 @@
 										</xsl:call-template>
 									</xsl:if>
 								</xsl:element>
-							</xsl:when>
+							</xsl:otherwise>
 						</xsl:choose>
 						<xsl:element name="xul:button">
 							<xsl:attribute name="label">Add</xsl:attribute>
@@ -610,12 +631,20 @@
 		<xsl:param name="level" select="0" />
 		<xsl:param name="optionNode" select="." />
 
-		<xsl:variable name="groupOptionNodes" select="$optionNode/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+		<xsl:variable name="groupOptionNodes" select="$optionNode/prg:options/*[not(prg:ui) or not(prg:ui/@mode) or prg:ui[@mode = 'default']]" />
 
 		<!-- Check empty group case -->
 		<xsl:variable name="isEmptyGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 0)" />
 
 		<xsl:variable name="isSingleElementGroup" select="$optionNode/self::prg:group and (count($groupOptionNodes) = 1)" />
+
+		<xsl:comment>
+			<xsl:value-of select="name($optionNode)" />
+			<xsl:text> </xsl:text>
+			<xsl:call-template name="prg.xul.optionLabel" >
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:comment>
 
 		<xsl:choose>
 			<!-- Flatten single-element groups -->
@@ -628,12 +657,6 @@
 			</xsl:when>
 
 			<xsl:when test="not($isEmptyGroup)">
-				<xsl:comment>
-					<xsl:value-of select="name($optionNode)" />
-					<xsl:text> </xsl:text>
-					<xsl:call-template name="prg.xul.optionLabel" />
-				</xsl:comment>
-
 				<xsl:element name="xul:row">
 					<xsl:call-template name="prg.xul.optionLabelColumn">
 						<xsl:with-param name="level" select="$level" />
@@ -678,7 +701,7 @@
 				</xsl:element>
 			</xsl:element>
 			<xsl:element name="xul:rows">
-				<xsl:for-each select="$optionsNode/*[not(prg:ui) or prg:ui[@mode = 'default']]">
+				<xsl:for-each select="$optionsNode/*[not(prg:ui) or not(prg:ui/@mode) or prg:ui[@mode = 'default']]">
 					<xsl:call-template name="prg.xul.optionRow">
 						<xsl:with-param name="level" select="0" />
 					</xsl:call-template>
@@ -702,6 +725,15 @@
 			<xsl:attribute name="id">
 				<xsl:value-of select="$valueId" />
 			</xsl:attribute>
+			<xsl:if test="$valueNode/prg:documentation/prg:details">
+				<xsl:attribute name="tooltiptext">
+					<xsl:call-template name="prg.xul.tooltiptext">
+						<xsl:with-param name="text">
+							<xsl:value-of select="$valueNode/prg:documentation/prg:details"/>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:attribute>
+			</xsl:if>
 			<xsl:attribute name="label">
 				<xsl:call-template name="prg.xul.valueLabel">
 						<xsl:with-param name="valueNode" select="$valueNode" />
@@ -851,7 +883,7 @@
 			<xsl:attribute name="height"><xsl:value-of select="$prg.xul.windowHeight" /></xsl:attribute>
 
 			<!-- Global options -->
-			<xsl:variable name="availableOptions" select="/prg:program/prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+			<xsl:variable name="availableOptions" select="/prg:program/prg:options/*[not(prg:ui) or not(prg:ui/@mode) or prg:ui[@mode = 'default']]" />
 
 			<xsl:if test="$availableOptions">
 				<xsl:element name="xul:groupbox">
@@ -946,7 +978,7 @@
 						<xsl:call-template name="prg.xul.subCommandLabel" />
 					</xsl:variable>
 					<xsl:element name="xul:vbox">
-						<xsl:variable name="availableOptions" select="prg:options/*[not(prg:ui) or prg:ui[@mode = 'default']]" />
+						<xsl:variable name="availableOptions" select="prg:options/*[not(prg:ui) or not(prg:ui/@mode) or prg:ui[@mode = 'default']]" />
 						<xsl:if test="$availableOptions">
 							<xsl:element name="xul:groupbox">
 								<xsl:element name="xul:label">
