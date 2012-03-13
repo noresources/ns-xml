@@ -8,7 +8,7 @@
 				<xbl:getter>
 					if (this.controls)
 					{
-					return this.controls[0].disabled;
+						return this.controls[0].disabled;
 					}
 				</xbl:getter>
 				<xbl:setter><![CDATA[
@@ -17,10 +17,11 @@
 						return;
 					}
 					
-					for (var i = 0; this.controls.length; i++)
+					for (var i in this.controls)
 					{
-						this.controls[i].disabled = val;
+						this.controls[i].disabled = val;	
 					}
+					return;
 				]]></xbl:setter>
 			</xbl:property>
 			<xbl:property name="required" onget="return this.getAttribute('required');" />
@@ -352,6 +353,21 @@
 				
 				return this.valueControl.isSet;
 				]]></xbl:getter>
+			</xbl:property>
+			<xbl:property name="disabled">
+				<xbl:getter><![CDATA[
+					if (this.valueControl)
+					{
+						return this.valueControl.disabled;
+					}
+					return false;
+				]]></xbl:getter>
+				<xbl:setter><![CDATA[
+					if (this.valueControl)
+					{
+						this.valueControl.disabled = val;
+					}
+				]]></xbl:setter>
 			</xbl:property>
 			<xbl:property name="value" readonly="true">
 				<xbl:getter><![CDATA[

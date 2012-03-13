@@ -115,11 +115,13 @@ NodeHelper.prototype.enableNode = function (node, enabled, recursive)
 		
 		if (enabled)
 		{
-			node.removeAttribute("disabled");
+			node.disabled = false;
+			//node.removeAttribute("disabled");
 		}
 		else
 		{
-			node.setAttribute("disabled", true);
+			//node.setAttribute("disabled", true);
+			node.disabled = true;
 		}
 		
 		if (recursive)
@@ -159,12 +161,14 @@ NodeHelper.prototype.showOnly = function(nodes, index)
 		}
 		if (i != index)
 		{
-			n.setAttribute("disabled", true);
+			//n.setAttribute("disabled", true);
+			n.disabled = true;
 			n.setAttribute("hidden", true);
 		}
 		else
 		{
-			n.removeAttribute("disabled");
+			n.disabled = false;
+			//n.removeAttribute("disabled");
 			n.removeAttribute("hidden");
 		}
 	}
@@ -185,12 +189,14 @@ AnonymousNodesHelper.prototype.showOnly = function(index)
 		var n = this.nodes[i];
 		if (i != index)
 		{
-			n.setAttribute("disabled", true);
+			//n.setAttribute("disabled", true);
+			n.disabled = true;
 			n.setAttribute("hidden", true);
 		}
 		else
 		{
-			n.removeAttribute("disabled");
+			n.disabled = false;
+			//n.removeAttribute("disabled");
 			n.removeAttribute("hidden");
 		}
 	}

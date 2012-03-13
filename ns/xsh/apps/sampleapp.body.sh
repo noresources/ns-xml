@@ -1,3 +1,6 @@
+echo "Wait a moment (just for fun!)"
+sleep 2
+
 if ! parse "${@}"
 then
 	parse_displayerrors

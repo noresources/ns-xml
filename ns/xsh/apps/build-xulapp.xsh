@@ -313,7 +313,7 @@ pref(\"nglayout.debug.disable_xul_fastload\", true);" >> "${appPrefFile}"
 	echo -en " --output \"$(ns_realpath "${outputPath}")\"" >> "${rebuildScriptFile}"
 	if [ "${launcherMode}" == "launcherModeXsh" ]
 	then
-		echo -en " --shell-template \"$(ns_realpath "${launcherModeXsh}")\"" >> "${rebuildScriptFile}"
+		echo -en " --shell \"$(ns_realpath "${launcherModeXsh}")\"" >> "${rebuildScriptFile}"
 		
 	elif [ "${launcherMode}" == "launcherModeExistingCommand" ]
 	then

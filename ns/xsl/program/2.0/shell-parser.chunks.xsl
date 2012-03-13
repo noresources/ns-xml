@@ -157,6 +157,7 @@
 							<text>[ </text>
 							<call-template name="sh.var">
 								<with-param name="name" select="$prg.sh.parser.vName_item" />
+								<with-param name="quoted" select="true()" />
 							</call-template>
 							<text> = "--" ]</text>
 						</with-param>

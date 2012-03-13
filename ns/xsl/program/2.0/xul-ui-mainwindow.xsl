@@ -492,6 +492,11 @@
 			<xsl:value-of select="$controlId" />
 			<xsl:text>:input</xsl:text>
 		</xsl:variable>
+		
+		<xsl:variable name="fsbuttonId">
+			<xsl:value-of select="$controlId" />
+			<xsl:text>:fsbutton</xsl:text>
+		</xsl:variable>
 
 		<xsl:variable name="typeNode" select="$node/prg:type" />
 		<xsl:variable name="defaultNode" select="$node/prg:default" />
@@ -560,6 +565,7 @@
 						</xsl:choose>
 						<xsl:element name="xul:button">
 							<xsl:attribute name="label">Add</xsl:attribute>
+							<xsl:attribute name="id"><xsl:value-of select="$fsbuttonId" /></xsl:attribute>
 							<xsl:attribute name="oncommand">
 								<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.addInputToMultiValue('</xsl:text>
 								<xsl:value-of select="$controlId" /><xsl:text>');</xsl:text>
@@ -579,6 +585,7 @@
 							<xsl:element name="xul:box">
 								<xsl:attribute name="class">fsbutton</xsl:attribute>
 								<xsl:attribute name="label">Add...</xsl:attribute>
+								<xsl:attribute name="id"><xsl:value-of select="$fsbuttonId" /></xsl:attribute>
 								<xsl:attribute name="onchange">
 									<xsl:text>document.getElementById('</xsl:text><xsl:value-of select="$proxyId" /><xsl:text>').addElement(this.value);</xsl:text>
 								</xsl:attribute>
@@ -930,6 +937,7 @@
 		<xsl:element name="xul:vbox">
 			<xsl:element name="xul:menulist">
 				<xsl:attribute name="flex">1</xsl:attribute>
+				<xsl:attribute name="id">prg.xul.ui.subcommandList</xsl:attribute>
 				<xsl:attribute name="oncommand">
 					<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.subcommand = this.value;</xsl:text>
 					<xsl:text>document.getElementById('</xsl:text>
@@ -1100,10 +1108,11 @@
 					</xsl:element>
 					<xsl:element name="xul:button">
 						<xsl:attribute name="label">Execute</xsl:attribute>
+						<xsl:attribute name="id">prg.xul.ui.executeButton</xsl:attribute>
 						<xsl:attribute name="oncommand">
 						<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" />
-						<xsl:text>.execute()</xsl:text>
-					</xsl:attribute>
+							<xsl:text>.execute()</xsl:text>
+						</xsl:attribute>
 					</xsl:element>
 				</xsl:element>
 			</xsl:element>

@@ -12,7 +12,7 @@ UiExtension.prototype.onExecute = function(evt)
 {
 	try
 	{
-		if (evt.executed && evt.exitValue == 0)
+		if (evt.executed && evt.exitValue == 0 && confirm("Quit ?"))
 		{
 			this.app.quitApplication();
 		}

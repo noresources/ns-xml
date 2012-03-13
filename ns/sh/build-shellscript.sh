@@ -230,7 +230,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -267,7 +267,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -334,7 +334,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -361,7 +361,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -415,7 +415,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -452,7 +452,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}
@@ -501,7 +501,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ ${parser_item} = "--" ]
+				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					return ${PARSER_ERROR}

@@ -250,6 +250,8 @@ function MainWindow(app)
 	Components.utils.import("resource://ns/xbl/controls.jsm");	
 	this.optionChangeEventListener = new EventForwarder (this, this.handleOptionChange);
 	this.valueChangeEventListener = new EventForwarder (this, this.handleValueChange);
+	
+	this.status = "default";
 }
 
 MainWindow.prototype.initialize = function()
@@ -270,18 +272,7 @@ MainWindow.prototype.initialize = function()
 	
 	for (var g in this.values)
 	{
-		var gs = this.values[g];
-		for (var index in gs)
-		{
-			var id = gs[index];
-			var value = document.getElementById(id);
-			if (value)
-			{
-				value.addEventListener("change", this.valueChangeEventListener, true);
-			}
-		}
-		
-		this.updateValueControls(g);
+		this.updateValueControls(g, true);
 	}
 	
 	// Load user-defined post initialization
@@ -381,6 +372,64 @@ MainWindow.prototype.setGroupVisible = function(e, visible)
 	}	
 }
 
+
+MainWindow.prototype.setControlEnabled = function(v)
+{
+	
+	var uiElementIds = ["prg.xul.ui.subcommandList", "prg.xul.ui.executuiElement"];
+	for (var i in uiElementIds)
+	{
+		var uiElement = document.getElementById(uiElementIds[i]);
+		if (uiElement)
+		{
+			uiElement.disabled = !v;
+		}	
+	}
+	
+	var suffixes = ["", ":value", ":value:fsbutton", ":value:proxy", ":value:input" ];
+	
+	for (var g in this.options)
+	{
+		var gs = this.options[g];
+		for (var id in gs)
+		{
+			var specs = gs[id];
+			if (specs.uiMode == "default")
+			{
+				for (var s in suffixes)
+				{
+					var option = document.getElementById(id + suffixes[s]);
+					if (option)
+					{
+						option.disabled = !v;
+					}	
+				}
+			}
+		}
+	}
+	
+	this.updateValueControls(null, v);
+}
+
+MainWindow.prototype.enable = function(newStatus)
+{
+	if (newStatus)
+	{
+		this.status = newStatus;
+	}
+	
+	this.setControlEnabled(true)
+}
+
+MainWindow.prototype.disable = function(newStatus)
+{
+	if (newStatus)
+	{
+		this.status = newStatus;
+	}
+	this.setControlEnabled(false)
+}
+
 MainWindow.prototype.addInputToMultiValue = function(baseId)
 {
 	var source = document.getElementById(baseId + ":input");
@@ -391,9 +440,9 @@ MainWindow.prototype.addInputToMultiValue = function(baseId)
 	}
 }
 
-MainWindow.prototype.RebuildObserver = function(app)
+MainWindow.prototype.RebuildObserver = function(mw)
 {
-	this.application = app;
+	this.mainWindow = mw;
 }
 
 MainWindow.prototype.RebuildObserver.prototype.observe = function(subject, topic, data)
@@ -591,27 +640,29 @@ MainWindow.prototype.handleOptionChange = function(event, object)
 	object.updatePreview(); 
 }
 
-MainWindow.prototype.updateValueControls = function(group)
+MainWindow.prototype.updateValueControls = function(group, enabled)
 {
 	var g = (group) ? group : ((this.subcommand) ? this.subcommand : this.globalId);
 	//this.trace("Update values of group " + g);
 	var groupIds = this.values[g];
-	var isSet = true;
-	var first = true;
+	var isSet = enabled;
 	for (var index in groupIds)
 	{
 		var id = groupIds[index];
 		var ctrl = document.getElementById(id);
 		if (ctrl)
 		{
-			//this.trace(ctrl.id + " " + isSet);
+			ctrl.removeEventListener("change", this.valueChangeEventListener, true);
+			
+			//this.trace("set " + ctrl.id + " " + isSet);
 			this.setRowEnabled(ctrl, isSet);
 			
-			first = false;
 			if (isSet)
 			{
 				isSet = ctrl.isSet;
 			}
+			
+			ctrl.addEventListener("change", this.valueChangeEventListener, true);
 		}
 	}
 }
@@ -621,7 +672,7 @@ MainWindow.prototype.handleValueChange = function(event, object)
 	try
 	{
 		//object.trace("value change " + event.target.id);
-		object.updateValueControls();
+		object.updateValueControls(null, true);
 	}
 	catch (e)
 	{
@@ -644,9 +695,9 @@ MainWindow.prototype.setPreview = function(str)
 	ctrl.value = str;
 }
 
-MainWindow.prototype.ExecuteObserver = function(app)
+MainWindow.prototype.ExecuteObserver = function(mw)
 {
-	this.application = app;
+	this.mainWindow = mw;
 }
 
 MainWindow.prototype.ExecuteObserver.prototype.observe = function(subject, topic, data)
@@ -681,13 +732,22 @@ MainWindow.prototype.ExecuteObserver.prototype.observe = function(subject, topic
 		res = false;
 	}
 	
-	this.application.dispatchEvent(evt);
+	this.mainWindow.dispatchEvent(evt);
+	
+	this.mainWindow.enable("default");
+	
 	return res;
 }
 
 
 MainWindow.prototype.execute = function()
 {
+	if (this.status == "execute")
+	{
+		return;
+	}
+	this.disable("execute");
+	
 	var args = this.getCommandArguments();
 	var command = "]]><value-of select="/prg:program/prg:name" /><![CDATA[";
 	this.setPreview(command + " " + args.join(" "));
@@ -709,6 +769,7 @@ MainWindow.prototype.executeCommand = function(path, args, observer)
 	catch (err)
 	{
 		this.trace("Failed to initialize process file '" + path  + "': " + err);
+		this.enable("default");
 		return false;
 	}
 	
@@ -721,6 +782,7 @@ MainWindow.prototype.executeCommand = function(path, args, observer)
 	catch (err)
 	{
 		this.trace("Failed to initialize process '" + path  + "': " + err);
+		this.enable("default");
 		return false;
 	}
 	
@@ -731,12 +793,10 @@ MainWindow.prototype.executeCommand = function(path, args, observer)
 	catch (err)
 	{
 		this.trace("Failed to run process: " + err);
+		this.enable("default");
 		return false;
 	}
-	
-	
-	
-	
+		
 	return true;
 }
 
