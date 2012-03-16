@@ -334,6 +334,7 @@
 				<text>return 1</text>
 			</with-param>
 		</call-template>
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_checkrequired" />
 			<with-param name="content">
@@ -438,6 +439,71 @@
 						<text>c</text>
 					</with-param>
 				</call-template>
+			</with-param>
+		</call-template>
+	</template>
+
+	<template name="prg.sh.parser.minmaxCheckFunction">
+		<param name="programNode" />
+
+		<call-template name="sh.functionDefinition">
+			<with-param name="name" select="$prg.sh.parser.fName_checkminmax" />
+			<with-param name="content">
+				<text>local errorCount=0</text>
+				<call-template name="endl" />
+				
+				<call-template name="sh.comment">
+					<with-param name="content">
+						<text>Check min argument for multiargument</text>
+					</with-param>
+				</call-template>
+				
+				<for-each select="$programNode//prg:multiargument[@min > 0]">
+					<variable name="optionName">
+						<call-template name="prg.sh.optionDisplayName">
+							<with-param name="optionNode" select="." />
+						</call-template>
+					</variable>
+					<if test="prg:databinding/prg:variable">
+						<variable name="argCountVariable">
+							<call-template name="sh.arrayLength">
+								<with-param name="name" select="prg:databinding/prg:variable" />
+							</call-template>
+						</variable>
+						<call-template name="sh.if">
+							<with-param name="condition">
+								<text>[ </text>
+								<value-of select="$argCountVariable" />
+								<text> -gt 0 ] &amp;&amp; [ </text>
+								<value-of select="$argCountVariable" />
+								<text> -lt </text>
+								<value-of select="@min" />
+								<text> ]</text>
+							</with-param>
+							<with-param name="then">
+								<call-template name="sh.arrayAppend">
+									<with-param name="name" select="$prg.sh.parser.vName_errors" />
+									<with-param name="value">
+										<text> "Invalid argument count for option \"</text>
+										<value-of select="$optionName" />
+										<text>\". At least </text>
+										<value-of select="@min" />
+										<text> expected, </text>
+										<value-of select="$argCountVariable" />
+										<text> given"</text>
+									</with-param>
+								</call-template>
+								<call-template name="endl" />
+								<call-template name="sh.varincrement">
+									<with-param name="name"><text>errorCount</text></with-param>
+								</call-template>
+							</with-param>
+						</call-template>
+					</if>
+				</for-each>
+
+				<call-template name="endl" />
+				<text>return ${errorCount}</text>
 			</with-param>
 		</call-template>
 	</template>
@@ -1016,6 +1082,10 @@
 				<value-of select="$prg.sh.parser.fName_checkrequired" />
 				<call-template name="endl" />
 
+				<!-- Check multiargument min attribute -->
+				<value-of select="$prg.sh.parser.fName_checkminmax" />
+				<call-template name="endl" />
+
 				<!-- Return error count -->
 				<variable name="errorCount">
 					<call-template name="prg.prefixedName">
@@ -1062,9 +1132,9 @@
 			</with-param>
 		</call-template>
 	</template>
-	
+
 	<!-- Main -->
-	<template name="prg.sh.parser.main" >
+	<template name="prg.sh.parser.main">
 		<param name="programNode" select="." />
 		<call-template name="prg.sh.parser.initialize">
 			<with-param name="programNode" select="$programNode" />
@@ -1076,6 +1146,9 @@
 			<with-param name="programNode" select="$programNode" />
 		</call-template>
 		<call-template name="prg.sh.parser.optionSetPresenceFunctions">
+			<with-param name="programNode" select="$programNode" />
+		</call-template>
+		<call-template name="prg.sh.parser.minmaxCheckFunction">
 			<with-param name="programNode" select="$programNode" />
 		</call-template>
 		<call-template name="prg.sh.parser.enumCheckFunction">
@@ -1092,5 +1165,5 @@
 			<with-param name="programNode" select="$programNode" />
 		</call-template>
 	</template>
-	
+
 </stylesheet>

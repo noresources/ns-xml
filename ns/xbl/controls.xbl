@@ -13,7 +13,7 @@
 					return this.filebox.mode;
 				</xbl:getter>
 				<xbl:setter>
-					if ((val == "file") || (val == "folder") || (val == "save"))
+					if ((val == "file") || (val == "folder") || (val == "save" || (val == "multi")))
 					{
 					this.filebox.mode = val;
 					}
@@ -33,52 +33,67 @@
 			</xbl:property>
 
 			<xbl:property name="value">
-				<xbl:getter>
-					return this.m_value;
-				</xbl:getter>
-				<xbl:setter>
-					var old = this.m_value;
-					this.m_value = val;
+				<xbl:getter><![CDATA[ 
+					return this.m_values[0]; 
+				]]></xbl:getter>
+				<xbl:setter><![CDATA[
+					var old = (this.m_values) ? this.m_values[0] : "";
+					this.m_values = [];
+					this.m_values.push(val);
 					var evt = document.createEvent("MutationEvent");
 					evt.initMutationEvent ("change", false, true, null, old, val, "value", MutationEvent.MODIFICATION);
 					/* eventname, bubbling, cancelable, related
 					node, prev, new, attribute, mode*/
 					this.dispatchEvent(evt);
-				</xbl:setter>
+				]]></xbl:setter>
+			</xbl:property>
+
+			<xbl:property name="values">
+				<xbl:getter>
+					return this.m_values;
+				</xbl:getter>
+			</xbl:property>
+			
+			<xbl:property name="itemCount">
+				<xbl:getter>
+					return this.m_values.length;
+				</xbl:getter>
 			</xbl:property>
 
 			<xbl:property name="basename" readonly="true">
-				<xbl:getter>
+				<xbl:getter><![CDATA[
 					var res = "";
 					try
 					{
-					var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-					file.initWithPath(this.value);
-					return file.leafName;
+						var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+						file.initWithPath(this.value);
+						return file.leafName;
 					}
 					catch(e){}
 
 					return this.value;
-				</xbl:getter>
+				]]></xbl:getter>
 			</xbl:property>
 
 			<xbl:property name="dirname" readonly="true">
-				<xbl:getter>
+				<xbl:getter><![CDATA[
 					var res = "";
 					try
 					{
-					var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
-					file.initWithPath(this.value);
-					if (file.parent)
-					{
-					return file.parent.path;
-					}
+						var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+						file.initWithPath(this.value);
+						if (file.parent)
+						{
+							return file.parent.path;
+						}
 
-					return ".";
-					}catch(e){}
+						return ".";
+					}
+					catch(e)
+					{}
 
 					return this.value;
-				</xbl:getter>
+				]]></xbl:getter>
 			</xbl:property>
 
 			<xbl:constructor>
@@ -88,13 +103,14 @@
 				}
 				catch (e)
 				{
-					alert("fsbutton constructor error: " + e);
+					dump("fsbutton constructor error: " + e + "\n");
 					return;
 				}
 				this.filebox = new FSItemSelectionDialog(window);
 				this.buttonControl = document.getAnonymousNodes(this)[0];
 				
-				this.m_value = this.getAttribute("default");
+				this.m_values = [];
+				this.m_values[0] = this.getAttribute("default");
 				
 				if (this.getAttribute("dialogtitle"))
 				{
@@ -115,7 +131,22 @@
 				var res = this.filebox.browse();
 				if (res.isValid)
 				{
-					this.value = res.path;
+					if (this.dialogmode == "multi")
+					{
+						var old = this.m_values;
+						this.m_values = [];
+						for (var i in res.paths)
+						{
+							this.m_values.push(res.paths[i]);	
+						}
+						var evt = document.createEvent("MutationEvent");
+						evt.initMutationEvent ("change", false, true, null, old, this.m_values, "values", MutationEvent.MODIFICATION);
+						this.dispatchEvent(evt);
+					}
+					else
+					{
+						this.value = res.path;
+					}
 				}
 				]]></xbl:body>
 			</xbl:method>
@@ -154,7 +185,34 @@
 						return true;
 					}
 
-					//dump("Invalid target " + this.target + " " + this.target.children + "\n");
+					return false;
+				]]></xbl:getter>
+			</xbl:property>
+
+			<xbl:property name="maxItems" onset="this.setAttribute('maxItems', val)">
+				<xbl:getter><![CDATA[
+					var v = parseInt(this.getAttribute('maxItems'));
+					if (isNaN(v) || v < 0)
+					{
+						return 0;
+					}
+					
+					return v;
+				]]></xbl:getter>
+			</xbl:property>
+
+			<xbl:property name="acceptItems">
+				<xbl:getter><![CDATA[
+					if (!this.validTarget)
+					{
+						return false;
+					}
+					
+					if ((this.maxItems <= 0) || (this.target.itemCount < this.maxItems))
+					{
+						return true;
+					}
+					
 					return false;
 				]]></xbl:getter>
 			</xbl:property>
@@ -207,7 +265,7 @@
 				<xbl:parameter name="value" />
 				<xbl:parameter name="index">-1</xbl:parameter>
 				<xbl:body><![CDATA[
-					if (!this.validTarget)
+					if (!this.acceptItems)
 					{
 						return;
 					}
@@ -228,9 +286,7 @@
 						this.removeButton.setAttribute("disabled", true);
 						return;
 					}
-					
-					//dump(this.target.selectedIndex + "\n");
-					
+									
 					if ((this.target.itemCount > 1) && (this.target.selectedIndex >= 0))
 					{
 						if (this.target.selectedIndex > 0)

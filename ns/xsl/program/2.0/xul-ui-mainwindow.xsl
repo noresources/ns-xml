@@ -64,12 +64,16 @@
 
 	<xsl:template name="prg.xul.fsButtonDialogMode">
 		<xsl:param name="pathNode" />
+		<xsl:param name="multi" select="false()" />
 
 		<xsl:variable name="kindsNode" select="$pathNode/prg:kinds" />
 		<xsl:variable name="isFolderOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:folder" />
 		<xsl:variable name="isFileOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:file" />
 
 		<xsl:choose>
+			<xsl:when test="$multi">
+				<xsl:attribute name="dialogmode">multi</xsl:attribute>
+			</xsl:when>
 			<xsl:when test="$isFolderOnly">
 				<xsl:attribute name="dialogmode">folder</xsl:attribute>
 			</xsl:when>
@@ -493,7 +497,7 @@
 			<xsl:text>:input</xsl:text>
 		</xsl:variable>
 		
-		<xsl:variable name="fsbuttonId">
+		<xsl:variable name="buttonId">
 			<xsl:value-of select="$controlId" />
 			<xsl:text>:fsbutton</xsl:text>
 		</xsl:variable>
@@ -565,7 +569,7 @@
 						</xsl:choose>
 						<xsl:element name="xul:button">
 							<xsl:attribute name="label">Add</xsl:attribute>
-							<xsl:attribute name="id"><xsl:value-of select="$fsbuttonId" /></xsl:attribute>
+							<xsl:attribute name="id"><xsl:value-of select="$buttonId" /></xsl:attribute>
 							<xsl:attribute name="oncommand">
 								<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.addInputToMultiValue('</xsl:text>
 								<xsl:value-of select="$controlId" /><xsl:text>');</xsl:text>
@@ -585,9 +589,10 @@
 							<xsl:element name="xul:box">
 								<xsl:attribute name="class">fsbutton</xsl:attribute>
 								<xsl:attribute name="label">Add...</xsl:attribute>
-								<xsl:attribute name="id"><xsl:value-of select="$fsbuttonId" /></xsl:attribute>
+								<xsl:attribute name="id"><xsl:value-of select="$buttonId" /></xsl:attribute>
 								<xsl:attribute name="onchange">
-									<xsl:text>document.getElementById('</xsl:text><xsl:value-of select="$proxyId" /><xsl:text>').addElement(this.value);</xsl:text>
+									<xsl:value-of select="$prg.xul.js.mainWindowInstanceName" /><xsl:text>.addInputToMultiValue('</xsl:text>
+									<xsl:value-of select="$controlId" /><xsl:text>', this);</xsl:text>
 								</xsl:attribute>
 								<xsl:if test="$pathNode/prg:patterns">
 									<xsl:call-template name="prg.xul.fsButtonFilterAttribute">
@@ -596,6 +601,7 @@
 								</xsl:if>
 								<xsl:call-template name="prg.xul.fsButtonDialogMode">
 									<xsl:with-param name="pathNode" select="$pathNode" />
+									<xsl:with-param name="multi" select="true()" />
 								</xsl:call-template>
 							</xsl:element>
 						</xsl:if>
@@ -603,6 +609,11 @@
 							<xsl:attribute name="class">itemarrangementbuttonbox</xsl:attribute>
 							<xsl:attribute name="id"><xsl:value-of select="$proxyId" /></xsl:attribute>
 							<xsl:attribute name="targetId"><xsl:value-of select="$controlId" /></xsl:attribute>
+							<xsl:if test="$node/@max">
+								<xsl:attribute name="maxItems">
+									<xsl:value-of select="$node/@max"/>
+								</xsl:attribute>
+							</xsl:if>
 						</xsl:element>
 					</xsl:element>
 				</xsl:element>

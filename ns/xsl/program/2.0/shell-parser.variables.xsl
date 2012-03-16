@@ -299,6 +299,15 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<variable name="prg.sh.parser.fName_checkminmax">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.functionNamePrefix" />
+				<text>checkminmax</text>
+			</with-param>
+		</call-template>
+	</variable>
 
 	<variable name="prg.sh.parser.fName_addmessage">
 		<call-template name="prg.prefixedName">

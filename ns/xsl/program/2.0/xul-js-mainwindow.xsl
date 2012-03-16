@@ -430,11 +430,21 @@ MainWindow.prototype.disable = function(newStatus)
 	this.setControlEnabled(false)
 }
 
-MainWindow.prototype.addInputToMultiValue = function(baseId)
+MainWindow.prototype.addInputToMultiValue = function(baseId, sourceElement)
 {
-	var source = document.getElementById(baseId + ":input");
+	var source = sourceElement ? sourceElement : document.getElementById(baseId + ":input");
 	var target = document.getElementById(baseId + ":proxy");
-	if (source.value.length)
+	if (source.values)
+	{
+		for (var i in source.values)
+		{
+			if (source.values[i].length)
+			{
+				target.addElement(source.values[i]);
+			}
+		}
+	}
+	else if (source.value && source.value.length)
 	{
 		target.addElement(source.value);
 	}

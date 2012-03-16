@@ -134,6 +134,7 @@
 	<!-- Description of a switch argument (all option names + description) -->
 	<template name="prg.sh.help.switchDescription">
 		<param name="optionNode" select="." />
+		
 		<call-template name="prg.sh.help.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
@@ -141,6 +142,13 @@
 		<call-template name="prg.sh.help.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
+		
+		<if test="$optionNode/prg:documentation/prg:details">
+			<call-template name="endl" />
+			<call-template name="prg.sh.help.descriptionDisplay">
+				<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+			</call-template>
+		</if>
 	</template>
 
 	<template name="prg.sh.help.argumentInline">
@@ -164,6 +172,7 @@
 
 	<template name="prg.sh.help.argumentDescription">
 		<param name="optionNode" select="." />
+		
 		<call-template name="prg.sh.help.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
@@ -171,6 +180,18 @@
 		<call-template name="prg.sh.help.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
+		
+		<if test="$optionNode/prg:documentation/prg:details">
+			<call-template name="endl" />
+			<call-template name="str.prependLine">
+				<with-param name="content">
+					<call-template name="prg.sh.help.descriptionDisplay">
+						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+					</call-template>
+				</with-param>
+			</call-template>
+		</if>
+		
 		<if test="$optionNode/prg:select">
 			<call-template name="endl" />
 			<call-template name="str.prependLine">
@@ -189,6 +210,16 @@
 						</with-param>
 						<with-param name="optionNode" select="$optionNode/prg:select" />
 					</call-template>
+				</with-param>
+			</call-template>
+		</if>
+		
+		<if test="$optionNode/prg:default">
+			<call-template name="endl" />
+			<call-template name="str.prependLine">
+				<with-param name="content">
+					<text>Default value: </text>
+					<value-of select="$optionNode/prg:default" />
 				</with-param>
 			</call-template>
 		</if>
@@ -218,6 +249,24 @@
 		<call-template name="prg.sh.help.argumentDescription">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
+		<if test="$optionNode/@min">
+			<call-template name="endl" />
+			<call-template name="str.prependLine">
+				<with-param name="content">
+					<text>Minimal argument count: </text>
+					<value-of select="$optionNode/@min" />
+				</with-param>
+			</call-template>
+		</if>
+		<if test="$optionNode/@max">
+			<call-template name="endl" />
+			<call-template name="str.prependLine">
+				<with-param name="content">
+					<text>Maximal argument count: </text>
+					<value-of select="$optionNode/@max" />
+				</with-param>
+			</call-template>
+		</if>
 	</template>
 
 	<template name="prg.sh.help.groupInline">

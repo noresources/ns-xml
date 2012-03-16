@@ -25,8 +25,10 @@ Usage:
     --target-platform, --target, -t: Target platform
     	The argument value have to be one of the following:	
     		host, linux or macosx
+    	Default value: host
     -u, --update: Update application if folder already exists
     --skip-validation, --no-validation, -S: Skip XML Schema validations
+    The default behavior of build-shellscript is to validate the given xsh file against the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. This option will disable schema validations
     User interface
     (
     	--window-width, -W: 
@@ -36,11 +38,19 @@ Usage:
     User data
     (
     	--init-script, -j: User-defined post-initialization script
+    		A Javascript file loaded after the main ui object initialization stage
+    		  If a onInitialize() function is available, it will be called with the main ui object as the first argument
+    		  The script is copied in the chrome/content directory and is available through the following url
+    		    chrome://<xulAppName>/content/<xulAppName>-user.js
+    		    							
     	--resources: Additional resources
+    		A list of path or file to add in the application bundle.
+    		  These items are copied in the chrome/userdata folder of the application bundle and a new resource url is avalailable (resource://userdata/...)
     )
     ns-xml options
     (
     	--ns-xml-path: ns-xml source path
+    		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
     	--ns-xml-add: Add other ns-xml folder
     		The argument value have to be one of the following:	
@@ -174,6 +184,13 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_checkminmax()
+{
+	local errorCount=0
+	# Check min argument for multiargument
+	
+	return ${errorCount}
 }
 parse_enumcheck()
 {
@@ -1071,6 +1088,7 @@ parse()
 	done
 	
 	parse_checkrequired
+	parse_checkminmax
 	
 	local parser_errorcount=${#parser_errors[*]}
 	if [ ${parser_errorcount} -eq 1 ] && [ -z "${parser_errors}" ]

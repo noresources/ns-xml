@@ -17,11 +17,16 @@ Usage:
     ns-xml source path options
     (
     	--ns-xml-path: ns-xml source path
+    		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
     )
     -x, --xml-description: Program description file
+    	If the program description file is provided, the xml file will be validated before any XSLT processing
     -s, --shell: XML shell file
+    	A xml file following the bash XML schema
+    	  The file may include a XML program definition
     --skip-validation, --no-validation, -S: Skip XML Schema validations
+    The default behavior of build-shellscript is to validate the given xsh file against the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. This option will disable schema validations
     -d, --debug: Generate debug messages in help and command line parsing functions
     -h, --help: This help
     -o, --output: Output file path
@@ -146,6 +151,13 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_checkminmax()
+{
+	local errorCount=0
+	# Check min argument for multiargument
+	
+	return ${errorCount}
 }
 parse_enumcheck()
 {
@@ -547,6 +559,7 @@ parse()
 	done
 	
 	parse_checkrequired
+	parse_checkminmax
 	
 	local parser_errorcount=${#parser_errors[*]}
 	if [ ${parser_errorcount} -eq 1 ] && [ -z "${parser_errors}" ]

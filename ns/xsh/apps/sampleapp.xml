@@ -249,7 +249,7 @@
 				<prg:details>A non-exclusive group of options which accept one or more arguments</prg:details>
 			</prg:documentation>
 			<prg:options>
-				<prg:multiargument max="3">
+				<prg:multiargument max="3" min="2">
 					<prg:databinding>
 						<prg:variable>gma</prg:variable>
 					</prg:databinding>

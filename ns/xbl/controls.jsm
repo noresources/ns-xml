@@ -16,6 +16,13 @@ function FSItemSelectionDialog(window)
 	this.filterAllTitle = "All";
 }
 
+FSItemSelectionDialog.prototype.trace = function(msg)
+{
+	Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService)
+		.logStringMessage(msg);
+	dump(msg + "\n");
+}
+
 FSItemSelectionDialog.prototype.importFilters = function(str)
 {
 	var rx = /([^\|]+)\|([^\|]+)/
@@ -37,8 +44,6 @@ FSItemSelectionDialog.prototype.importFilters = function(str)
 
 FSItemSelectionDialog.prototype.filePickerMode = function(fp)
 {
-	/*Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService)
-	.logStringMessage("mode " + this.mode);*/
 	if (this.mode == "folder")
 	{
 		return fp.modeGetFolder;
@@ -47,13 +52,18 @@ FSItemSelectionDialog.prototype.filePickerMode = function(fp)
 	{
 		return fp.modeSave;
 	}
+	else if (this.mode == "multi")
+	{
+		return fp.modeOpenMultiple;
+	}
 	return fp.modeOpen;
 }
 
 FSItemSelectionDialog.prototype.browse = function()
 {
 	var filePicker = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
-	filePicker.init(this.window, this.title, this.filePickerMode(filePicker));
+	var mode = this.filePickerMode(filePicker);
+	filePicker.init(this.window, this.title, mode);
 	
 	for (var i = 0; i < this.filters.length; i++)
 	{
@@ -76,13 +86,28 @@ FSItemSelectionDialog.prototype.browse = function()
 		var returnValue = filePicker.show();
 		if (returnValue != filePicker.returnCancel)
 		{
+			if (mode == filePicker.modeOpenMultiple)
+			{
+				result.paths = [];
+				var files = filePicker.files;
+				while (files.hasMoreElements()) 
+			    {
+			    	var p = files.getNext().QueryInterface(Components.interfaces.nsILocalFile).path;
+			        result.paths.push(p);
+			    }
+			}
+			else
+			{
+				result.paths = [ filePicker.file.path ];
+			}
+			
+			result.path = result.paths[0];
 			result.isValid = true;
-			result.path = filePicker.file.path;
 		}
 	}
 	catch (error)
 	{
-		alert(error);
+		this.trace(error);
 	}
 	
 	return result;
