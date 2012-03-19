@@ -15,7 +15,20 @@
 	<!-- - Double minus for multi-characters options -->
 	<template name="prg.sh.optionDisplayName">
 		<param name="optionNode" select="." />
+		<param name="recursive" select="true()" />
 		<choose>
+			<when test="$recursive and $optionNode/self::prg:group">
+				<text>(</text>
+				<for-each select="$optionNode/prg:options/*">
+					<call-template name="prg.sh.optionDisplayName">
+						<with-param name="recursive" select="true()" />
+					</call-template>
+					<if test="position() != last()">
+						<text>, </text>
+					</if>
+				</for-each>
+				<text>)</text>
+			</when>
 			<when test="$optionNode/prg:names/prg:long">
 				<call-template name="prg.sh.optionName">
 					<with-param name="nameNode" select="$optionNode/prg:names/prg:long[1]" />

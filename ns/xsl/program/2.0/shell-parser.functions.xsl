@@ -467,7 +467,9 @@
 					<if test="prg:databinding/prg:variable">
 						<variable name="argCountVariable">
 							<call-template name="sh.arrayLength">
-								<with-param name="name" select="prg:databinding/prg:variable" />
+								<with-param name="name">
+									<apply-templates select="prg:databinding/prg:variable"/>
+								</with-param>
 							</call-template>
 						</variable>
 						<call-template name="sh.if">
@@ -481,10 +483,9 @@
 								<text> ]</text>
 							</with-param>
 							<with-param name="then">
-								<call-template name="sh.arrayAppend">
-									<with-param name="name" select="$prg.sh.parser.vName_errors" />
+								<call-template name="prg.sh.parser.addGlobalError">
 									<with-param name="value">
-										<text> "Invalid argument count for option \"</text>
+										<text>"Invalid argument count for option \"</text>
 										<value-of select="$optionName" />
 										<text>\". At least </text>
 										<value-of select="@min" />
@@ -493,6 +494,7 @@
 										<text> given"</text>
 									</with-param>
 								</call-template>
+								
 								<call-template name="endl" />
 								<call-template name="sh.varincrement">
 									<with-param name="name"><text>errorCount</text></with-param>
@@ -507,8 +509,6 @@
 			</with-param>
 		</call-template>
 	</template>
-
-	<!-- -->
 
 	<template name="prg.sh.parser.enumCheckFunction">
 		<call-template name="sh.functionDefinition">
@@ -546,9 +546,96 @@
 
 	<!-- Check and add anonymous value -->
 	<template name="prg.sh.parser.addValueFunction">
+		<param name="programNode" />
+		
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_addvalue" />
 			<with-param name="content">
+				<text>local position=</text>
+				<call-template name="sh.arrayLength">
+					<with-param name="name" select="$prg.sh.parser.vName_values" />
+				</call-template>
+				<call-template name="endl" />
+				
+				<text>local value="${1}"</text>
+				<call-template name="endl" />
+				
+				<call-template name="sh.if">
+					<with-param name="condition">
+						<text>[ -z </text>
+						<value-of select="$prg.sh.parser.var_subcommand" />
+						<text> ]</text>
+					</with-param>
+					
+					<!-- Add global values -->
+					<with-param name="then">
+						<choose>
+							<when test="count($programNode/prg:values/*)">
+								<call-template name="prg.sh.parser.checkValue">
+									<with-param name="valuesNode" select="$programNode/prg:values" />
+								</call-template>
+							</when>
+							<otherwise>
+								<call-template name="prg.sh.parser.addGlobalError">
+									<with-param name="value">
+										<text>"Positional argument not allowed"</text>
+									</with-param>
+								</call-template>
+								<call-template name="endl" />
+								<text>return </text>
+								<value-of select="$prg.sh.parser.var_ERROR" />
+							</otherwise>
+						</choose>
+					</with-param>
+					
+					<!-- Subcommand values -->
+					<with-param name="else">
+						<call-template name="sh.case">
+							<with-param name="case">
+								<call-template name="sh.var">
+									<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+								</call-template>
+							</with-param>
+							<with-param name="in">
+								<for-each select="$programNode/prg:subcommands/*">
+									<call-template name="sh.caseblock">
+										<with-param name="case" select="prg:name" />
+										<with-param name="content">
+											<choose>
+												<when test="count(./prg:values/*)">
+													<call-template name="prg.sh.parser.checkValue">
+														<with-param name="valuesNode" select="./prg:values" />
+													</call-template>
+												</when>
+												<otherwise>
+													<call-template name="prg.sh.parser.addGlobalError">
+														<with-param name="value">
+															<text>"Positional argument not allowed in subcommand </text>
+															<value-of select="./prg:name" />
+															<text>"</text>
+														</with-param>
+													</call-template>
+													<call-template name="endl" />
+													<text>return </text>
+													<value-of select="$prg.sh.parser.var_ERROR" />
+												</otherwise>
+											</choose>
+										</with-param>
+									</call-template>
+								</for-each>
+								<call-template name="sh.caseblock">
+									<with-param name="case"><text>*</text></with-param>
+									<with-param name="content">
+										<text>return </text>
+										<value-of select="$prg.sh.parser.var_ERROR" />
+									</with-param>
+								</call-template>
+							</with-param>
+						</call-template>
+					</with-param>
+					
+				</call-template>
+			
 				<call-template name="sh.arrayAppend">
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
 					<with-param name="value">
@@ -558,6 +645,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
+				
 			</with-param>
 		</call-template>
 	</template>
@@ -717,9 +805,7 @@
 		<param name="programNode" select="." />
 		<variable name="onError">
 			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
-			</call-template>
+			<value-of select="$prg.sh.parser.var_ERROR" />
 		</variable>
 		<variable name="onSuccess">
 			<text>return </text>
@@ -736,9 +822,7 @@
 			<text>\""</text>
 			<call-template name="endl" />
 			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
-			</call-template>
+			<value-of select="$prg.sh.parser.var_ERROR" />
 		</variable>
 
 		<call-template name="sh.functionDefinition">
@@ -1154,7 +1238,9 @@
 		<call-template name="prg.sh.parser.enumCheckFunction">
 			<with-param name="programNode" select="$programNode" />
 		</call-template>
-		<call-template name="prg.sh.parser.addValueFunction" />
+		<call-template name="prg.sh.parser.addValueFunction">
+			<with-param name="programNode" select="$programNode" />
+		</call-template>
 		<call-template name="prg.sh.parser.subCommandOptionParseFunction">
 			<with-param name="programNode" select="$programNode" />
 		</call-template>

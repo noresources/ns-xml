@@ -17,6 +17,7 @@ sub: A sub-command (sub)
 Usage: sampleapp sub [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
 With:
   --switch, --sc-switch: Switch of the sub command
+  The bound variable name can be the same as another subcommand variable or one of the global option. In this case, you have to set the prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)
   --sc-existing-file-argument: Sub command file argument
   --sc-strict-enum: Sub command argument (strict set)
   	The argument value have to be one of the following:	
@@ -27,6 +28,12 @@ help)
 cat << EOFSCUSAGE
 help: Help about other sub commands
 Usage: sampleapp help
+EOFSCUSAGE
+;;
+version)
+cat << EOFSCUSAGE
+version: 
+Usage: sampleapp version
 EOFSCUSAGE
 ;;
 
@@ -41,6 +48,7 @@ Usage:
     sub: A sub-command (sub)
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
     help: Help about other sub commands
+    version:
   With global options:
     --help: 
     --ui-only: A single argument option automatically set in the UI
@@ -133,8 +141,9 @@ parser_index=${parser_startindex}
 # Switch options
 
 displayHelp=false
-gswitch=false
+switch=false
 grpSwitch=false
+sub_switch=false
 # Single argument options
 
 uiArg=
@@ -149,8 +158,8 @@ gFarg=
 gmfarg=
 strictEnum="Value B"
 nonStrictEnum=
-subFile=
-subEnum=
+sub_subFile=
+sub_subEnum=
 
 parse_addmessage()
 {
@@ -257,6 +266,60 @@ parse_enumcheck()
 }
 parse_addvalue()
 {
+	local position=${#parser_values[*]}
+	local value="${1}"
+	if [ -z "${parser_subcommand}" ]
+	then
+		case "${position}" in
+		0)
+			;;
+		1)
+			if ! parse_pathaccesscheck "${value}" "rw"
+			then
+				parse_adderror "Invalid path permissions for \"${value}\", rw privilege(s) expected for positional argument ${position}"
+			fi
+			
+			
+			;;
+		2)
+			;;
+		*)
+			;;
+		
+		esac
+	else
+		case "${parser_subcommand}" in
+		sub)
+			case "${position}" in
+			*)
+				;;
+			
+			esac
+			;;
+		help)
+			case "${position}" in
+			0)
+				if ! ([ "${value}" = "sub" ] || [ "${value}" = "help" ])
+				then
+					parse_adderror "Invalid value for positional argument ${position}"
+				fi
+				
+				;;
+			*)
+				;;
+			
+			esac
+			;;
+		version)
+			parser_errors[${#parser_errors[*]}]="Positional argument not allowed in subcommand version"
+			return ${PARSER_ERROR}
+			;;
+		*)
+			return ${PARSER_ERROR}
+			;;
+		
+		esac
+	fi
 	parser_values[${#parser_values[*]}]="${1}"
 }
 parse_process_subcommand_option()
@@ -280,6 +343,13 @@ parse_process_subcommand_option()
 			
 			case "${parser_option}" in
 			switch | sc-switch)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+					parser_optiontail=""
+					return ${PARSER_SC_ERROR}
+				fi
+				sub_switch=true
 				parse_setoptionpresence SC_1_sub_1_switch
 				;;
 			sc-existing-file-argument)
@@ -306,11 +376,11 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				if [ ! -e "${parser_item}" ]
 				then
-					parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
 				
-				subFile="${parser_item}"
+				sub_subFile="${parser_item}"
 				parse_setoptionpresence SC_1_sub_2_sc-existing-file-argument
 				;;
 			sc-strict-enum)
@@ -337,11 +407,11 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				if ! ([ "${parser_item}" = "OptionA" ] || [ "${parser_item}" = "ValueB" ] || [ "${parser_item}" = "ItemC" ])
 				then
-					parse_adderror "Invalid value for option \"${parser_item}\""
+					parse_adderror "Invalid value for option \"${parser_option}\""
 					
 					return ${PARSER_SC_ERROR}
 				fi
-				subEnum="${parser_item}"
+				sub_subEnum="${parser_item}"
 				parse_setoptionpresence SC_1_sub_3_sc-strict-enum
 				;;
 			*)
@@ -461,7 +531,7 @@ parse_process_option()
 				parser_optiontail=""
 				return ${PARSER_ERROR}
 			fi
-			gswitch=true
+			switch=true
 			parse_setoptionpresence G_4_simpleswitch
 			;;
 		existing-file-argument)
@@ -488,7 +558,7 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -519,13 +589,13 @@ parse_process_option()
 			parser_optiontail=""
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privileges expected for option ${parser_option}"
+				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privilege(s) expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -556,13 +626,13 @@ parse_process_option()
 			parser_optiontail=""
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privileges expected for option ${parser_option}"
+				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privilege(s) expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ] || [ -S "${parser_item}" ] || [ -d "${parser_item}" ] || [ -L "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -618,7 +688,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", x privileges expected for option ${parser_option}"
+				parse_adderror "Invalid path permissions for \"${parser_item}\", x privilege(s) expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -649,7 +719,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! ([ "${parser_item}" = "Option A" ] || [ "${parser_item}" = "Value B" ] || [ "${parser_item}" = "Item C" ] || [ "${parser_item}" = "ItemD with space" ])
 			then
-				parse_adderror "Invalid value for option \"${parser_item}\""
+				parse_adderror "Invalid value for option \"${parser_option}\""
 				
 				return ${PARSER_ERROR}
 			fi
@@ -696,7 +766,7 @@ parse_process_option()
 		basic-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${garg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "garg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -730,7 +800,7 @@ parse_process_option()
 		string-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gsarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gsarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -764,7 +834,7 @@ parse_process_option()
 		argument-with-default)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${dgarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "dgarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -798,7 +868,7 @@ parse_process_option()
 		numeric-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gnarg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gnarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -832,7 +902,7 @@ parse_process_option()
 		float-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "${gn2arg}" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gn2arg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -926,7 +996,7 @@ parse_process_option()
 			then
 				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ] || [ "${parser_item}" = "Third option" ])
 				then
-					parse_adderror "Invalid value for option \"${parser_item}\""
+					parse_adderror "Invalid value for option \"${parser_option}\""
 					
 					return ${PARSER_ERROR}
 				fi
@@ -947,7 +1017,7 @@ parse_process_option()
 				parser_item="${parser_input[${parser_index}]}"
 				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ] || [ "${parser_item}" = "Third option" ])
 				then
-					parse_adderror "Invalid value for option \"${parser_item}\""
+					parse_adderror "Invalid value for option \"${parser_option}\""
 					
 					return ${PARSER_ERROR}
 				fi
@@ -1024,7 +1094,7 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		s)
-			gswitch=true
+			switch=true
 			parse_setoptionpresence G_4_simpleswitch
 			;;
 		H)
@@ -1076,7 +1146,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", x privileges expected for option ${parser_option}"
+				parse_adderror "Invalid path permissions for \"${parser_item}\", x privilege(s) expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -1107,7 +1177,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! ([ "${parser_item}" = "Option A" ] || [ "${parser_item}" = "Value B" ] || [ "${parser_item}" = "Item C" ] || [ "${parser_item}" = "ItemD with space" ])
 			then
-				parse_adderror "Invalid value for option \"${parser_item}\""
+				parse_adderror "Invalid value for option \"${parser_option}\""
 				
 				return ${PARSER_ERROR}
 			fi
@@ -1153,6 +1223,9 @@ parse_process_option()
 			;;
 		help)
 			parser_subcommand="help"
+			;;
+		version)
+			parser_subcommand="version"
 			;;
 		*)
 			parse_addvalue "${parser_item}"

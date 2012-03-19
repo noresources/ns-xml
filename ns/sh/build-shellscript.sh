@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use XML description file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-d] [-h] -o <path>
+  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-p] [-d] [-h] -o <path>
   With:
     ns-xml source path options
     (
@@ -27,6 +27,8 @@ Usage:
     	  The file may include a XML program definition
     --skip-validation, --no-validation, -S: Skip XML Schema validations
     The default behavior of build-shellscript is to validate the given xsh file against the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. This option will disable schema validations
+    --prefix-sc-variables, -p: Prefix subcommand options bound variable names
+    This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
     -d, --debug: Generate debug messages in help and command line parsing functions
     -h, --help: This help
     -o, --output: Output file path
@@ -61,11 +63,12 @@ parser_index=${parser_startindex}
 
 
 parser_required[${#parser_required[*]}]="G_3_shell:--shell"
-parser_required[${#parser_required[*]}]="G_7_output:--output"
+parser_required[${#parser_required[*]}]="G_8_output:--output"
 # Switch options
 
 nsxmlPathRelative=false
 skipValidation=false
+prefixSubcommandBoundVariableName=false
 debugMode=false
 displayHelp=false
 # Single argument options
@@ -175,6 +178,20 @@ parse_enumcheck()
 }
 parse_addvalue()
 {
+	local position=${#parser_values[*]}
+	local value="${1}"
+	if [ -z "${parser_subcommand}" ]
+	then
+		parser_errors[${#parser_errors[*]}]="Positional argument not allowed"
+		return ${PARSER_ERROR}
+	else
+		case "${parser_subcommand}" in
+		*)
+			return ${PARSER_ERROR}
+			;;
+		
+		esac
+	fi
 	parser_values[${#parser_values[*]}]="${1}"
 }
 parse_process_subcommand_option()
@@ -253,13 +270,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -290,13 +307,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -313,6 +330,16 @@ parse_process_option()
 			skipValidation=true
 			parse_setoptionpresence G_4_skip-validation
 			;;
+		prefix-sc-variables)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			prefixSubcommandBoundVariableName=true
+			parse_setoptionpresence G_5_prefix-sc-variables
+			;;
 		debug)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -321,7 +348,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_5_debug
+			parse_setoptionpresence G_6_debug
 			;;
 		help)
 			if [ ! -z "${parser_optiontail}" ]
@@ -331,7 +358,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_6_help
+			parse_setoptionpresence G_7_help
 			;;
 		output)
 			if [ ! -z "${parser_optiontail}" ]
@@ -356,7 +383,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_7_output
+			parse_setoptionpresence G_8_output
 			;;
 		ns-xml-path)
 			# Group checks
@@ -438,13 +465,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -475,13 +502,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -492,13 +519,17 @@ parse_process_option()
 			skipValidation=true
 			parse_setoptionpresence G_4_skip-validation
 			;;
+		p)
+			prefixSubcommandBoundVariableName=true
+			parse_setoptionpresence G_5_prefix-sc-variables
+			;;
 		d)
 			debugMode=true
-			parse_setoptionpresence G_5_debug
+			parse_setoptionpresence G_6_debug
 			;;
 		h)
 			displayHelp=true
-			parse_setoptionpresence G_6_help
+			parse_setoptionpresence G_7_help
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -523,7 +554,7 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_7_output
+			parse_setoptionpresence G_8_output
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -688,9 +719,16 @@ then
 	debugParam="--stringparam prg.debug \"true()\""
 fi
 
-if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
+prefixParam=""
+if ${prefixSubcommandBoundVariableName}
+then
+	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+fi
+
+if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
 	exit 6
-fi 
+fi
+
 chmod 755 "${outputScriptFilePath}"

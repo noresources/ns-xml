@@ -176,8 +176,8 @@ fi
 preexistantOutputPath=false
 if [ -d "${appRootPath}" ] 
 then
-	(! ${update}) && error " - Folder already exists. Set option --update to force update"
-	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && error " - Folder exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
+	(! ${update}) && error " - Folder \"${appRootPath}\" already exists. Set option --update to force update"
+	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && error " - Folder \"${appRootPath}\" exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
 	preexistantOutputPath=true
 else
 	mkdir -p "${outputPath}" || error "Unable to create output path \"${outputPath}\""
@@ -223,17 +223,23 @@ then
 		debugParam="--stringparam prg.debug \"true()\""
 	fi
 	
+	prefixParam=""
+	if ${prefixSubcommandBoundVariableName}
+	then
+		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+	fi
+
 	# Validate bash scheam
-	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${launcherModeXsh}"
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
 	then
 		error "bash XML schema error - abort"
 	fi
 		
 	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-	launcherModeXsh="$(ns_realpath "${launcherModeXsh}")"
-	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${debugParam} "${xshXslTemplatePath}" "${launcherModeXsh}"
+	xmlShellFileDescriptionPath="$(ns_realpath "${xmlShellFileDescriptionPath}")"
+	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 	then
-		echo "Fail to process xsh file \"${launcherModeXsh}\""
+		echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
 		exit 5
 	fi
 		
@@ -313,7 +319,7 @@ pref(\"nglayout.debug.disable_xul_fastload\", true);" >> "${appPrefFile}"
 	echo -en " --output \"$(ns_realpath "${outputPath}")\"" >> "${rebuildScriptFile}"
 	if [ "${launcherMode}" == "launcherModeXsh" ]
 	then
-		echo -en " --shell \"$(ns_realpath "${launcherModeXsh}")\"" >> "${rebuildScriptFile}"
+		echo -en " --shell \"$(ns_realpath "${xmlShellFileDescriptionPath}")\"" >> "${rebuildScriptFile}"
 		
 	elif [ "${launcherMode}" == "launcherModeExistingCommand" ]
 	then

@@ -12,14 +12,21 @@ usage()
 cat << EOFUSAGE
 build-xulapp: Build (or update) a xul application launcher
 Usage: 
-  build-xulapp [-h] -o <path> -x <path> (-s <path> | -c <...>) [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
+  build-xulapp [-h] -o <path> [-x <path>] (-s <path> -p | -c <...>) [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
   With:
     -h, --help: Display the command documentation & options
     -o, --output: Output folder path for the XUL application structure
     -x, --xml-description: Program description file
     Launcher mode
     (
-    	-s, --shell: Generated shell script from the given template
+    	Generate shell script
+    	(
+    		-s, --shell: XML shell file
+    			A xml file following the bash XML schema
+    			  The file may include a XML program definition
+    		--prefix-sc-variables, -p: Prefix subcommand options bound variable names
+    		This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+    	)
     	--command, -c: Launch the given existing command
     )
     --target-platform, --target, -t: Target platform
@@ -32,7 +39,9 @@ Usage:
     User interface
     (
     	--window-width, -W: 
+    		Default value: 640
     	--window-height, -H: 
+    		Default value: 480
     	-d, --debug: Add debug options into the built interface
     )
     User data
@@ -87,11 +96,11 @@ parser_index=${parser_startindex}
 
 
 parser_required[${#parser_required[*]}]="G_2_output:--output"
-parser_required[${#parser_required[*]}]="G_3_xml-description:--xml-description"
-parser_required[${#parser_required[*]}]="G_4_g:--shell or --command"
+parser_required[${#parser_required[*]}]="G_4_g:(--shell, --prefix-sc-variables) or --command"
 # Switch options
 
 displayHelp=false
+prefixSubcommandBoundVariableName=false
 update=false
 skipValidation=false
 debugMode=false
@@ -100,11 +109,11 @@ nsxmlPathRelative=false
 
 outputPath=
 xmlProgramDescriptionPath=
-launcherModeXsh=
+xmlShellFileDescriptionPath=
 launcherModeExistingCommand=
 targetPlatform="host"
-windowWidth=
-windowHeight=
+windowWidth="640"
+windowHeight="480"
 userInitializationScript=
 nsxmlPath=
 
@@ -208,6 +217,20 @@ parse_enumcheck()
 }
 parse_addvalue()
 {
+	local position=${#parser_values[*]}
+	local value="${1}"
+	if [ -z "${parser_subcommand}" ]
+	then
+		parser_errors[${#parser_errors[*]}]="Positional argument not allowed"
+		return ${PARSER_ERROR}
+	else
+		case "${parser_subcommand}" in
+		*)
+			return ${PARSER_ERROR}
+			;;
+		
+		esac
+	fi
 	parser_values[${#parser_values[*]}]="${1}"
 }
 parse_process_subcommand_option()
@@ -296,13 +319,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -333,13 +356,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -370,7 +393,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
 			then
-				parse_adderror "Invalid value for option \"${parser_item}\""
+				parse_adderror "Invalid value for option \"${parser_option}\""
 				
 				return ${PARSER_ERROR}
 			fi
@@ -400,7 +423,7 @@ parse_process_option()
 		shell)
 			# Group checks
 			
-			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeXsh}" ] || [ "${launcherMode:0:1}" = "@" ])
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeXsh" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
 				return ${PARSER_ERROR}
@@ -429,24 +452,45 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
-			launcherModeXsh="${parser_item}"
+			xmlShellFileDescriptionPath="${parser_item}"
 			launcherMode="launcherModeXsh"
-			parse_setoptionpresence G_4_g_1_shell;parse_setoptionpresence G_4_g
+			launcherModeXsh="xmlShellFileDescriptionPath"
+			parse_setoptionpresence G_4_g_1_g_1_shell;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			;;
+		prefix-sc-variables)
+			# Group checks
+			
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeXsh" ] || [ "${launcherMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			prefixSubcommandBoundVariableName=true
+			launcherMode="launcherModeXsh"
+			launcherModeXsh="prefixSubcommandBoundVariableName"
+			parse_setoptionpresence G_4_g_1_g_2_prefix-sc-variables;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
 			;;
 		command)
 			# Group checks
 			
-			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeExistingCommand}" ] || [ "${launcherMode:0:1}" = "@" ])
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeExistingCommand" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
 				return ${PARSER_ERROR}
@@ -569,13 +613,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -598,13 +642,13 @@ parse_process_option()
 			then
 				if [ ! -e "${parser_item}" ]
 				then
-					parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 					return ${PARSER_ERROR}
 				fi
 				
 				if ! ([ -f "${parser_item}" ] || [ -d "${parser_item}" ])
 				then
-					parse_adderror "Invalid patn type for option ${parser_option}"
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
 					return ${PARSER_ERROR}
 				fi
 				
@@ -625,13 +669,13 @@ parse_process_option()
 				parser_item="${parser_input[${parser_index}]}"
 				if [ ! -e "${parser_item}" ]
 				then
-					parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 					return ${PARSER_ERROR}
 				fi
 				
 				if ! ([ -f "${parser_item}" ] || [ -d "${parser_item}" ])
 				then
-					parse_adderror "Invalid patn type for option ${parser_option}"
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
 					return ${PARSER_ERROR}
 				fi
 				
@@ -703,7 +747,7 @@ parse_process_option()
 			then
 				if ! ([ "${parser_item}" = "sh" ] || [ "${parser_item}" = "xsl" ] || [ "${parser_item}" = "xsd" ])
 				then
-					parse_adderror "Invalid value for option \"${parser_item}\""
+					parse_adderror "Invalid value for option \"${parser_option}\""
 					
 					return ${PARSER_ERROR}
 				fi
@@ -724,7 +768,7 @@ parse_process_option()
 				parser_item="${parser_input[${parser_index}]}"
 				if ! ([ "${parser_item}" = "sh" ] || [ "${parser_item}" = "xsl" ] || [ "${parser_item}" = "xsd" ])
 				then
-					parse_adderror "Invalid value for option \"${parser_item}\""
+					parse_adderror "Invalid value for option \"${parser_option}\""
 					
 					return ${PARSER_ERROR}
 				fi
@@ -786,13 +830,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -d "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -823,13 +867,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -860,7 +904,7 @@ parse_process_option()
 			parser_optiontail=""
 			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
 			then
-				parse_adderror "Invalid value for option \"${parser_item}\""
+				parse_adderror "Invalid value for option \"${parser_option}\""
 				
 				return ${PARSER_ERROR}
 			fi
@@ -878,7 +922,7 @@ parse_process_option()
 		s)
 			# Group checks
 			
-			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeXsh}" ] || [ "${launcherMode:0:1}" = "@" ])
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeXsh" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
 				return ${PARSER_ERROR}
@@ -907,24 +951,39 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
-			launcherModeXsh="${parser_item}"
+			xmlShellFileDescriptionPath="${parser_item}"
 			launcherMode="launcherModeXsh"
-			parse_setoptionpresence G_4_g_1_shell;parse_setoptionpresence G_4_g
+			launcherModeXsh="xmlShellFileDescriptionPath"
+			parse_setoptionpresence G_4_g_1_g_1_shell;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			;;
+		p)
+			# Group checks
+			
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeXsh" ] || [ "${launcherMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			prefixSubcommandBoundVariableName=true
+			launcherMode="launcherModeXsh"
+			launcherModeXsh="prefixSubcommandBoundVariableName"
+			parse_setoptionpresence G_4_g_1_g_2_prefix-sc-variables;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
 			;;
 		c)
 			# Group checks
 			
-			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "${launcherModeExistingCommand}" ] || [ "${launcherMode:0:1}" = "@" ])
+			if ! ([ -z "${launcherMode}" ] || [ "${launcherMode}" = "launcherModeExistingCommand" ] || [ "${launcherMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"launcherMode\" was previously set (${launcherMode})"
 				return ${PARSER_ERROR}
@@ -1041,13 +1100,13 @@ parse_process_option()
 			parser_optiontail=""
 			if [ ! -e "${parser_item}" ]
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option ${parser_option}"
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -f "${parser_item}" ])
 			then
-				parse_adderror "Invalid patn type for option ${parser_option}"
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
 			
@@ -1286,8 +1345,8 @@ fi
 preexistantOutputPath=false
 if [ -d "${appRootPath}" ] 
 then
-	(! ${update}) && error " - Folder already exists. Set option --update to force update"
-	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && error " - Folder exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
+	(! ${update}) && error " - Folder \"${appRootPath}\" already exists. Set option --update to force update"
+	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && error " - Folder \"${appRootPath}\" exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
 	preexistantOutputPath=true
 else
 	mkdir -p "${outputPath}" || error "Unable to create output path \"${outputPath}\""
@@ -1333,17 +1392,23 @@ then
 		debugParam="--stringparam prg.debug \"true()\""
 	fi
 	
+	prefixParam=""
+	if ${prefixSubcommandBoundVariableName}
+	then
+		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+	fi
+
 	# Validate bash scheam
-	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${launcherModeXsh}"
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
 	then
 		error "bash XML schema error - abort"
 	fi
 		
 	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-	launcherModeXsh="$(ns_realpath "${launcherModeXsh}")"
-	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${debugParam} "${xshXslTemplatePath}" "${launcherModeXsh}"
+	xmlShellFileDescriptionPath="$(ns_realpath "${xmlShellFileDescriptionPath}")"
+	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 	then
-		echo "Fail to process xsh file \"${launcherModeXsh}\""
+		echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
 		exit 5
 	fi
 		
@@ -1423,7 +1488,7 @@ pref(\"nglayout.debug.disable_xul_fastload\", true);" >> "${appPrefFile}"
 	echo -en " --output \"$(ns_realpath "${outputPath}")\"" >> "${rebuildScriptFile}"
 	if [ "${launcherMode}" == "launcherModeXsh" ]
 	then
-		echo -en " --shell \"$(ns_realpath "${launcherModeXsh}")\"" >> "${rebuildScriptFile}"
+		echo -en " --shell \"$(ns_realpath "${xmlShellFileDescriptionPath}")\"" >> "${rebuildScriptFile}"
 		
 	elif [ "${launcherMode}" == "launcherModeExistingCommand" ]
 	then

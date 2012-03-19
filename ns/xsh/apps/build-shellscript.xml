@@ -66,7 +66,7 @@
 			</prg:options>
 		</prg:group>
 
-		<prg:argument>
+		<prg:argument id="xmlProgramDescriptionPath">
 			<prg:databinding>
 				<prg:variable>xmlProgramDescriptionPath</prg:variable>
 			</prg:databinding>
@@ -89,7 +89,7 @@
 			</prg:type>
 		</prg:argument>
 
-		<prg:argument required="true">
+		<prg:argument required="true" id="xmlShellFileDescriptionPath">
 			<prg:databinding>
 				<prg:variable>xmlShellFileDescriptionPath</prg:variable>
 			</prg:databinding>
@@ -124,7 +124,7 @@
 			</prg:names>
 		</prg:argument>
 
-		<prg:switch>
+		<prg:switch id="skipValidation">
 			<prg:databinding>
 				<prg:variable>skipValidation</prg:variable>
 			</prg:databinding>
@@ -138,6 +138,22 @@
 				<prg:long>skip-validation</prg:long>
 				<prg:long>no-validation</prg:long>
 				<prg:short>S</prg:short>
+			</prg:names>
+		</prg:switch>
+
+		<prg:switch id="prefixSubcommandBoundVariableName">
+			<prg:databinding>
+				<prg:variable>prefixSubcommandBoundVariableName</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Prefix subcommand options bound variable names</prg:abstract>
+				<prg:details>This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae).
+				This avoid variable name aliasing.
+				</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>prefix-sc-variables</prg:long>
+				<prg:short>p</prg:short>
 			</prg:names>
 		</prg:switch>
 

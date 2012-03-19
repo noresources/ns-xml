@@ -114,6 +114,13 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<variable name="prg.sh.parser.var_subcommand">
+		<call-template name="sh.var">
+			<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+			<with-param name="quoted" select="true()" />
+		</call-template>
+	</variable>
 
 	<variable name="prg.sh.parser.vName_subcommand_expected">
 		<call-template name="prg.prefixedName">
@@ -182,6 +189,12 @@
 		</call-template>
 	</variable>
 
+	<variable name="prg.sh.parser.var_OK">
+		<call-template name="sh.var">
+			<with-param name="name" select="$prg.sh.parser.vName_OK" />
+		</call-template>
+	</variable>
+
 	<variable name="prg.sh.parser.vName_ERROR">
 		<call-template name="str.toUpper">
 			<with-param name="content">
@@ -192,6 +205,12 @@
 					</with-param>
 				</call-template>
 			</with-param>
+		</call-template>
+	</variable>
+	
+	<variable name="prg.sh.parser.var_ERROR">
+		<call-template name="sh.var">
+			<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
 		</call-template>
 	</variable>
 
@@ -207,7 +226,7 @@
 			</with-param>
 		</call-template>
 	</variable>
-
+	
 	<variable name="prg.sh.parser.vName_SC_ERROR">
 		<call-template name="str.toUpper">
 			<with-param name="content">

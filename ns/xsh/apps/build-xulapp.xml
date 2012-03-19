@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0">
+<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>build-xulapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
@@ -46,35 +46,16 @@
 			</prg:type>
 		</prg:argument>
 
-		<prg:argument id="xmlDesc" required="true">
-			<prg:databinding>
-				<prg:variable>xmlProgramDescriptionPath</prg:variable>
-			</prg:databinding>
+		<prg:argument id="xmlProgramDescriptionPath">
+			<!-- In build-xulapp, the documentation change a bit -->
+			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:databinding)" />
 			<prg:documentation>
 				<prg:abstract>Program description file</prg:abstract>
 			</prg:documentation>
-			<prg:names>
-				<prg:short>x</prg:short>
-				<prg:long>xml-description</prg:long>
-			</prg:names>
-			<prg:type>
-				<prg:path exist="true">
-					<prg:kinds>
-						<prg:file />
-					</prg:kinds>
-					<prg:patterns>
-						<prg:pattern>
-							<prg:name>Xml file</prg:name>
-							<prg:rules>
-								<prg:rule>
-									<prg:endWith>.xml</prg:endWith>
-								</prg:rule>
-							</prg:rules>
-						</prg:pattern>
-					</prg:patterns>
-				</prg:path>
-			</prg:type>
+			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:names)" />
+			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:type)" />
 		</prg:argument>
+
 		<prg:group type="exclusive" required="true">
 			<prg:databinding>
 				<prg:variable>launcherMode</prg:variable>
@@ -83,25 +64,25 @@
 				<prg:abstract>Launcher mode</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:argument id="launcherModeXsh">
+				<prg:group id="launcherModeXsh">
 					<prg:databinding>
 						<prg:variable>launcherModeXsh</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Generated shell script from the given template</prg:abstract>
+						<prg:abstract>Generate shell script</prg:abstract>
 					</prg:documentation>
-					<prg:type>
-						<prg:path exist="true">
-							<prg:kinds>
-								<prg:file />
-							</prg:kinds>
-						</prg:path>
-					</prg:type>
-					<prg:names>
-						<prg:short>s</prg:short>
-						<prg:long>shell</prg:long>
-					</prg:names>
-				</prg:argument>
+					<prg:options>
+						<!-- In build-xulapp, xmlShellFileDescriptionPath is not required -->
+						<prg:argument id="xmlShellFileDescriptionPath">
+							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:databinding)" />
+							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:documentation)" />
+							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:type)" />
+							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:names)" />
+						</prg:argument>
+
+						<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])" />
+					</prg:options>
+				</prg:group>
 				<prg:argument id="launcherModeExistingCommand">
 					<prg:databinding>
 						<prg:variable>launcherModeExistingCommand</prg:variable>
@@ -149,26 +130,9 @@
 				<prg:abstract>Update application if folder already exists</prg:abstract>
 			</prg:documentation>
 		</prg:switch>
-		
-		<!--  -->
-		<prg:switch>
-			<prg:databinding>
-				<prg:variable>skipValidation</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Skip XML Schema validations</prg:abstract>
-				<prg:details>The default behavior of build-shellscript is to validate the given xsh file against
-					the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas.
-					This option will disable schema validations
-				</prg:details>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>skip-validation</prg:long>
-				<prg:long>no-validation</prg:long>
-				<prg:short>S</prg:short>
-			</prg:names>
-		</prg:switch>
-		
+
+		<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'skipValidation'])" />
+
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>User interface</prg:abstract>
@@ -185,6 +149,7 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
+					<prg:default>640</prg:default>
 				</prg:argument>
 				<prg:argument>
 					<prg:databinding>
@@ -197,6 +162,7 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
+					<prg:default>480</prg:default>
 				</prg:argument>
 				<prg:switch>
 					<prg:databinding>

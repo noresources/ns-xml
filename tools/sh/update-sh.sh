@@ -54,7 +54,7 @@ do
 	if [ "${bn}" != "build-shellscript" ]
 	then
 		echo "Update ${b}"
-		if ! ${buildshellscript} -x ${fn}.xml -s ${f} -o ${shOut}
+		if ! ${buildshellscript} -p -x ${fn}.xml -s ${f} -o ${shOut}
 		then
 			echo "Failed to update ${f}"
 			exit 1

@@ -512,6 +512,10 @@
 					<selector xpath=".//prg:names/prg:long" />
 					<field xpath="." />
 				</unique>
+				<unique name="subcommandVariableNameUniqueness">
+					<selector xpath=".//prg:databinding/prg:variable" />
+					<field xpath="." />
+				</unique>
 			</element>
 			<element name="values" type="prg:valuesNodeType" minOccurs="0" maxOccurs="1" />
 			<element name="ui" type="prg:subcommandUISpecs" minOccurs="0" maxOccurs="1" />
@@ -684,6 +688,10 @@
 						<selector xpath=".//prg:names/prg:long" />
 						<field xpath="." />
 					</unique>
+					<unique name="variableNameUniqueness">
+						<selector xpath=".//prg:databinding/prg:variable" />
+						<field xpath="." />
+					</unique>
 				</element>
 				<element name="values" type="prg:valuesNodeType" minOccurs="0" />
 				<element name="ui" type="prg:programUISpecs" minOccurs="0" />
@@ -715,11 +723,6 @@
 		<unique name="optionIdUniqueness">
 			<selector xpath=".//prg:options/*" />
 			<field xpath="@id" />
-		</unique>
-
-		<unique name="variableNameUniqueness">
-			<selector xpath=".//prg:databinding/prg:variable" />
-			<field xpath="." />
 		</unique>
 
 	</element>

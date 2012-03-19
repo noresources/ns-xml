@@ -107,11 +107,18 @@ then
 	debugParam="--stringparam prg.debug \"true()\""
 fi
 
-if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
+prefixParam=""
+if ${prefixSubcommandBoundVariableName}
+then
+	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+fi
+
+if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
 	exit 6
-fi 
+fi
+
 chmod 755 "${outputScriptFilePath}"
 ]]></sh:code>
 </sh:program>

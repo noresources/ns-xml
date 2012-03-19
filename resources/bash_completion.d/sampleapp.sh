@@ -128,6 +128,24 @@ __sc_help_bashcompletion()
 	esac
 	return 1
 }
+__sc_version_bashcompletion()
+{
+	# Context
+	local current="${COMP_WORDS[COMP_CWORD]}"
+	local previous="${COMP_WORDS[COMP_CWORD-1]}"
+	# argument option
+	local option="$(__sampleapp_getoptionname ${previous})"
+	if [ -z "${option}" ]
+	then
+		return 1
+	fi
+	
+	
+	case "${option}" in
+	
+	esac
+	return 1
+}
 
 __sampleapp_bashcompletion()
 {
@@ -142,7 +160,7 @@ __sampleapp_bashcompletion()
 	# Subcommand proposal
 	if [ ${COMP_CWORD} -eq 1 ]
 	then
-		local subcommands="sub help"
+		local subcommands="sub help version"
 		COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -171,6 +189,9 @@ __sampleapp_bashcompletion()
 		args="--switch --sc-switch --sc-existing-file-argument --sc-strict-enum ${globalargs}"
 		;;
 	"help")
+		args=" ${globalargs}"
+		;;
+	"version")
 		args=" ${globalargs}"
 		;;
 	

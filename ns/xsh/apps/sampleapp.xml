@@ -57,7 +57,7 @@
 		</prg:argument>
 		<prg:switch>
 			<prg:databinding>
-				<prg:variable>gswitch</prg:variable>
+				<prg:variable>switch</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>Simple switch</prg:abstract>
@@ -417,8 +417,14 @@
 						<prg:long>switch</prg:long>
 						<prg:long>sc-switch</prg:long>
 					</prg:names>
+					<prg:databinding>
+						<prg:variable>switch</prg:variable>
+					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Switch of the sub command</prg:abstract>
+						<prg:details>The bound variable name can be the same as another subcommand variable 
+						or one of the global option. In this case, you have to set the 
+						prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)</prg:details>
 					</prg:documentation>
 				</prg:switch>
 				<prg:argument>
@@ -481,9 +487,19 @@
 				</prg:value>
 			</prg:values>
 		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>version</prg:name>
+		</prg:subcommand>
 	</prg:subcommands>
 
 	<prg:values>
+		<prg:value>
+			<prg:documentation>
+				<prg:abstract>Mixed value</prg:abstract>
+				<prg:details>This is the most basic element you can define. Not really useful</prg:details>
+			</prg:documentation>
+		</prg:value>
+
 		<prg:value>
 			<prg:type>
 				<prg:path access="rw" />
@@ -493,14 +509,7 @@
 				<prg:details>Anonymous values will be added to the command line after all options</prg:details>
 			</prg:documentation>
 		</prg:value>
-
-		<prg:value>
-			<prg:documentation>
-				<prg:abstract>Mixed value</prg:abstract>
-				<prg:details>This is the most basic element you can define. Not really useful</prg:details>
-			</prg:documentation>
-		</prg:value>
-
+		
 		<prg:value>
 			<prg:documentation>
 				<prg:abstract>Selection</prg:abstract>
