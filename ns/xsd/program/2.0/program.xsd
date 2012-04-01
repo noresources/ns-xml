@@ -413,7 +413,7 @@
 					<element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
 					<element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1" />
 					<element name="options" type="prg:optionsType" minOccurs="1">
-						<unique name="groupOptionIdUniqueness">
+						<unique name="subOptionsIdUniqueness">
 							<selector xpath="./*" />
 							<field xpath="@id" />
 						</unique>
@@ -423,7 +423,7 @@
 						<complexType>
 							<attribute name="id" type="IDREF" />
 						</complexType>
-						<keyref name="groupDefaultOptionKeyRef" refer="prg:groupOptionIdUniqueness">
+						<keyref name="groupDefaultOptionUniqueRef" refer="prg:subOptionsIdUniqueness">
 							<selector xpath="prg:default" />
 							<field xpath="@id" />
 						</keyref>
@@ -670,6 +670,25 @@
 		</restriction>
 	</simpleType>
 
+	<element name="options" type="prg:optionsType">
+		<annotation>
+			<documentation xml:lang="en">
+			</documentation>
+		</annotation>
+		<unique name="optionShortNameUniqueness">
+			<selector xpath=".//prg:names/prg:short" />
+			<field xpath="." />
+		</unique>
+		<unique name="optionLongNameUniqueness">
+			<selector xpath=".//prg:names/prg:long" />
+			<field xpath="." />
+		</unique>
+		<unique name="optionVariableNameUniqueness">
+			<selector xpath=".//prg:databinding/prg:variable" />
+			<field xpath="." />
+		</unique>
+	</element>
+	
 	<element name="program">
 		<complexType>
 			<all>

@@ -42,6 +42,7 @@
 				<prg:value>ui argument</prg:value>
 			</prg:ui>
 		</prg:argument>
+		
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>standardArg</prg:variable>
@@ -55,6 +56,7 @@
 			</prg:names>
 			<prg:ui mode="default" />
 		</prg:argument>
+		
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>switch</prg:variable>
@@ -114,7 +116,7 @@
 					</prg:names>
 				</prg:argument>
 
-				<prg:argument>
+				<prg:argument id="gsarg_id">
 					<prg:databinding>
 						<prg:variable>gsarg</prg:variable>
 					</prg:databinding>
@@ -180,9 +182,10 @@
 					</prg:type>
 				</prg:argument>
 			</prg:options>
+			<prg:default id="gsarg_id" />
 		</prg:group>
 
-		<prg:argument>
+		<prg:argument id="gfarg_id">
 			<prg:databinding>
 				<prg:variable>gfarg</prg:variable>
 			</prg:databinding>

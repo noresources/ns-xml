@@ -160,6 +160,8 @@ strictEnum="Value B"
 nonStrictEnum=
 sub_subFile=
 sub_subEnum=
+# Group default options
+globalArgumentsGroup="@gsarg"
 
 parse_addmessage()
 {
@@ -1250,6 +1252,13 @@ parse()
 			parser_subindex=$(expr ${parser_subindex} + 1)
 		fi
 	done
+	
+	# Set default option for group G_6_g (if not already set)
+	if [ "${globalArgumentsGroup:0:1}" = "@" ]
+	then
+		globalArgumentsGroup="gsarg"
+		parse_setoptionpresence G_6_g
+	fi
 	
 	parse_checkrequired
 	parse_checkminmax

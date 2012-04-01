@@ -1132,13 +1132,19 @@
 				<call-template name="endl" />
 
 				<!-- Set group default options -->
-				<for-each select="$programNode//prg:group/prg:default">
-					<variable name="groupNode" select=".." />
-					<variable name="prg.optionId" select="@id" />
-					<variable name="optionNode" select="$groupNode/prg:options/*/@id[.=$optionId]/.." />
+				<for-each select="$programNode//prg:group[prg:default]">
+					<variable name="groupNode" select="." />
+					<variable name="optionIdRef" select="./prg:default/@id" />
+					<variable name="optionNode" select="$groupNode/prg:options/*/@id[.=$optionIdRef]/.." />
+					<variable name="groupNodeId">
+						<call-template name="prg.optionId">
+							<with-param name="optionNode" select="$groupNode" />
+						</call-template>
+					</variable>
+					
 					<if test="$groupNode/prg:databinding/prg:variable and $optionNode/prg:databinding/prg:variable">
 						<text># Set default option for group </text>
-						<value-of select="$groupNode/@id"></value-of>
+						<value-of select="$groupNodeId" />
 						<text> (if not already set)</text>
 						<call-template name="endl" />
 						<call-template name="sh.if">
@@ -1155,7 +1161,7 @@
 								<call-template name="endl" />
 								<value-of select="$prg.sh.parser.fName_setoptionpresence" />
 								<text> </text>
-								<value-of select="$groupNode/@id" />
+								<value-of select="$groupNodeId" />
 							</with-param>
 						</call-template>
 						<call-template name="endl" />
