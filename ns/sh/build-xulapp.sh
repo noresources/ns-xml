@@ -12,9 +12,9 @@ usage()
 cat << EOFUSAGE
 build-xulapp: Build (or update) a xul application launcher
 Usage: 
-  build-xulapp [-h] -o <path> [-x <path>] (-s <path> -p | -c <...>) [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
+  build-xulapp [--help] -o <path> [-x <path>] (-s <path> -p | -c <...>) [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative --ns-xml-add <...  [ ... ]>]
   With:
-    -h, --help: Display the command documentation & options
+    --help: Display program usage
     -o, --output: Output folder path for the XUL application structure
     -x, --xml-description: Program description file
     Launcher mode
@@ -35,14 +35,14 @@ Usage:
     	Default value: host
     -u, --update: Update application if folder already exists
     --skip-validation, --no-validation, -S: Skip XML Schema validations
-    The default behavior of build-shellscript is to validate the given xsh file against the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. This option will disable schema validations
+    The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
     User interface
     (
     	--window-width, -W: 
     		Default value: 640
     	--window-height, -H: 
     		Default value: 480
-    	-d, --debug: Add debug options into the built interface
+    	-d, --debug: Add debug console and options into the built interface
     )
     User data
     (
@@ -311,6 +311,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -348,6 +349,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -385,6 +387,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -444,6 +447,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -511,6 +515,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -539,6 +544,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -566,6 +572,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -605,6 +612,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -710,6 +718,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -802,10 +811,6 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		h)
-			displayHelp=true
-			parse_setoptionpresence G_1_help
-			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -822,6 +827,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -859,6 +865,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -896,6 +903,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -943,6 +951,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -1004,6 +1013,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -1032,6 +1042,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -1059,6 +1070,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -1092,6 +1104,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -1159,11 +1172,8 @@ parse()
 
 ns_realpath()
 {
-	body
-}
-ns_realpath()
-{
 	local path="${1}"
+	shift
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -1196,11 +1206,15 @@ error()
 xml_validate()
 {
 	local schema="${1}"
-	local xml="${2}"
+	shift
+	local xml="${1}"
+	shift
 	local tmpOut="/tmp/xml_validate.tmp"
 	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then
 		cat "${tmpOut}"
+		echo "Schema: ${scheam}"
+		echo "File: ${xml}"
 		return 1
 	fi
 	

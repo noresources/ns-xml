@@ -1,10 +1,12 @@
 ns/xsd;XSD
 ns/xbl;XBL
 ns/xsl;XSLT
+ns/python;Python
 ns/xpcom;XPCOM
 tools;Tools
 resources;Resources
 doc;Documentation
+unittests;UnitTests
 tests;Tests
 ns/sh;Shell
 ns/xsh;XSH

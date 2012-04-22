@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="base.xsl" />
@@ -164,6 +164,13 @@
 						<with-param name="then">
 							<value-of select="$prg.sh.parser.fName_adderror" />
 							<text> "End of option marker found - Argument expected"</text>
+							<call-template name="endl" />
+							<call-template name="sh.var.selfexpr">
+								<with-param name="name" select="$prg.sh.parser.vName_index" />
+								<with-param name="operator">
+									<text>-</text>
+								</with-param>
+							</call-template>
 							<if test="$onError">
 								<call-template name="endl" />
 								<value-of select="$onError" />

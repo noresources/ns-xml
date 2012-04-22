@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <!-- Describe bash script elements -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" targetNamespace="http://xsd.nore.fr/bash" elementFormDefault="qualified">
+<schema targetNamespace="http://xsd.nore.fr/bash" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash">
 
 	<import namespace="http://xsd.nore.fr/program" schemaLocation="program/2.0/program.xsd" />
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="www.w3.org/XML/1998/namespace.xsd" />
 
-	<complexType name="functionParameterType">
+	<simpleType name="booleanLiteral">
+		<restriction base="string">
+			<enumeration value="true" />
+			<enumeration value="false" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="functionParameterTypeEnum">
+		<restriction base="string">
+			<enumeration value="string" />
+			<enumeration value="numeric" />
+			<enumeration value="boolean" />
+		</restriction>
+	</simpleType>
+		
+	<complexType name="functionParameterType" mixed="true">
 		<attribute name="name" type="string" />
+		<attribute name="type" type="sh:functionParameterTypeEnum" use="optional" />
 	</complexType>
 
 	<simpleType name="plainCodeType">
@@ -19,27 +35,28 @@
 	</simpleType>
 
 	<simpleType name="interpreterPathType">
-		<restriction base="string">
-		</restriction>
+		<restriction base="string" />
 	</simpleType>
+	
+	<complexType name="functionBodyType">
+		<simpleContent>
+			<extension base="sh:plainCodeType">
+				<attribute name="indent" type="sh:booleanLiteral" use="optional" />
+			</extension>
+		</simpleContent>
+	</complexType>
 
 	<complexType name="functionType">
 		<sequence minOccurs="1" maxOccurs="1">
 			<element name="parameter" type="sh:functionParameterType" minOccurs="0" maxOccurs="unbounded" />
-			<element name="body" minOccurs="1" maxOccurs="1" type="sh:plainCodeType" />
+			<element name="body" minOccurs="1" maxOccurs="unbounded" type="sh:functionBodyType" />
 		</sequence>
 		<attribute name="name">
 			<annotation>
 				<documentation>Function name</documentation>
 			</annotation>
 		</attribute>
-		<attribute ref="xml:base">
-			<annotation>
-				<documentation>This attribute reference will allow the element to be included through XInclude.
-					XInclude may add it while processing
-				</documentation>
-			</annotation>
-		</attribute>
+		<attribute ref="xml:base" />
 	</complexType>
 
 	<complexType name="programType">
@@ -76,13 +93,7 @@
 			<sequence>
 				<element ref="sh:function" minOccurs="1" maxOccurs="unbounded" />
 			</sequence>
-			<attribute ref="xml:base">
-				<annotation>
-					<documentation>This attribute reference will allow the element to be included through XInclude.
-						XInclude may add it while processing
-					</documentation>
-				</annotation>
-			</attribute>
+			<attribute ref="xml:base" />
 		</complexType>
 	</element>
 

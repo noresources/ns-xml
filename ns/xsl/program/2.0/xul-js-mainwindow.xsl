@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <!-- Javascript code base of a xul application based on program schema -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 

@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use XML description file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-p] [-d] [-h] -o <path>
+  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-p] [-d] [--help] -o <path>
   With:
     ns-xml source path options
     (
@@ -26,11 +26,11 @@ Usage:
     	A xml file following the bash XML schema
     	  The file may include a XML program definition
     --skip-validation, --no-validation, -S: Skip XML Schema validations
-    The default behavior of build-shellscript is to validate the given xsh file against the program (http://xsd.nore.fr/program) and bash (http://xsd.nore.fr/bash) schemas. This option will disable schema validations
+    The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
     --prefix-sc-variables, -p: Prefix subcommand options bound variable names
     This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
     -d, --debug: Generate debug messages in help and command line parsing functions
-    -h, --help: This help
+    --help: Display program usage
     -o, --output: Output file path
 EOFUSAGE
 }
@@ -262,6 +262,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -299,6 +300,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -376,6 +378,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -403,6 +406,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -457,6 +461,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -494,6 +499,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -527,10 +533,6 @@ parse_process_option()
 			debugMode=true
 			parse_setoptionpresence G_6_debug
 			;;
-		h)
-			displayHelp=true
-			parse_setoptionpresence G_7_help
-			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -547,6 +549,7 @@ parse_process_option()
 				if [ "${parser_item}" = "--" ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
 					return ${PARSER_ERROR}
 				fi
 			fi
@@ -602,11 +605,8 @@ parse()
 
 ns_realpath()
 {
-	body
-}
-ns_realpath()
-{
 	local path="${1}"
+	shift
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -620,6 +620,65 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
+}
+error()
+{
+	local errno=${1}
+	[ -z "${errno}" ] && errno=1
+	shift
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
+chunk_check_nsxml_ns_path()
+{
+	if [ ! -z "${nsxmlPath}" ]
+	then
+		if ${nsxmlPathRelative}
+		then
+			nsPath="${scriptPath}/${nsxmlPath}"
+		else
+			nsPath="${nsxmlPath}"
+		fi
+		
+		[ -d "${nsPath}" ] || return 1
+		
+		nsPath="$(ns_realpath "${nsPath}")"
+	fi
+	[ -d "${nsPath}" ]
+}
+get_program_version()
+{
+	local file="${1}"
+	shift
+	local tmpXslFile="/tmp/get_program_version.xsl"
+	cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:output method="text" encoding="utf-8" />
+	<xsl:template match="//prg:program">
+		<xsl:value-of select="@version" />
+		<xsl:text>&#10;</xsl:text>
+	</xsl:template>
+</xsl:stylesheet>
+GETPROGRAMVERSIONXSLEOF
+
+	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
+	rm -f "${tmpXslFile}"
+	if [ ! -z "${result##*[!0-9.]*}" ]
+	then
+		echo "${result}"
+		return 0
+	else
+		return 1
+	fi
+
+	
 }
 
 # Global variables
@@ -656,23 +715,7 @@ then
 	exit 0
 fi
 
-# Check ns-xml library path
-if [ ! -z "${nsxmlPath}" ]
-then
-	if ${nsxmlPathRelative}
-	then
-		nsPath="${scriptPath}/${nsxmlPath}"
-	else
-		nsPath="${nsxmlPath}"
-	fi
-	
-	if [ ! -d "${nsPath}" ]
-	then
-		error "Invalid ns path \"${nsPath}\""
-	fi
-	
-	nsPath="$(ns_realpath "${nsPath}")"
-fi
+chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 
 # Check required XSLT files
 xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"

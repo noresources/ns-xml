@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+
+<!-- A set of very common options -->
+<prg:options xmlns:prg="http://xsd.nore.fr/program">
+	<prg:switch id="prg.option.displayHelp">
+		<prg:databinding>
+			<prg:variable>displayHelp</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Display program usage</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>help</prg:long>
+		</prg:names>
+		<prg:ui mode="disabled" />
+	</prg:switch>
+	<prg:switch>
+		<prg:databinding>
+			<prg:variable>displayVersion</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Display program version</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>version</prg:long>
+		</prg:names>
+		<prg:ui mode="disabled" />
+	</prg:switch>
+</prg:options>

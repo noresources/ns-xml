@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<sh:info>
 		<xi:include href="build-xulapp.xml" />
@@ -30,6 +30,8 @@ local tmpOut="/tmp/xml_validate.tmp"
 if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 then
 	cat "${tmpOut}"
+	echo "Schema: ${scheam}"
+	echo "File: ${xml}"
 	return 1
 fi
 

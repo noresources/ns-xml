@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <!-- Shell script language elements -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
 
@@ -97,17 +97,33 @@
 		</call-template>
 	</template>
 
-	<template name="sh.varincrement">
+	<template name="sh.var.selfexpr">
+		<!-- Operations on itself -->
 		<param name="name" />
+		<param name="operator">
+			<text>+</text>
+		</param>
 		<param name="value" select="1" />
 		<value-of select="normalize-space($name)" />
 		<text>=$(expr </text>
 		<call-template name="sh.var">
 			<with-param name="name" select="$name" />
 		</call-template>
-		<text> + </text>
+		<text> </text>
+		<value-of select="normalize-space($operator)" />
+		<text> </text>
 		<value-of select="normalize-space($value)" />
 		<text>)</text>
+	</template>
+
+	<template name="sh.varincrement">
+		<param name="name" />
+		<param name="value" select="1" />
+		<call-template name="sh.var.selfexpr">
+			<with-param name="name" select="$name" />
+			<with-param name="value" select="$value" />
+			<with-param name="operator"><text>+</text></with-param>
+		</call-template>
 	</template>
 
 	<template name="sh.arrayLength">

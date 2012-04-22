@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
 <!-- - Extends shellscript templates -->
 <!-- - Transform elements of the bash schema -->
@@ -21,27 +21,78 @@
 
 	<xsl:template match="sh:function">
 		<xsl:if test="(not($bash.def.elementType) or ($bash.def.elementType = 'function')) and (not($bash.def.functionName) or ($bash.def.functionName = @name))">
-			<xsl:call-template name="sh.functionDefinition">
-				<xsl:with-param name="name" select="@name" />
-				<xsl:with-param name="content">
-					<xsl:for-each select="sh:parameter">
-						<xsl:text>local </xsl:text>
-						<xsl:value-of select="normalize-space(@name)" />
-						<xsl:text>=</xsl:text>
-						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name" select="position()" />
-							<xsl:with-param name="quoted" select="true()" />
+			<xsl:value-of select="normalize-space(@name)" />
+			<text>()</text>
+			<xsl:call-template name="unixEndl" />
+			<xsl:text>{</xsl:text>
+			
+			<!-- parameters -->
+			<xsl:if test="sh:parameter">
+				<xsl:call-template name="sh.block">
+					<xsl:with-param name="addFinalEndl" select="false()" />
+					<xsl:with-param name="addInitialEndl" select="false()" />
+					<xsl:with-param name="endl"><text>&#10;</text></xsl:with-param>
+					<xsl:with-param name="content">
+						<xsl:for-each select="sh:parameter">
+							<xsl:variable name="default" select="." />
+							<xsl:variable name="quoted" select="not(@type) or (@type = 'string')" />
+							<xsl:text>local </xsl:text>
+							<xsl:value-of select="normalize-space(@name)" />
+							<xsl:text>=</xsl:text>
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="1" />
+								<xsl:with-param name="quoted" select="$quoted" />
+							</xsl:call-template>
+							<xsl:call-template name="unixEndl" />
+							<xsl:if test="string-length($default) > 0">
+								<xsl:text>[ -z "</xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="normalize-space(@name)" />
+								</xsl:call-template>
+								<xsl:text>" ]</xsl:text>
+								<xsl:text> &amp;&amp; </xsl:text>
+								<xsl:value-of select="normalize-space(@name)" />
+								<xsl:text>=</xsl:text>
+								<xsl:if test="$quoted">
+									<text>"</text>
+								</xsl:if>
+								<xsl:value-of select="$default" />
+								<xsl:if test="$quoted">
+									<text>"</text>
+								</xsl:if>
+								<xsl:call-template name="unixEndl" />
+							</xsl:if>
+							<text>shift</text>
+							<xsl:call-template name="unixEndl" />
+						</xsl:for-each>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:if>
+			
+			<!-- body -->
+			<xsl:for-each select="sh:body">
+				<xsl:choose>
+					<xsl:when test="@indent = 'false'">
+						<xsl:apply-templates select="." />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="sh.block">
+							<xsl:with-param name="addFinalEndl" select="false()" />
+							<xsl:with-param name="content">
+								<xsl:apply-templates select="." />
+							</xsl:with-param>
 						</xsl:call-template>
-						<xsl:call-template name="unixEndl" />
-					</xsl:for-each>
-					<xsl:apply-templates select="sh:body" />
-				</xsl:with-param>
-			</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:call-template name="unixEndl" />
+			</xsl:for-each>
+			<xsl:text>}</xsl:text>
+			<xsl:call-template name="unixEndl" />
 		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="sh:functions">
 		<xsl:apply-templates select="sh:function" />
 	</xsl:template>
-	
+
 </xsl:stylesheet>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>build-xulapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
@@ -12,19 +12,9 @@
 		<prg:label>Command line front-end builder</prg:label>
 	</prg:ui>
 	<prg:options>
-		<prg:switch id="help">
-			<prg:databinding>
-				<prg:variable>displayHelp</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Display the command documentation &amp; options</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:short>h</prg:short>
-				<prg:long>help</prg:long>
-			</prg:names>
-			<prg:ui mode="disabled" />
-		</prg:switch>
+
+		<!-- Help -->
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 
 		<prg:argument id="outputfolder" required="true">
 			<prg:databinding>
@@ -48,12 +38,12 @@
 
 		<prg:argument id="xmlProgramDescriptionPath">
 			<!-- In build-xulapp, the documentation change a bit -->
-			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:databinding)" />
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)" />
 			<prg:documentation>
 				<prg:abstract>Program description file</prg:abstract>
 			</prg:documentation>
-			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:names)" />
-			<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlProgramDescriptionPath']/prg:type)" />
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:names)" />
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:type)" />
 		</prg:argument>
 
 		<prg:group type="exclusive" required="true">
@@ -131,7 +121,8 @@
 			</prg:documentation>
 		</prg:switch>
 
-		<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'skipValidation'])" />
+		<!-- Skip validation -->
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
 
 		<prg:group>
 			<prg:documentation>
@@ -164,18 +155,16 @@
 					</prg:type>
 					<prg:default>480</prg:default>
 				</prg:argument>
+
+				<!-- debugMode -->
 				<prg:switch>
-					<prg:databinding>
-						<prg:variable>debugMode</prg:variable>
-					</prg:databinding>
+					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:databinding)" />
 					<prg:documentation>
-						<prg:abstract>Add debug options into the built interface</prg:abstract>
+						<prg:abstract>Add debug console and options into the built interface</prg:abstract>
 					</prg:documentation>
-					<prg:names>
-						<prg:short>d</prg:short>
-						<prg:long>debug</prg:long>
-					</prg:names>
+					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:names)" />
 				</prg:switch>
+				
 			</prg:options>
 		</prg:group>
 
@@ -262,52 +251,10 @@
 				<prg:abstract>ns-xml options</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:argument>
-					<prg:databinding>
-						<prg:variable>nsxmlPath</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>ns-xml source path</prg:abstract>
-						<prg:details>Location of the ns folder of ns-xml package
-						</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>ns-xml-path</prg:long>
-					</prg:names>
-					<prg:type>
-						<prg:path>
-							<prg:kinds>
-								<prg:folder />
-							</prg:kinds>
-							<prg:patterns>
-								<prg:pattern>
-									<prg:name>ns folder</prg:name>
-									<prg:rules>
-										<prg:rule>
-											<prg:endWith>ns</prg:endWith>
-										</prg:rule>
-									</prg:rules>
-								</prg:pattern>
-							</prg:patterns>
-						</prg:path>
-					</prg:type>
-					<prg:ui mode="hidden">
-						<prg:value>../chrome/ns</prg:value>
-					</prg:ui>
-				</prg:argument>
-				<prg:switch>
-					<prg:databinding>
-						<prg:variable>nsxmlPathRelative</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>ns source path is relative this program path</prg:abstract>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>ns-xml-path-relative</prg:long>
-					</prg:names>
-					<prg:ui mode="hidden">
-					</prg:ui>
-				</prg:switch>
+
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])" />
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.nsxmlRelativePath'])" />
+
 				<prg:multiargument>
 					<prg:databinding>
 						<prg:variable>nsxmlAdditionalSources</prg:variable>

@@ -146,6 +146,14 @@ __sc_version_bashcompletion()
 	esac
 	return 1
 }
+__sc_hep_bashcompletion()
+{
+	__sc_help_bashcompletion
+}
+__sc_sos_bashcompletion()
+{
+	__sc_help_bashcompletion
+}
 
 __sampleapp_bashcompletion()
 {
@@ -160,7 +168,7 @@ __sampleapp_bashcompletion()
 	# Subcommand proposal
 	if [ ${COMP_CWORD} -eq 1 ]
 	then
-		local subcommands="sub help version"
+		local subcommands="sub help version hep sos"
 		COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -188,7 +196,7 @@ __sampleapp_bashcompletion()
 	"sub")
 		args="--switch --sc-switch --sc-existing-file-argument --sc-strict-enum ${globalargs}"
 		;;
-	"help")
+	"help" | "hep" | "sos")
 		args=" ${globalargs}"
 		;;
 	"version")

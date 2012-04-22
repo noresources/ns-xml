@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program">
 	<prg:name>sampleapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
@@ -474,6 +474,10 @@
 				<prg:label>Help sub command</prg:label>
 			</prg:ui>
 			<prg:name>help</prg:name>
+			<prg:aliases>
+				<prg:alias>hep</prg:alias>
+				<prg:alias>sos</prg:alias>
+			</prg:aliases>
 			<prg:documentation>
 				<prg:abstract>Help about other sub commands</prg:abstract>
 				<prg:details>This command is not available in UI</prg:details>

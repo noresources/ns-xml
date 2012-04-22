@@ -7,6 +7,8 @@ tools/sh/bzr
 # 
 tests
 resources/bzr
+glob:*.pyc
+glob:*.log
 # Symbolic links used in Eclipse project
 scripts/eclipse/Tools
 scripts/eclipse/XPCOM
@@ -20,3 +22,5 @@ scripts/eclipse/XSLT
 scripts/eclipse/XSH
 scripts/eclipse/Documentation
 scripts/eclipse/Relax NG
+scripts/eclipse/UnitTests
+scripts/eclipse/Python

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:prg="http://xsd.nore.fr/program" targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified">
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:prg="http://xsd.nore.fr/program" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified">
+
+	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
 
 	<complexType name="emptyType" />
 
@@ -34,7 +36,7 @@
 			<whiteSpace value="collapse" />
 		</restriction>
 	</simpleType>
-	
+
 	<simpleType name="regularExpressionTypenameType">
 		<restriction base="string">
 			<enumeration value="POSIX" />
@@ -272,6 +274,7 @@
 			<element name="names" type="prg:optionNamesType" minOccurs="1" />
 			<element name="ui" type="prg:optionUISpecs" minOccurs="0" />
 		</all>
+		<attribute ref="xml:base" />
 		<attribute name="id" type="ID" use="optional" />
 		<attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean" />
 	</complexType>
@@ -338,6 +341,7 @@
 					<element name="ui" type="prg:argumentOptionUISpecs" minOccurs="0" />
 				</all>
 
+				<attribute ref="xml:base" />
 				<attribute name="id" type="ID" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
 			</extension>
@@ -360,6 +364,7 @@
 					<element name="ui" type="prg:multiargumentOptionUISpecs" minOccurs="0" />
 				</all>
 
+				<attribute ref="xml:base" />
 				<attribute name="id" type="ID" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
 
@@ -428,8 +433,9 @@
 							<field xpath="@id" />
 						</keyref>
 					</element>
-
 				</all>
+
+				<attribute ref="xml:base" />
 				<attribute name="id" type="ID" use="optional" />
 				<attribute name="type" type="prg:actionGroupTypeEnum" use="optional" />
 				<attribute name="required" type="prg:literalTrueType" use="optional" />
@@ -615,6 +621,13 @@
 		<sequence minOccurs="1" maxOccurs="unbounded">
 			<group ref="prg:optionGroup" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
+		<attribute ref="xml:base">
+			<annotation>
+				<documentation>This attribute reference will allow the element to be included through XInclude.
+					XInclude may add it while processing
+				</documentation>
+			</annotation>
+		</attribute>
 	</complexType>
 
 	<complexType name="subcommandsType">
@@ -688,7 +701,7 @@
 			<field xpath="." />
 		</unique>
 	</element>
-	
+
 	<element name="program">
 		<complexType>
 			<all>
@@ -715,6 +728,7 @@
 				<element name="values" type="prg:valuesNodeType" minOccurs="0" />
 				<element name="ui" type="prg:programUISpecs" minOccurs="0" />
 			</all>
+			<attribute ref="xml:base" />
 			<attribute name="version" use="required" fixed="2.0">
 				<annotation>
 					<documentation xml:lang="en">

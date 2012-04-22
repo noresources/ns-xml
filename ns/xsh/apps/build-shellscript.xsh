@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <sh:program xmlns:prg="http://xsd.nore.fr/program" 
 xmlns:sh="http://xsd.nore.fr/bash" 
 xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -8,6 +8,7 @@ xmlns:xi="http://www.w3.org/2001/XInclude">
 </sh:info>
 <sh:functions>
 	<xi:include href="../lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_realpath'])" />
+	<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function)" />
 </sh:functions>
 <sh:code><![CDATA[
 # Global variables
@@ -44,23 +45,7 @@ then
 	exit 0
 fi
 
-# Check ns-xml library path
-if [ ! -z "${nsxmlPath}" ]
-then
-	if ${nsxmlPathRelative}
-	then
-		nsPath="${scriptPath}/${nsxmlPath}"
-	else
-		nsPath="${nsxmlPath}"
-	fi
-	
-	if [ ! -d "${nsPath}" ]
-	then
-		error "Invalid ns path \"${nsPath}\""
-	fi
-	
-	nsPath="$(ns_realpath "${nsPath}")"
-fi
+chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 
 # Check required XSLT files
 xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"

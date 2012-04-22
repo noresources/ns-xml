@@ -76,7 +76,7 @@ __build_xulapp_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--help --output --xml-description --shell --prefix-sc-variables --command --target-platform --target --update --skip-validation --no-validation --window-width --window-height --debug --init-script --resources --ns-xml-path --ns-xml-path-relative --ns-xml-add -h -o -x -t -u -S"
+	local globalargs="--help --output --xml-description --shell --prefix-sc-variables --command --target-platform --target --update --skip-validation --no-validation --window-width --window-height --debug --init-script --resources --ns-xml-path --ns-xml-path-relative --ns-xml-add -o -x -t -u -S"
 	local args="${globalargs}"
 	
 	

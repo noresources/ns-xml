@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+
+<!-- A set of common options for ns-xml apps -->
+<prg:options xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:switch id="nsxml.option.debugMode">
+		<prg:databinding>
+			<prg:variable>debugMode</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Generate debug messages in help and command line parsing functions</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:short>d</prg:short>
+			<prg:long>debug</prg:long>
+		</prg:names>
+	</prg:switch>
+
+	<prg:group id="nsxml.option.nsxmlPathGroup">
+		<prg:documentation>
+			<prg:abstract>ns-xml source path options</prg:abstract>
+		</prg:documentation>
+		<prg:options>
+			<prg:argument id="nsxml.option.nsxmlPath">
+				<prg:databinding>
+					<prg:variable>nsxmlPath</prg:variable>
+				</prg:databinding>
+				<prg:documentation>
+					<prg:abstract>ns-xml source path</prg:abstract>
+					<prg:details>Location of the ns folder of ns-xml package
+					</prg:details>
+				</prg:documentation>
+				<prg:names>
+					<prg:long>ns-xml-path</prg:long>
+				</prg:names>
+				<prg:type>
+					<prg:path>
+						<prg:kinds>
+							<prg:folder />
+						</prg:kinds>
+						<prg:patterns>
+							<prg:pattern>
+								<prg:name>ns folder</prg:name>
+								<prg:rules>
+									<prg:rule>
+										<prg:endWith>ns</prg:endWith>
+									</prg:rule>
+								</prg:rules>
+							</prg:pattern>
+						</prg:patterns>
+					</prg:path>
+				</prg:type>
+				<prg:ui mode="hidden">
+					<prg:value>../chrome/ns</prg:value>
+				</prg:ui>
+			</prg:argument>
+			<prg:switch id="nsxml.option.nsxmlRelativePath">
+				<prg:databinding>
+					<prg:variable>nsxmlPathRelative</prg:variable>
+				</prg:databinding>
+				<prg:documentation>
+					<prg:abstract>ns source path is relative this program path</prg:abstract>
+				</prg:documentation>
+				<prg:names>
+					<prg:long>ns-xml-path-relative</prg:long>
+				</prg:names>
+				<prg:ui mode="hidden">
+				</prg:ui>
+			</prg:switch>
+		</prg:options>
+	</prg:group>
+
+	<prg:argument id="nsxml.option.xmlProgramDescriptionPath">
+		<prg:databinding>
+			<prg:variable>xmlProgramDescriptionPath</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Program description file</prg:abstract>
+			<prg:details>If the program description file is provided, the xml file will be validated
+				before any XSLT processing
+			</prg:details>
+		</prg:documentation>
+		<prg:names>
+			<prg:short>x</prg:short>
+			<prg:long>xml-description</prg:long>
+		</prg:names>
+		<prg:type>
+			<prg:path exist="true">
+				<prg:kinds>
+					<prg:file />
+				</prg:kinds>
+			</prg:path>
+		</prg:type>
+	</prg:argument>
+
+	<prg:argument required="true" id="nsxml.option.requiredXmlProgramDescriptionPath">
+		<prg:databinding>
+			<prg:variable>xmlProgramDescriptionPath</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Program description file</prg:abstract>
+			<prg:details>If the program description file is provided, the xml file will be validated
+				before any XSLT processing
+			</prg:details>
+		</prg:documentation>
+		<prg:names>
+			<prg:short>x</prg:short>
+			<prg:long>xml-description</prg:long>
+		</prg:names>
+		<prg:type>
+			<prg:path exist="true">
+				<prg:kinds>
+					<prg:file />
+				</prg:kinds>
+			</prg:path>
+		</prg:type>
+	</prg:argument>
+
+	<prg:switch id="nsxml.option.skipValidation">
+		<prg:databinding>
+			<prg:variable>skipValidation</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Skip XML Schema validations</prg:abstract>
+			<prg:details>The default behavior of the program is to validate the given xml-based file(s) against
+				its/their xml schema (http://xsd.nore.fr/program etc.).
+				This option will disable schema validations
+			</prg:details>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>skip-validation</prg:long>
+			<prg:long>no-validation</prg:long>
+			<prg:short>S</prg:short>
+		</prg:names>
+	</prg:switch>
+</prg:options>

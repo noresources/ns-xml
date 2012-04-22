@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
 
 	<import href="../strings.xsl" />
@@ -46,8 +46,12 @@
 	<template name="code.block">
 		<param name="content" />
 		<param name="indentChar" select="$code.indentChar" />
+		<param name="endl"><call-template name="endl" /></param>
+		<param name="addInitialEndl" select="true()" />
 		<param name="addFinalEndl" select="true()" />
-		<call-template name="endl" />
+		<if test="$addInitialEndl">
+			<value-of select="$endl" />
+		</if>
 		<value-of select="$indentChar" />
 		<call-template name="str.trim">
 			<with-param name="text">
@@ -64,7 +68,7 @@
 			</with-param>
 		</call-template>
 		<if test="$addFinalEndl">
-			<call-template name="endl" />
+			<value-of select="$endl" />
 		</if>
 	</template>
 

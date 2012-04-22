@@ -12,11 +12,6 @@
 [ ! -z "${path}" ] && [ -L "${path}" ]
 		]]></sh:body>
 	</sh:function>
-	<sh:function name="ns_realpath">
-		<sh:body>
-			body
-		</sh:body>
-	</sh:function>
 	<sh:function name="ns_realpath" >
 		<sh:parameter name="path" />
 		<sh:body><![CDATA[
