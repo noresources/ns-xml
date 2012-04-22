@@ -1,0 +1,8 @@
+CLI: -c abc def ghi
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=
+multiargC=abc def ghi

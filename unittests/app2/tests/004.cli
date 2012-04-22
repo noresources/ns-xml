@@ -1,0 +1,1 @@
+-c --argument-b "This should be misinterpreted (at least one argument rule)"

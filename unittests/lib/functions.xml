@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sh:functions xmlns:sh="http://xsd.nore.fr/bash" >
+	<sh:function name="toboolstr">
+		<sh:parameter name="value" />
+		<sh:parameter name="trueString">True</sh:parameter>
+		<sh:parameter name="falseString" >False</sh:parameter>
+		<sh:body><![CDATA[
+[ -z "${value}" ] && echo "${falseString}" && return 0
+for s in 0 0.0 no No NO nil Nil NIL none None NONE null Null NULL false False FALSE
+do
+	[ "${value}" == "${s}" ] && echo "${falseString}" && return 0
+done
+echo "${trueString}"
+return 0
+		]]></sh:body>
+	</sh:function>
+	<sh:function name="switchval">
+		<sh:parameter name="varname" />
+		<sh:body><![CDATA[
+echo "${varname}=$(toboolstr ${!varname})"
+		]]></sh:body>
+	</sh:function>
+</sh:functions>

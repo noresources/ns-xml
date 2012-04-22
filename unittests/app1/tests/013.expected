@@ -1,0 +1,7 @@
+CLI: -b -- Missing argueent error
+Value count: 1
+Values: Missing argueent error
+Error count: 1
+Subcommand: 
+switchA=False
+argumentB=

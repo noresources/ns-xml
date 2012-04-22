@@ -1,0 +1,8 @@
+CLI: -b klm -c abc def ghi
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=klm
+multiargC=abc def ghi
