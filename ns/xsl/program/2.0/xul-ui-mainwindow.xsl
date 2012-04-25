@@ -7,14 +7,14 @@
 
 	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 
-	<xsl:param name="prg.xul.windowWidth" select="1024" />
-	<xsl:param name="prg.xul.windowHeight" select="768" />
-	
+	<xsl:param name="prg.xul.windowWidth" />
+	<xsl:param name="prg.xul.windowHeight" />
+
 	<xsl:template name="prg.xul.tooltiptext">
-		<xsl:param name="text" select="."/>
+		<xsl:param name="text" select="." />
 		<xsl:value-of select="normalize-space($text)" />
 	</xsl:template>
-	
+
 	<!-- Option label (using the best element available) -->
 	<xsl:template name="prg.xul.optionLabel">
 		<xsl:param name="optionNode" select="." />
@@ -71,11 +71,11 @@
 		<xsl:variable name="isFileOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:file" />
 
 		<xsl:choose>
-			<xsl:when test="$multi">
-				<xsl:attribute name="dialogmode">multi</xsl:attribute>
-			</xsl:when>
 			<xsl:when test="$isFolderOnly">
 				<xsl:attribute name="dialogmode">folder</xsl:attribute>
+			</xsl:when>
+			<xsl:when test="$multi">
+				<xsl:attribute name="dialogmode">multi</xsl:attribute>
 			</xsl:when>
 			<xsl:when test="not($pathNode/@exist) and $isFileOnly">
 				<xsl:attribute name="dialogmode">save</xsl:attribute>
@@ -114,7 +114,7 @@
 				<xsl:attribute name="tooltiptext">
 					<xsl:call-template name="prg.xul.tooltiptext">
 						<xsl:with-param name="text">
-							<xsl:value-of select="$optionNode/prg:documentation/prg:details"/>
+							<xsl:value-of select="$optionNode/prg:documentation/prg:details" />
 						</xsl:with-param>
 					</xsl:call-template>
 				</xsl:attribute>
@@ -496,7 +496,7 @@
 			<xsl:value-of select="$controlId" />
 			<xsl:text>:input</xsl:text>
 		</xsl:variable>
-		
+
 		<xsl:variable name="buttonId">
 			<xsl:value-of select="$controlId" />
 			<xsl:text>:fsbutton</xsl:text>
@@ -611,7 +611,7 @@
 							<xsl:attribute name="targetId"><xsl:value-of select="$controlId" /></xsl:attribute>
 							<xsl:if test="$node/@max">
 								<xsl:attribute name="maxItems">
-									<xsl:value-of select="$node/@max"/>
+									<xsl:value-of select="$node/@max" />
 								</xsl:attribute>
 							</xsl:if>
 						</xsl:element>
@@ -659,7 +659,7 @@
 		<xsl:comment>
 			<xsl:value-of select="name($optionNode)" />
 			<xsl:text> </xsl:text>
-			<xsl:call-template name="prg.xul.optionLabel" >
+			<xsl:call-template name="prg.xul.optionLabel">
 				<xsl:with-param name="optionNode" select="$optionNode" />
 			</xsl:call-template>
 		</xsl:comment>
@@ -747,7 +747,7 @@
 				<xsl:attribute name="tooltiptext">
 					<xsl:call-template name="prg.xul.tooltiptext">
 						<xsl:with-param name="text">
-							<xsl:value-of select="$valueNode/prg:documentation/prg:details"/>
+							<xsl:value-of select="$valueNode/prg:documentation/prg:details" />
 						</xsl:with-param>
 					</xsl:call-template>
 				</xsl:attribute>
@@ -862,11 +862,49 @@
 
 	<!-- Frame for debug mode -->
 	<xsl:template name="prg.xul.debugFrame">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="width" />
+		<xsl:param name="height" />
+
+		<xsl:variable name="debugHeight">
+			<xsl:choose>
+				<xsl:when test="$height &lt; 768" >
+					<xsl:text>768</xsl:text>
+				</xsl:when>
+				<xsl:when test="$height">
+					<xsl:value-of select="$height" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>768</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:if test="$prg.debug">
+			<xsl:comment>
+				<xsl:call-template name="endl" />
+				<xsl:text>Ref size: </xsl:text>
+				<xsl:value-of select="$width" />
+				<xsl:text>x</xsl:text>
+				<xsl:value-of select="$height" />
+				<xsl:call-template name="endl" />
+				<xsl:text>Used size: </xsl:text>
+				<xsl:value-of select="$width" />
+				<xsl:text>x</xsl:text>
+				<xsl:value-of select="$debugHeight" />
+				<xsl:call-template name="endl" />
+			</xsl:comment>
+		</xsl:if>
+
 		<xsl:element name="xul:hbox">
 			<xsl:element name="xul:vbox">
 				<xsl:attribute name="width">600</xsl:attribute>
-				<!-- debug frame force window size to something usable -->
-				<xsl:attribute name="height">768</xsl:attribute>
+				<xsl:attribute name="height"><xsl:value-of select="$debugHeight" /></xsl:attribute>
+
+				<xsl:comment>
+					<text>Debug frame</text>
+				</xsl:comment>
+
 				<!-- console -->
 				<xsl:element name="xul:iframe">
 					<xsl:attribute name="src">chrome://global/content/console.xul</xsl:attribute>
@@ -889,16 +927,28 @@
 					</xsl:element>
 				</xsl:element>
 			</xsl:element>
-			<xsl:call-template name="prg.xul.mainFrame" />
+
+			<xsl:comment>
+				<text>Main frame</text>
+			</xsl:comment>
+			<xsl:call-template name="prg.xul.mainFrame">
+				<xsl:with-param name="programNode" select="$programNode" />
+				<xsl:with-param name="width" select="$width" />
+				<xsl:with-param name="height" select="$debugHeight" />
+			</xsl:call-template>
 		</xsl:element>
 	</xsl:template>
 
 	<xsl:template name="prg.xul.mainFrame">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="width" />
+		<xsl:param name="height" />
+
 		<xsl:element name="xul:vbox">
 			<xsl:attribute name="flex">1</xsl:attribute>
 			<xsl:attribute name="style">overflow: -moz-scrollbars-vertical;</xsl:attribute>
-			<xsl:attribute name="width"><xsl:value-of select="$prg.xul.windowWidth" /></xsl:attribute>
-			<xsl:attribute name="height"><xsl:value-of select="$prg.xul.windowHeight" /></xsl:attribute>
+			<xsl:attribute name="width"><xsl:value-of select="$width" /></xsl:attribute>
+			<xsl:attribute name="height"><xsl:value-of select="$height" /></xsl:attribute>
 
 			<!-- Global options -->
 			<xsl:variable name="availableOptions" select="/prg:program/prg:options/*[not(prg:ui) or not(prg:ui/@mode) or prg:ui[@mode = 'default']]" />
@@ -1095,7 +1145,7 @@
 			<xsl:element name="xul:commandset">
 				<xsl:attribute name="id">prg.ui.commandset</xsl:attribute>
 			</xsl:element>
-			
+
 			<!-- Do not add menubar under Mac OS X (set in hidden window) -->
 			<xsl:if test="$prg.xul.platform != 'macosx'">
 				<xsl:element name="xul:menubar">
@@ -1128,12 +1178,70 @@
 				</xsl:element>
 			</xsl:element>
 
+			<!-- Compute width and height -->
+			<xsl:variable name="width">
+				<xsl:choose>
+					<xsl:when test="$prg.xul.windowWidth">
+						<xsl:value-of select="$prg.xul.windowWidth" />
+					</xsl:when>
+					<xsl:when test="./prg:ui/prg:window/@width">
+						<xsl:value-of select="./prg:ui/prg:window/@width" />
+					</xsl:when>
+					<xsl:otherwise>
+						<text>1024</text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+
+			<xsl:variable name="height">
+				<xsl:choose>
+					<xsl:when test="$prg.xul.windowHeight">
+						<xsl:value-of select="$prg.xul.windowHeight" />
+					</xsl:when>
+					<xsl:when test="./prg:ui/prg:window/@height">
+						<xsl:value-of select="./prg:ui/prg:window/@height" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>768</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+
+			<xsl:if test="$prg.debug">
+				<xsl:comment>
+					<xsl:call-template name="endl" />
+					<xsl:text>Schema ui size: </xsl:text>
+					<xsl:value-of select="./prg:ui/prg:window/@width" />
+					<xsl:text>x</xsl:text>
+					<xsl:value-of select="./prg:ui/prg:window/@height" />
+					<xsl:call-template name="endl" />
+					<xsl:text>Parameters ui size: </xsl:text>
+					<xsl:value-of select="$prg.xul.windowWidth" />
+					<xsl:text>x</xsl:text>
+					<xsl:value-of select="$prg.xul.windowHeight" />
+					<xsl:call-template name="endl" />
+					<xsl:text>Used size: </xsl:text>
+					<xsl:value-of select="$width" />
+					<xsl:text>x</xsl:text>
+					<xsl:value-of select="$height" />
+					<xsl:call-template name="endl" />
+				</xsl:comment>
+			</xsl:if>
+
 			<xsl:choose>
 				<xsl:when test="$prg.debug">
-					<xsl:call-template name="prg.xul.debugFrame" />
+					<xsl:call-template name="prg.xul.debugFrame">
+						<xsl:with-param name="programNode" select="." />
+						<xsl:with-param name="width" select="$width" />
+						<xsl:with-param name="height" select="$height" />
+					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="prg.xul.mainFrame" />
+					<xsl:call-template name="prg.xul.mainFrame">
+						<xsl:with-param name="programNode" select="." />
+						<xsl:with-param name="width" select="$width" />
+						<xsl:with-param name="height" select="$height" />
+					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
 

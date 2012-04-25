@@ -60,7 +60,7 @@ if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
 	programVersion="$(xsltproc "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
-	echo "Program schema version ${programVersion}"
+	#echo "Program schema version ${programVersion}"
 	
 	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
 	then
@@ -68,7 +68,7 @@ then
 		exit 3
 	fi
 
-	if ! ${skipValidation} && ! xmllint --xinclude --noout --schema "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}" 1>/dev/null
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 	then
 		echo "program schema error - abort"
 		exit 4
@@ -78,7 +78,7 @@ fi
 # Validate against bash schema
 if ! ${skipValidation}
 then
-	if ! xmllint --xinclude --noout --schema "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
+	if ! xml_validate "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
 	then
 		echo "bash schema error - abort"
 		exit 5

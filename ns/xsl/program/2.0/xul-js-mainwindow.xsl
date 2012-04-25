@@ -626,25 +626,30 @@ MainWindow.prototype.handleOptionChange = function(event, object)
 {
 	try
 	{
-		if (event.target.optionType == "group")
+		var o = event.target;
+		//object.trace("handleOptionChange: " + o.id + " ("+o.isSet+")");
+		if (o.optionType == "group")
 	  	{
-	  		if (!event.target.isSet)
+	  		if (!o.isSet)
 	  		{
-	  			var radioGroupId = event.target.id + ":group";
+	  			var radioGroupId = o.id + ":group";
 	  			//object.trace("handleOptionChange get " + radioGroupId); 
 	  			var radioGroup = document.getElementById(radioGroupId);
 	  			radioGroup.selectedIndex = -1;
-	  		}	
+	  		}
 		}
-		else if (event.target.parent)
+		
+		//object.trace("handleOptionChange parent:" + o.parent);
+				
+		if (o.parent)
 		{
-			//object.trace("handleOptionChange: activate parent:" + event.target.parent.id);
-			event.target.parent.isSet = true;
+			//object.trace("handleOptionChange: activate parent:" + o.parent.id);
+			o.parent.set(true);
 		}
 	}
 	catch (e)
 	{
-		object.trace("handleOptionChange error: " + e);
+		//object.trace("handleOptionChange error: " + e);
 	}
   
 	object.updatePreview(); 
@@ -686,7 +691,7 @@ MainWindow.prototype.handleValueChange = function(event, object)
 	}
 	catch (e)
 	{
-		object.trace("handleValueChange error: " + e);
+		//object.trace("handleValueChange error: " + e);
 	}
   
 	object.updatePreview(); 

@@ -5,7 +5,7 @@ glob:*.git
 \.gitignore
 tools/sh/bzr
 # 
-tests
+glob:tests
 resources/bzr
 glob:*.pyc
 glob:*.log

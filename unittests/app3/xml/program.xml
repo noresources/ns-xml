@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app3</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (simple subcommand behavior)</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+	</prg:options>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>sub</prg:name>
+			<prg:aliases>
+				<prg:alias>sc</prg:alias>
+				<prg:alias>subcommand-alias</prg:alias>
+			</prg:aliases>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>argumentD</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:long>argument-d</prg:long>
+						<prg:short>c</prg:short>
+					</prg:names>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>switchE</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<!-- 'a' overrides the global name -->
+						<prg:short>a</prg:short>
+						<prg:long>switch-e</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+			<prg:values>
+				<prg:other />
+			</prg:values>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>empty</prg:name>
+		</prg:subcommand>
+	</prg:subcommands>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

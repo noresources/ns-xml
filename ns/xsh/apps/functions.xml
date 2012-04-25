@@ -35,7 +35,7 @@ fi
 		<sh:parameter name="file" />
 		<sh:body><![CDATA[local tmpXslFile="/tmp/get_program_version.xsl"
 cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF]]></sh:body>
-<sh:body indent="false"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+		<sh:body indent="false"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:output method="text" encoding="utf-8" />
 	<xsl:template match="//prg:program">
@@ -57,5 +57,20 @@ fi
 ]]></sh:body>
 		<sh:body><![CDATA[
 ]]></sh:body>
+	</sh:function>
+	<sh:function name="xml_validate">
+		<sh:parameter name="schema" />
+		<sh:parameter name="xml" />
+		<sh:body><![CDATA[
+local tmpOut="/tmp/xml_validate.tmp"
+if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
+then
+	cat "${tmpOut}"
+	echo "Schema: ${scheam}"
+	echo "File: ${xml}"
+	return 1
+fi
+
+return 0]]></sh:body>
 	</sh:function>
 </sh:functions>

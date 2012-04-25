@@ -39,9 +39,7 @@ Usage:
     User interface
     (
     	--window-width, -W: 
-    		Default value: 640
     	--window-height, -H: 
-    		Default value: 480
     	-d, --debug: Add debug console and options into the built interface
     )
     User data
@@ -112,8 +110,8 @@ xmlProgramDescriptionPath=
 xmlShellFileDescriptionPath=
 launcherModeExistingCommand=
 targetPlatform="host"
-windowWidth="640"
-windowHeight="480"
+windowWidth=
+windowHeight=
 userInitializationScript=
 nsxmlPath=
 

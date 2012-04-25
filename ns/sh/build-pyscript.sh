@@ -680,6 +680,23 @@ GETPROGRAMVERSIONXSLEOF
 
 	
 }
+xml_validate()
+{
+	local schema="${1}"
+	shift
+	local xml="${1}"
+	shift
+	local tmpOut="/tmp/xml_validate.tmp"
+	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
+	then
+		cat "${tmpOut}"
+		echo "Schema: ${scheam}"
+		echo "File: ${xml}"
+		return 1
+	fi
+	
+	return 0
+}
 
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"

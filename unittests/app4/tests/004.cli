@@ -1,0 +1,1 @@
+-c abc def ghi -a sub "This should succeed"

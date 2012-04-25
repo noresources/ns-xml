@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app2</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (multiargument behavior)</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+		<prg:multiargument id="prg.unittest.option.multiargC">
+			<prg:databinding>
+				<prg:variable>multiargC</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A basic multi-argument option</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>c</prg:short>
+				<prg:long>multi-argument</prg:long>
+				<prg:long>multi</prg:long>
+			</prg:names>
+		</prg:multiargument>
+	</prg:options>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

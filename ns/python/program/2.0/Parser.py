@@ -5,8 +5,8 @@ class State:
     Undef = 0
     EndOfOptions = 1
     GluedValue = 2
-    SkipArgument = 3
-    ArgumentExpected = 4
+    SkipArgument = 4
+    ArgumentExpected = 8
    
 class Context:
     state = None
@@ -139,10 +139,16 @@ class SubcommandResult:
     
     def __init__(self, info):
         self.__name = info.name
+        self.__options = OptionResultContainer()
+        ParserResultUtil.set_options(self.__options, info.options)
         
     @property
     def name(self):
         return self.__name
+    
+    @property
+    def options(self):
+        return self.__options
     
 class ParserResult:
     __issues = None
@@ -153,7 +159,7 @@ class ParserResult:
     def __init__(self, context, info):
         self.__issues = context.issues
         self.__options = OptionResultContainer()
-        ParserResultUtil.set_options(self.options, info.options)
+        ParserResultUtil.set_options(self.__options, info.options)
         self.__values = info.values 
         
         if isinstance(context.subcommand, SubcommandInfo):
@@ -289,7 +295,7 @@ class Parser:
                         elif isinstance(context.option, MultiArgumentOptionInfo):
                             context.set_argument_skipping(True, -1)
                 else:
-                    context.debug(" Option " + option + " not found in " + str(programInfo.option_names.keys()))
+                    context.error("Invalid option name " + InfoUtil.cli_option_name(option))
                                 
             elif (len(arg) > 1 and (arg[0] == "-")):
                 tail = arg[1:len(arg)]
@@ -326,7 +332,7 @@ class Parser:
                             "Forget remaining characters in any case"
                             break
                     else:
-                        context.error("Invalid option name -" + option)
+                        context.error("Invalid option name " + InfoUtil.cli_option_name(option))
                         break
             
             else:

@@ -140,7 +140,6 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
-					<prg:default>640</prg:default>
 				</prg:argument>
 				<prg:argument>
 					<prg:databinding>
@@ -153,7 +152,6 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
-					<prg:default>480</prg:default>
 				</prg:argument>
 
 				<!-- debugMode -->

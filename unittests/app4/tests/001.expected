@@ -1,0 +1,10 @@
+CLI: sub -c abc def ghi This should be ok
+Value count: 3
+Values: def ghi This should be ok
+Error count: 0
+Subcommand: sub
+switchA=False
+argumentB=
+multiargC=
+sub_argumentD=abc
+sub_switchE=False

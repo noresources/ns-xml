@@ -22,22 +22,7 @@ ${isDebug} && log "${@}"
 exit 1
 		]]></sh:body>
 		</sh:function>
-		<sh:function name="xml_validate">
-			<sh:parameter name="schema" />
-			<sh:parameter name="xml" />
-			<sh:body><![CDATA[
-local tmpOut="/tmp/xml_validate.tmp"
-if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
-then
-	cat "${tmpOut}"
-	echo "Schema: ${scheam}"
-	echo "File: ${xml}"
-	return 1
-fi
-
-return 0
-		]]></sh:body>
-		</sh:function>
+		<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'xml_validate'])" />
 	</sh:functions>
 	<sh:code><![CDATA[
 logFile="/tmp/$(basename "${0}").log"

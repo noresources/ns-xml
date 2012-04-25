@@ -86,6 +86,8 @@
 						return false;
 					}
 					
+					// If we are part of an exclusive group,
+					// the main control is a radiobutton
 					if ((this.parent.groupType == "exclusive"))
 					{
 						return this.radioControl.selected;
@@ -151,13 +153,30 @@
 					}
 				}
 				
-				this.selectControl(usedControlIndex);
-				
 				// TODO if (not exclusive and no default) only
 				var radiogroup = document.getElementById(this.id + ":group");
 				radiogroup.selectedIndex = -1;
-				
+																				
+				this.selectControl(usedControlIndex);
 			]]></xbl:body>
+			</xbl:method>
+			<xbl:method name="set">
+				<xbl:parameter name="v"/>
+				<xbl:body><![CDATA[
+				if (this.checkboxControl)
+				{	
+					this.checkboxControl.checked = v;
+				}
+				
+				if (this.radioControl && this.parent)
+				{
+					var rg = document.getElementById(this.parent.id + ":group");
+					if (rg)
+					{	
+						rg.selectedItem = this.radioControl; 
+					}
+				}
+				]]></xbl:body>
 			</xbl:method>
 		</xbl:implementation>
 	</xbl:binding>
@@ -182,6 +201,7 @@
 					{
 						return this.radioControl.selected;
 					}
+
 				}
 						
 				return this.checkboxControl.checked;
@@ -680,7 +700,7 @@
 		</xbl:content>
 		<xbl:implementation>
 			<xbl:property name="disabled" onget="return this.control.disabled" onset="this.control.disabled = val;" />
-			<xbl:property name="isSet" readonly="true" onget="if (this.control) return (this.control.itemCount > 0); return false;"></xbl:property>
+			<xbl:property name="isSet" readonly="true" onget="if (this.control) return (this.control.itemCount > 0); return false;" />
 			<xbl:property name="value" readonly="true">
 				<xbl:getter><![CDATA[
 				var res = Array();

@@ -60,7 +60,7 @@ do
 	
 	# Build the whole script
 	shScript="${d}/program.sh"
-	xsltproc --xinclude -o "${shScript}" "${xshStylesheet}" "${d}/xsh/program.xsh" || error "Failed to create ${shScript}"
+	"${projectPath}/ns/sh/build-shellscript.sh" -p -x "${xmlDescription}" -s "${d}/xsh/program.xsh" -o "${shScript}" || error "Failed to create ${shScript}"  
 	rm -f "${d}/xsh/program.body.sh"
 	chmod 755 "${shScript}"
 	
