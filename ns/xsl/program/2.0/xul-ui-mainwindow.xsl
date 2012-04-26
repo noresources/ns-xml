@@ -71,6 +71,7 @@
 		<xsl:variable name="isFileOnly" select="$kindsNode and (count($kindsNode/descendant::*) = 1) and $kindsNode/prg:file" />
 
 		<xsl:choose>
+			<!-- Allways treat folder-only case first. Mac OS X does not allow folder selection in non 'foldermode' modes -->
 			<xsl:when test="$isFolderOnly">
 				<xsl:attribute name="dialogmode">folder</xsl:attribute>
 			</xsl:when>

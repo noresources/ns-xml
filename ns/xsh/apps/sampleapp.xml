@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program">
+<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0">
 	<prg:name>sampleapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
 		<prg:abstract>Sample application
-		</prg:abstract>
-		<prg:details>This application demonstrates most of the
-		possibilities offered by the program schema to define
-		and display command line options</prg:details>
+	</prg:abstract>
+		<prg:details>This application demonstrates most of the possibilities offered by the program schema to define and display command line options</prg:details>
 	</prg:documentation>
 	<prg:ui>
-		<prg:label>
-		Sample application
-</prg:label>
-		<prg:window width="512" height="960" />
+		<prg:label>Sample application</prg:label>
+		<prg:window width="512" height="960"/>
 	</prg:ui>
 	<prg:options>
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>
-				displayHelp   </prg:variable>
+					displayHelp
+				</prg:variable>
 			</prg:databinding>
 			<prg:names>
 				<prg:long>help</prg:long>
 			</prg:names>
-			<prg:ui mode="disabled" />
+			<prg:ui mode="disabled"/>
 		</prg:switch>
-		
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>uiArg</prg:variable>
@@ -43,7 +39,6 @@
 				<prg:value>ui argument</prg:value>
 			</prg:ui>
 		</prg:argument>
-		
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>standardArg</prg:variable>
@@ -55,9 +50,8 @@
 			<prg:names>
 				<prg:long>standard-arg</prg:long>
 			</prg:names>
-			<prg:ui mode="default" />
+			<prg:ui mode="default"/>
 		</prg:argument>
-		
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>switch</prg:variable>
@@ -71,7 +65,6 @@
 				<prg:long>simpleswitch</prg:long>
 			</prg:names>
 		</prg:switch>
-
 		<prg:group>
 			<prg:ui>
 				<prg:label>A group with only one element</prg:label>
@@ -87,8 +80,9 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Another switch</prg:abstract>
-						<prg:details>This swith is in a group with only one option.
-						So, the group is hidden and the option appears at the same level</prg:details>
+						<prg:details>This swith is in a group with only one option. 
+							So, the group is hidden and the option appears at the same level
+						</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>switch-alone-in-group</prg:long>
@@ -96,7 +90,6 @@
 				</prg:switch>
 			</prg:options>
 		</prg:group>
-
 		<prg:group type="exclusive">
 			<prg:documentation>
 				<prg:abstract>Exclusive option group</prg:abstract>
@@ -105,87 +98,101 @@
 				<prg:variable>globalArgumentsGroup</prg:variable>
 			</prg:databinding>
 			<prg:options>
-				<prg:argument>
+				<prg:group>
 					<prg:databinding>
-						<prg:variable>garg</prg:variable>
+						<prg:variable>nestedGroup</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Basic argument</prg:abstract>
+						<prg:abstract>Nested group (basic type arguments)</prg:abstract>
 					</prg:documentation>
-					<prg:names>
-						<prg:long>basic-argument</prg:long>
-					</prg:names>
-				</prg:argument>
-
-				<prg:argument id="gsarg_id">
-					<prg:databinding>
-						<prg:variable>gsarg</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>String argument</prg:abstract>
-						<prg:details>This argument expect a string, which is 
-						roughly the same thing as accepting any kind of content</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>string-argument</prg:long>
-					</prg:names>
-					<prg:type>
-						<prg:string />
-					</prg:type>
-				</prg:argument>
-
-				<prg:argument>
+					<prg:options>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>garg</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Basic argument</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>basic-argument</prg:long>
+							</prg:names>
+						</prg:argument>
+						<prg:argument id="gsarg_id">
+							<prg:databinding>
+								<prg:variable>gsarg</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>String argument</prg:abstract>
+								<prg:details>This argument expect a string, which is 
+roughly the same thing as accepting any kind of content</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>string-argument</prg:long>
+							</prg:names>
+							<prg:type>
+								<prg:string/>
+							</prg:type>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+				<prg:argument id="dgarg_id">
 					<prg:databinding>
 						<prg:variable>dgarg</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Argument (with default value)</prg:abstract>
-						<prg:details>A default value is proposed. If the user does not change it,
-						the option will not appear in the command line</prg:details>
+						<prg:details>A default value is proposed. If the user does not change it, the option will not appear in the command line</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>argument-with-default</prg:long>
 					</prg:names>
 					<prg:default>Default value</prg:default>
 				</prg:argument>
-
-				<prg:argument>
+				<prg:group type="exclusive">
 					<prg:databinding>
-						<prg:variable>gnarg</prg:variable>
+						<prg:variable>nestedExclusiveGroup</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Numeric argument</prg:abstract>
-						<prg:details>Only numberrs are accepted as argument value.
-						A numeric argument appears as a spin box in the UI</prg:details>
+						<prg:abstract>Nested exclusive group</prg:abstract>
 					</prg:documentation>
-					<prg:names>
-						<prg:long>numeric-argument</prg:long>
-					</prg:names>
-					<prg:type>
-						<prg:number />
-					</prg:type>
-				</prg:argument>
-
-				<prg:argument>
-					<prg:databinding>
-						<prg:variable>gn2arg</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>Float argument</prg:abstract>
-						<prg:details>Numeric argument with decimals. 
-						A minimum (1.0) and maximum (10) values are also defined</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>float-argument</prg:long>
-					</prg:names>
-					<prg:type>
-						<prg:number min="1.0" max="10.0" decimal="2" />
-					</prg:type>
-				</prg:argument>
+					<prg:options>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>gnarg</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Numeric argument</prg:abstract>
+								<prg:details>Only numberrs are accepted as argument value.
+A numeric argument appears as a spin box in the UI</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>numeric-argument</prg:long>
+							</prg:names>
+							<prg:type>
+								<prg:number/>
+							</prg:type>
+						</prg:argument>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>gn2arg</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Float argument</prg:abstract>
+								<prg:details>Numeric argument with decimals. 
+A minimum (1.0) and maximum (10) values are also defined</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>float-argument</prg:long>
+							</prg:names>
+							<prg:type>
+								<prg:number min="1.0" max="10.0" decimal="2"/>
+							</prg:type>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
 			</prg:options>
-			<prg:default id="gsarg_id" />
+			<prg:default id="dgarg_id"/>
 		</prg:group>
-
 		<prg:argument id="gfarg_id">
 			<prg:databinding>
 				<prg:variable>gfarg</prg:variable>
@@ -198,10 +205,9 @@
 				<prg:long>existing-file-argument</prg:long>
 			</prg:names>
 			<prg:type>
-				<prg:path exist="true" />
+				<prg:path exist="true"/>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>gFarg</prg:variable>
@@ -216,12 +222,11 @@
 			<prg:type>
 				<prg:path access="rw">
 					<prg:kinds>
-						<prg:folder />
+						<prg:folder/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>gmfarg</prg:variable>
@@ -229,8 +234,8 @@
 			<prg:documentation>
 				<prg:abstract>File, folder etc.</prg:abstract>
 				<prg:details>Accept most of file system object types. 
-				On some UI and platforms, you can't select a folder in the file box if 
-				files are also accepted.</prg:details>
+On some UI and platforms, you can't select a folder in the file box if 
+files are also accepted.</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>mixed-fskind-argument</prg:long>
@@ -238,15 +243,14 @@
 			<prg:type>
 				<prg:path access="rw">
 					<prg:kinds>
-						<prg:file />
-						<prg:socket />
-						<prg:folder />
-						<prg:symlink />
+						<prg:file/>
+						<prg:socket/>
+						<prg:folder/>
+						<prg:symlink/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>Multi argument options</prg:abstract>
@@ -265,7 +269,6 @@
 						<prg:long>multi-argument</prg:long>
 					</prg:names>
 				</prg:multiargument>
-
 				<prg:multiargument>
 					<prg:databinding>
 						<prg:variable>gmsa</prg:variable>
@@ -278,12 +281,11 @@
 						<prg:long>multi-select-argument</prg:long>
 					</prg:names>
 					<prg:select restrict="true">
-						<prg:option>FirstOption    </prg:option>
+						<prg:option>FirstOption		</prg:option>
 						<prg:option>Second option</prg:option>
 						<prg:option>Third option</prg:option>
 					</prg:select>
 				</prg:multiargument>
-
 				<prg:multiargument>
 					<prg:databinding>
 						<prg:variable>gmaxml</prg:variable>
@@ -321,22 +323,20 @@
 				</prg:multiargument>
 			</prg:options>
 		</prg:group>
-
 		<prg:argument>
 			<prg:documentation>
 				<prg:abstract>Hostname</prg:abstract>
 				<prg:details>Accept a host name. In console mode, the autocompletion will 
-				propose hosts defined in /etc/hosts.</prg:details>
+propose hosts defined in /etc/hosts.</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>hostname</prg:long>
 				<prg:short>H</prg:short>
 			</prg:names>
 			<prg:type>
-				<prg:hostname />
+				<prg:hostname/>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:names>
 				<prg:long>simple-pattern-sh</prg:long>
@@ -363,13 +363,12 @@
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>
-				
-				
-				strictEnum</prg:variable>
+
+
+strictEnum</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>Strict enumeration</prg:abstract>
@@ -386,7 +385,6 @@
 			</prg:select>
 			<prg:default>Value B</prg:default>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>nonStrictEnum</prg:variable>
@@ -394,7 +392,7 @@
 			<prg:documentation>
 				<prg:abstract>Non-restrictive enumeration</prg:abstract>
 				<prg:details>Non restricive enumeration will only propose 
-				some values in autocompletion but will accept any other values</prg:details>
+some values in autocompletion but will accept any other values</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>non-strict-enum</prg:long>
@@ -408,7 +406,6 @@
 			</prg:select>
 		</prg:argument>
 	</prg:options>
-
 	<prg:subcommands>
 		<prg:subcommand>
 			<prg:name>sub</prg:name>
@@ -427,8 +424,8 @@
 					<prg:documentation>
 						<prg:abstract>Switch of the sub command</prg:abstract>
 						<prg:details>The bound variable name can be the same as another subcommand variable 
-						or one of the global option. In this case, you have to set the 
-						prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)</prg:details>
+or one of the global option. In this case, you have to set the 
+prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)</prg:details>
 					</prg:documentation>
 				</prg:switch>
 				<prg:argument>
@@ -442,7 +439,7 @@
 						<prg:long>sc-existing-file-argument</prg:long>
 					</prg:names>
 					<prg:type>
-						<prg:path exist="true" />
+						<prg:path exist="true"/>
 					</prg:type>
 				</prg:argument>
 				<prg:argument>
@@ -465,7 +462,7 @@
 			<prg:values>
 				<prg:other>
 					<prg:type>
-						<prg:path />
+						<prg:path/>
 					</prg:type>
 				</prg:other>
 			</prg:values>
@@ -499,7 +496,6 @@
 			<prg:name>version</prg:name>
 		</prg:subcommand>
 	</prg:subcommands>
-
 	<prg:values>
 		<prg:value>
 			<prg:documentation>
@@ -507,17 +503,15 @@
 				<prg:details>This is the most basic element you can define. Not really useful</prg:details>
 			</prg:documentation>
 		</prg:value>
-
 		<prg:value>
 			<prg:type>
-				<prg:path access="rw" />
+				<prg:path access="rw"/>
 			</prg:type>
 			<prg:documentation>
 				<prg:abstract>File value</prg:abstract>
 				<prg:details>Anonymous values will be added to the command line after all options</prg:details>
 			</prg:documentation>
 		</prg:value>
-		
 		<prg:value>
 			<prg:documentation>
 				<prg:abstract>Selection</prg:abstract>
@@ -528,12 +522,11 @@
 				<prg:option>B</prg:option>
 			</prg:select>
 		</prg:value>
-
 		<prg:other>
 			<prg:documentation>
 				<prg:abstract>Other</prg:abstract>
 				<prg:details>Other values after the prevous ones.
-				Act an anonymous multi-arguement option</prg:details>
+Act an anonymous multi-arguement option</prg:details>
 			</prg:documentation>
 		</prg:other>
 	</prg:values>
