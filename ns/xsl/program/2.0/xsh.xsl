@@ -4,9 +4,9 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 
 	<import href="../../languages/bash.xsl" />
-	<import href="shell-help.chunks.xsl" />
-	<import href="shell-parser.chunks.xsl" />
-	<import href="shell-parser.functions.xsl" />
+	<import href="sh-help.chunks.xsl" />
+	<import href="sh-parser.chunks.xsl" />
+	<import href="sh-parser.functions.xsl" />
 
 	<output method="text" encoding="utf-8" />
 

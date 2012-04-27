@@ -3,7 +3,7 @@
 <!-- bug 1: in multiargument invalid break if one of the value starts by '-' -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="shell-parser.base.xsl" />
+	<import href="sh-parser.base.xsl" />
 	
 	<!-- Variable and function names -->
 	

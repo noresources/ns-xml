@@ -3,8 +3,8 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="base.xsl" />
-	<import href="shell-base.xsl" />
-	<import href="shell-parser.variables.xsl" />
+	<import href="sh-base.xsl" />
+	<import href="sh-parser.variables.xsl" />
 
 	<!-- "$parser_index++" -->
 	<template name="prg.sh.parser.indexIncrement">

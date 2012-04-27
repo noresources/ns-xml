@@ -3,8 +3,8 @@
 <!-- Generic function definitions -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="shell-parser.base.xsl" />
-	<import href="shell-parser.variables.xsl" />
+	<import href="sh-parser.base.xsl" />
+	<import href="sh-parser.variables.xsl" />
 
 	<!-- Message functions -->
 	<template name="prg.sh.parser.addMessageFunction">

@@ -43,7 +43,7 @@ fi
 cat << EOFUSAGE
 sampleapp: Sample application
 Usage: 
-  sampleapp <subcommand [subcommand option(s)]> [--help] [--ui-only <...>] [--standard-arg <...>] [-s] [--switch-alone-in-group] [(--basic-argument <...> | --string-argument <string> | --argument-with-default <...> | --numeric-argument <number> | --float-argument <number>)] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
+  sampleapp <subcommand [subcommand option(s)]> [--help] [--ui-only <...>] [--standard-arg <...>] [-s] [--switch-alone-in-group] [(--basic-argument <...> --string-argument <string> | --argument-with-default <...> | (--numeric-argument <number> | --float-argument <number>))] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
   With subcommand:
     sub: A sub-command (sub)
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
@@ -63,16 +63,22 @@ Usage:
     )
     Exclusive option group
     (
-    	--basic-argument: Basic argument
-    	--string-argument: String argument
-    		This argument expect a string, which is roughly the same thing as accepting any kind of content
+    	Nested group (basic type arguments)
+    	(
+    		--basic-argument: Basic argument
+    		--string-argument: String argument
+    			This argument expect a string, which is roughly the same thing as accepting any kind of content
+    	)
     	--argument-with-default: Argument (with default value)
     		A default value is proposed. If the user does not change it, the option will not appear in the command line
     		Default value: Default value
-    	--numeric-argument: Numeric argument
-    		Only numberrs are accepted as argument value. A numeric argument appears as a spin box in the UI
-    	--float-argument: Float argument
-    		Numeric argument with decimals. A minimum (1.0) and maximum (10) values are also defined
+    	Nested exclusive group
+    	(
+    		--numeric-argument: Numeric argument
+    			Only numberrs are accepted as argument value. A numeric argument appears as a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values are also defined
+    	)
     )
     --existing-file-argument: File argument
     	An existing file argument
@@ -105,9 +111,7 @@ Usage:
     	The argument can be:	
     		nOptionA, nValueB, nItemC or nItemD with space
 
-  This application demonstrates most of the
-  		possibilities offered by the program schema to define
-  		and display command line options
+  This application demonstrates most of the possibilities offered by the program schema to define and display command line options
 EOFUSAGE
 }
 
@@ -161,7 +165,7 @@ nonStrictEnum=
 sub_subFile=
 sub_subEnum=
 # Group default options
-globalArgumentsGroup="@gsarg"
+globalArgumentsGroup="@dgarg"
 
 parse_addmessage()
 {
@@ -779,7 +783,7 @@ parse_process_option()
 		basic-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "garg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -808,13 +812,14 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			garg="${parser_item}"
-			globalArgumentsGroup="garg"
-			parse_setoptionpresence G_6_g_1_basic-argument;parse_setoptionpresence G_6_g
+			globalArgumentsGroup="nestedGroup"
+			nestedGroup="garg"
+			parse_setoptionpresence G_6_g_1_g_1_basic-argument;parse_setoptionpresence G_6_g_1_g;parse_setoptionpresence G_6_g
 			;;
 		string-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gsarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
 				return ${PARSER_ERROR}
@@ -843,8 +848,9 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			gsarg="${parser_item}"
-			globalArgumentsGroup="gsarg"
-			parse_setoptionpresence G_6_g_2_string-argument;parse_setoptionpresence G_6_g
+			globalArgumentsGroup="nestedGroup"
+			nestedGroup="gsarg"
+			parse_setoptionpresence G_6_g_1_g_2_string-argument;parse_setoptionpresence G_6_g_1_g;parse_setoptionpresence G_6_g
 			;;
 		argument-with-default)
 			# Group checks
@@ -879,14 +885,20 @@ parse_process_option()
 			parser_optiontail=""
 			dgarg="${parser_item}"
 			globalArgumentsGroup="dgarg"
-			parse_setoptionpresence G_6_g_3_argument-with-default;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_6_g_2_argument-with-default;parse_setoptionpresence G_6_g
 			;;
 		numeric-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gnarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedExclusiveGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${nestedExclusiveGroup}" ] || [ "${nestedExclusiveGroup}" = "gnarg" ] || [ "${nestedExclusiveGroup:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"nestedExclusiveGroup\" was previously set (${nestedExclusiveGroup})"
 				return ${PARSER_ERROR}
 			fi
 			
@@ -913,15 +925,22 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			gnarg="${parser_item}"
-			globalArgumentsGroup="gnarg"
-			parse_setoptionpresence G_6_g_4_numeric-argument;parse_setoptionpresence G_6_g
+			globalArgumentsGroup="nestedExclusiveGroup"
+			nestedExclusiveGroup="gnarg"
+			parse_setoptionpresence G_6_g_3_g_1_numeric-argument;parse_setoptionpresence G_6_g_3_g;parse_setoptionpresence G_6_g
 			;;
 		float-argument)
 			# Group checks
 			
-			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "gn2arg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
+			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedExclusiveGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${nestedExclusiveGroup}" ] || [ "${nestedExclusiveGroup}" = "gn2arg" ] || [ "${nestedExclusiveGroup:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"nestedExclusiveGroup\" was previously set (${nestedExclusiveGroup})"
 				return ${PARSER_ERROR}
 			fi
 			
@@ -948,8 +967,9 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			gn2arg="${parser_item}"
-			globalArgumentsGroup="gn2arg"
-			parse_setoptionpresence G_6_g_5_float-argument;parse_setoptionpresence G_6_g
+			globalArgumentsGroup="nestedExclusiveGroup"
+			nestedExclusiveGroup="gn2arg"
+			parse_setoptionpresence G_6_g_3_g_2_float-argument;parse_setoptionpresence G_6_g_3_g;parse_setoptionpresence G_6_g
 			;;
 		multi-argument)
 			# Group checks
@@ -1276,7 +1296,7 @@ parse()
 	# Set default option for group G_6_g (if not already set)
 	if [ "${globalArgumentsGroup:0:1}" = "@" ]
 	then
-		globalArgumentsGroup="gsarg"
+		globalArgumentsGroup="dgarg"
 		parse_setoptionpresence G_6_g
 	fi
 	

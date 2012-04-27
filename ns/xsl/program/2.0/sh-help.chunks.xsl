@@ -2,7 +2,7 @@
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="./shell-base.xsl" />
+	<import href="./sh-base.xsl" />
 
 	<variable name="prg.sh.help.usageFunctionName">
 		<call-template name="prg.prefixedName">
