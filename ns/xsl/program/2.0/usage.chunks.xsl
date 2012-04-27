@@ -4,7 +4,7 @@
 
 	<import href="./sh-base.xsl" />
 
-	<variable name="prg.sh.help.usageFunctionName">
+	<variable name="prg.help.usageFunctionName">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
 				<text>usage</text>
@@ -12,7 +12,7 @@
 		</call-template>
 	</variable>
 
-	<template name="prg.sh.help.typeDisplay">
+	<template name="prg.help.typeDisplay">
 		<param name="typeNode" />
 		<param name="detailed" select="false()" />
 		<choose>
@@ -38,7 +38,7 @@
 	</template>
 
 	<!-- Display the option description @todo auto-split lines -->
-	<template name="prg.sh.help.descriptionDisplay">
+	<template name="prg.help.descriptionDisplay">
 		<param name="textNode" select="." />
 		<call-template name="str.replaceAll">
 			<with-param name="replace">
@@ -63,7 +63,7 @@
 		</call-template>
 	</template>
 
-	<template name="prg.sh.help.selectValueList">
+	<template name="prg.help.selectValueList">
 		<param name="optionNode" select="." />
 		<param name="mode" />
 		<call-template name="str.prependLine">
@@ -95,7 +95,7 @@
 		</call-template>
 	</template>
 
-	<template name="prg.sh.help.firstOptionNameDisplay">
+	<template name="prg.help.firstOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<choose>
 			<when test="$optionNode/prg:names/prg:short">
@@ -111,7 +111,7 @@
 		</choose>
 	</template>
 
-	<template name="prg.sh.help.allOptionNameDisplay">
+	<template name="prg.help.allOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<for-each select="$optionNode/prg:names/prg:short|$optionNode/prg:names/prg:long">
 			<call-template name="prg.sh.optionName">
@@ -124,42 +124,42 @@
 	</template>
 
 	<!-- inline display of a switch argument (choose the first option name) -->
-	<template name="prg.sh.help.switchInline">
+	<template name="prg.help.switchInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.sh.help.firstOptionNameDisplay">
+		<call-template name="prg.help.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 	</template>
 
 	<!-- Description of a switch argument (all option names + description) -->
-	<template name="prg.sh.help.switchDescription">
+	<template name="prg.help.switchDescription">
 		<param name="optionNode" select="." />
 		
-		<call-template name="prg.sh.help.allOptionNameDisplay">
+		<call-template name="prg.help.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<text>: </text>
-		<call-template name="prg.sh.help.descriptionDisplay">
+		<call-template name="prg.help.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
 		
 		<if test="$optionNode/prg:documentation/prg:details">
 			<call-template name="endl" />
-			<call-template name="prg.sh.help.descriptionDisplay">
+			<call-template name="prg.help.descriptionDisplay">
 				<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
 			</call-template>
 		</if>
 	</template>
 
-	<template name="prg.sh.help.argumentInline">
+	<template name="prg.help.argumentInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.sh.help.firstOptionNameDisplay">
+		<call-template name="prg.help.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<choose>
 			<when test="$optionNode/prg:type">
 				<text> &lt;</text>
-				<call-template name="prg.sh.help.typeDisplay">
+				<call-template name="prg.help.typeDisplay">
 					<with-param name="typeNode" select="$optionNode/prg:type" />
 				</call-template>
 				<text>&gt;</text>
@@ -170,14 +170,14 @@
 		</choose>
 	</template>
 
-	<template name="prg.sh.help.argumentDescription">
+	<template name="prg.help.argumentDescription">
 		<param name="optionNode" select="." />
 		
-		<call-template name="prg.sh.help.allOptionNameDisplay">
+		<call-template name="prg.help.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<text>: </text>
-		<call-template name="prg.sh.help.descriptionDisplay">
+		<call-template name="prg.help.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
 		
@@ -185,7 +185,7 @@
 			<call-template name="endl" />
 			<call-template name="str.prependLine">
 				<with-param name="content">
-					<call-template name="prg.sh.help.descriptionDisplay">
+					<call-template name="prg.help.descriptionDisplay">
 						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
 					</call-template>
 				</with-param>
@@ -204,7 +204,7 @@
 							<text>The argument can be:</text>
 						</otherwise>
 					</choose>
-					<call-template name="prg.sh.help.selectValueList">
+					<call-template name="prg.help.selectValueList">
 						<with-param name="mode">
 							<text>inline</text>
 						</with-param>
@@ -225,15 +225,15 @@
 		</if>
 	</template>
 
-	<template name="prg.sh.help.multiargumentInline">
+	<template name="prg.help.multiargumentInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.sh.help.firstOptionNameDisplay">
+		<call-template name="prg.help.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<choose>
 			<when test="$optionNode/prg:type">
 				<text> &lt;</text>
-				<call-template name="prg.sh.help.typeDisplay">
+				<call-template name="prg.help.typeDisplay">
 					<with-param name="typeNode" select="$optionNode/prg:type" />
 				</call-template>
 				<text> [ ... ]&gt;</text>
@@ -244,9 +244,9 @@
 		</choose>
 	</template>
 
-	<template name="prg.sh.help.multiargumentDescription">
+	<template name="prg.help.multiargumentDescription">
 		<param name="optionNode" select="." />
-		<call-template name="prg.sh.help.argumentDescription">
+		<call-template name="prg.help.argumentDescription">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<if test="$optionNode/@min">
@@ -269,13 +269,13 @@
 		</if>
 	</template>
 
-	<template name="prg.sh.help.groupInline">
+	<template name="prg.help.groupInline">
 		<param name="optionNode" select="." />
 
 		<if test="$optionNode[@type = 'exclusive']">
 			<text>(</text>
 		</if>
-		<call-template name="prg.sh.help.optionListInline">
+		<call-template name="prg.help.optionListInline">
 			<with-param name="optionsNode" select="$optionNode/prg:options" />
 			<with-param name="separator">
 				<choose>
@@ -293,9 +293,9 @@
 		</if>
 	</template>
 
-	<template name="prg.sh.help.groupDescription">
+	<template name="prg.help.groupDescription">
 		<param name="optionNode" select="." />
-		<call-template name="prg.sh.help.descriptionDisplay">
+		<call-template name="prg.help.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
 		<call-template name="endl" />
@@ -303,7 +303,7 @@
 		<call-template name="sh.block">
 			<with-param name="indentChar" select="$prg.sh.indentChar" />
 			<with-param name="content">
-				<call-template name="prg.sh.help.optionListDescription">
+				<call-template name="prg.help.optionListDescription">
 					<with-param name="optionsNode" select="$optionNode/prg:options" />
 				</call-template>
 			</with-param>
@@ -312,7 +312,7 @@
 	</template>
 
 	<!-- Display the option list -->
-	<template name="prg.sh.help.optionListInline">
+	<template name="prg.help.optionListInline">
 		<param name="optionsNode" />
 		<param name="separator">
 			<text>, </text>
@@ -325,22 +325,22 @@
 			</if>
 			<choose>
 				<when test="./self::prg:switch">
-					<call-template name="prg.sh.help.switchInline">
+					<call-template name="prg.help.switchInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:argument">
-					<call-template name="prg.sh.help.argumentInline">
+					<call-template name="prg.help.argumentInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:multiargument">
-					<call-template name="prg.sh.help.multiargumentInline">
+					<call-template name="prg.help.multiargumentInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:group">
-					<call-template name="prg.sh.help.groupInline">
+					<call-template name="prg.help.groupInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
@@ -355,7 +355,7 @@
 	</template>
 
 	<!-- Display the full documentation for each option -->
-	<template name="prg.sh.help.optionListDescription">
+	<template name="prg.help.optionListDescription">
 		<param name="optionsNode" />
 		
 		<for-each select="$optionsNode/*">
@@ -364,22 +364,22 @@
 			</if>
 			<choose>
 				<when test="./self::prg:switch">
-					<call-template name="prg.sh.help.switchDescription">
+					<call-template name="prg.help.switchDescription">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:argument">
-					<call-template name="prg.sh.help.argumentDescription">
+					<call-template name="prg.help.argumentDescription">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:multiargument">
-					<call-template name="prg.sh.help.multiargumentDescription">
+					<call-template name="prg.help.multiargumentDescription">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:group">
-					<call-template name="prg.sh.help.groupDescription">
+					<call-template name="prg.help.groupDescription">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
@@ -388,13 +388,13 @@
 	</template>
 
 	<!-- Main template -->
-	<template name="prg.sh.help.programHelp">
+	<template name="prg.help.programHelp">
 		<param name="programNode" select="." />
 		
 		<!-- Usage function -->
 		<call-template name="sh.functionDefinition">
 			<with-param name="name">
-				<value-of select="$prg.sh.help.usageFunctionName" />
+				<value-of select="$prg.help.usageFunctionName" />
 			</with-param>
 			<with-param name="indent" select="false()" />
 			<with-param name="content">
@@ -430,7 +430,7 @@
 												<call-template name="endl" />
 												<value-of select="./prg:name" />
 												<text>: </text>
-												<call-template name="prg.sh.help.descriptionDisplay">
+												<call-template name="prg.help.descriptionDisplay">
 													<with-param name="textNode" select="./prg:documentation/prg:abstract" />
 												</call-template>
 												<call-template name="endl" />
@@ -441,7 +441,7 @@
 												<value-of select="./prg:name" />
 												<if test="./prg:options">
 													<text> </text>
-													<call-template name="prg.sh.help.optionListInline">
+													<call-template name="prg.help.optionListInline">
 														<with-param name="optionsNode" select="./prg:options" />
 														<with-param name="separator">
 															<text> </text>
@@ -455,7 +455,7 @@
 														<with-param name="indentChar" select="$prg.sh.indentChar" />
 														<with-param name="addFinalEndl" select="false()" />
 														<with-param name="content">
-															<call-template name="prg.sh.help.optionListDescription">
+															<call-template name="prg.help.optionListDescription">
 																<with-param name="optionsNode" select="./prg:options" />
 															</call-template>
 
@@ -493,7 +493,7 @@
 				<text>: </text>
 
 				<!-- Program description -->
-				<call-template name="prg.sh.help.descriptionDisplay">
+				<call-template name="prg.help.descriptionDisplay">
 					<with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
 				</call-template>
 				<call-template name="endl" />
@@ -510,7 +510,7 @@
 						<!-- Inline options list + description of each option -->
 						<if test="$programNode/prg:options">
 							<text> </text>
-							<call-template name="prg.sh.help.optionListInline">
+							<call-template name="prg.help.optionListInline">
 								<with-param name="optionsNode" select="$programNode/prg:options" />
 								<with-param name="separator">
 									<text> </text>
@@ -542,7 +542,7 @@
 												<with-param name="addFinalEndl" select="false()" />
 												<with-param name="content">
 													<text>options: </text>
-													<call-template name="prg.sh.help.optionListInline">
+													<call-template name="prg.help.optionListInline">
 														<with-param name="optionsNode" select="./prg:options" />
 														<with-param name="separator">
 															<text> </text>
@@ -569,7 +569,7 @@
 								<with-param name="indentChar" select="$prg.sh.indentChar" />
 								<with-param name="addFinalEndl" select="false()" />
 								<with-param name="content">
-									<call-template name="prg.sh.help.optionListDescription">
+									<call-template name="prg.help.optionListDescription">
 										<with-param name="optionsNode" select="$programNode/prg:options" />
 									</call-template>
 								</with-param>

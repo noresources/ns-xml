@@ -3,7 +3,7 @@
 <!-- Display help message for a command line program -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="sh-help.chunks.xsl" />
+	<import href="usage.chunks.xsl" />
 	
 	<output method="text" indent="yes" encoding="utf-8" />
 		
@@ -15,7 +15,7 @@
 	</template>
 	
 	<template match="/prg:program">
-		<call-template name="prg.sh.help.programHelp" >
+		<call-template name="prg.help.programHelp" >
 			<with-param name="programNode" select="/prg:program" />
 		</call-template>		
 	</template>
