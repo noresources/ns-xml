@@ -140,3 +140,5 @@ EOFSH
 	fi
 					
 done
+
+exit $(find "${testPathBase}" -name "*.result-*" | wc -l)

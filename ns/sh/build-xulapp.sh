@@ -18,17 +18,15 @@ Usage:
     -o, --output: Output folder path for the XUL application structure
     -x, --xml-description: Program description file
     Launcher mode
-    (
     	Generate shell script
-    	(
     		-s, --shell: XML shell file
     			A xml file following the bash XML schema
     			  The file may include a XML program definition
     		--prefix-sc-variables, -p: Prefix subcommand options bound variable names
     		This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
-    	)
+    	
     	--command, -c: Launch the given existing command
-    )
+    
     --target-platform, --target, -t: Target platform
     	The argument value have to be one of the following:	
     		host, linux or macosx
@@ -37,13 +35,11 @@ Usage:
     --skip-validation, --no-validation, -S: Skip XML Schema validations
     The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
     User interface
-    (
     	--window-width, -W: 
     	--window-height, -H: 
     	-d, --debug: Add debug console and options into the built interface
-    )
+    
     User data
-    (
     	--init-script, -j: User-defined post-initialization script
     		A Javascript file loaded after the main ui object initialization stage
     		  If a onInitialize() function is available, it will be called with the main ui object as the first argument
@@ -53,16 +49,14 @@ Usage:
     	--resources: Additional resources
     		A list of path or file to add in the application bundle.
     		  These items are copied in the chrome/userdata folder of the application bundle and a new resource url is avalailable (resource://userdata/...)
-    )
+    
     ns-xml options
-    (
     	--ns-xml-path: ns-xml source path
     		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
     	--ns-xml-add: Add other ns-xml folder
     		The argument value have to be one of the following:	
     			sh, xsl or xsd
-    )
 EOFUSAGE
 }
 

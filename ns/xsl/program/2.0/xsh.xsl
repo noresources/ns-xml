@@ -13,6 +13,214 @@
 	<param name="prg.xsh.defaultInterpreter">
 		<text>/bin/bash</text>
 	</param>
+
+	<!-- Help string -->
+	<template name="prg.sh.usage.programHelp">
+		<param name="programNode" select="." />
+
+		<!-- Usage function -->
+		<call-template name="sh.functionDefinition">
+			<with-param name="name">
+				<value-of select="$prg.usage.usageFunctionName" />
+			</with-param>
+			<with-param name="indent" select="false()" />
+			<with-param name="content">
+
+				<!-- TODO subcommand doc case here -->
+				<if test="$programNode/prg:subcommands">
+					<call-template name="sh.if">
+						<with-param name="indent" select="false()" />
+						<with-param name="condition">
+							<text>[ ! -z "${1}" ]</text>
+						</with-param>
+						<with-param name="then">
+							<call-template name="sh.case">
+								<with-param name="indent" select="false()" />
+								<with-param name="case">
+									<call-template name="sh.var">
+										<with-param name="name" select="1" />
+									</call-template>
+								</with-param>
+								<with-param name="in">
+									<for-each select="$programNode/prg:subcommands/*">
+										<call-template name="sh.caseblock">
+											<with-param name="indent" select="false()" />
+											<with-param name="case">
+												<value-of select="./prg:name" />
+												<for-each select="./prg:aliases/prg:alias">
+													<text> | </text>
+													<value-of select="." />
+												</for-each>
+											</with-param>
+											<with-param name="content">
+												<text>cat &lt;&lt; EOFSCUSAGE</text>
+												<call-template name="endl" />
+												<value-of select="./prg:name" />
+												<text>: </text>
+												<call-template name="prg.usage.descriptionDisplay">
+													<with-param name="textNode" select="./prg:documentation/prg:abstract" />
+												</call-template>
+												<call-template name="endl" />
+
+												<text>Usage: </text>
+												<value-of select="../../prg:name" />
+												<text> </text>
+												<value-of select="./prg:name" />
+												<if test="./prg:options">
+													<text> </text>
+													<call-template name="prg.usage.optionListInline">
+														<with-param name="optionsNode" select="./prg:options" />
+														<with-param name="separator">
+															<text> </text>
+														</with-param>
+													</call-template>
+													<call-template name="endl" />
+
+													<text>With</text>
+													<text>:</text>
+													<call-template name="code.block">
+														<with-param name="indentChar" select="$prg.sh.indentChar" />
+														<with-param name="addFinalEndl" select="false()" />
+														<with-param name="content">
+															<call-template name="prg.usage.optionListDescription">
+																<with-param name="optionsNode" select="./prg:options" />
+															</call-template>
+
+															<!-- Program documentation & details -->
+															<if test="./prg:documentation/prg:details">
+																<call-template name="code.block">
+																	<with-param name="indentChar" select="$prg.sh.indentChar" />
+																	<with-param name="addFinalEndl" select="false()" />
+																	<with-param name="content">
+																		<apply-templates select="./prg:documentation/prg:details" />
+																	</with-param>
+																</call-template>
+															</if>
+														</with-param>
+													</call-template>
+												</if>
+												<call-template name="endl" />
+
+												<text>EOFSCUSAGE</text>
+											</with-param>
+										</call-template>
+									</for-each>
+								</with-param>
+							</call-template>
+							<call-template name="endl" />
+							<text>return 0</text>
+						</with-param>
+					</call-template>
+				</if>
+
+				<text>cat &lt;&lt; EOFUSAGE</text>
+				<call-template name="endl" />
+
+				<value-of select="$programNode/prg:name" />
+				<text>: </text>
+
+				<!-- Program description -->
+				<call-template name="prg.usage.descriptionDisplay">
+					<with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
+				</call-template>
+				<call-template name="endl" />
+				<text>Usage: </text>
+				<call-template name="code.block">
+					<with-param name="indentChar" select="$prg.sh.indentChar" />
+					<with-param name="content">
+						<value-of select="$programNode/prg:name" />
+
+						<if test="$programNode/prg:subcommands">
+							<text> &lt;subcommand [subcommand option(s)]&gt;</text>
+						</if>
+
+						<!-- Inline options list + description of each option -->
+						<if test="$programNode/prg:options">
+							<text> </text>
+							<call-template name="prg.usage.optionListInline">
+								<with-param name="optionsNode" select="$programNode/prg:options" />
+								<with-param name="separator">
+									<text> </text>
+								</with-param>
+							</call-template>
+						</if>
+
+						<!-- subcommands descriptions -->
+						<if test="$programNode/prg:subcommands">
+							<call-template name="endl" />
+							<text>With subcommand:</text>
+							<call-template name="code.block">
+								<with-param name="indentChar" select="$prg.sh.indentChar" />
+								<with-param name="addFinalEndl" select="false()" />
+								<with-param name="content">
+									<for-each select="$programNode/prg:subcommands/prg:subcommand">
+										<value-of select="./prg:name" />
+										<for-each select="./prg:aliases/prg:alias">
+											<text>, </text>
+											<value-of select="." />
+										</for-each>
+										<text>: </text>
+										<value-of select="normalize-space(./prg:documentation/prg:abstract)" />
+
+										<!-- Option descritption -->
+										<if test="./prg:options">
+											<call-template name="code.block">
+												<with-param name="indentChar" select="$prg.sh.indentChar" />
+												<with-param name="addFinalEndl" select="false()" />
+												<with-param name="content">
+													<text>options: </text>
+													<call-template name="prg.usage.optionListInline">
+														<with-param name="optionsNode" select="./prg:options" />
+														<with-param name="separator">
+															<text> </text>
+														</with-param>
+													</call-template>
+												</with-param>
+											</call-template>
+										</if>
+										<call-template name="endl" />
+									</for-each>
+								</with-param>
+							</call-template>
+						</if>
+
+						<!-- Option descritption -->
+						<if test="$programNode/prg:options">
+							<call-template name="endl" />
+							<text>With</text>
+							<if test="$programNode/prg:subcommands">
+								<text> global options</text>
+							</if>
+							<text>:</text>
+							<call-template name="code.block">
+								<with-param name="indentChar" select="$prg.sh.indentChar" />
+								<with-param name="addFinalEndl" select="false()" />
+								<with-param name="content">
+									<call-template name="prg.usage.optionListDescription">
+										<with-param name="optionsNode" select="$programNode/prg:options" />
+									</call-template>
+								</with-param>
+							</call-template>
+						</if>
+					</with-param>
+				</call-template>
+
+				<!-- Program documentation & details -->
+				<if test="$programNode/prg:documentation/prg:details">
+					<call-template name="code.block">
+						<with-param name="indentChar" select="$prg.sh.indentChar" />
+						<with-param name="addFinalEndl" select="false()" />
+						<with-param name="content">
+							<apply-templates select="$programNode/prg:documentation/prg:details" />
+						</with-param>
+					</call-template>
+					<call-template name="endl" />
+				</if>
+				<text>EOFUSAGE</text>
+			</with-param>
+		</call-template>
+	</template>
+
 	<template match="/sh:program">
 		<text>#!</text>
 		<choose>
@@ -62,7 +270,7 @@
 							<text>Program help</text>
 						</with-param>
 					</call-template>
-					<call-template name="prg.help.programHelp">
+					<call-template name="prg.sh.usage.programHelp">
 						<with-param name="programNode" select="$programNode" />
 					</call-template>
 					<call-template name="endl" />

@@ -15,11 +15,10 @@ Usage:
   build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-p] [-d] [--help] -o <path>
   With:
     ns-xml source path options
-    (
     	--ns-xml-path: ns-xml source path
     		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
-    )
+    
     -x, --xml-description: Program description file
     	If the program description file is provided, the xml file will be validated before any XSLT processing
     -s, --shell: XML shell file

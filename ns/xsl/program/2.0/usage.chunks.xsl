@@ -4,7 +4,7 @@
 
 	<import href="./sh-base.xsl" />
 
-	<variable name="prg.help.usageFunctionName">
+	<variable name="prg.usage.usageFunctionName">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
 				<text>usage</text>
@@ -12,7 +12,7 @@
 		</call-template>
 	</variable>
 
-	<template name="prg.help.typeDisplay">
+	<template name="prg.usage.typeDisplay">
 		<param name="typeNode" />
 		<param name="detailed" select="false()" />
 		<choose>
@@ -38,7 +38,7 @@
 	</template>
 
 	<!-- Display the option description @todo auto-split lines -->
-	<template name="prg.help.descriptionDisplay">
+	<template name="prg.usage.descriptionDisplay">
 		<param name="textNode" select="." />
 		<call-template name="str.replaceAll">
 			<with-param name="replace">
@@ -63,7 +63,7 @@
 		</call-template>
 	</template>
 
-	<template name="prg.help.selectValueList">
+	<template name="prg.usage.selectValueList">
 		<param name="optionNode" select="." />
 		<param name="mode" />
 		<call-template name="str.prependLine">
@@ -95,7 +95,7 @@
 		</call-template>
 	</template>
 
-	<template name="prg.help.firstOptionNameDisplay">
+	<template name="prg.usage.firstOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<choose>
 			<when test="$optionNode/prg:names/prg:short">
@@ -111,7 +111,7 @@
 		</choose>
 	</template>
 
-	<template name="prg.help.allOptionNameDisplay">
+	<template name="prg.usage.allOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<for-each select="$optionNode/prg:names/prg:short|$optionNode/prg:names/prg:long">
 			<call-template name="prg.sh.optionName">
@@ -124,42 +124,45 @@
 	</template>
 
 	<!-- inline display of a switch argument (choose the first option name) -->
-	<template name="prg.help.switchInline">
+	<template name="prg.usage.switchInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.help.firstOptionNameDisplay">
+
+		<call-template name="prg.usage.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 	</template>
 
 	<!-- Description of a switch argument (all option names + description) -->
-	<template name="prg.help.switchDescription">
+	<template name="prg.usage.switchDescription">
 		<param name="optionNode" select="." />
-		
-		<call-template name="prg.help.allOptionNameDisplay">
+		<param name="details" select="true()" />
+
+		<call-template name="prg.usage.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<text>: </text>
-		<call-template name="prg.help.descriptionDisplay">
+		<call-template name="prg.usage.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
-		
-		<if test="$optionNode/prg:documentation/prg:details">
+
+		<if test="$details and $optionNode/prg:documentation/prg:details">
 			<call-template name="endl" />
-			<call-template name="prg.help.descriptionDisplay">
+			<call-template name="prg.usage.descriptionDisplay">
 				<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
 			</call-template>
 		</if>
 	</template>
 
-	<template name="prg.help.argumentInline">
+	<template name="prg.usage.argumentInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.help.firstOptionNameDisplay">
+
+		<call-template name="prg.usage.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<choose>
 			<when test="$optionNode/prg:type">
 				<text> &lt;</text>
-				<call-template name="prg.help.typeDisplay">
+				<call-template name="prg.usage.typeDisplay">
 					<with-param name="typeNode" select="$optionNode/prg:type" />
 				</call-template>
 				<text>&gt;</text>
@@ -170,70 +173,94 @@
 		</choose>
 	</template>
 
-	<template name="prg.help.argumentDescription">
+	<template name="prg.usage.argumentValueDescription">
 		<param name="optionNode" select="." />
-		
-		<call-template name="prg.help.allOptionNameDisplay">
+
+		<if test="$optionNode/prg:select">
+			<call-template name="endl" />
+			<choose>
+				<when test="$optionNode/prg:select/@restrict">
+					<text>The argument value have to be one of the following:</text>
+				</when>
+				<otherwise>
+					<text>The argument can be:</text>
+				</otherwise>
+			</choose>
+			<call-template name="prg.usage.selectValueList">
+				<with-param name="mode">
+					<text>inline</text>
+				</with-param>
+				<with-param name="optionNode" select="$optionNode/prg:select" />
+			</call-template>
+		</if>
+
+		<if test="$optionNode/prg:default">
+			<call-template name="endl" />
+			<text>Default value: </text>
+			<value-of select="$optionNode/prg:default" />
+		</if>
+
+		<if test="$optionNode/@min">
+			<call-template name="endl" />
+			<text>Minimal argument count: </text>
+			<value-of select="$optionNode/@min" />
+		</if>
+
+		<if test="$optionNode/@max">
+			<call-template name="endl" />
+			<text>Maximal argument count: </text>
+			<value-of select="$optionNode/@max" />
+		</if>
+
+	</template>
+
+	<template name="prg.usage.argumentDescription">
+		<param name="optionNode" select="." />
+		<param name="details" select="true()" />
+
+		<call-template name="prg.usage.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<text>: </text>
-		<call-template name="prg.help.descriptionDisplay">
+		<call-template name="prg.usage.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
-		
-		<if test="$optionNode/prg:documentation/prg:details">
+
+		<if test="$details and $optionNode/prg:documentation/prg:details">
 			<call-template name="endl" />
 			<call-template name="str.prependLine">
 				<with-param name="content">
-					<call-template name="prg.help.descriptionDisplay">
+					<call-template name="prg.usage.descriptionDisplay">
 						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
 					</call-template>
 				</with-param>
 			</call-template>
 		</if>
+
+		<variable name="argumentValueDesc">
+			<call-template name="prg.usage.argumentValueDescription">
+					<with-param name="optionNode" select="$optionNode" />
+				</call-template>
+		</variable>
 		
-		<if test="$optionNode/prg:select">
-			<call-template name="endl" />
-			<call-template name="str.prependLine">
-				<with-param name="content">
-					<choose>
-						<when test="$optionNode/prg:select/@restrict">
-							<text>The argument value have to be one of the following:</text>
-						</when>
-						<otherwise>
-							<text>The argument can be:</text>
-						</otherwise>
-					</choose>
-					<call-template name="prg.help.selectValueList">
-						<with-param name="mode">
-							<text>inline</text>
-						</with-param>
-						<with-param name="optionNode" select="$optionNode/prg:select" />
-					</call-template>
-				</with-param>
-			</call-template>
-		</if>
-		
-		<if test="$optionNode/prg:default">
-			<call-template name="endl" />
-			<call-template name="str.prependLine">
-				<with-param name="content">
-					<text>Default value: </text>
-					<value-of select="$optionNode/prg:default" />
-				</with-param>
-			</call-template>
+		<if test="string-length($argumentValueDesc)">
+		<call-template name="str.prependLine">
+			<with-param name="content">
+				<value-of select="$argumentValueDesc" />
+			</with-param>
+		</call-template>
 		</if>
 	</template>
 
-	<template name="prg.help.multiargumentInline">
+	<template name="prg.usage.multiargumentInline">
 		<param name="optionNode" select="." />
-		<call-template name="prg.help.firstOptionNameDisplay">
+		<call-template name="prg.usage.firstOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
 		<choose>
 			<when test="$optionNode/prg:type">
 				<text> &lt;</text>
-				<call-template name="prg.help.typeDisplay">
+				<call-template name="prg.usage.typeDisplay">
 					<with-param name="typeNode" select="$optionNode/prg:type" />
 				</call-template>
 				<text> [ ... ]&gt;</text>
@@ -244,38 +271,22 @@
 		</choose>
 	</template>
 
-	<template name="prg.help.multiargumentDescription">
+	<template name="prg.usage.multiargumentDescription">
 		<param name="optionNode" select="." />
-		<call-template name="prg.help.argumentDescription">
+		<param name="details" select="true()" />
+		<call-template name="prg.usage.argumentDescription">
 			<with-param name="optionNode" select="$optionNode" />
+			<with-param name="details" select="true()" />
 		</call-template>
-		<if test="$optionNode/@min">
-			<call-template name="endl" />
-			<call-template name="str.prependLine">
-				<with-param name="content">
-					<text>Minimal argument count: </text>
-					<value-of select="$optionNode/@min" />
-				</with-param>
-			</call-template>
-		</if>
-		<if test="$optionNode/@max">
-			<call-template name="endl" />
-			<call-template name="str.prependLine">
-				<with-param name="content">
-					<text>Maximal argument count: </text>
-					<value-of select="$optionNode/@max" />
-				</with-param>
-			</call-template>
-		</if>
 	</template>
 
-	<template name="prg.help.groupInline">
+	<template name="prg.usage.groupInline">
 		<param name="optionNode" select="." />
 
 		<if test="$optionNode[@type = 'exclusive']">
 			<text>(</text>
 		</if>
-		<call-template name="prg.help.optionListInline">
+		<call-template name="prg.usage.optionListInline">
 			<with-param name="optionsNode" select="$optionNode/prg:options" />
 			<with-param name="separator">
 				<choose>
@@ -293,26 +304,25 @@
 		</if>
 	</template>
 
-	<template name="prg.help.groupDescription">
+	<template name="prg.usage.groupDescription">
 		<param name="optionNode" select="." />
-		<call-template name="prg.help.descriptionDisplay">
+		<param name="details" select="true()" />
+
+		<call-template name="prg.usage.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
-		<call-template name="endl" />
-		<text>(</text>
 		<call-template name="sh.block">
 			<with-param name="indentChar" select="$prg.sh.indentChar" />
 			<with-param name="content">
-				<call-template name="prg.help.optionListDescription">
+				<call-template name="prg.usage.optionListDescription">
 					<with-param name="optionsNode" select="$optionNode/prg:options" />
 				</call-template>
 			</with-param>
 		</call-template>
-		<text>)</text>
 	</template>
 
 	<!-- Display the option list -->
-	<template name="prg.help.optionListInline">
+	<template name="prg.usage.optionListInline">
 		<param name="optionsNode" />
 		<param name="separator">
 			<text>, </text>
@@ -325,22 +335,22 @@
 			</if>
 			<choose>
 				<when test="./self::prg:switch">
-					<call-template name="prg.help.switchInline">
+					<call-template name="prg.usage.switchInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:argument">
-					<call-template name="prg.help.argumentInline">
+					<call-template name="prg.usage.argumentInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:multiargument">
-					<call-template name="prg.help.multiargumentInline">
+					<call-template name="prg.usage.multiargumentInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
 				<when test="./self::prg:group">
-					<call-template name="prg.help.groupInline">
+					<call-template name="prg.usage.groupInline">
 						<with-param name="optionNode" select="." />
 					</call-template>
 				</when>
@@ -355,243 +365,41 @@
 	</template>
 
 	<!-- Display the full documentation for each option -->
-	<template name="prg.help.optionListDescription">
+	<template name="prg.usage.optionListDescription">
 		<param name="optionsNode" />
-		
+		<param name="details" select="true()" />
+
 		<for-each select="$optionsNode/*">
 			<if test="position() != 1">
 				<call-template name="endl" />
 			</if>
 			<choose>
 				<when test="./self::prg:switch">
-					<call-template name="prg.help.switchDescription">
+					<call-template name="prg.usage.switchDescription">
 						<with-param name="optionNode" select="." />
+						<with-param name="details" select="$details" />
 					</call-template>
 				</when>
 				<when test="./self::prg:argument">
-					<call-template name="prg.help.argumentDescription">
+					<call-template name="prg.usage.argumentDescription">
 						<with-param name="optionNode" select="." />
+						<with-param name="details" select="$details" />
 					</call-template>
 				</when>
 				<when test="./self::prg:multiargument">
-					<call-template name="prg.help.multiargumentDescription">
+					<call-template name="prg.usage.multiargumentDescription">
 						<with-param name="optionNode" select="." />
+						<with-param name="details" select="$details" />
 					</call-template>
 				</when>
 				<when test="./self::prg:group">
-					<call-template name="prg.help.groupDescription">
+					<call-template name="prg.usage.groupDescription">
 						<with-param name="optionNode" select="." />
+						<with-param name="details" select="$details" />
 					</call-template>
 				</when>
 			</choose>
 		</for-each>
-	</template>
-
-	<!-- Main template -->
-	<template name="prg.help.programHelp">
-		<param name="programNode" select="." />
-		
-		<!-- Usage function -->
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.help.usageFunctionName" />
-			</with-param>
-			<with-param name="indent" select="false()" />
-			<with-param name="content">
-
-				<!-- TODO subcommand doc case here -->
-				<if test="$programNode/prg:subcommands">
-					<call-template name="sh.if">
-						<with-param name="indent" select="false()" />
-						<with-param name="condition">
-							<text>[ ! -z "${1}" ]</text>
-						</with-param>
-						<with-param name="then">
-							<call-template name="sh.case">
-								<with-param name="indent" select="false()" />
-								<with-param name="case">
-									<call-template name="sh.var">
-										<with-param name="name" select="1" />
-									</call-template>
-								</with-param>
-								<with-param name="in">
-									<for-each select="$programNode/prg:subcommands/*">
-										<call-template name="sh.caseblock">
-											<with-param name="indent" select="false()" />
-											<with-param name="case">
-												<value-of select="./prg:name" />
-												<for-each select="./prg:aliases/prg:alias">
-													<text> | </text>
-													<value-of select="." />
-												</for-each>
-											</with-param>
-											<with-param name="content">
-												<text>cat &lt;&lt; EOFSCUSAGE</text>
-												<call-template name="endl" />
-												<value-of select="./prg:name" />
-												<text>: </text>
-												<call-template name="prg.help.descriptionDisplay">
-													<with-param name="textNode" select="./prg:documentation/prg:abstract" />
-												</call-template>
-												<call-template name="endl" />
-
-												<text>Usage: </text>
-												<value-of select="../../prg:name" />
-												<text> </text>
-												<value-of select="./prg:name" />
-												<if test="./prg:options">
-													<text> </text>
-													<call-template name="prg.help.optionListInline">
-														<with-param name="optionsNode" select="./prg:options" />
-														<with-param name="separator">
-															<text> </text>
-														</with-param>
-													</call-template>
-													<call-template name="endl" />
-
-													<text>With</text>
-													<text>:</text>
-													<call-template name="code.block">
-														<with-param name="indentChar" select="$prg.sh.indentChar" />
-														<with-param name="addFinalEndl" select="false()" />
-														<with-param name="content">
-															<call-template name="prg.help.optionListDescription">
-																<with-param name="optionsNode" select="./prg:options" />
-															</call-template>
-
-															<!-- Program documentation & details -->
-															<if test="./prg:documentation/prg:details">
-																<call-template name="code.block">
-																	<with-param name="indentChar" select="$prg.sh.indentChar" />
-																	<with-param name="addFinalEndl" select="false()" />
-																	<with-param name="content">
-																		<apply-templates select="./prg:documentation/prg:details" />
-																	</with-param>
-																</call-template>
-															</if>
-														</with-param>
-													</call-template>
-												</if>
-												<call-template name="endl" />
-
-												<text>EOFSCUSAGE</text>
-											</with-param>
-										</call-template>
-									</for-each>
-								</with-param>
-							</call-template>
-							<call-template name="endl" />
-							<text>return 0</text>
-						</with-param>
-					</call-template>
-				</if>
-
-				<text>cat &lt;&lt; EOFUSAGE</text>
-				<call-template name="endl" />
-
-				<value-of select="$programNode/prg:name" />
-				<text>: </text>
-
-				<!-- Program description -->
-				<call-template name="prg.help.descriptionDisplay">
-					<with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
-				</call-template>
-				<call-template name="endl" />
-				<text>Usage: </text>
-				<call-template name="code.block">
-					<with-param name="indentChar" select="$prg.sh.indentChar" />
-					<with-param name="content">
-						<value-of select="$programNode/prg:name" />
-
-						<if test="$programNode/prg:subcommands">
-							<text> &lt;subcommand [subcommand option(s)]&gt;</text>
-						</if>
-
-						<!-- Inline options list + description of each option -->
-						<if test="$programNode/prg:options">
-							<text> </text>
-							<call-template name="prg.help.optionListInline">
-								<with-param name="optionsNode" select="$programNode/prg:options" />
-								<with-param name="separator">
-									<text> </text>
-								</with-param>
-							</call-template>
-						</if>
-
-						<!-- subcommands descriptions -->
-						<if test="$programNode/prg:subcommands">
-							<call-template name="endl" />
-							<text>With subcommand:</text>
-							<call-template name="code.block">
-								<with-param name="indentChar" select="$prg.sh.indentChar" />
-								<with-param name="addFinalEndl" select="false()" />
-								<with-param name="content">
-									<for-each select="$programNode/prg:subcommands/prg:subcommand">
-										<value-of select="./prg:name" />
-										<for-each select="./prg:aliases/prg:alias">
-											<text>, </text>
-											<value-of select="." />
-										</for-each>
-										<text>: </text>
-										<value-of select="normalize-space(./prg:documentation/prg:abstract)" />
-
-										<!-- Option descritption -->
-										<if test="./prg:options">
-											<call-template name="code.block">
-												<with-param name="indentChar" select="$prg.sh.indentChar" />
-												<with-param name="addFinalEndl" select="false()" />
-												<with-param name="content">
-													<text>options: </text>
-													<call-template name="prg.help.optionListInline">
-														<with-param name="optionsNode" select="./prg:options" />
-														<with-param name="separator">
-															<text> </text>
-														</with-param>
-													</call-template>
-												</with-param>
-											</call-template>
-										</if>
-										<call-template name="endl" />
-									</for-each>
-								</with-param>
-							</call-template>
-						</if>
-
-						<!-- Option descritption -->
-						<if test="$programNode/prg:options">
-							<call-template name="endl" />
-							<text>With</text>
-							<if test="$programNode/prg:subcommands">
-								<text> global options</text>
-							</if>
-							<text>:</text>
-							<call-template name="code.block">
-								<with-param name="indentChar" select="$prg.sh.indentChar" />
-								<with-param name="addFinalEndl" select="false()" />
-								<with-param name="content">
-									<call-template name="prg.help.optionListDescription">
-										<with-param name="optionsNode" select="$programNode/prg:options" />
-									</call-template>
-								</with-param>
-							</call-template>
-						</if>
-					</with-param>
-				</call-template>
-				
-				<!-- Program documentation & details -->
-				<if test="$programNode/prg:documentation/prg:details">
-					<call-template name="code.block">
-						<with-param name="indentChar" select="$prg.sh.indentChar" />
-						<with-param name="addFinalEndl" select="false()" />
-						<with-param name="content">
-							<apply-templates select="$programNode/prg:documentation/prg:details" />
-						</with-param>
-					</call-template>
-					<call-template name="endl" />
-				</if>
-				<text>EOFUSAGE</text>
-			</with-param>
-		</call-template>
 	</template>
 
 </stylesheet>

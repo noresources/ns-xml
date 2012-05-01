@@ -27,11 +27,9 @@ Usage:
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     ns-xml source path options
-    (
     	--ns-xml-path: ns-xml source path
     		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
-    )
 EOFUSAGE
 }
 
@@ -704,6 +702,7 @@ scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
 programVersion="2.0"
+baseModules=(__init__ Base Info Parser Validators)
  
 # Check required programs
 for x in xmllint xsltproc
@@ -742,14 +741,14 @@ pythonModulePath="${pythonScriptPathBase}/${moduleName}"
 [ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 
 nsPythonPath="${nsPath}/python/program/${programVersion}"
-for m in InfoBase __init__ Parser Validators
+for m in ${baseModules[*]}
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"	
 	[ -f "${nsPythonFile}" ] || error 2 "Base python module not found (${nsPythonFile})"
 done
 
 mkdir -p "${pythonModulePath}" || error 3 "Unable to create Module folder ${pythonModulePath}"
-for m in InfoBase __init__ Parser Validators
+for m in ${baseModules[*]}
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"
 	cp -fp "${nsPythonFile}" "${pythonModulePath}"  
@@ -757,7 +756,7 @@ done
 
 # Create the Program module
 xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
-if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/python-module.xsl" "${xmlProgramDescriptionPath}"
+if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py-module.xsl" "${xmlProgramDescriptionPath}"
 then
 	error 4 "Failed to create Program module"
 fi

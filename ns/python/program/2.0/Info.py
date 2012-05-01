@@ -1,26 +1,28 @@
 """ Program options and subcommand infos """
 from Validators import *
+from Base import *
 
-class InfoUtil:
-    @classmethod
-    def cli_option_name(self, name):
-        """Current option name as it appears on the command line"""
-        if (name == None) or (len(name) == 0):
-            return ""
-        elif len(name) == 1:
-            return "-" + name
-        return "--" + name
-
-class OptionInfo:
+class Documentation:
+    def __init__(self):
+        self.option_names = ""
+        self.value_description = ""
+        self.inline = ""
+        self.abstract = ""
+        self.details = ""
         
+class OptionInfo:
+    """Base class for all option infos"""        
     def __init__(self, var=None):
         self.varname = var
+        self.documentation = None
+        self.required = False
         self.value = None
         self.owner = None
         self.present = False
         self.short_names = []
         self.long_names = []
         self.validators = []
+        self.documentation = Documentation()
         
     def set_names(self, option_names=()):
         for n in option_names:
@@ -85,7 +87,7 @@ class GroupOptionInfo(OptionInfo):
                          
     def add_option(self, info):
         self.options.append(info)
-        info.owner = self          
+        info.owner = self
         
 class SwitchOptionInfo(OptionInfo):
     def __init__(self, var):
@@ -115,10 +117,13 @@ class MultiArgumentOptionInfo(OptionInfo):
 class OptionRootInfo:
     options = None
     option_names = None
+    usage = None
         
     def __init__(self):
         self.options = []
         self.option_names = {}
+        self.usage = { "inline": "", "abstract": "",  "details": ""}
+        self.documentation = { "abstract": "", "details": ""}
     
     def add_option_names(self, info):
         for n in info.names():
@@ -131,7 +136,7 @@ class OptionRootInfo:
     def add_option(self, info):
         self.options.append(info)
         self.add_option_names(info)
-                   
+                       
 class SubcommandInfo(OptionRootInfo):
     name = ""
     aliases = None
@@ -146,8 +151,9 @@ class ProgramInfo(OptionRootInfo):
     subcommand_names = None
     values = None
         
-    def __init__(self):
+    def __init__(self, n):
         OptionRootInfo.__init__(self)
+        self.name = n
         self.subcommands = []
         self.subcommand_names = {}
         self.values = []

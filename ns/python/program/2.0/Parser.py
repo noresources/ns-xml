@@ -1,80 +1,14 @@
 """Parser and parser result"""
-from InfoBase import *
-
-class State:
-    Undef = 0
-    EndOfOptions = 1
-    GluedValue = 2
-    SkipArgument = 4
-    ArgumentExpected = 8
-   
-class Context:
-    state = None
-    "State flags"
-    option = None
-    "Current option reference"
-    option_name = None
-    "Current option name (without minus sign(s))"
-    option_args = None
-    "current options arguments"
-    subcommand = None
-    skip_count = 0
-    issues = None
-    
-    def __init__(self):
-        self.state = State.Undef
-        self.option = None
-        self.option_name = ""
-        self.option_args = []
-        self.subcommand = None
-        self.skip_count = 0
-        self.issues = {"debug": [], "notice": [], "warnings": [], "errors": []}
-            
-    def unset_current_option(self):
-        self.option = None
-        self.option_name = ""
-        
-    def set_argument_skipping(self, b, count):
-        if b:
-            self.state |= State.SkipArgument
-            self.skip_count = count
-        else:
-            self.state &= ~State.SkipArgument
-            self.skip_count = 0
-        
-    def skip_argument(self):
-        self.skip_count = self.skip_count - 1
-        if self.skip_count == 0:
-            self.state &= ~State.SkipArgument
-    
-    @property
-    def cli_option_name(self):
-        """Current option name as it appears on the command line"""
-        return InfoUtil.cli_option_name(self.option_name)
-    
-    def add_issue(self, level, message):
-        if level == "fatalerror":
-            print "Fatal error: " + message
-            return   
-        self.issues[level].append(message)
-        
-    def debug(self, message):
-        self.add_issue("debug", message)
-        
-    def notice(self, message):
-        self.add_issue("notices", message)
-        
-    def warning(self, message):
-        self.add_issue("warnings", message)
-        
-    def error(self, message):
-        self.add_issue("errors", message) 
+from Info import *
+from Base import *
+import textwrap
  
 class OptionResultContainer:
     """A dynamic class where each attribute is an option result"""
     pass
    
 class ParserResultUtil:
+    
     @classmethod
     def get_option_attr(self, o):
         """Return the name of the variable in a parser result"""
@@ -110,6 +44,87 @@ class ParserResultUtil:
                 setattr(e, attr, value)
                 if (r != e):
                     setattr(r, attr, value)
+
+    UsageIndentText = "\t"
+
+    @classmethod
+    def format(cls, text, level = 1, subsequent_level = 1):
+        return textwrap.fill(text, width=80, initial_indent = cls.UsageIndentText * level, subsequent_indent = cls.UsageIndentText * subsequent_level)
+    
+    @classmethod
+    def option_usage(cls, optionInfo, level = 1, usageFlags = Usage.AllInfos):
+        isRaw = (usageFlags & Usage.Raw)
+        msg = ""
+        abstract = ((usageFlags & Usage.Abstract) == Usage.Abstract)
+        details =  ((usageFlags & Usage.Details) == Usage.Details)
+        if (abstract):
+            tmp = optionInfo.documentation.abstract
+            if not isRaw and len(optionInfo.documentation.option_names):
+                tmp = optionInfo.documentation.option_names + ": " + tmp
+            if len(tmp) > 0:
+                msg = msg + cls.format(tmp, level, level + 1) + "\n"
+            
+        if (details):
+            msg = msg + str(usageFlags) + " " + str(Usage.Details) 
+            if (len(optionInfo.documentation.value_description)):
+                for t in optionInfo.documentation.value_description.splitlines():
+                    if len(t) > 0:
+                        msg = msg + cls.format(t, level + 1, level + 2) + "\n"
+                        
+            tmp = optionInfo.documentation.details
+            if len(tmp) > 0:
+                msg = msg + cls.format(tmp, level + 1, level + 1) + "\n"
+        
+        if isinstance(optionInfo, GroupOptionInfo):
+            for o in optionInfo.options:
+                msg = msg + cls.option_usage(o, level + 1, usageFlags)
+                
+        return msg
+    
+    @classmethod
+    def usage(cls, programInfo, result, usageFlags = Usage.AllInfos):
+        """ Return the program usage string """
+        msg = ""
+        isSubcommand = isinstance(result, ParserResult) and result.subcommand
+        isRaw = (usageFlags & Usage.Raw)
+        abstract = ((usageFlags & Usage.Abstract) == Usage.Abstract)
+        details =  ((usageFlags & Usage.Details) == Usage.Details) 
+        info = programInfo
+        if isSubcommand:
+            info = programInfo.subcommand_names[result.subcommand.name]
+        
+        if not isRaw:
+            msg = programInfo.name
+            if isSubcommand:
+                msg = msg + " " + result.subcommand.name
+            if (len(info.documentation["abstract"]) > 0):
+                msg = msg + ": " + str(info.documentation["abstract"])
+            msg = msg + "\n"
+            
+            if (usageFlags & Usage.Inline):
+                msg = msg + "Usage:\n" + cls.UsageIndentText
+                if isSubcommand:
+                    msg = msg + programInfo.name + " " 
+                msg = msg + info.name + " " 
+        
+        if (usageFlags & Usage.Inline):
+            msg = msg + info.usage["inline"]
+            
+        if (abstract):
+            if not isRaw:
+                msg = msg + "with:\n"
+                
+            for o in info.options:
+                msg = msg + cls.option_usage(o, 1, usageFlags)
+        
+        if isSubcommand:
+            if not isRaw and (abstract):
+                msg = msg + "Global options:\n"
+                for o in programInfo.options:
+                    msg = msg + cls.option_usage(o, 1, usageFlags)
+            
+        return msg
+        
 
 class GroupOptionResult:
     """A special class to represent a group option result"""
@@ -165,6 +180,10 @@ class ParserResult:
         if isinstance(context.subcommand, SubcommandInfo):
             self.__subcommand = SubcommandResult(context.subcommand)
               
+    @property
+    def is_valid(self):
+        return (len(self.__issues["errors"]) == 0)
+    
     @property
     def issues(self):
         return self.__issues
@@ -295,7 +314,7 @@ class Parser:
                         elif isinstance(context.option, MultiArgumentOptionInfo):
                             context.set_argument_skipping(True, -1)
                 else:
-                    context.error("Invalid option name " + InfoUtil.cli_option_name(option))
+                    context.error("Invalid option name " + Util.cli_option_name(option))
                                 
             elif (len(arg) > 1 and (arg[0] == "-")):
                 tail = arg[1:len(arg)]
@@ -332,7 +351,7 @@ class Parser:
                             "Forget remaining characters in any case"
                             break
                     else:
-                        context.error("Invalid option name " + InfoUtil.cli_option_name(option))
+                        context.error("Invalid option name " + Util.cli_option_name(option))
                         break
             
             else:

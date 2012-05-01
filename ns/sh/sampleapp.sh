@@ -57,29 +57,24 @@ Usage:
     -s, --simpleswitch: Simple switch
     A simple switch option (true/false)
     A useless group option
-    (
     	--switch-alone-in-group: Another switch
     	This swith is in a group with only one option. So, the group is hidden and the option appears at the same level
-    )
+    
     Exclusive option group
-    (
     	Nested group (basic type arguments)
-    	(
     		--basic-argument: Basic argument
     		--string-argument: String argument
     			This argument expect a string, which is roughly the same thing as accepting any kind of content
-    	)
+    	
     	--argument-with-default: Argument (with default value)
     		A default value is proposed. If the user does not change it, the option will not appear in the command line
     		Default value: Default value
     	Nested exclusive group
-    	(
     		--numeric-argument: Numeric argument
     			Only numberrs are accepted as argument value. A numeric argument appears as a spin box in the UI
     		--float-argument: Float argument
     			Numeric argument with decimals. A minimum (1.0) and maximum (10) values are also defined
-    	)
-    )
+    
     --existing-file-argument: File argument
     	An existing file argument
     --rw-folder-argument: Folder argument
@@ -87,7 +82,6 @@ Usage:
     --mixed-fskind-argument: File, folder etc.
     	Accept most of file system object types. On some UI and platforms, you can't select a folder in the file box if files are also accepted.
     Multi argument options
-    (
     	--multi-argument: Multi argument
     		A basic multi argument options
     		Minimal argument count: 2
@@ -98,7 +92,7 @@ Usage:
     			FirstOption, Second option or Third option
     	--multi-xml: Xml files
     		Expect a file. XML files are welcome but others are accepted
-    )
+    
     --hostname, -H: Hostname
     	Accept a host name. In console mode, the autocompletion will propose hosts defined in /etc/hosts.
     --simple-pattern-sh, -P: 
