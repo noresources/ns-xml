@@ -237,7 +237,11 @@ class Parser:
                         context.unset_current_option()
                         programInfo.values.append(arg)
               
-                        
+            else:
+                if isinstance(context.option, ArgumentOptionInfo):
+                    context.option.set_value(arg)
+                    context.unset_current_option()
+                    
         elif (context.subcommand == None):
             context.debug(" Attempt to get subcommand")
             context.subcommand = self.get_subcommand(programInfo, context, arg)

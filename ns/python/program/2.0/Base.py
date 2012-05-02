@@ -2,7 +2,7 @@
 
 class Util:
     @classmethod
-    def cli_option_name(self, name):
+    def cli_option_name(cls, name):
         """Current option name as it appears on the command line"""
         if (name == None) or (len(name) == 0):
             return ""
@@ -10,6 +10,20 @@ class Util:
             return "-" + name
         return "--" + name
 
+    @classmethod
+    def value_list_display(cls, values, separator = ", ", last_separator = " or ", enclose_start = "", enclose_end =""):
+        length = len(values)
+        
+        if length < 2:
+            return values[0]
+        if length == 2:
+            glue = enclose_end + last_separator + enclose_start 
+            return enclose_start + glue.join(values) + enclose_end
+        
+        glue = enclose_end + separator + enclose_start
+        msg = enclose_start + glue.join(values[0:(length - 1)])
+        return msg + enclose_end + last_separator + enclose_start + values[(length - 1)] + enclose_end 
+            
 class State:
     """Parser context state"""
     Undef = 0

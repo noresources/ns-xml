@@ -26,12 +26,26 @@
 		</call-template>
 	</template>
 
-	<template name="prg.py.module.stringList">
+	<template name="prg.py.module.nodeValueStringList">
 		<param name="rootNode" />
 		<text>[</text>
 		<for-each select="$rootNode/*">
 			<text>"</text>
 			<value-of select="normalize-space(.)" />
+			<text>"</text>
+			<if test="position() != last()">
+				<text>, </text>
+			</if>
+		</for-each>
+		<text>]</text>
+	</template>
+	
+	<template name="prg.py.module.nodeNameStringList">
+		<param name="rootNode" />
+		<text>[</text>
+		<for-each select="$rootNode/*">
+			<text>"</text>
+			<value-of select="local-name(.)" />
 			<text>"</text>
 			<if test="position() != last()">
 				<text>, </text>
@@ -119,7 +133,7 @@
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.set_names(</text>
-			<call-template name="prg.py.module.stringList">
+			<call-template name="prg.py.module.nodeValueStringList">
 				<with-param name="rootNode" select="$optionNode/prg:names" />
 			</call-template>
 			<text>)</text>
@@ -185,9 +199,44 @@
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.validators.append(RestrictedValueValidator(</text>
-			<call-template name="prg.py.module.stringList">
+			<call-template name="prg.py.module.nodeValueStringList">
 				<with-param name="rootNode" select="$optionNode/prg:select" />
 			</call-template>
+			<text>))</text>
+			<call-template name="endl" />
+		</if>
+		<if test="$optionNode/prg:type/prg:number">
+			<variable name="numberNode" select="$optionNode/prg:type/prg:number" />
+			<value-of select="$indent" />
+			<value-of select="$pyVarName" />
+			<text>.validators.append(NumberValidator(</text>
+			<choose>
+				<when test="$numberNode/@min">
+					<value-of select="$numberNode/@min" /> 
+				</when>
+				<otherwise><text>"NaN"</text></otherwise>
+			</choose>
+			<text>, </text>
+			<choose>
+				<when test="$numberNode/@max">
+					<value-of select="$numberNode/@max" />
+				</when>
+				<otherwise><text>"NaN"</text></otherwise>
+			</choose>
+			<text>))</text>
+			<call-template name="endl" />
+		</if>
+		<if test="$optionNode/prg:type/prg:path[@exist = 'true']">
+			<variable name="pathNode" select="$optionNode/prg:type/prg:path" />
+			<value-of select="$indent" />
+			<value-of select="$pyVarName" />
+			<text>.validators.append(PathValidator(</text>
+			<call-template name="prg.py.module.nodeNameStringList">
+				<with-param name="rootNode" select="$pathNode/prg:kinds" />
+			</call-template>
+			<text>, "</text>
+			<value-of select="$pathNode/@access" />
+			<text>"</text>
 			<text>))</text>
 			<call-template name="endl" />
 		</if>
@@ -249,7 +298,7 @@
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.aliases = </text>
-			<call-template name="prg.py.module.stringList">
+			<call-template name="prg.py.module.nodeValueStringList">
 				<with-param name="rootNode" select="$subcommandNode/prg:aliases" />
 			</call-template>
 			<call-template name="endl" />

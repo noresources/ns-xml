@@ -220,7 +220,7 @@ A minimum (1.0) and maximum (10) values are also defined</prg:details>
 				<prg:long>rw-folder-argument</prg:long>
 			</prg:names>
 			<prg:type>
-				<prg:path access="rw">
+				<prg:path access="rw" exist="true">
 					<prg:kinds>
 						<prg:folder/>
 					</prg:kinds>
