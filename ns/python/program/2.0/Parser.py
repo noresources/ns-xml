@@ -124,81 +124,38 @@ class ParserResultUtil:
                     msg = msg + cls.option_usage(o, 1, usageFlags)
             
         return msg
-        
-
 class GroupOptionResult:
     """A special class to represent a group option result"""
     
     def __init__(self, info, root):
-        self.__options = OptionResultContainer()
-        self.__is_set = info.present
-        ParserResultUtil.set_options(self.__options, info.options, root)
+        self.options = OptionResultContainer()
+        self.is_set = info.present
+        ParserResultUtil.set_options(self.options, info.options, root)
         if info.type == GroupOptionType.Exclusive:
             setattr(self, "selected_option", info.selected_option)
             if isinstance(info.selected_option, OptionInfo):
                 setattr(self, "selected_option_name", ParserResultUtil.get_option_attr(info.selected_option))
-                    
-    @property
-    def options(self):
-        """Option results"""
-        return self.__options
-    
-    @property
-    def is_set(self):
-        """Indicates if at least one option of the group was present on the commnad line"""
-        return self.__is_set
                              
 class SubcommandResult:
-    __name = None
-    __options = None
-    
     def __init__(self, info):
-        self.__name = info.name
-        self.__options = OptionResultContainer()
-        ParserResultUtil.set_options(self.__options, info.options)
-        
-    @property
-    def name(self):
-        return self.__name
-    
-    @property
-    def options(self):
-        return self.__options
-    
+        self.name = info.name
+        self.options = OptionResultContainer()
+        ParserResultUtil.set_options(self.options, info.options)
+         
 class ParserResult:
-    __issues = None
-    __subcommand = None
-    __options = None
-    __values = None
-    
     def __init__(self, context, info):
-        self.__issues = context.issues
-        self.__options = OptionResultContainer()
-        ParserResultUtil.set_options(self.__options, info.options)
-        self.__values = info.values 
+        self.issues = context.issues
+        self.options = OptionResultContainer()
+        ParserResultUtil.set_options(self.options, info.options)
+        self.values = info.values
+        self.subcommand = None 
         
         if isinstance(context.subcommand, SubcommandInfo):
-            self.__subcommand = SubcommandResult(context.subcommand)
+            self.subcommand = SubcommandResult(context.subcommand)
               
     @property
     def is_valid(self):
-        return (len(self.__issues["errors"]) == 0)
-    
-    @property
-    def issues(self):
-        return self.__issues
-    
-    @property
-    def values(self):
-        return self.__values
-    
-    @property
-    def subcommand(self):
-        return self.__subcommand
-    
-    @property
-    def options(self):
-        return self.__options
+        return (len(self.issues["errors"]) == 0)
         
 class Parser:
     
@@ -374,5 +331,3 @@ class Parser:
                 context.error("Missing argument(s) for option " + context.cli_option_name)
            
         return ParserResult(context, programInfo)   
-                    
-                            

@@ -482,7 +482,7 @@ MainWindow.prototype.RebuildObserver.prototype.observe = function(subject, topic
 MainWindow.prototype.rebuildWindow = function(path, args)
 {
 	var args = new Array();
-	var commandPath = unescape(this.app.getApplicationPathString() + "sh/_rebuild.sh"); 
+	var commandPath = this.app.getApplicationPath() + "sh/_rebuild.sh"; 
 	this.executeCommand(commandPath, args, new this.RebuildObserver(this)); 
 }
 
@@ -767,7 +767,7 @@ MainWindow.prototype.execute = function()
 	var command = "]]><value-of select="/prg:program/prg:name" /><![CDATA[";
 	this.setPreview(command + " " + args.join(" "));
 	
-	var commandPath = unescape(this.app.getApplicationPathString()) + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA[.sh"; 
+	var commandPath = this.app.getApplicationPath() + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA[.sh"; 
 	this.executeCommand(commandPath, args, new this.ExecuteObserver(this));
 }
 

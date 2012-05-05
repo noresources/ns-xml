@@ -4,12 +4,13 @@
 
 	<import href="./base.xsl" />
 
+	<!-- platform name ("linux" or "macosx") -->
 	<param name="prg.xul.platform" />
 
 	<param name="prg.xul.appName">
 		<value-of select="/prg:program/prg:name" />
 	</param>
-
+	
 	<param name="prg.xul.js.mainWindowInstanceName">
 		<value-of select="$prg.xul.appName" /><text>MainWindow</text>
 	</param>

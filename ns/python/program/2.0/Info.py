@@ -69,9 +69,6 @@ class GroupOptionType:
     Exclusive = 2
     
 class GroupOptionInfo(OptionInfo):
-    options = None
-    selected_option = None
-    
     def __init__(self, var=None, type=GroupOptionType.Default):
         OptionInfo.__init__(self, var)
         self.options = []
@@ -115,10 +112,7 @@ class MultiArgumentOptionInfo(OptionInfo):
         return True
     
 class OptionRootInfo:
-    options = None
-    option_names = None
-    usage = None
-        
+           
     def __init__(self):
         self.options = []
         self.option_names = {}
@@ -138,19 +132,12 @@ class OptionRootInfo:
         self.add_option_names(info)
                        
 class SubcommandInfo(OptionRootInfo):
-    name = ""
-    aliases = None
-    
     def __init__(self, name):
         OptionRootInfo.__init__(self)
         self.name = name
         self.aliases = []
     
 class ProgramInfo(OptionRootInfo):
-    subcommands = None
-    subcommand_names = None
-    values = None
-        
     def __init__(self, n):
         OptionRootInfo.__init__(self)
         self.name = n
