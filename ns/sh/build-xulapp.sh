@@ -27,7 +27,7 @@ Usage:
     	
     	--command, -c: Launch the given existing command
     
-    --target-platform, --target, -t: Target platform
+    --target-platform, --target, -t: Target platform	
     	The argument value have to be one of the following:	
     		host, linux or macosx
     	Default value: host
@@ -54,7 +54,7 @@ Usage:
     	--ns-xml-path: ns-xml source path
     		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
-    	--ns-xml-add: Add other ns-xml folder
+    	--ns-xml-add: Add other ns-xml folder	
     		The argument value have to be one of the following:	
     			sh, xsl or xsd
 EOFUSAGE

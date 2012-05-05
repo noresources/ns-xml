@@ -33,19 +33,6 @@ class State:
     ArgumentExpected = 8
    
 class Context:
-    """Parser context"""
-    state = None
-    "State flags"
-    option = None
-    "Current option reference"
-    option_name = None
-    "Current option name (without minus sign(s))"
-    option_args = None
-    "current options arguments"
-    subcommand = None
-    skip_count = 0
-    issues = None
-    
     def __init__(self):
         self.state = State.Undef
         self.option = None

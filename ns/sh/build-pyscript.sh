@@ -17,7 +17,7 @@ Usage:
     -p, --python: Python script path
     	Location of the Python script body. The parser module will be created at the same place
     -m, --module-name, --module: Python module name
-    	Set the name of the command line parser python module
+    	Set the name of the command line parser python module	
     	Default value: Program
     -u, --update: Update pythom module if already exists
     -x, --xml-description: Program description file

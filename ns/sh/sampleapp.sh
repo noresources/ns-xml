@@ -19,7 +19,7 @@ With:
   --switch, --sc-switch: Switch of the sub command
   The bound variable name can be the same as another subcommand variable or one of the global option. In this case, you have to set the prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)
   --sc-existing-file-argument: Sub command file argument
-  --sc-strict-enum: Sub command argument (strict set)
+  --sc-strict-enum: Sub command argument (strict set)	
   	The argument value have to be one of the following:	
   		OptionA, ValueB or ItemC
 EOFSCUSAGE
@@ -67,7 +67,7 @@ Usage:
     			This argument expect a string, which is roughly the same thing as accepting any kind of content
     	
     	--argument-with-default: Argument (with default value)
-    		A default value is proposed. If the user does not change it, the option will not appear in the command line
+    		A default value is proposed. If the user does not change it, the option will not appear in the command line	
     		Default value: Default value
     	Nested exclusive group
     		--numeric-argument: Numeric argument
@@ -83,11 +83,11 @@ Usage:
     	Accept most of file system object types. On some UI and platforms, you can't select a folder in the file box if files are also accepted.
     Multi argument options
     	--multi-argument: Multi argument
-    		A basic multi argument options
+    		A basic multi argument options	
     		Minimal argument count: 2
     		Maximal argument count: 3
     	--multi-select-argument: Multi select argument
-    		Accept only a fixed set of values
+    		Accept only a fixed set of values	
     		The argument value have to be one of the following:	
     			FirstOption, Second option or Third option
     	--multi-xml: Xml files
@@ -96,12 +96,12 @@ Usage:
     --hostname, -H: Hostname
     	Accept a host name. In console mode, the autocompletion will propose hosts defined in /etc/hosts.
     --simple-pattern-sh, -P: 
-    --strict-enum, -E: Strict enumeration
+    --strict-enum, -E: Strict enumeration	
     	The argument value have to be one of the following:	
     		Option A, Value B, Item C or ItemD with space
     	Default value: Value B
     --non-strict-enum, -e: Non-restrictive enumeration
-    	Non restricive enumeration will only propose some values in autocompletion but will accept any other values
+    	Non restricive enumeration will only propose some values in autocompletion but will accept any other values	
     	The argument can be:	
     		nOptionA, nValueB, nItemC or nItemD with space
 
@@ -593,6 +593,12 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			if [ ! -e "${parser_item}" ]
+			then
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privilege(s) expected for option \"${parser_option}\""

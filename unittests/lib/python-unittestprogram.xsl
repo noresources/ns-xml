@@ -2,7 +2,7 @@
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<output method="text" encoding="utf-8" />
-	
+	<param name="interpreter"><text>python</text></param>	
 	<include href="../../ns/xsl/languages/base.xsl"/>
 		
 	<template match="prg:databinding/prg:variable">
@@ -10,7 +10,7 @@
 	</template>
 	
 	<template match="/">
-		<text><![CDATA[#!/usr/bin/python
+		<text>#!/usr/bin/env </text><value-of select="$interpreter"/><text><![CDATA[
 import sys
 import Program
 
