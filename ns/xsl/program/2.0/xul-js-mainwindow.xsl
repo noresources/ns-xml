@@ -767,7 +767,7 @@ MainWindow.prototype.execute = function()
 	var command = "]]><value-of select="/prg:program/prg:name" /><![CDATA[";
 	this.setPreview(command + " " + args.join(" "));
 	
-	var commandPath = this.app.getApplicationPath() + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA[.sh"; 
+	var commandPath = this.app.getApplicationPath() + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA["; 
 	this.executeCommand(commandPath, args, new this.ExecuteObserver(this));
 }
 

@@ -11,6 +11,61 @@
 	<prg:ui>
 		<prg:label>Command line front-end builder</prg:label>
 	</prg:ui>
+
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>xsh</prg:name>
+			<prg:aliases>
+				<prg:alias>sh</prg:alias>
+				<prg:alias>shell</prg:alias>
+			</prg:aliases>
+			<prg:documentation>
+				<prg:abstract>Build a XUL application which will run a Shell script defined through the bash XML schema</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath'])" />
+				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])" />
+			</prg:options>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>python</prg:name>
+			<prg:aliases>
+				<prg:alias>py</prg:alias>
+			</prg:aliases>
+			<prg:documentation>
+				<prg:abstract>Build a XUL application which will run a python script built with the program XML schema</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])" />
+				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])" />
+			</prg:options>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>command</prg:name>
+			<prg:aliases>
+				<prg:alias>cmd</prg:alias>
+			</prg:aliases>
+			<prg:documentation>
+				<prg:abstract>Build a XUL application which will run an existing command</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument id="existingCommandPath" required="true">
+					<prg:databinding>
+						<prg:variable>existingCommandPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Launch the given existing command</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>command</prg:long>
+						<prg:long>cmd</prg:long>
+						<prg:short>c</prg:short>
+					</prg:names>
+				</prg:argument>
+			</prg:options>
+		</prg:subcommand>
+	</prg:subcommands>
+
 	<prg:options>
 
 		<!-- Help -->
@@ -40,53 +95,12 @@
 			<!-- In build-xulapp, the documentation change a bit -->
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)" />
 			<prg:documentation>
-				<prg:abstract>Program description file</prg:abstract>
+				<prg:abstract>Program XML description file</prg:abstract>
+				<prg:details>Location of the XML program description file. Expect a valid XML file following the http://xsd.nore.fr/program schema</prg:details>
 			</prg:documentation>
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:names)" />
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:type)" />
 		</prg:argument>
-
-		<prg:group type="exclusive" required="true">
-			<prg:databinding>
-				<prg:variable>launcherMode</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Launcher mode</prg:abstract>
-			</prg:documentation>
-			<prg:options>
-				<prg:group id="launcherModeXsh">
-					<prg:databinding>
-						<prg:variable>launcherModeXsh</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>Generate shell script</prg:abstract>
-					</prg:documentation>
-					<prg:options>
-						<!-- In build-xulapp, xmlShellFileDescriptionPath is not required -->
-						<prg:argument id="xmlShellFileDescriptionPath">
-							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:databinding)" />
-							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:documentation)" />
-							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:type)" />
-							<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath']/prg:names)" />
-						</prg:argument>
-
-						<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])" />
-					</prg:options>
-				</prg:group>
-				<prg:argument id="launcherModeExistingCommand">
-					<prg:databinding>
-						<prg:variable>launcherModeExistingCommand</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>Launch the given existing command</prg:abstract>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>command</prg:long>
-						<prg:short>c</prg:short>
-					</prg:names>
-				</prg:argument>
-			</prg:options>
-		</prg:group>
 
 		<prg:argument>
 			<prg:databinding>
@@ -133,6 +147,10 @@
 					<prg:databinding>
 						<prg:variable>windowWidth</prg:variable>
 					</prg:databinding>
+					<prg:documentation>	
+						<prg:abstract>Window width</prg:abstract>
+						<prg:details>Force the application main window witdh</prg:details>
+					</prg:documentation>
 					<prg:names>
 						<prg:long>window-width</prg:long>
 						<prg:short>W</prg:short>
@@ -140,11 +158,17 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
+					<!-- This default value have to match the one in the XSLT stylesheet -->
+					<prg:default>1024</prg:default>
 				</prg:argument>
 				<prg:argument>
 					<prg:databinding>
 						<prg:variable>windowHeight</prg:variable>
 					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Window height</prg:abstract>
+						<prg:details>Force the application main window height</prg:details>
+					</prg:documentation>
 					<prg:names>
 						<prg:long>window-height</prg:long>
 						<prg:short>H</prg:short>
@@ -152,6 +176,8 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
+					<!-- This default value have to match the one in the XSLT stylesheet -->
+					<prg:default>768</prg:default>
 				</prg:argument>
 
 				<!-- debugMode -->
@@ -162,7 +188,7 @@
 					</prg:documentation>
 					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:names)" />
 				</prg:switch>
-				
+
 			</prg:options>
 		</prg:group>
 
@@ -252,23 +278,20 @@
 
 				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])" />
 				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.nsxmlRelativePath'])" />
-
-				<prg:multiargument>
+				<prg:switch>
 					<prg:databinding>
-						<prg:variable>nsxmlAdditionalSources</prg:variable>
+						<prg:variable>addNsXml</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Add other ns-xml folder</prg:abstract>
+						<prg:abstract>Add ns-xml sources into application resources</prg:abstract>
+						<prg:details>Include the ns-xml library files (python, sh, xsl and xsd folders) in the XUL application bundle.</prg:details>
 					</prg:documentation>
 					<prg:names>
+						<prg:short>n</prg:short>
+						<prg:long>ns</prg:long>
 						<prg:long>ns-xml-add</prg:long>
 					</prg:names>
-					<prg:select restrict="true">
-						<prg:option>sh</prg:option>
-						<prg:option>xsl</prg:option>
-						<prg:option>xsd</prg:option>
-					</prg:select>
-				</prg:multiargument>
+				</prg:switch>
 			</prg:options>
 		</prg:group>
 

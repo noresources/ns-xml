@@ -12,7 +12,7 @@
 		<prg:label>Python script builder</prg:label>
 	</prg:ui>
 	<prg:options>
-		<prg:argument required="true">
+		<prg:argument required="true" id="pythonScriptPath">
 			<prg:databinding>
 				<prg:variable>pythonScriptPath</prg:variable>
 			</prg:databinding>
@@ -44,7 +44,7 @@
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-		<prg:argument>
+		<prg:argument id="moduleName">
 			<prg:databinding>
 				<prg:variable>moduleName</prg:variable>
 			</prg:databinding>

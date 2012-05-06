@@ -22,6 +22,69 @@ ${isDebug} && log "${@}"
 exit 1
 		]]></sh:body>
 		</sh:function>
+		<sh:function name="build_xsh">
+			<sh:body><![CDATA[
+info " - Generate shell file"
+debugParam=""
+if ${debugMode}
+then
+	debugParam="--stringparam prg.debug \"true()\""
+fi
+
+prefixParam=""
+if ${xsh_prefixSubcommandBoundVariableName}
+then
+	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+fi
+
+# Validate bash scheam
+if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${xsh_xmlShellFileDescriptionPath}"
+then
+	error "bash XML schema error - abort"
+fi
+
+xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+xsh_xmlShellFileDescriptionPath="$(ns_realpath "${xsh_xmlShellFileDescriptionPath}")"
+if ! xsltproc --xinclude -o "${commandLauncherFile}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xsh_xmlShellFileDescriptionPath}"
+then
+	echo "Fail to process xsh file \"${xsh_xmlShellFileDescriptionPath}\""
+	exit 5
+fi
+return 0
+			]]></sh:body>
+		</sh:function>
+		<sh:function name="build_python">
+			<sh:body><![CDATA[
+baseModules=(__init__ Base Info Parser Validators)
+pythonModulePath="${xulScriptBasePath}/${python_moduleName}"
+nsPythonPath="${nsPath}/python/program/${programVersion}"
+
+cp -p "${python_pythonScriptPath}" "${commandLauncherFile}"
+[ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
+mkdir -p "${pythonModulePath}" || error "Failed to create Python module path ${pythonModulePath}"
+for m in ${baseModules[*]}
+do
+	nsPythonFile="${nsPythonPath}/${m}.py"	
+	[ -f "${nsPythonFile}" ] || error "Base python module not found (${nsPythonFile})"
+	cp -fp "${nsPythonFile}" "${pythonModulePath}"
+done 
+
+# Create the Program module
+xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
+if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py-module.xsl" "${xmlProgramDescriptionPath}"
+then
+	error 4 "Failed to create Program module"
+fi
+
+return 0
+			]]></sh:body>
+		</sh:function>
+		<sh:function name="build_command">
+			<sh:body><![CDATA[
+info " - Generate command launcher"
+echo -ne "#!/bin/bash\n${command_existingCommandPath} \${@}" > "${commandLauncherFile}"
+			]]></sh:body>
+		</sh:function>
 		<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'xml_validate'])" />
 	</sh:functions>
 	<sh:code><![CDATA[
@@ -66,7 +129,7 @@ if ! parse "${@}"
 then
 	if ${displayHelp}
 	then
-		usage
+		usage ${parser_subcommand}
 		exit 0
 	fi
 	
@@ -76,8 +139,14 @@ fi
 
 if ${displayHelp}
 then
-	usage
+	usage ${parser_subcommand}
 	exit 0
+fi
+
+builderFunction="build_${parser_subcommand}"
+if [ "$(type -t ${builderFunction})" != "function" ]
+then
+	error "Missing subcommand name"
 fi
 
 if [ "${targetPlatform}" == "host" ]
@@ -104,7 +173,7 @@ then
 fi
 
 # finding schema version
-programVersion="$(xsltproc "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
 info "Program schema version ${programVersion}"
 
 if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
@@ -136,11 +205,11 @@ fi
 programStylesheetPath="${nsPath}/xsl/program/${programVersion}"
 programInfoStylesheetPath="${programStylesheetPath}/get-programinfo.xsl"
 
-appName="$(xsltproc --stringparam name name "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
-appDisplayName="$(xsltproc --stringparam name label "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
+appName="$(xsltproc --xinclude --stringparam name name "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
+appDisplayName="$(xsltproc --xinclude --stringparam name label "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
 xulAppName="$(echo "${appName}" | sed "s/[^a-zA-Z0-9]//g")"
-appAuthor="$(xsltproc --stringparam name author "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
-appVersion="$(xsltproc --stringparam name version "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
+appAuthor="$(xsltproc --xinclude --stringparam name author "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
+appVersion="$(xsltproc --xinclude --stringparam name version "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
 appUUID="$(uuidgen)"
 appBuildID="$(date +%Y%m%d-%s)"
 
@@ -169,9 +238,10 @@ then
 else
 	mkdir -p "${outputPath}" || error "Unable to create output path \"${outputPath}\""
 	mkdir -p "${appRootPath}" || error "Unable to create application root path \"${appRootPath}\""
-	outputPath="$(ns_realpath "${outputPath}")"
-	appRootPath="$(ns_realpath "${appRootPath}")"
 fi
+
+outputPath="$(ns_realpath "${outputPath}")"
+appRootPath="$(ns_realpath "${appRootPath}")"
 
 appIniFile="${appRootPath}/application.ini"
 appPrefFile="${appRootPath}/defaults/preferences/pref.js"
@@ -179,11 +249,10 @@ appCssFile="${appRootPath}/chrome/content/${xulAppName}.css"
 appMainXulFile="${appRootPath}/chrome/content/${xulAppName}.xul"
 appOverlayXulFile="${appRootPath}/chrome/content/${xulAppName}-overlay.xul"
 appHiddenWindowXulFile="${appRootPath}/chrome/content/${xulAppName}-hiddenwindow.xul"
-rebuildScriptFile="${appRootPath}/sh/_rebuild.sh"
-commandLauncherFile="${appRootPath}/sh/${xulAppName}.sh"
+xulScriptBasePath="${appRootPath}/sh"
 
 info "XUL application will be built in \"${outputPath}\""
-	  
+
 if ${preexistantOutputPath} && ${update}
 then
 	info " - Application will be updated"
@@ -195,46 +264,14 @@ then
 	fi
 fi
 
-if ! mkdir -p "${appRootPath}/sh"
-then
-	error "Unable to create shell sub directory"
-fi
+mkdir -p "${xulScriptBasePath}" || error "Unable to create shell sub directory"
+
+xulScriptBasePath="$(ns_realpath "${xulScriptBasePath}")"
+rebuildScriptFile="${xulScriptBasePath}/_rebuild.sh"
+commandLauncherFile="${xulScriptBasePath}/${xulAppName}"
 commandLauncherFile="$(ns_realpath "${commandLauncherFile}")"
 
-if [ "${launcherMode}" == "launcherModeXsh" ]
-then
-	info " - Generate shell file"
-	debugParam=""
-	if ${debugMode}
-	then
-		debugParam="--stringparam prg.debug \"true()\""
-	fi
-	
-	prefixParam=""
-	if ${prefixSubcommandBoundVariableName}
-	then
-		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
-	fi
-
-	# Validate bash scheam
-	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
-	then
-		error "bash XML schema error - abort"
-	fi
-		
-	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-	xmlShellFileDescriptionPath="$(ns_realpath "${xmlShellFileDescriptionPath}")"
-	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
-	then
-		echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
-		exit 5
-	fi
-		
-elif [ "${launcherMode}" == "launcherModeExistingCommand" ]
-then 
-	info " - Generate command launcher"
-	echo -ne "#!/bin/bash\n${launcherModeExistingCommand} \${@}" > "${commandLauncherFile}"
-fi
+${builderFunction} || error "Failed to build ${commandLauncherFile}"
 chmod 755 "${commandLauncherFile}"
 
 info " - Creating XUL application structure"
@@ -249,13 +286,11 @@ do
 	rsync -Lprt "${nsPath}/${d}" "${appRootPath}/chrome/ns/"
 done
 
-if [ ${#nsxmlAdditionalSources[*]} -gt 0 ]
+if ${addNsXml}
 then
-	info " - Copy ns-xml additianal files"
-	for ((i=0;${i}<${#nsxmlAdditionalSources[*]};i++))
+	info " - Copy ns-xml optional files"
+	for d in python sh xsh xsl 
 	do
-		d="${nsxmlAdditionalSources[${i}]}"
-		info " -- ${d} -> ${appRootPath}/chrome/ns"
 		rsync -Lprt "${nsPath}/${d}" "${appRootPath}/chrome/ns/"
 	done
 fi
@@ -302,53 +337,55 @@ pref(\"nglayout.debug.disable_xul_fastload\", true);" >> "${appPrefFile}"
 	# TODO need update for new args
 	mkdir -p "$(dirname "${rebuildScriptFile}")"
 	echo "#!/bin/bash" > "${rebuildScriptFile}"
-	echo -en "$(ns_realpath "${0}") --update --debug --xml-description \"$(ns_realpath "${xmlProgramDescriptionPath}")\"" >> "${rebuildScriptFile}"
+	echo -en "$(ns_realpath "${0}") ${parser_subcommand} --update --debug --xml-description \"$(ns_realpath "${xmlProgramDescriptionPath}")\"" >> "${rebuildScriptFile}"
 	echo -en " --output \"$(ns_realpath "${outputPath}")\"" >> "${rebuildScriptFile}"
-	if [ "${launcherMode}" == "launcherModeXsh" ]
+	# TODO 
+	if [ "${parser_subcommand}" == "xsh" ]
 	then
-		echo -en " --shell \"$(ns_realpath "${xmlShellFileDescriptionPath}")\"" >> "${rebuildScriptFile}"
-		
-	elif [ "${launcherMode}" == "launcherModeExistingCommand" ]
+		echo -en " --shell \"$(ns_realpath "${xsh_xmlShellFileDescriptionPath}")\"" >> "${rebuildScriptFile}"
+	elif [ "${parser_subcommand}" == "python" ]
 	then
-		echo -en " --command" >> "${rebuildScriptFile}"
+		echo -en " --python \"$(ns_realpath "${python_pythonScriptPath}")\" --module-name ${python_moduleName}" >> "${rebuildScriptFile}"
+	elif [ "${parser_subcommand}" == "command" ]
+	then
+		echo -en " --command \"$(ns_realpath "${existingCommandPath}")\"" >> "${rebuildScriptFile}"
 	fi
 	
 	echo "" >> "${rebuildScriptFile}"
-	
-	chmod 755  "${rebuildScriptFile}"
+	chmod 755 "${rebuildScriptFile}"
 fi
 
 info " - Building UI layout"
 #The xul for the main window
-xsltOption="--stringparam prg.xul.appName ${xulAppName}"
-[ -z "${windowWidth}" ] || xsltOption="${xsltOption} --param prg.xul.windowWidth ${windowWidth}"
-[ -z "${windowHeight}" ] || xsltOption="${xsltOption} --param prg.xul.windowHeight ${windowHeight}"
+xsltOptions="--xinclude --stringparam prg.xul.appName ${xulAppName}"
+[ -z "${windowWidth}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowWidth ${windowWidth}"
+[ -z "${windowHeight}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowHeight ${windowHeight}"
  
-xsltOption="${xsltOption} --stringparam prg.xul.platform ${targetPlatform}"
+xsltOptions="${xsltOptions} --stringparam prg.xul.platform ${targetPlatform}"
  
 if ${debugMode}
 then
-	xsltOption="${xsltOption} --param prg.debug \"true()\""
+	xsltOptions="${xsltOptions} --param prg.debug \"true()\""
 fi
 
 info " -- Main window"
-if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-ui-mainwindow.xsl" "${xmlProgramDescriptionPath}" > "${appMainXulFile}"  
+if ! xsltproc ${xsltOptions} -o "${appMainXulFile}" "${programStylesheetPath}/xul-ui-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL main window layout (${appMainXulFile} - ${xsltOption})"
+	error "Error while building XUL main window layout (${appMainXulFile} - ${xsltOptions})"
 fi
 
 info " -- Overlay"
-if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-ui-overlay.xsl" "${xmlProgramDescriptionPath}" > "${appOverlayXulFile}"  
+if ! xsltproc ${xsltOptions} -o "${appOverlayXulFile}" "${programStylesheetPath}/xul-ui-overlay.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOption})"
+	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOptions})"
 fi
 
 if [ "${targetPlatform}" == "macosx" ]
 then
 	info " -- Mac OS X hidden window"
-	if ! xsltproc -o "${appHiddenWindowXulFile}" ${xsltOption} "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
+	if ! xsltproc ${xsltOptions} -o "${appHiddenWindowXulFile}" "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
 	then
-		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOption})"
+		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOptions})"
 	fi 
 fi
 
@@ -359,7 +396,7 @@ do
 	find "${d}" -maxdepth 1 -mindepth 1 -name "*.xbl" | while read f
 	do
 		b="${f#${nsPath}/xbl/}"
-		cssXsltOptions="--param resourceURI \"resource://ns/xbl/${b}\""
+		cssXsltOptions="--xinclude --param resourceURI \"resource://ns/xbl/${b}\""
 		if [ ! -f "${appCssFile}" ]
 		then
 			cssXsltOptions="${cssXsltOptions} --param xbl.css.displayHeader \"true()\""
@@ -374,12 +411,12 @@ do
 done
 
 info " - Building Javascript code"
-if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-js-application.xsl" "${xmlProgramDescriptionPath}" > "${appRootPath}/chrome/content/${xulAppName}.jsm"  
+if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.jsm" "${programStylesheetPath}/xul-js-application.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL application code"
 fi
 
-if ! xsltproc ${xsltOption} "${programStylesheetPath}/xul-js-mainwindow.xsl" "${xmlProgramDescriptionPath}" > "${appRootPath}/chrome/content/${xulAppName}.js"  
+if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.js" "${programStylesheetPath}/xul-js-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL main window code"
 fi
@@ -403,7 +440,7 @@ then
 	mkdir -p "${outputPath}/Contents/Resources"
 	
 	info " - Create/Update Mac OS X application property list"
-	if ! xsltproc ${xsltOption} --stringparam prg.xul.buildID "${appBuildID}" "${programStylesheetPath}/macosx-plist.xsl" "${xmlProgramDescriptionPath}" > "${outputPath}/Contents/Info.plist"  
+	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/macosx-plist.xsl" "${xmlProgramDescriptionPath}"  
 	then
 		error "Error while building XUL main window code"
 	fi
