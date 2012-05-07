@@ -19,6 +19,7 @@ class OptionInfo:
         self.value = None
         self.owner = None
         self.present = False
+        self.required = False
         self.short_names = []
         self.long_names = []
         self.validators = []
@@ -60,9 +61,17 @@ class OptionInfo:
                 return False
             
         return True
-                    
+      
+    @property              
     def names(self):
         return self.short_names + self.long_names
+    
+    @property
+    def default_name(self):
+        if len(self.long_names) > 0:
+            return self.long_names[0]
+        else:
+            return self.short_names[0]
     
 class GroupOptionType:
     Default = 1
@@ -120,7 +129,7 @@ class OptionRootInfo:
         self.documentation = { "abstract": "", "details": ""}
     
     def add_option_names(self, info):
-        for n in info.names():
+        for n in info.names:
             self.option_names[n] = info
             
         if isinstance(info, GroupOptionInfo) and len(info.options):

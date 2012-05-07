@@ -326,8 +326,18 @@ class Parser:
         if isinstance(context.option, ArgumentOptionInfo):
             if context.option.value == None:
                 context.error("Missing argument for option " + context.cli_option_name)
+                
         if isinstance(context.option, MultiArgumentOptionInfo):
             if len(context.option.value) == 0:
                 context.error("Missing argument(s) for option " + context.cli_option_name)
+                
+        for o in programInfo.options:
+            if o.required and not o.present:
+                context.error("Option " + Util.cli_option_name(o.default_name) + " is required")
+                
+        if isinstance(context.subcommand, SubcommandInfo):
+            for o in context.subcommand.options:
+                if o.required and not o.present:
+                    context.error("Option " + Util.cli_option_name(o.default_name) + " of " + context.subcommand.name +  " subcommand is required")
            
         return ParserResult(context, programInfo)   

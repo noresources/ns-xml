@@ -70,11 +70,11 @@ class PathValidator(Validator):
     def __init__(self, typeList, accessString):
         Validator.__init__(self, "Path type")
         self.types = typeList
-        self.access = accessString
+        self.accessString = accessString
         
     def access(self, path):
-        if len(self.access) > 0:
-            for a in self.access:
+        if len(self.accessString) > 0:
+            for a in self.accessString:
                 if a == "r" and not os.access(path, os.R_OK):
                     self.error(ctx, "Path is not readable")
                     return False

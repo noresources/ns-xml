@@ -39,7 +39,7 @@
 		</for-each>
 		<text>]</text>
 	</template>
-	
+
 	<template name="prg.py.module.nodeNameStringList">
 		<param name="rootNode" />
 		<text>[</text>
@@ -64,7 +64,9 @@
 		<text>.usage["inline"] = """</text>
 		<call-template name="prg.usage.optionListInline">
 			<with-param name="optionsNode" select="$optionsNode" />
-			<with-param name="separator"><text> </text></with-param>
+			<with-param name="separator">
+				<text> </text>
+			</with-param>
 		</call-template>
 		<text>"""</text>
 		<call-template name="endl" />
@@ -138,7 +140,7 @@
 			</call-template>
 			<text>)</text>
 			<call-template name="endl" />
-			
+
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.documentation.option_names = "</text>
@@ -148,7 +150,7 @@
 			<text>"</text>
 			<call-template name="endl" />
 		</if>
-		
+
 		<if test="$optionNode/self::prg:argument or $optionNode/self::prg:multiargument">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -159,7 +161,7 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-		
+
 		<if test="$optionNode/prg:documentation/prg:abstract">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -170,7 +172,7 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-		
+
 		<if test="$optionNode/prg:documentation/prg:details">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -181,7 +183,13 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-		
+
+		<if test="$optionNode/@required = 'true'">
+			<value-of select="$indent" />
+			<value-of select="$pyVarName" />
+			<text>.required = True</text>
+			<call-template name="endl" />
+		</if>
 		<if test="$optionNode/prg:default">
 			<choose>
 				<when test="$optionNode/self::prg:argument">
@@ -212,16 +220,20 @@
 			<text>.validators.append(NumberValidator(</text>
 			<choose>
 				<when test="$numberNode/@min">
-					<value-of select="$numberNode/@min" /> 
+					<value-of select="$numberNode/@min" />
 				</when>
-				<otherwise><text>"NaN"</text></otherwise>
+				<otherwise>
+					<text>"NaN"</text>
+				</otherwise>
 			</choose>
 			<text>, </text>
 			<choose>
 				<when test="$numberNode/@max">
 					<value-of select="$numberNode/@max" />
 				</when>
-				<otherwise><text>"NaN"</text></otherwise>
+				<otherwise>
+					<text>"NaN"</text>
+				</otherwise>
 			</choose>
 			<text>))</text>
 			<call-template name="endl" />
@@ -285,10 +297,11 @@
 		<value-of select="$subcommandNode/prg:name" />
 		<text>")</text>
 		<call-template name="endl" />
-		
+
 		<if test="$subcommandNode/prg:documentation/prg:abstract">
 			<value-of select="$indent" />
-			<value-of select="$pyVarName" /><text>.documentation["abstract"] = """</text>
+			<value-of select="$pyVarName" />
+			<text>.documentation["abstract"] = """</text>
 			<apply-templates select="$subcommandNode/prg:documentation/prg:abstract" />
 			<text>"""</text>
 			<call-template name="endl" />
@@ -391,7 +404,7 @@ class Program:
 		<value-of select="./prg:name" />
 		<text>")</text>
 		<call-template name="endl" />
-		
+
 		<if test="./prg:documentation/prg:abstract">
 			<value-of select="$indent" />
 			<text>self.program.documentation["abstract"] = """</text>
@@ -399,7 +412,7 @@ class Program:
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-		
+
 		<!-- Options -->
 		<call-template name="endl" />
 		<call-template name="prg.py.module.buildOptionInfo">
