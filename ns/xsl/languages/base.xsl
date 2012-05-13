@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+
+<!-- Common templates for code generation -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
 
 	<import href="../strings.xsl" />
@@ -10,9 +12,13 @@
 
 	<!-- Prepend all lines with a comment marker -->
 	<template name="code.comment">
+		<!-- Comment marker for all lines (except first and last) -->
 		<param name="marker" />
+		<!-- Comment marker for the first line -->
 		<param name="beginMarker" select="$marker" />
+		<!-- Comment marker for the last line -->
 		<param name="endMarker" select="$marker" />
+		<!-- Comment text -->
 		<param name="content" select="." />
 
 		<if test="$beginMarker != $marker">

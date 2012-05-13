@@ -30,4 +30,38 @@ cd "${cwd}" 1>/dev/null 2>&1
 echo "${path}"
 		]]></sh:body>
 	</sh:function>
+	<sh:function name="ns_relativepath">
+		<sh:parameter name="from" />
+		<sh:parameter name="base">.</sh:parameter>
+		<sh:body><![CDATA[
+[ -r "${from}" ] || return 1
+[ -r "${base}" ] || return 2
+[ ! -d "${base}" ] && base="$(dirname "${base}")"  
+[ -d "${base}" ] || return 3
+from="$(ns_realpath "${from}")"
+base="$(ns_realpath "${base}")"
+#echo from: $from
+#echo base: $base
+c=0
+sub="${base}"
+newsub=""
+while [ "${from:0:${#sub}}" != "${sub}" ]
+do
+	newsub="$(dirname "${sub}")"
+	[ "${newsub}" == "${sub}" ] && return 4
+	sub="${newsub}"
+	c="$(expr ${c} + 1)"
+done
+#echo c: ${c}
+#echo sub: ${sub}
+res="."
+for ((i=0;${i}<${c};i++))
+do
+	res="${res}/.."
+done
+res="${res}${from#${sub}}"
+res="${res#./}"
+echo "${res}"
+		]]></sh:body>
+	</sh:function>
 </sh:functions>

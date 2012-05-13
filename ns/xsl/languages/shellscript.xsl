@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+
 <!-- Shell script language elements -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
 

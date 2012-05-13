@@ -45,7 +45,7 @@ buildshellscript="${projectPath}/ns/sh/build-shellscript.sh"
 
 completionCommands=
 
-for f in  "${projectPath}/ns/xsh/apps/"*.xsh
+for f in "${projectPath}/ns/xsh/apps/"*.xsh
 do
 	fn="${f%.xsh}"
 	b="$(basename "${f}")"
@@ -75,9 +75,10 @@ do
 	fi
 done
 
-echo "To update bash completion immediatelly, run:"
-for ((i=0;$i<${#completionCommands[*]};i++))
+for f in "${projectPath}/resources/xsh/"*.xsh
 do
-	echo "${completionCommands[$i]}"
+	o="$(basename "${f}")"
+	o="${o%xsh}sh"
+	echo "${o}"
+	xsltproc --xinclude -o "${projectPath}/tools/sh/${o}" "${projectPath}/ns/xsl/program/2.0/xsh.xsl" "${f}"
 done
-echo

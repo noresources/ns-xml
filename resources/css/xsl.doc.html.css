@@ -1,0 +1,78 @@
+@CHARSET "UTF-8";
+body
+{
+	font-family: "Calibri", "Tahoma", "Arial";
+}
+
+a
+{
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+.xsl-stylesheet-subtitle
+{
+	display: block;
+	font-size: 70%;
+}
+
+.xsl-template-subtitle
+{
+	display: block;
+	font-size: 80%;
+}
+
+.xsl-template-decl
+{
+	font-family: "Courier New";
+}
+
+.xsl-template-name
+{
+	font-weight: bold;
+}
+
+.xsl-template-def
+{
+	display: block;
+	padding: 5px;
+}
+
+.xsl-template-def-title
+{
+	background-color: rgb(220, 220, 220);
+	padding: 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgb(192, 192, 192);
+}
+
+.xsl-template-def-details
+{
+	padding: 5px;
+}
+
+.xsl-templates-details
+{
+	
+}
+
+.xsl-templateparam-name
+{
+	font-family: "Courier New";
+	/*font-weight: bold;*/
+}
+
+.xsl-templateparam-default
+{
+	font-style: italic;
+}
+
+.xsl-templateparam-comment
+{
+	font-size: 80%;
+}

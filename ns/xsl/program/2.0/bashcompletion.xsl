@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<!-- Create a bash completion script for the program -->
 
 <!-- compgen options -a, -A alias -> alias -->
 <!-- -b, -A builtin -> builtin functions -->
@@ -15,6 +14,7 @@
 <!-- -v, -A variable -> variables -->
 <!-- -A hostname -> hostnames -->
 
+<!-- Create a bash completion script for the program -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="../../languages/shellscript.xsl" />

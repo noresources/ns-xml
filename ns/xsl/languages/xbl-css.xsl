@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<!-- Create CSS rules for xbl control bindings -->
+
+<!-- Create CSS rules for XBL control bindings -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:xbl="http://www.mozilla.org/xbl">
 
 	<import href="css.xsl" />

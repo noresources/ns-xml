@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
-<!-- - Extends shellscript templates -->
-<!-- - Transform elements of the bash schema -->
-
+<!-- Transform document based on the bash XML schema to shell script code -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sh="http://xsd.nore.fr/bash">
 
 	<xsl:output method="text" encoding="utf-8" />
@@ -70,22 +68,29 @@
 			</xsl:if>
 			
 			<!-- body -->
-			<xsl:for-each select="sh:body">
-				<xsl:choose>
-					<xsl:when test="@indent = 'false'">
-						<xsl:apply-templates select="." />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:call-template name="sh.block">
-							<xsl:with-param name="addFinalEndl" select="false()" />
-							<xsl:with-param name="content">
+			<xsl:choose>
+				<xsl:when test="sh:body">
+					<xsl:for-each select="sh:body">
+						<xsl:choose>
+							<xsl:when test="@indent = 'false'">
 								<xsl:apply-templates select="." />
-							</xsl:with-param>
-						</xsl:call-template>
-					</xsl:otherwise>
-				</xsl:choose>
-				<xsl:call-template name="unixEndl" />
-			</xsl:for-each>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:call-template name="sh.block">
+									<xsl:with-param name="addFinalEndl" select="false()" />
+									<xsl:with-param name="content">
+										<xsl:apply-templates select="." />
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:call-template name="unixEndl" />
+					</xsl:for-each>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="unixEndl" />
+				</xsl:otherwise>
+			</xsl:choose>
 			<xsl:text>}</xsl:text>
 			<xsl:call-template name="unixEndl" />
 		</xsl:if>

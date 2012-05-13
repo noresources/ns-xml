@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Basic includes and parameter relative to XUL application generation -->
+
+<!-- Basic templates for XUL frontend -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="./base.xsl" />
