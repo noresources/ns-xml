@@ -2,31 +2,51 @@
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
 <!-- Generate HTML documentation for a given XSLT style sheet -->
-<xsl:stylesheet version="1.0" 
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:import href="../../strings.xsl" />
 
 	<xsl:output method="html" indent="yes" encoding="utf-8" />
 
+	<!-- A file path relative to documentation root -->
 	<xsl:param name="xsl.doc.html.fileName" />
+	
+	<!-- Relative path to the CSS style sheet -->
 	<xsl:param name="xsl.doc.html.stylesheetPath" />
 
+	<xsl:param name="xsl.doc.string.parameters">
+		<xsl:text>Parameters</xsl:text>
+	</xsl:param>
+
+	<xsl:param name="xsl.doc.string.templates">
+		<xsl:text>Templates</xsl:text>
+	</xsl:param>
+
 	<xsl:param name="xsl.doc.string.details">
-		<text>Details</text>
+		<xsl:text>Details</xsl:text>
+	</xsl:param>
+
+	<xsl:param name="xsl.doc.string.abstract">
+		<xsl:text>Table of content</xsl:text>
 	</xsl:param>
 
 	<xsl:param name="xsl.doc.string.default">
 		<text>Default value</text>
 	</xsl:param>
 
+	<!-- Generate a unique id for HTML anchor -->
 	<xsl:template name="xsl.doc.elementId">
 		<xsl:param name="node" select="." />
 		<xsl:choose>
 			<xsl:when test="$node/self::xsl:template">
+				<xsl:text>tpl_</xsl:text>
 				<xsl:value-of select="$node/@name" />
 			</xsl:when>
-			<xsl:when test="$node/self::xsl:param">
+			<xsl:when test="$node/self::xsl:param and $node/../self::xsl:stylesheet">
+				<xsl:text>prm_</xsl:text>
+				<xsl:value-of select="$node" />
+			</xsl:when>
+			<xsl:when test="$node/self::xsl:param and $node/../self::xsl:template">
 				<xsl:call-template name="xsl.doc.elementId">
 					<xsl:with-param name="node" select="$node/.." />
 				</xsl:call-template>
@@ -39,7 +59,7 @@
 	<xsl:template name="xsl.doc.html.activePathLink">
 		<xsl:param name="path" />
 		<xsl:param name="level" select="1" />
-		
+
 		<xsl:element name="a">
 			<xsl:attribute name="href">
 				<xsl:text>./</xsl:text>
@@ -51,11 +71,11 @@
 			<xsl:value-of select="$path" />
 		</xsl:element>
 	</xsl:template>
-	
+
 	<xsl:template name="xsl.doc.html.activePath">
 		<xsl:param name="path" />
 		<xsl:param name="level" select="1" />
-		
+
 		<xsl:choose>
 			<xsl:when test="contains($path, '/')">
 				<xsl:call-template name="xsl.doc.html.activePath">
@@ -67,7 +87,7 @@
 					</xsl:with-param>
 					<xsl:with-param name="level" select="$level + 1" />
 				</xsl:call-template>
-				
+
 				<xsl:call-template name="xsl.doc.html.activePathLink">
 					<xsl:with-param name="path">
 						<xsl:call-template name="str.substringAfterLast">
@@ -76,7 +96,7 @@
 						</xsl:call-template>
 					</xsl:with-param>
 					<xsl:with-param name="level" select="$level" />
-				</xsl:call-template>						
+				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:call-template name="xsl.doc.html.activePathLink">
@@ -85,26 +105,26 @@
 				</xsl:call-template>
 			</xsl:otherwise>
 		</xsl:choose>
-		
+
 		<xsl:text> / </xsl:text>
 	</xsl:template>
-	
+
 	<xsl:template name="xsl.doc.html.activeTitle">
 		<xsl:param name="title" />
-		
+
 		<xsl:variable name="depth">
 			<xsl:call-template name="str.count">
 				<xsl:with-param name="text" select="$title" />
 				<xsl:with-param name="substring" select="'/'" />
 			</xsl:call-template>
 		</xsl:variable>
-		
+
 		<xsl:call-template name="xsl.doc.html.activePathLink">
 			<xsl:with-param name="path" select="'&lt;'" />
 			<xsl:with-param name="level" select="$depth + 1" />
 		</xsl:call-template>
 		<xsl:text> / </xsl:text>
-				
+
 		<xsl:call-template name="xsl.doc.html.activePath">
 			<xsl:with-param name="path">
 				<xsl:call-template name="str.substringBeforeLast">
@@ -112,24 +132,21 @@
 					<xsl:with-param name="delimiter" select="'/'" />
 				</xsl:call-template>
 			</xsl:with-param>
-		</xsl:call-template>				
-		
+		</xsl:call-template>
+
 		<xsl:call-template name="str.substringAfterLast">
 			<xsl:with-param name="text" select="$title" />
 			<xsl:with-param name="delimiter" select="'/'" />
 		</xsl:call-template>
 	</xsl:template>
 
+	<!-- Find the node documentation -->
 	<xsl:template name="xsl.doc.html.comment">
 		<xsl:param name="node" select="." />
 		<xsl:param name="class" />
 
-		<xsl:variable name="comment">
-			<xsl:if test="$node/preceding-sibling::comment()">
-				<xsl:value-of select="normalize-space($node/preceding-sibling::comment()[position() = 1])" />
-			</xsl:if>
-		</xsl:variable>
-
+		<xsl:variable name="comment" select="preceding-sibling::node()[self::*|self::comment()][1][self::comment()]" />
+		
 		<xsl:if test="string-length($comment)">
 			<xsl:choose>
 				<xsl:when test="$class">
@@ -195,6 +212,32 @@
 		</xsl:element>
 	</xsl:template>
 
+	<!-- Display a inline declaration of a stylesheet parameter -->
+	<xsl:template name="xsl.doc.html.paramDeclaration">
+		<!-- param node -->
+		<xsl:param name="node" select="." />
+
+		<xsl:element name="div">
+			<xsl:attribute name="class">xsl-param-decl</xsl:attribute>
+			<xsl:element name="a">
+				<xsl:attribute name="class">xsl-param-name</xsl:attribute>
+				<xsl:attribute name="href">
+					<xsl:text>#</xsl:text>
+					<xsl:call-template name="xsl.doc.elementId">
+						<xsl:with-param name="node" select="$node" />
+					</xsl:call-template>
+				</xsl:attribute>
+				<xsl:value-of select="$node/@name" />
+			</xsl:element>
+			<xsl:variable name="default" select="normalize-space($node)" />
+			<xsl:if test="string-length($default) > 0">
+				<xsl:text>="</xsl:text>
+				<xsl:value-of select="$default" />
+				<xsl:text>"</xsl:text>
+			</xsl:if>
+		</xsl:element>
+	</xsl:template>
+
 	<xsl:template name="xsl.doc.html.templateParamDetails">
 		<xsl:param name="node" select="." />
 		<xsl:element name="span">
@@ -248,7 +291,7 @@
 		<xsl:element name="div">
 			<xsl:attribute name="class">xsl-template-def</xsl:attribute>
 			<xsl:element name="div">
-				<xsl:attribute name="class">xsl-template-def-title</xsl:attribute>	
+				<xsl:attribute name="class">xsl-template-def-title</xsl:attribute>
 				<xsl:element name="a">
 					<xsl:attribute name="name">
 						<xsl:call-template name="xsl.doc.elementId" />
@@ -256,7 +299,7 @@
 				</xsl:element>
 				<xsl:call-template name="xsl.doc.html.templateDeclaration" />
 			</xsl:element>
-			
+
 			<xsl:element name="div">
 				<xsl:attribute name="class">xsl-template-def-details</xsl:attribute>
 				<xsl:if test="string-length($comment)">
@@ -273,7 +316,52 @@
 					</xsl:element>
 				</xsl:if>
 			</xsl:element>
+		</xsl:element>
+	</xsl:template>
 
+	<xsl:template name="xsl.doc.html.paramDetails">
+		<xsl:param name="node" select="." />
+
+		<xsl:variable name="comment">
+			<xsl:call-template name="xsl.doc.html.comment">
+				<xsl:with-param name="class">
+					<xsl:text>xsl-param-subtitle</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:element name="div">
+			<xsl:attribute name="class">xsl-param-def</xsl:attribute>
+			<xsl:element name="div">
+				<xsl:attribute name="class">xsl-param-def-title</xsl:attribute>
+				<xsl:element name="a">
+					<xsl:attribute name="name">
+						<xsl:call-template name="xsl.doc.elementId" />
+					</xsl:attribute>
+				</xsl:element>
+				<xsl:call-template name="xsl.doc.html.paramDeclaration" />
+			</xsl:element>
+
+			<xsl:element name="div">
+				<xsl:attribute name="class">xsl-param-def-details</xsl:attribute>
+				<xsl:if test="string-length($comment)">
+					<xsl:element name="blockquote">
+						<xsl:value-of select="$comment" />
+					</xsl:element>
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:variable name="default" select="$node/@select" />
+
+			<xsl:if test="string-length($default)">
+				<xsl:element name="br" />
+				<xsl:value-of select="normalize-space($xsl.doc.string.default)" />
+				<xsl:text>: </xsl:text>
+				<xsl:element name="span">
+					<xsl:attribute name="class">xsl-param-default</xsl:attribute>
+					<xsl:value-of select="$node/@select" />
+				</xsl:element>
+			</xsl:if>
 		</xsl:element>
 	</xsl:template>
 
@@ -291,25 +379,68 @@
 		</xsl:element>
 
 		<!-- TOC -->
-		<xsl:element name="ul">
-			<xsl:for-each select="./xsl:template[@name]">
-				<xsl:element name="li">
-					<xsl:call-template name="xsl.doc.html.templateDeclaration" />
+		<xsl:variable name="hasContent" select="./xsl:template[@name] or ./xsl:param" />
+
+		<xsl:if test="$hasContent">
+			<xsl:element name="h2">
+				<xsl:value-of select="$xsl.doc.string.abstract" />
+			</xsl:element>
+		</xsl:if>
+
+		<xsl:if test="./xsl:param">
+			<xsl:element name="h3">
+				<xsl:value-of select="normalize-space($xsl.doc.string.parameters)" />
+			</xsl:element>
+			<xsl:element name="ul">
+				<xsl:for-each select="./xsl:param">
+					<xsl:element name="li">
+						<xsl:call-template name="xsl.doc.html.paramDeclaration" />
+					</xsl:element>
+				</xsl:for-each>
+			</xsl:element>
+		</xsl:if>
+
+		<xsl:if test="./xsl:template[@name]">
+			<xsl:element name="h3">
+				<xsl:value-of select="normalize-space($xsl.doc.string.templates)" />
+			</xsl:element>
+			<xsl:element name="ul">
+				<xsl:for-each select="./xsl:template[@name]">
+					<xsl:element name="li">
+						<xsl:call-template name="xsl.doc.html.templateDeclaration" />
+					</xsl:element>
+				</xsl:for-each>
+			</xsl:element>
+		</xsl:if>
+
+		<xsl:if test="$hasContent">
+			<xsl:element name="hr" />
+
+			<xsl:element name="h2">
+				<xsl:attribute name="class">xsl-templates-details</xsl:attribute>
+				<xsl:value-of select="normalize-space($xsl.doc.string.details)" />
+			</xsl:element>
+
+			<!-- Parameters -->
+			<xsl:if test="./xsl:param">
+				<xsl:element name="h3">
+					<xsl:value-of select="normalize-space($xsl.doc.string.parameters)" />
 				</xsl:element>
-			</xsl:for-each>
-		</xsl:element>
+				<xsl:for-each select="./xsl:param">
+					<xsl:call-template name="xsl.doc.html.paramDetails" />
+				</xsl:for-each>
+			</xsl:if>
 
-		<xsl:element name="hr" />
-
-		<xsl:element name="div">
-			<xsl:attribute name="class">xsl-templates-details</xsl:attribute>
-			<xsl:value-of select="$xsl.doc.string.details" />
-		</xsl:element>
-
-		<!-- Detailed documentation -->
-		<xsl:for-each select="./xsl:template[@name]">
-			<xsl:call-template name="xsl.doc.html.templateDetails" />
-		</xsl:for-each>
+			<!-- Detailed documentation -->
+			<xsl:if test="./xsl:template[@name]">
+				<xsl:element name="h3">
+					<xsl:value-of select="normalize-space($xsl.doc.string.templates)" />
+				</xsl:element>
+				<xsl:for-each select="./xsl:template[@name]">
+					<xsl:call-template name="xsl.doc.html.templateDetails" />
+				</xsl:for-each>
+			</xsl:if>
+		</xsl:if>
 
 	</xsl:template>
 
@@ -320,7 +451,7 @@
 				<xsl:with-param name="node" select="./xsl:stylesheet" />
 			</xsl:call-template>
 		</xsl:variable>
-					
+
 		<xsl:element name="html">
 			<xsl:element name="head">
 				<xsl:element name="title">

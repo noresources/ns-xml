@@ -20,6 +20,42 @@ a:hover
 	font-size: 70%;
 }
 
+.xsl-param-subtitle
+{
+	display: block;
+	font-size: 80%;
+}
+
+.xsl-param-decl
+{
+	font-family: "Courier New";
+}
+
+.xsl-param-name
+{
+	font-weight: bold;
+}
+
+.xsl-param-def
+{
+	display: block;
+	padding: 5px;
+}
+
+.xsl-param-def-title
+{
+	background-color: rgb(220, 220, 220);
+	padding: 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgb(192, 192, 192);
+}
+
+.xsl-param-def-details
+{
+	padding: 5px;
+}
+
 .xsl-template-subtitle
 {
 	display: block;
@@ -54,11 +90,6 @@ a:hover
 .xsl-template-def-details
 {
 	padding: 5px;
-}
-
-.xsl-templates-details
-{
-	
 }
 
 .xsl-templateparam-name

@@ -79,6 +79,12 @@ for f in "${projectPath}/resources/xsh/"*.xsh
 do
 	o="$(basename "${f}")"
 	o="${o%xsh}sh"
+	x="${f%xsh}xml"
 	echo "${o}"
-	xsltproc --xinclude -o "${projectPath}/tools/sh/${o}" "${projectPath}/ns/xsl/program/2.0/xsh.xsl" "${f}"
+	if [ -f "${x}" ]
+	then
+		${buildshellscript} -p -x "${x}" -s "${f}" -o "${projectPath}/tools/sh/${o}"
+	else
+		xsltproc --xinclude -o "${projectPath}/tools/sh/${o}" "${projectPath}/ns/xsl/program/2.0/xsh.xsl" "${f}"
+	fi
 done

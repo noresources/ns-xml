@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>update-doc</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>2.0</prg:version>
+	<prg:license>Copyright © 2012 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:documentation>
+		<prg:abstract>Documentation builder</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+
+		<!-- Help -->
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>xsltDocOutputPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>XSLT output path</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>xsl-output</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:folder />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>xsltDocCssFile</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>XSLT CSS file</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>xsl-css</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+
+	</prg:options>
+</prg:program>
