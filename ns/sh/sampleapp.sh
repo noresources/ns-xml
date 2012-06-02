@@ -17,7 +17,9 @@ sub: A sub-command (sub)
 Usage: sampleapp sub [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
 With:
   --switch, --sc-switch: Switch of the sub command
-  The bound variable name can be the same as another subcommand variable or one of the global option. In this case, you have to set the prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)
+  	The bound variable name can be the same as another subcommand variable or 
+  	one of the global option. In this case, you have to set the prg.sh.parser.
+  	prefixSubcommandOptionVariable xslt parameter to true() (the default)
   --sc-existing-file-argument: Sub command file argument
   --sc-strict-enum: Sub command argument (strict set)	
   	The argument value have to be one of the following:	
@@ -55,32 +57,124 @@ Usage:
     --standard-arg: Basic argument option
     	This option will accept any kind of argument
     -s, --simpleswitch: Simple switch
-    A simple switch option (true/false)
+    	A simple switch option (true/false)
     A useless group option
     	--switch-alone-in-group: Another switch
-    	This swith is in a group with only one option. So, the group is hidden and the option appears at the same level
+    		This swith is in a group with only one option. So, the group is hidden and 
+    		the option appears at the same level
     
     Exclusive option group
     	Nested group (basic type arguments)
     		--basic-argument: Basic argument
     		--string-argument: String argument
-    			This argument expect a string, which is roughly the same thing as accepting any kind of content
+    			This argument expect a string, which is roughly the same thing as 
+    	accepting 
+    			any kind of content
     	
     	--argument-with-default: Argument (with default value)
-    		A default value is proposed. If the user does not change it, the option will not appear in the command line	
+    		A default value is proposed. If the user does not change it, the option 
+    	will 
+    		not appear in the command line	
     		Default value: Default value
     	Nested exclusive group
     		--numeric-argument: Numeric argument
-    			Only numberrs are accepted as argument value. A numeric argument appears as a spin box in the UI
+    			Only numberrs are accepted as argument value. A numeric argument appears 
+    	as 
+    			a spin box in the UI
     		--float-argument: Float argument
-    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values are also defined
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    		not appear in the command line	
+    		Default value: Default value
+    	Nested exclusive group
+    		--numeric-argument: Numeric argument
+    			Only numberrs are accepted as argument value. A numeric argument appears 
+    	as 
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    			any kind of content
+    	
+    	--argument-with-default: Argument (with default value)
+    		A default value is proposed. If the user does not change it, the option 
+    	will 
+    		not appear in the command line	
+    		Default value: Default value
+    	Nested exclusive group
+    		--numeric-argument: Numeric argument
+    			Only numberrs are accepted as argument value. A numeric argument appears 
+    	as 
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    		not appear in the command line	
+    		Default value: Default value
+    	Nested exclusive group
+    		--numeric-argument: Numeric argument
+    			Only numberrs are accepted as argument value. A numeric argument appears 
+    	as 
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
+    			a spin box in the UI
+    		--float-argument: Float argument
+    			Numeric argument with decimals. A minimum (1.0) and maximum (10) values 
+    	are 
+    			also defined
+    	
+    			also defined
+    	
     
     --existing-file-argument: File argument
     	An existing file argument
     --rw-folder-argument: Folder argument
     	Expect a folder with Read/Write access
     --mixed-fskind-argument: File, folder etc.
-    	Accept most of file system object types. On some UI and platforms, you can't select a folder in the file box if files are also accepted.
+    	Accept most of file system object types. On some UI and platforms, you can't 
+    	select a folder in the file box if files are also accepted.
     Multi argument options
     	--multi-argument: Multi argument
     		A basic multi argument options	
@@ -94,14 +188,16 @@ Usage:
     		Expect a file. XML files are welcome but others are accepted
     
     --hostname, -H: Hostname
-    	Accept a host name. In console mode, the autocompletion will propose hosts defined in /etc/hosts.
+    	Accept a host name. In console mode, the autocompletion will propose hosts 
+    	defined in /etc/hosts.
     --simple-pattern-sh, -P: 
     --strict-enum, -E: Strict enumeration	
     	The argument value have to be one of the following:	
     		Option A, Value B, Item C or ItemD with space
     	Default value: Value B
     --non-strict-enum, -e: Non-restrictive enumeration
-    	Non restricive enumeration will only propose some values in autocompletion but will accept any other values	
+    	Non restricive enumeration will only propose some values in autocompletion 
+    	but will accept any other values	
     	The argument can be:	
     		nOptionA, nValueB, nItemC or nItemD with space
 

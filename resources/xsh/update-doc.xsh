@@ -12,6 +12,8 @@
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
+creolePath="${rootPath}/doc/wiki/creole"
+xslPath="${rootPath}/ns/xsl"
 cwd="$(pwd)"
 
 if ! parse "${@}"
@@ -32,16 +34,43 @@ then
 	exit 0
 fi
 
+update_item()
+{
+	local name="${1}"
+	local n=${#parser_values[*]}
+	[ ${n} -eq 0 ] && return 0
+	for ((i=0;${i}<${n};i++))
+	do
+		[ "${parser_values[${i}]}" == "${name}" ] && return 0
+	done
+	
+	return 1
+}
+
 for tool in nme find xsltproc
 do
 	which ${tool} 1>/dev/null 2>&1 || (echo "${tool} not found" && exit 1)
 done
 
-creolePath="${rootPath}/doc/wiki/creole"
-htmlArticlePath="${rootPath}/doc/html/articles"
-
-if true
+if update_item creole
 then
+	appXshPath="${rootPath}/ns/xsh/apps"
+	outputPath="${creolePath}/apps"
+
+	# TODO get program version 
+	creoleXslStylesheet="${xslPath}/program/2.0/wikicreole-usage.xsl"
+
+	find "${appXshPath}" -name "*.xml" | while read f
+	do
+		b="$(basename "${f}")"
+		xsltproc -o "${outputPath}/${b%xml}wiki" "${creoleXslStylesheet}" "${f}" 
+	done
+fi
+
+if update_item html
+then
+	htmlArticlePath="${rootPath}/doc/html/articles"
+	
 	find "${creolePath}" -name "*.wiki" | while read f
 	do
 		output="${htmlArticlePath}${f#${creolePath}}"
@@ -52,26 +81,28 @@ then
 	done
 fi
 
-xslPath="${rootPath}/ns/xsl"
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
 defaultCssFile="${rootPath}/resources/css/xsl.doc.html.css"
 
 [ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
 [ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 
-find "${xslPath}" -name "*.xsl" | while read f
-do
-	output="${xsltDocOutputPath}${f#${xslPath}}"
-	output="${output%xsl}html"
-	echo "${output}"
-	cssPath="$(ns_relativepath "${xsltDocCssFile}" "${output}")"
-	title="${output#${xsltDocOutputPath}/}"
-	title="${title%.html}"
-	mkdir -p "$(dirname "${output}")"
-	xsltproc --xinclude -o "${output}" \
-		--stringparam xsl.doc.html.fileName "${title}"\
-		--stringparam xsl.doc.html.stylesheetPath "${cssPath}"\
-		"${xslStylesheet}" "${f}"
-done
+if update_item xsl
+then
+	find "${xslPath}" -name "*.xsl" | while read f
+	do
+		output="${xsltDocOutputPath}${f#${xslPath}}"
+		output="${output%xsl}html"
+		echo "${output}"
+		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${output}")"
+		title="${output#${xsltDocOutputPath}/}"
+		title="${title%.html}"
+		mkdir -p "$(dirname "${output}")"
+		xsltproc --xinclude -o "${output}" \
+			--stringparam xsl.doc.html.fileName "${title}"\
+			--stringparam xsl.doc.html.stylesheetPath "${cssPath}"\
+			"${xslStylesheet}" "${f}"
+	done
+fi
 ]]></sh:code>
 </sh:program>

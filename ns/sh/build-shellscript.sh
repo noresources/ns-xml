@@ -20,14 +20,18 @@ Usage:
     	--ns-xml-path-relative: ns source path is relative this program path
     
     -x, --xml-description: Program description file
-    	If the program description file is provided, the xml file will be validated before any XSLT processing
+    	If the program description file is provided, the xml file will be validated 
+    	before any XSLT processing
     -s, --shell: XML shell file
     	A xml file following the bash XML schema
-    	  The file may include a XML program definition
+    	The file may include a XML program definition
     --skip-validation, --no-validation, -S: Skip XML Schema validations
-    The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
+    	The default behavior of the program is to validate the given xml-based 
+    	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
+    	option will disable schema validations
     --prefix-sc-variables, -p: Prefix subcommand options bound variable names
-    This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+    	This will prefix all subcommand options bound variable name by the 
+    	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     -o, --output: Output file path

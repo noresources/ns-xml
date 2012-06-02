@@ -476,6 +476,7 @@ ns_realpath()
 	cd "\${cwd}" 1>/dev/null 2>&1
 	echo "\${path}"
 }
+#This variable indicates from which platform this app have been built
 buildPlatform="${targetPlatform}"
 debug=${debugMode}
 platform="linux"
@@ -486,13 +487,10 @@ fi
 
 scriptPath="\$(ns_realpath "\$(dirname "\${0}")")"
 appIniPath="\$(ns_realpath "\${scriptPath}/application.ini")"
-logFile="/tmp/\$(basename "\${0}").log"
-if [ "\${buildPlatform}" == "macosx" ]
-then
-	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
-fi
+logFile="/tmp/${xulAppName}.log"
 if [ "\${platform}" == "macosx" ]
 then
+	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
 	macOSXArchitecture="\$(uname -m)"
 	cmdPrefix=""
 	if [ "\${macOSXArchitecture}" = "i386" ]
@@ -514,9 +512,11 @@ debug "Args: \${@}"
 use_framework()
 {	
 	debug use_framwork
-	
+	local frameworkName="XUL.framework"
+	local bundledFrameworkPath="\$(ns_realpath "\${scriptPath}/../Frameworks/\${frameworkName}")"
+	local systemFrameworkPathBase="Library/Frameworks/\${frameworkName}"
 	minXulFrameworkVersion=4
-	for xul in "/Library/Frameworks/XUL.framework" "\${HOME}/Library/Frameworks/XUL.framework"
+	for xul in "\${bundledFrameworkPath}" "/\${systemFrameworkPathBase}" "/\${HOME}/\${systemFrameworkPathBase}"
 	do
 		debug "Check \${xul}"
 		if [ -x "\${xul}/xulrunner-bin" ]

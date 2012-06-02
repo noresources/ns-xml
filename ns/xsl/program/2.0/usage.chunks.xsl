@@ -6,6 +6,10 @@
 
 	<import href="./sh-base.xsl" />
 
+	<param name="prg.usage.indentChar" select="'&#9;'" />
+	<param name="prg.usage.wrap" select="true()" />
+	<param name="prg.usage.lineMaxLength" select="80" />
+
 	<variable name="prg.usage.usageFunctionName">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -39,37 +43,30 @@
 		</choose>
 	</template>
 
-	<!-- Display the option description @todo auto-split lines -->
+	<!-- Display the option description -->
 	<template name="prg.usage.descriptionDisplay">
 		<param name="textNode" select="." />
-		<call-template name="str.replaceAll">
-			<with-param name="replace">
-				<call-template name="endl" />
-			</with-param>
-			<with-param name="by">
-				<call-template name="endl" />
-				<value-of select="$prg.sh.indentChar" />
-			</with-param>
-			<with-param name="text">
-				<for-each select="$textNode/node()">
-					<choose>
-						<when test="self::node()[1][self::text()]">
-							<value-of select="normalize-space(self::node()[1])" />
-						</when>
-						<otherwise>
-							<apply-templates select="." />
-						</otherwise>
-					</choose>
-				</for-each>
-			</with-param>
-		</call-template>
+
+		<for-each select="$textNode/node()">
+			<choose>
+				<when test="self::node()[1][self::text()]">
+					<value-of select="normalize-space(self::node()[1])" />
+				</when>
+				<otherwise>
+					<apply-templates select="." />
+				</otherwise>
+			</choose>
+		</for-each>
 	</template>
 
 	<template name="prg.usage.selectValueList">
 		<param name="optionNode" select="." />
 		<param name="mode" />
 		<call-template name="str.prependLine">
-			<with-param name="content">
+			<with-param name="prependedText" select="$prg.usage.indentChar" />
+			<with-param name="wrap" select="$prg.usage.wrap" />
+			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - 3 * string-length($prg.usage.indentChar)" />
+			<with-param name="text">
 				<choose>
 					<when test="$mode = 'inline'">
 						<call-template name="endl" />
@@ -149,8 +146,15 @@
 
 		<if test="$details and $optionNode/prg:documentation/prg:details">
 			<call-template name="endl" />
-			<call-template name="prg.usage.descriptionDisplay">
-				<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+			<call-template name="str.prependLine">
+				<with-param name="prependedText" select="$prg.usage.indentChar" />
+				<with-param name="text">
+					<call-template name="prg.usage.descriptionDisplay">
+						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+					</call-template>
+				</with-param>
+				<with-param name="wrap" select="$prg.usage.wrap" />
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2" />
 			</call-template>
 		</if>
 	</template>
@@ -231,26 +235,32 @@
 		<if test="$details and $optionNode/prg:documentation/prg:details">
 			<call-template name="endl" />
 			<call-template name="str.prependLine">
-				<with-param name="content">
+				<with-param name="prependedText" select="$prg.usage.indentChar" />
+				<with-param name="text">
 					<call-template name="prg.usage.descriptionDisplay">
 						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
 					</call-template>
 				</with-param>
+				<with-param name="wrap" select="$prg.usage.wrap" />
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2" />
 			</call-template>
 		</if>
 
 		<variable name="argumentValueDesc">
 			<call-template name="prg.usage.argumentValueDescription">
-					<with-param name="optionNode" select="$optionNode" />
-				</call-template>
+				<with-param name="optionNode" select="$optionNode" />
+			</call-template>
 		</variable>
-		
+
 		<if test="string-length($argumentValueDesc)">
-		<call-template name="str.prependLine">
-			<with-param name="content">
-				<value-of select="$argumentValueDesc" />
-			</with-param>
-		</call-template>
+			<call-template name="str.prependLine">
+				<with-param name="prependedText" select="$prg.usage.indentChar" />
+				<with-param name="text">
+					<value-of select="$argumentValueDesc" />
+				</with-param>
+				<with-param name="wrap" select="$prg.usage.wrap" />
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2" />
+			</call-template>
 		</if>
 	</template>
 
@@ -313,14 +323,19 @@
 		<call-template name="prg.usage.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
 		</call-template>
-		<call-template name="sh.block">
-			<with-param name="indentChar" select="$prg.sh.indentChar" />
-			<with-param name="content">
+		<call-template name="endl" />
+		<call-template name="str.prependLine">
+			<with-param name="prependedText" select="$prg.usage.indentChar" />
+			<with-param name="text">
 				<call-template name="prg.usage.optionListDescription">
 					<with-param name="optionsNode" select="$optionNode/prg:options" />
 				</call-template>
 			</with-param>
+			<with-param name="wrap" select="$prg.usage.wrap" />
+			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2" />
 		</call-template>
+		<call-template name="endl" />
+
 	</template>
 
 	<!-- Display the option list -->
@@ -403,5 +418,4 @@
 			</choose>
 		</for-each>
 	</template>
-
 </stylesheet>

@@ -428,6 +428,7 @@ MainWindow.prototype.disable = function(newStatus)
 	{
 		this.status = newStatus;
 	}
+	
 	this.setControlEnabled(false)
 }
 
@@ -728,6 +729,8 @@ MainWindow.prototype.ExecuteObserver.prototype.observe = function(subject, topic
 	{
 		var process = subject.QueryInterface(Components.interfaces.nsIProcess);
 		evt.exitValue = process.exitValue;
+		evt.mainWindow = this.mainWindow;
+		evt.application = this.mainWindow.app;		
 		
 		if (topic == "process-failed")
 		{

@@ -207,6 +207,7 @@
 				</call-template>
 
 				<!-- Program documentation & details -->
+				<!-- @todo use str.prependLine + wrap -->
 				<if test="$programNode/prg:documentation/prg:details">
 					<call-template name="code.block">
 						<with-param name="indentChar" select="$prg.sh.indentChar" />

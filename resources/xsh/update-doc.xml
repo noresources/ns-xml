@@ -50,6 +50,17 @@
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 	</prg:options>
+	<prg:values>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>Things to update</prg:abstract>
+			</prg:documentation>
+			<prg:select>
+				<prg:option>html</prg:option>
+				<prg:option>xsl</prg:option>
+				<prg:option>creole</prg:option>
+			</prg:select>
+		</prg:other>
+	</prg:values>
 </prg:program>

@@ -15,15 +15,19 @@ Usage:
   build-pyscript -p <path> [-m <...>] [-u] -x <path> [-S] [-d] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
   With:
     -p, --python: Python script path
-    	Location of the Python script body. The parser module will be created at the same place
+    	Location of the Python script body. The parser module will be created at the 
+    	same place
     -m, --module-name, --module: Python module name
     	Set the name of the command line parser python module	
     	Default value: Program
     -u, --update: Update pythom module if already exists
     -x, --xml-description: Program description file
-    	If the program description file is provided, the xml file will be validated before any XSLT processing
+    	If the program description file is provided, the xml file will be validated 
+    	before any XSLT processing
     --skip-validation, --no-validation, -S: Skip XML Schema validations
-    The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
+    	The default behavior of the program is to validate the given xml-based 
+    	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
+    	option will disable schema validations
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     ns-xml source path options

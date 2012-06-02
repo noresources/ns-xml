@@ -69,9 +69,11 @@
 		<call-template name="endl" />
 		<call-template name="str.prependLine">
 			<with-param name="prependedText" select="$prg.sh.indentChar" />
-			<with-param name="content">
+			<with-param name="text">
 				<apply-templates />
 			</with-param>
+			<with-param name="wrap" select="true()" />
+			<with-param name="lineMaxLength" select="80" />
 		</call-template>
 	</template>
 

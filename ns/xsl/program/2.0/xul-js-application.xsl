@@ -63,7 +63,7 @@ Application.prototype.getApplicationURI = function()
 	}	
 }
 
-// Return the file URI of the application path (where application.ini resides) as a string
+// Return the unescaped string of the application path (where application.ini resides)
 Application.prototype.getApplicationPath = function()
 {
 	var appUri = this.getApplicationURI();

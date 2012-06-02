@@ -147,7 +147,7 @@
 					<prg:databinding>
 						<prg:variable>windowWidth</prg:variable>
 					</prg:databinding>
-					<prg:documentation>	
+					<prg:documentation>
 						<prg:abstract>Window width</prg:abstract>
 						<prg:details>Force the application main window witdh</prg:details>
 					</prg:documentation>
@@ -205,14 +205,11 @@
 					<prg:documentation>
 						<prg:abstract>User-defined post-initialization script</prg:abstract>
 						<prg:details>
-							A Javascript file loaded after the main ui object initialization
-							stage
+							A Javascript file loaded after the main ui object initialization stage
 							<prg:endl />
-							If a onInitialize() function is available, it will be
-							called with the main ui object as the first argument
+							If a onInitialize() function is available, it will be called with the main ui object as the first argument
 							<prg:endl />
-							The script is copied in the chrome/content directory and is
-							available through the following url
+							The script is copied in the chrome/content directory and is available through the following url
 							<prg:block>chrome://&lt;xulAppName&gt;/content/&lt;xulAppName&gt;-user.js
 							</prg:block>
 						</prg:details>

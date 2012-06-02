@@ -19,9 +19,10 @@ Usage: build-xulapp xsh -s <path> [-p]
 With:
   -s, --shell: XML shell file
   	A xml file following the bash XML schema
-  	  The file may include a XML program definition
+  	The file may include a XML program definition
   --prefix-sc-variables, -p: Prefix subcommand options bound variable names
-  This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+  	This will prefix all subcommand options bound variable name by the 
+  	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
 EOFSCUSAGE
 ;;
 python | py)
@@ -30,7 +31,8 @@ python: Build a XUL application which will run a python script built with the pr
 Usage: build-xulapp python -p <path> [-m <...>]
 With:
   -p, --python: Python script path
-  	Location of the Python script body. The parser module will be created at the same place
+  	Location of the Python script body. The parser module will be created at the 
+  	same place
   -m, --module-name, --module: Python module name
   	Set the name of the command line parser python module	
   	Default value: Program
@@ -63,14 +65,17 @@ Usage:
     --help: Display program usage
     -o, --output: Output folder path for the XUL application structure
     -x, --xml-description: Program XML description file
-    	Location of the XML program description file. Expect a valid XML file following the http://xsd.nore.fr/program schema
+    	Location of the XML program description file. Expect a valid XML file 
+    	following the http://xsd.nore.fr/program schema
     --target-platform, --target, -t: Target platform	
     	The argument value have to be one of the following:	
     		host, linux or macosx
     	Default value: host
     -u, --update: Update application if folder already exists
     --skip-validation, --no-validation, -S: Skip XML Schema validations
-    The default behavior of the program is to validate the given xml-based file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This option will disable schema validations
+    	The default behavior of the program is to validate the given xml-based 
+    	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
+    	option will disable schema validations
     User interface
     	--window-width, -W: Window width
     		Force the application main window witdh	
@@ -83,20 +88,32 @@ Usage:
     User data
     	--init-script, -j: User-defined post-initialization script
     		A Javascript file loaded after the main ui object initialization stage
-    		  If a onInitialize() function is available, it will be called with the main ui object as the first argument
-    		  The script is copied in the chrome/content directory and is available through the following url
-    		    chrome://<xulAppName>/content/<xulAppName>-user.js
-    		    							
+    		If a onInitialize() function is available, it will be called with the main 
+    		ui object as the first argument
+    		The script is copied in the chrome/content directory and is available 
+    		through the following url
+    		  chrome://<xulAppName>/content/<xulAppName>-user.js
+    		  							
+    		  chrome://<xulAppName>/content/<xulAppName>-user.js
+    		  							
+    		The script is copied in the chrome/content directory and is available 
+    		through the following url
+    		  chrome://<xulAppName>/content/<xulAppName>-user.js
+    		  							
+    		  chrome://<xulAppName>/content/<xulAppName>-user.js
+    		  							
     	--resources: Additional resources
     		A list of path or file to add in the application bundle.
-    		  These items are copied in the chrome/userdata folder of the application bundle and a new resource url is avalailable (resource://userdata/...)
+    		These items are copied in the chrome/userdata folder of the application 
+    		bundle and a new resource url is avalailable (resource://userdata/...)
     
     ns-xml options
     	--ns-xml-path: ns-xml source path
     		Location of the ns folder of ns-xml package
     	--ns-xml-path-relative: ns source path is relative this program path
     	-n, --ns, --ns-xml-add: Add ns-xml sources into application resources
-    	Include the ns-xml library files (python, sh, xsl and xsd folders) in the XUL application bundle.
+    		Include the ns-xml library files (python, sh, xsl and xsd folders) in the 
+    		XUL application bundle.
 EOFUSAGE
 }
 
@@ -1863,6 +1880,7 @@ ns_realpath()
 	cd "\${cwd}" 1>/dev/null 2>&1
 	echo "\${path}"
 }
+#This variable indicates from which platform this app have been built
 buildPlatform="${targetPlatform}"
 debug=${debugMode}
 platform="linux"
@@ -1873,13 +1891,10 @@ fi
 
 scriptPath="\$(ns_realpath "\$(dirname "\${0}")")"
 appIniPath="\$(ns_realpath "\${scriptPath}/application.ini")"
-logFile="/tmp/\$(basename "\${0}").log"
-if [ "\${buildPlatform}" == "macosx" ]
-then
-	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
-fi
+logFile="/tmp/${xulAppName}.log"
 if [ "\${platform}" == "macosx" ]
 then
+	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
 	macOSXArchitecture="\$(uname -m)"
 	cmdPrefix=""
 	if [ "\${macOSXArchitecture}" = "i386" ]
@@ -1901,9 +1916,11 @@ debug "Args: \${@}"
 use_framework()
 {	
 	debug use_framwork
-	
+	local frameworkName="XUL.framework"
+	local bundledFrameworkPath="\$(ns_realpath "\${scriptPath}/../Frameworks/\${frameworkName}")"
+	local systemFrameworkPathBase="Library/Frameworks/\${frameworkName}"
 	minXulFrameworkVersion=4
-	for xul in "/Library/Frameworks/XUL.framework" "\${HOME}/Library/Frameworks/XUL.framework"
+	for xul in "\${bundledFrameworkPath}" "/\${systemFrameworkPathBase}" "/\${HOME}/\${systemFrameworkPathBase}"
 	do
 		debug "Check \${xul}"
 		if [ -x "\${xul}/xulrunner-bin" ]

@@ -4,9 +4,13 @@ glob:*.bzr
 glob:*.git
 \.gitignore
 tools/sh/bzr
-# 
+# Auto-generated files
+doc/html/articles
+doc/html/xsl
+# Working dir files 
 glob:tests
 resources/bzr
+# Temporary files
 glob:*.pyc
 glob:*.log
 # Symbolic links used in Eclipse project
