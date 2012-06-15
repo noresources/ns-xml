@@ -1,4 +1,4 @@
-CLI: -c abc def ghi
+CLI: "-c", "abc", "def", "ghi"
 Value count: 0
 Values: 
 Error count: 0

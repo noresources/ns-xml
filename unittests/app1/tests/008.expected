@@ -1,4 +1,4 @@
-CLI: -a --argument-b=Value of B with spaces
+CLI: "-a", "--argument-b=Value of B with spaces"
 Value count: 0
 Values: 
 Error count: 0

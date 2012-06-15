@@ -1,4 +1,4 @@
-CLI: -c abc --argument-b This should be ok
+CLI: "-c", "abc", "--argument-b", "This should be ok"
 Value count: 0
 Values: 
 Error count: 0

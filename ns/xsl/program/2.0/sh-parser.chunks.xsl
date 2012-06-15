@@ -102,6 +102,25 @@
 		</if>
 	</template>
 
+	<!-- Remove \ protection if any -->
+	<template name="prg.sh.parser.unescapeValue">
+		<param name="variableName" select="$prg.sh.parser.vName_item" />
+		<text>[ </text>
+		<call-template name="sh.var">
+			<with-param name="name" select="$variableName" />
+			<with-param name="quoted" select="true()" />
+			<with-param name="length" select="2" />
+		</call-template>
+		<text> = "\-" ] &amp;&amp; </text>
+		<value-of select="$variableName" />
+		<text>=</text>
+		<call-template name="sh.var">
+			<with-param name="name" select="$variableName" />
+			<with-param name="quoted" select="true()" />
+			<with-param name="start" select="1" />
+			</call-template>
+	</template>
+	
 	<template name="prg.sh.parser.argumentPreprocess">
 		<param name="optionNode" select="." />
 		<param name="onError" />
@@ -188,6 +207,9 @@
 			<call-template name="endl" />
 			<value-of select="$prg.sh.parser.vName_optiontail" />
 			<text>=""</text>
+			
+			<call-template name="endl" />
+			<call-template name="prg.sh.parser.unescapeValue" />
 		</if>
 	</template>
 
@@ -220,6 +242,10 @@
 		<call-template name="endl" />
 		<value-of select="$prg.sh.parser.vName_optiontail" />
 		<text>=""</text>
+		
+		<call-template name="endl" />
+		<call-template name="prg.sh.parser.unescapeValue" />
+		
 	</template>
 
 	<template name="prg.sh.parser.optionSetValue">
@@ -914,6 +940,7 @@
 								<text> ]</text>
 							</with-param>
 							<with-param name="do">
+								<!-- Stop on '-[something]' if not first -->
 								<call-template name="sh.if">
 									<with-param name="condition">
 										<text>[ </text>
@@ -936,6 +963,7 @@
 										</call-template>
 									</with-param>
 								</call-template>
+								
 								<call-template name="endl" />
 								<call-template name="prg.sh.parser.indexIncrement" />
 								<call-template name="endl" />
@@ -943,6 +971,9 @@
 								<call-template name="endl" />
 
 								<!-- Checks -->
+								<call-template name="prg.sh.parser.unescapeValue" />
+								<call-template name="endl" />
+								
 								<call-template name="prg.sh.parser.optionValueTypeCheck">
 									<with-param name="node" select="$optionNode" />
 									<with-param name="onError" select="$onError" />

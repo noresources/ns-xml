@@ -1,4 +1,4 @@
-CLI: -c --argument-b This should be misinterpreted (at least one argument rule)
+CLI: "-c", "--argument-b", "This should be misinterpreted (at least one argument rule)"
 Value count: 0
 Values: 
 Error count: 0

@@ -1,4 +1,4 @@
-CLI: -c abc -b This should be ok too
+CLI: "-c", "abc", "-b", "This should be ok too"
 Value count: 0
 Values: 
 Error count: 0

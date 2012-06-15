@@ -527,6 +527,8 @@ MainWindow.prototype.getOptionArguments = function(option, specs)
 		{
 			result.push(values[i]);
 		}
+		// Allways add 'end-of-option-arg' marker
+		result.push("-");
 	}
 	
 	return result;

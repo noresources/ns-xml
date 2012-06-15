@@ -168,27 +168,29 @@ windowHeight="768"
 userInitializationScript=
 nsxmlPath=
 
-parse_addmessage()
-{
-	local type="${1}"
-	local message="${2}"
-	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	eval "local c=\${#parser_${type}s[*]}"
-	c=$(expr ${c} + ${parser_startindex})
-	eval "parser_${type}s[${c}]=\"${m}\""
-}
-
 parse_addwarning()
 {
-	parse_addmessage "warning" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_warnings[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_warnings[${c}]="${m}"
 }
 parse_adderror()
 {
-	parse_addmessage "error" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_errors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_errors[${c}]="${m}"
 }
 parse_addfatalerror()
 {
-	parse_addmessage "fatalerror" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_fatalerrors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_fatalerrors[${c}]="${m}"
 }
 
 parse_displayerrors()
@@ -339,6 +341,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -403,6 +406,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -463,6 +467,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -501,6 +506,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_moduleName="${parser_item}"
 				parse_setoptionpresence SC_2_python_2_module-name
 				;;
@@ -543,6 +549,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -581,6 +588,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_moduleName="${parser_item}"
 				parse_setoptionpresence SC_2_python_2_module-name
 				;;
@@ -625,6 +633,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_3_command_1_command
 				;;
@@ -667,6 +676,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_3_command_1_command
 				;;
@@ -710,6 +720,12 @@ parse_process_option()
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
+	elif [ "${parser_item}" = "-" ]
+	then
+		return ${PARSER_OK}
+	elif [ "${parser_item:0:2}" = "\-" ]
+	then
+		parse_addvalue "${parser_item:1}"
 	elif [ "${parser_item:0:2}" = "--" ] 
 	then
 		parser_option="${parser_item:2}"
@@ -753,6 +769,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -791,6 +808,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -829,6 +847,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
@@ -883,6 +902,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			windowWidth="${parser_item}"
 			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
@@ -911,6 +931,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			windowHeight="${parser_item}"
 			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
@@ -951,6 +972,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -976,6 +998,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#userDataPaths[*]}
 			if [ -z "${parser_item}" ]
@@ -1007,6 +1030,7 @@ parse_process_option()
 				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -1057,6 +1081,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_9_g_1_ns-xml-path;parse_setoptionpresence G_9_g
 			;;
@@ -1124,6 +1149,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -1162,6 +1188,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -1200,6 +1227,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "macosx" ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
@@ -1242,6 +1270,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			windowWidth="${parser_item}"
 			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
@@ -1270,6 +1299,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			windowHeight="${parser_item}"
 			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
@@ -1304,6 +1334,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""

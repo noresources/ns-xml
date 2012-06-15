@@ -31,9 +31,29 @@
 	
 	<template match="/">
 		<text><![CDATA[parse "${@}"
-echo "CLI: ${@}"
+echo -n "CLI: "
+cpt="${#}"
+for ((i=1;${i}<=${cpt};i++))
+do
+	if [ ${i} -gt 1 ]
+	then
+		echo -n ", "
+	fi
+	echo -n "\"${!i}\""
+done
+echo ""
 echo "Value count: ${#parser_values[*]}"
-echo "Values: ${parser_values[*]}"
+cpt="${#parser_values[*]}"
+echo -n "Values: "
+for ((i=0;${i}<${cpt};i++))
+do
+	if [ ${i} -gt 0 ]
+	then
+		echo -n ", "
+	fi
+	echo -n "\"${parser_values[${i}]}\""
+done
+echo ""
 echo "Error count: ${#parser_errors[*]}"
 echo "Subcommand: ${parser_subcommand}"
 ]]></text>

@@ -1,4 +1,4 @@
-CLI: -b klm -c abc def ghi
+CLI: "-b", "klm", "-c", "abc", "def", "ghi"
 Value count: 0
 Values: 
 Error count: 0

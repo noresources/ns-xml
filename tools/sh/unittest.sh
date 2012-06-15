@@ -52,7 +52,7 @@ do
 	fi
 done
 
-find "${testPathBase}" -mindepth 1 -maxdepth 1 -type d | while read d
+find "${testPathBase}" -mindepth 1 -maxdepth 1 -type d | sort | while read d
 do
 	if [ -f "${d}/xml/program.xml" ]
 	then
@@ -85,7 +85,7 @@ do
 		fi
 		
 		### Run tests ###
-		find "${d}/tests" -type f -name "*.cli" | while read t
+		find "${d}/tests" -type f -name "*.cli" | sort | while read t
 		do
 			base="${t%.cli}"
 			testnumber="$(basename "${base}")"

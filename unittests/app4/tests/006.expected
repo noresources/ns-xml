@@ -1,6 +1,6 @@
-CLI: -c abc def ghi --invalid-switch sub This should succeed (even invalid switch will break the multiarg value parsing)
+CLI: "-c", "abc", "def", "ghi", "--invalid-switch", "sub", "This should succeed (even invalid switch will break the multiarg value parsing)"
 Value count: 1
-Values: This should succeed (even invalid switch will break the multiarg value parsing)
+Values: "This should succeed (even invalid switch will break the multiarg value parsing)"
 Error count: 1
 Subcommand: sub
 switchA=False

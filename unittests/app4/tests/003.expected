@@ -1,4 +1,4 @@
-CLI: -c abc def ghi sub This should fail
+CLI: "-c", "abc", "def", "ghi", "sub", "This should fail"
 Value count: 0
 Values: 
 Error count: 0

@@ -80,27 +80,29 @@ moduleName="Program"
 xmlProgramDescriptionPath=
 nsxmlPath=
 
-parse_addmessage()
-{
-	local type="${1}"
-	local message="${2}"
-	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	eval "local c=\${#parser_${type}s[*]}"
-	c=$(expr ${c} + ${parser_startindex})
-	eval "parser_${type}s[${c}]=\"${m}\""
-}
-
 parse_addwarning()
 {
-	parse_addmessage "warning" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_warnings[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_warnings[${c}]="${m}"
 }
 parse_adderror()
 {
-	parse_addmessage "error" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_errors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_errors[${c}]="${m}"
 }
 parse_addfatalerror()
 {
-	parse_addmessage "fatalerror" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_fatalerrors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_fatalerrors[${c}]="${m}"
 }
 
 parse_displayerrors()
@@ -238,6 +240,12 @@ parse_process_option()
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
+	elif [ "${parser_item}" = "-" ]
+	then
+		return ${PARSER_OK}
+	elif [ "${parser_item:0:2}" = "\-" ]
+	then
+		parse_addvalue "${parser_item:1}"
 	elif [ "${parser_item:0:2}" = "--" ] 
 	then
 		parser_option="${parser_item:2}"
@@ -271,6 +279,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -309,6 +318,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			moduleName="${parser_item}"
 			parse_setoptionpresence G_2_module-name
 			;;
@@ -345,6 +355,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -415,6 +426,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_8_g_1_ns-xml-path;parse_setoptionpresence G_8_g
 			;;
@@ -470,6 +482,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -508,6 +521,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			moduleName="${parser_item}"
 			parse_setoptionpresence G_2_module-name
 			;;
@@ -538,6 +552,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""

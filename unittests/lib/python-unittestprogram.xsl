@@ -15,16 +15,17 @@ import sys
 import Program
 
 class UnittestUtil:
-	def array_to_string(self, v):
+	def array_to_string(self, v, begin_str = "", end_str = "", separator_str = " "):
 		first = True
 		res = ""
 		for i in v:	
 			if not first:
-				res = res + " "
+				res = res + separator_str
 			else:
 				first = False
-			res = res + str(i)
+			res = res + begin_str + str(i) + end_str
 		return res
+		
 	def argument_to_string(self, v):
 		if v == None:
 			return ""
@@ -36,9 +37,9 @@ u = UnittestUtil()
 p = Program.Program()
 r = p.parse(sys.argv[1:len(sys.argv)])
 
-print "CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)])
+print "CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)], "\"", "\"", ", ")
 print "Value count: " + str(len(r.values))
-print "Values: " + u.array_to_string(r.values)
+print "Values: " + u.array_to_string(r.values, "\"", "\"", ", ")
 print "Error count: " + str(len(r.issues["errors"]))
 if r.subcommand:
 	print "Subcommand: " + r.subcommand.name

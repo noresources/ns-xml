@@ -1,4 +1,4 @@
-CLI: sub -a
+CLI: "sub", "-a"
 Value count: 0
 Values: 
 Error count: 0

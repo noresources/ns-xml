@@ -8,27 +8,41 @@
 	<import href="sh-parser.variables.xsl" />
 
 	<!-- Message functions -->
-	<template name="prg.sh.parser.addMessageFunction">
+	<template name="prg.sh.parser.addMessageFunctionHelper">
+		<param name="name" />
+		<param name="onEnd" />
+		<variable name="tableName">
+			<value-of select="$prg.prefix" />
+			<value-of select="$prg.sh.parser.variableNamePrefix" />
+			<value-of select="$name" />
+			<text>s</text>
+		</variable>
+		
 		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_addmessage" />
+			<with-param name="name">
+				<value-of select="$prg.prefix" />
+				<value-of select="$prg.sh.parser.functionNamePrefix" />
+				<text>add</text>
+				<value-of select="$name" />
+			</with-param>
 			<with-param name="content">
-				<text>local type="${1}"</text>
+				<text>local message="${1}"</text>
 				<call-template name="endl" />
-				<text>local message="${2}"</text>
-				<call-template name="endl" />
-				<text>local m="[</text>
+				<text>local m="</text>
+				<text>[</text>
 				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_option" />
+				<with-param name="name" select="$prg.sh.parser.vName_option" />
 				</call-template>
 				<text>:</text>
 				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_index" />
+				<with-param name="name" select="$prg.sh.parser.vName_index" />
 				</call-template>
 				<text>:</text>
 				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_subindex" />
+				<with-param name="name" select="$prg.sh.parser.vName_subindex" />
 				</call-template>
 				<text>] </text>
+				
 				<call-template name="sh.var">
 					<with-param name="name">
 						<text>message</text>
@@ -37,21 +51,10 @@
 				<text>"</text>
 				<call-template name="endl" />
 
-				<text>eval "local c=\</text>
+				<text>local c=</text>
 				<call-template name="sh.arrayLength">
-					<with-param name="name">
-						<value-of select="$prg.prefix" />
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text></text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>type</text>
-							</with-param>
-						</call-template>
-						<text>s</text>
-					</with-param>
+					<with-param name="name" select="$tableName" />
 				</call-template>
-				<text>"</text>
 				<call-template name="endl" />
 
 				<text>c=$(expr </text>
@@ -67,46 +70,21 @@
 				<text>)</text>
 				<call-template name="endl" />
 
-				<text>eval "</text>
-				<value-of select="$prg.prefix" />
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text></text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>type</text>
-					</with-param>
-				</call-template>
-				<text>s[</text>
+				
+				<value-of select="$tableName" />
+				<text>[</text>
 				<call-template name="sh.var">
 					<with-param name="name">
 						<text>c</text>
 					</with-param>
 				</call-template>
-				<text>]=\"</text>
+				<text>]="</text>
 				<call-template name="sh.var">
 					<with-param name="name">
 						<text>m</text>
 					</with-param>
 				</call-template>
-				<text>\""</text>
-			</with-param>
-		</call-template>
-	</template>
-
-	<template name="prg.sh.parser.addMessageFunctionHelper">
-		<param name="name" />
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.prefix" />
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>add</text>
-				<value-of select="$name" />
-			</with-param>
-			<with-param name="content">
-				<value-of select="$prg.sh.parser.fName_addmessage" />
-				<text> "</text>
-				<value-of select="$name" />
-				<text>" "${@}"</text>
+				<text>"</text>
 			</with-param>
 		</call-template>
 	</template>
@@ -150,8 +128,6 @@
 
 	<template name="prg.sh.parser.messageFunctions">
 		<!-- addwarning -->
-		<call-template name="prg.sh.parser.addMessageFunction" />
-		<call-template name="endl" />
 		<call-template name="prg.sh.parser.addMessageFunctionHelper">
 			<with-param name="name">
 				<text>warning</text>
@@ -167,6 +143,9 @@
 		<call-template name="prg.sh.parser.addMessageFunctionHelper">
 			<with-param name="name">
 				<text>fatalerror</text>
+			</with-param>
+			<with-param name="onEnd">
+				<text>exit 1</text>
 			</with-param>
 		</call-template>
 		<call-template name="endl" />
@@ -452,13 +431,13 @@
 			<with-param name="content">
 				<text>local errorCount=0</text>
 				<call-template name="endl" />
-				
+
 				<call-template name="sh.comment">
 					<with-param name="content">
 						<text>Check min argument for multiargument</text>
 					</with-param>
 				</call-template>
-				
+
 				<for-each select="$programNode//prg:multiargument[@min > 0]">
 					<variable name="optionName">
 						<call-template name="prg.sh.optionDisplayName">
@@ -469,7 +448,7 @@
 						<variable name="argCountVariable">
 							<call-template name="sh.arrayLength">
 								<with-param name="name">
-									<apply-templates select="prg:databinding/prg:variable"/>
+									<apply-templates select="prg:databinding/prg:variable" />
 								</with-param>
 							</call-template>
 						</variable>
@@ -495,10 +474,12 @@
 										<text> given"</text>
 									</with-param>
 								</call-template>
-								
+
 								<call-template name="endl" />
 								<call-template name="sh.varincrement">
-									<with-param name="name"><text>errorCount</text></with-param>
+									<with-param name="name">
+										<text>errorCount</text>
+									</with-param>
 								</call-template>
 							</with-param>
 						</call-template>
@@ -548,7 +529,7 @@
 	<!-- Check and add anonymous value -->
 	<template name="prg.sh.parser.addValueFunction">
 		<param name="programNode" />
-		
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_addvalue" />
 			<with-param name="content">
@@ -557,17 +538,17 @@
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
 				</call-template>
 				<call-template name="endl" />
-				
+
 				<text>local value="${1}"</text>
 				<call-template name="endl" />
-				
+
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>[ -z </text>
 						<value-of select="$prg.sh.parser.var_subcommand" />
 						<text> ]</text>
 					</with-param>
-					
+
 					<!-- Add global values -->
 					<with-param name="then">
 						<choose>
@@ -588,7 +569,7 @@
 							</otherwise>
 						</choose>
 					</with-param>
-					
+
 					<!-- Subcommand values -->
 					<with-param name="else">
 						<call-template name="sh.case">
@@ -625,7 +606,9 @@
 									</call-template>
 								</for-each>
 								<call-template name="sh.caseblock">
-									<with-param name="case"><text>*</text></with-param>
+									<with-param name="case">
+										<text>*</text>
+									</with-param>
 									<with-param name="content">
 										<text>return </text>
 										<value-of select="$prg.sh.parser.var_ERROR" />
@@ -634,9 +617,9 @@
 							</with-param>
 						</call-template>
 					</with-param>
-					
+
 				</call-template>
-			
+
 				<call-template name="sh.arrayAppend">
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
 					<with-param name="value">
@@ -646,7 +629,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				
+
 			</with-param>
 		</call-template>
 	</template>
@@ -950,7 +933,7 @@
 					<text>)"</text>
 					<call-template name="endl" />
 				</if>
-
+				
 				<!-- End of options -->
 				<text>if [ </text>
 				<call-template name="sh.var">
@@ -970,7 +953,47 @@
 						</call-template>
 					</with-param>
 				</call-template>
-
+				
+				<!-- End of option values -->
+				<text>elif [ </text>
+				<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_item" />
+					<with-param name="quoted" select="true()" />
+				</call-template>
+				<text> = "-" ]</text>
+				<call-template name="endl" />
+				<text>then</text>
+				<call-template name="code.block">
+					<with-param name="content">
+						<text>return </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_OK" />
+						</call-template>
+					</with-param>
+				</call-template>
+				
+				<!-- Protected value -->
+				<text>elif [ </text>
+				<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_item" />
+					<with-param name="quoted" select="true()" />
+					<with-param name="length" select="2" />
+				</call-template>
+				<text> = "\-" ]</text>
+				<call-template name="endl" />
+				<text>then</text>
+				<call-template name="code.block">
+					<with-param name="content">
+						<value-of select="$prg.sh.parser.fName_addvalue" />
+						<text> </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_item" />
+							<with-param name="quoted" select="true()" />
+							<with-param name="start" select="1" />
+						</call-template>
+					</with-param>
+				</call-template>
+				
 				<variable name="optionsNode" select="$programNode/prg:options" />
 
 				<!-- long option -->
@@ -1142,7 +1165,7 @@
 							<with-param name="optionNode" select="$groupNode" />
 						</call-template>
 					</variable>
-					
+
 					<if test="$groupNode/prg:databinding/prg:variable and $optionNode/prg:databinding/prg:variable">
 						<text># Set default option for group </text>
 						<value-of select="$groupNodeId" />

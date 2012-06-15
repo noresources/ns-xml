@@ -239,6 +239,19 @@ class Parser:
                 context.unset_current_option()
                 context.set_argument_skipping(False, 0)
                 continue
+            elif (arg == "-"):
+                context.debug("end of option argument(s)")
+                context.unset_current_option()
+                context.set_argument_skipping(False, 0)
+            elif (len(arg) >= 2) and (arg[0:2] == "\\-"):
+                context.debug("escaped value")
+                if (context.state & State.SkipArgument):
+                    context.debug("Skip value, subcommand or option arg")
+                    context.skip_argument()
+                else:
+                    context.debug("Process Value, subcommand or option arg")
+                    self.process_value(programInfo, context, arg[1:len(arg)])
+                continue
             elif (context.state & State.ArgumentExpected):
                 context.debug("argument (forced - ArgumentExpected)" + arg)
                 self.process_value(programInfo, context, arg)

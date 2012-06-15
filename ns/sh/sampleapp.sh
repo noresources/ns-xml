@@ -257,27 +257,29 @@ sub_subEnum=
 # Group default options
 globalArgumentsGroup="@dgarg"
 
-parse_addmessage()
-{
-	local type="${1}"
-	local message="${2}"
-	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	eval "local c=\${#parser_${type}s[*]}"
-	c=$(expr ${c} + ${parser_startindex})
-	eval "parser_${type}s[${c}]=\"${m}\""
-}
-
 parse_addwarning()
 {
-	parse_addmessage "warning" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_warnings[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_warnings[${c}]="${m}"
 }
 parse_adderror()
 {
-	parse_addmessage "error" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_errors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_errors[${c}]="${m}"
 }
 parse_addfatalerror()
 {
-	parse_addmessage "fatalerror" "${@}"
+	local message="${1}"
+	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
+	local c=${#parser_fatalerrors[*]}
+	c=$(expr ${c} + ${parser_startindex})
+	parser_fatalerrors[${c}]="${m}"
 }
 
 parse_displayerrors()
@@ -471,6 +473,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
 					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -503,6 +506,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if ! ([ "${parser_item}" = "OptionA" ] || [ "${parser_item}" = "ValueB" ] || [ "${parser_item}" = "ItemC" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
@@ -552,6 +556,12 @@ parse_process_option()
 		done
 		parser_index=${parser_itemcount}
 		return ${PARSER_OK}
+	elif [ "${parser_item}" = "-" ]
+	then
+		return ${PARSER_OK}
+	elif [ "${parser_item:0:2}" = "\-" ]
+	then
+		parse_addvalue "${parser_item:1}"
 	elif [ "${parser_item:0:2}" = "--" ] 
 	then
 		parser_option="${parser_item:2}"
@@ -595,6 +605,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			uiArg="${parser_item}"
 			parse_setoptionpresence G_2_ui-only
 			;;
@@ -621,6 +632,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			standardArg="${parser_item}"
 			parse_setoptionpresence G_3_standard-arg
 			;;
@@ -657,6 +669,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -689,6 +702,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
 				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
@@ -733,6 +747,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "rw"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", rw privilege(s) expected for option \"${parser_option}\""
@@ -771,6 +786,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			
 			parse_setoptionpresence G_11_hostname
 			;;
@@ -797,6 +813,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", x privilege(s) expected for option \"${parser_option}\""
@@ -829,6 +846,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = "Option A" ] || [ "${parser_item}" = "Value B" ] || [ "${parser_item}" = "Item C" ] || [ "${parser_item}" = "ItemD with space" ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
@@ -861,6 +879,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nonStrictEnum="${parser_item}"
 			parse_setoptionpresence G_14_non-strict-enum
 			;;
@@ -907,6 +926,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			garg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
 			nestedGroup="garg"
@@ -943,6 +963,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			gsarg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
 			nestedGroup="gsarg"
@@ -979,6 +1000,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			dgarg="${parser_item}"
 			globalArgumentsGroup="dgarg"
 			parse_setoptionpresence G_6_g_2_argument-with-default;parse_setoptionpresence G_6_g
@@ -1020,6 +1042,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			gnarg="${parser_item}"
 			globalArgumentsGroup="nestedExclusiveGroup"
 			nestedExclusiveGroup="gnarg"
@@ -1062,6 +1085,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			gn2arg="${parser_item}"
 			globalArgumentsGroup="nestedExclusiveGroup"
 			nestedExclusiveGroup="gn2arg"
@@ -1077,6 +1101,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#gma[*]}
 			if [ ${parser_ma_total_count} -ge 3 ]
@@ -1101,6 +1126,7 @@ parse_process_option()
 				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				gma[${#gma[*]}]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
@@ -1124,6 +1150,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#gmsa[*]}
 			if [ -z "${parser_item}" ]
@@ -1149,6 +1176,7 @@ parse_process_option()
 				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if ! ([ "${parser_item}" = "FirstOption " ] || [ "${parser_item}" = "Second option" ] || [ "${parser_item}" = "Third option" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
@@ -1178,6 +1206,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#gmaxml[*]}
 			if [ -z "${parser_item}" ]
@@ -1197,6 +1226,7 @@ parse_process_option()
 				
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				gmaxml[${#gmaxml[*]}]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
@@ -1254,6 +1284,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			
 			parse_setoptionpresence G_11_hostname
 			;;
@@ -1280,6 +1311,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "x"
 			then
 				parse_adderror "Invalid path permissions for \"${parser_item}\", x privilege(s) expected for option \"${parser_option}\""
@@ -1312,6 +1344,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = "Option A" ] || [ "${parser_item}" = "Value B" ] || [ "${parser_item}" = "Item C" ] || [ "${parser_item}" = "ItemD with space" ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
@@ -1344,6 +1377,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nonStrictEnum="${parser_item}"
 			parse_setoptionpresence G_14_non-strict-enum
 			;;
@@ -1423,14 +1457,23 @@ ns_issymlink()
 	[ ! -z "${path}" ] && [ -L "${path}" ]
 }
 
-echo "Wait a moment (just for fun!)"
-sleep 2
+#echo "Wait a moment (just for fun!)"
+#sleep 2
 
-if ! parse "${@}"
-then
-	parse_displayerrors
-	exit 1
-fi
+arg_value()
+{
+	local a="${1}"
+	echo "${a}=${!a}"
+}
+
+marg_value()
+{
+	local a="${1}"
+	local i=0
+	echo -n "${a}=("
+	eval "for ((i=0;\$i<\${#${a}[*]};i++)); do [ \${i} -gt 0 ] && echo -n \", \"; echo -n \"\${i}=\${${a}[\${i}]}\"; done"
+	echo ")"
+}
 
 echo "Sample application called with ${#} argument(s): ${@}"
 i=1
@@ -1439,6 +1482,13 @@ do
 	echo $i:${!i}
 	i=$(expr $i + 1)
 done
+
+if ! parse "${@}"
+then
+	parse_displayerrors
+	exit 1
+fi
+
 echo "Sub command: ${parser_subcommand}"
 echo "Values (${#parser_values[*]})"
 for ((i=0;${i}<${#parser_values[*]};i++))
@@ -1451,5 +1501,9 @@ if [ "${parser_subcommand}" == "help" ]
 then
 	([ ${#parser_values[*]} -gt 0 ] && usage "${parser_values[0]}") || usage
 fi
+
+# Display values
+arg_value standardArg
+marg_value gma 
 
 exit 0
