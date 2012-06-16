@@ -4,19 +4,11 @@
 <!-- Program usage text chunks -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="./sh-base.xsl" />
+	<import href="./base.xsl" />
 
 	<param name="prg.usage.indentChar" select="'&#9;'" />
 	<param name="prg.usage.wrap" select="true()" />
 	<param name="prg.usage.lineMaxLength" select="80" />
-
-	<variable name="prg.usage.usageFunctionName">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<text>usage</text>
-			</with-param>
-		</call-template>
-	</variable>
 
 	<template name="prg.usage.typeDisplay">
 		<param name="typeNode" />
@@ -98,12 +90,12 @@
 		<param name="optionNode" select="." />
 		<choose>
 			<when test="$optionNode/prg:names/prg:short">
-				<call-template name="prg.sh.optionName">
+				<call-template name="prg.cliOptionName">
 					<with-param name="nameNode" select="$optionNode/prg:names/prg:short[1]" />
 				</call-template>
 			</when>
 			<when test="$optionNode/prg:names/prg:long">
-				<call-template name="prg.sh.optionName">
+				<call-template name="prg.cliOptionName">
 					<with-param name="nameNode" select="$optionNode/prg:names/prg:long[1]" />
 				</call-template>
 			</when>
@@ -113,7 +105,7 @@
 	<template name="prg.usage.allOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<for-each select="$optionNode/prg:names/prg:short|$optionNode/prg:names/prg:long">
-			<call-template name="prg.sh.optionName">
+			<call-template name="prg.cliOptionName">
 				<with-param name="nameNode" select="." />
 			</call-template>
 			<if test="(position() != last())">

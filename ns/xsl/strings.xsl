@@ -279,15 +279,18 @@
 		</variable>
 
 		<if test="string-length($item) &gt; 0">
+			<!-- <text>(process: </text><value-of select="$item" /><text> of </text><value-of select="$text" /><text>)</text> -->
 			<choose>
 				<when test="string-length($item) &gt; $lineMaxLength">
+					<!-- Text chunk -->
 					<variable name="splititem" select="substring($item, 1, $lineMaxLength)" />
+					<!-- Position of the last breakable char in text chunk -->
 					<variable name="breakPosition">
 						<call-template name="str.lastBreakableCharacterPosition">
 							<with-param name="text" select="$splititem" />
 						</call-template>
 					</variable>
-
+					
 					<variable name="b" select="substring($splititem, $breakPosition, 1)" />
 
 					<variable name="isBlank">
@@ -326,13 +329,18 @@
 						<value-of select="$part" />
 						<value-of select="$endlChar" />
 					</if>
+					
+					<variable name="remaining" select="substring($item, $len + 1)" />
 
 					<!-- remaining part -->
-					<call-template name="str.wrap">
-						<with-param name="text" select="substring($text, $len + 1)" />
-						<with-param name="lineMaxLength" select="$lineMaxLength" />
-						<with-param name="endlChar" select="$endlChar" />
-					</call-template>
+					<if test="string-length($remaining) &gt; 0">
+						<!-- <text>(remain: </text><value-of select="$remaining" /><text>)</text> -->
+						<call-template name="str.wrap">
+							<with-param name="text" select="$remaining" />
+							<with-param name="lineMaxLength" select="$lineMaxLength" />
+							<with-param name="endlChar" select="$endlChar" />
+						</call-template>
+					</if>
 				</when>
 				<otherwise>
 					<value-of select="$item" />
@@ -343,11 +351,15 @@
 		<!-- other lines -->
 		<if test="$hasEndl = true()">
 			<value-of select="$endlChar" />
-			<call-template name="str.wrap">
-				<with-param name="text" select="substring-after($text, $endlChar)" />
-				<with-param name="lineMaxLength" select="$lineMaxLength" />
-				<with-param name="endlChar" select="$endlChar" />
-			</call-template>
+			<variable name="otherLines" select="substring-after($text, $endlChar)" />
+			<if test="string-length($otherLines) &gt; 0">
+				<!-- <text>(continue with: </text><value-of select="$otherLines" /><text>)</text> -->
+				<call-template name="str.wrap">
+					<with-param name="text" select="$otherLines" />
+					<with-param name="lineMaxLength" select="$lineMaxLength" />
+					<with-param name="endlChar" select="$endlChar" />
+				</call-template>
+			</if>
 		</if>
 	</template>
 

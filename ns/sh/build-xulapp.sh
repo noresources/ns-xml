@@ -94,14 +94,6 @@ Usage:
     		through the following url
     		  chrome://<xulAppName>/content/<xulAppName>-user.js
     		  							
-    		  chrome://<xulAppName>/content/<xulAppName>-user.js
-    		  							
-    		The script is copied in the chrome/content directory and is available 
-    		through the following url
-    		  chrome://<xulAppName>/content/<xulAppName>-user.js
-    		  							
-    		  chrome://<xulAppName>/content/<xulAppName>-user.js
-    		  							
     	--resources: Additional resources
     		A list of path or file to add in the application bundle.
     		These items are copied in the chrome/userdata folder of the application 

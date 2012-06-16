@@ -31,30 +31,16 @@
 				<text>)</text>
 			</when>
 			<when test="$optionNode/prg:names/prg:long">
-				<call-template name="prg.sh.optionName">
+				<call-template name="prg.cliOptionName">
 					<with-param name="nameNode" select="$optionNode/prg:names/prg:long[1]" />
 				</call-template>
 			</when>
 			<otherwise>
-				<call-template name="prg.sh.optionName">
+				<call-template name="prg.cliOptionName">
 					<with-param name="nameNode" select="$optionNode/prg:names/prg:short[1]" />
 				</call-template>
 			</otherwise>
 		</choose>
-	</template>
-
-	<template name="prg.sh.optionName">
-		<param name="nameNode" select="." />
-		<choose>
-			<when test="$nameNode/self::prg:long">
-				<text>&#45;</text>
-				<text>&#45;</text>
-			</when>
-			<otherwise>
-				<text>&#45;</text>
-			</otherwise>
-		</choose>
-		<value-of select="$nameNode" />
 	</template>
 
 	<template match="prg:br">

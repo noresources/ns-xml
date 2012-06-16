@@ -6,6 +6,8 @@
 
 	<import href="base.xsl" />
 
+	<variable name="sh.endl" select="'&#10;'" />
+
 	<template name="sh.block">
 		<param name="indent" select="true()" />
 		<param name="content" />

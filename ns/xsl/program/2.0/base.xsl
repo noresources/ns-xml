@@ -23,6 +23,21 @@
 		<value-of select="normalize-space($name)" />
 	</template>
 
+	<!-- Option name as it appears on a command line -->
+	<template name="prg.cliOptionName">
+		<param name="nameNode" select="." />
+		<choose>
+			<when test="$nameNode/self::prg:long">
+				<text>&#45;</text>
+				<text>&#45;</text>
+			</when>
+			<otherwise>
+				<text>&#45;</text>
+			</otherwise>
+		</choose>
+		<value-of select="$nameNode" />
+	</template>
+	
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
 	<template name="prg.optionId">
 		<param name="optionNode" select="." />

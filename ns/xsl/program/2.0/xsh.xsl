@@ -5,7 +5,7 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 
 	<import href="../../languages/bash.xsl" />
-	<import href="usage.chunks.xsl" />
+	<import href="sh-usage.chunks.xsl" />
 	<import href="sh-parser.chunks.xsl" />
 	<import href="sh-parser.functions.xsl" />
 
@@ -22,7 +22,7 @@
 		<!-- Usage function -->
 		<call-template name="sh.functionDefinition">
 			<with-param name="name">
-				<value-of select="$prg.usage.usageFunctionName" />
+				<value-of select="$prg.sh.usage.usageFunctionName" />
 			</with-param>
 			<with-param name="indent" select="false()" />
 			<with-param name="content">
