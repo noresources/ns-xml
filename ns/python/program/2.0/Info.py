@@ -113,10 +113,14 @@ class MultiArgumentOptionInfo(OptionInfo):
     def __init__(self, var):
         OptionInfo.__init__(self, var)
         self.value = []
+        self.min = 1
+        self.max = -1
         
     def append_value(self, value):
         "@todo check min max"
         self.set_present()
+        if self.max > 0 and (len(self.value) >= self.max):
+                return False 
         self.value.append(value)
         return True
     

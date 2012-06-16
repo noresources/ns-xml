@@ -124,6 +124,7 @@ class ParserResultUtil:
                     msg = msg + cls.option_usage(o, 1, usageFlags)
             
         return msg
+
 class GroupOptionResult:
     """A special class to represent a group option result"""
     
@@ -196,7 +197,6 @@ class Parser:
               
             else:
                 if isinstance(context.option, ArgumentOptionInfo):
-                    context.option.set_value(arg)
                     context.unset_current_option()
                     
         elif (context.subcommand == None):
@@ -282,11 +282,11 @@ class Parser:
                         if ((value != None) and (len(value) >= 0)) or isinstance(context.option, SwitchOptionInfo): 
                             self.process_value(programInfo, context, value)
                     else:
-                        context.unset_current_option()
                         if isinstance(context.option, ArgumentOptionInfo):
                             context.set_argument_skipping(True, 1)
                         elif isinstance(context.option, MultiArgumentOptionInfo):
                             context.set_argument_skipping(True, -1)
+                        context.unset_current_option()
                 else:
                     context.error("Invalid option name " + Util.cli_option_name(option))
                                 
@@ -347,6 +347,9 @@ class Parser:
         for o in programInfo.options:
             if o.required and not o.present:
                 context.error("Option " + Util.cli_option_name(o.default_name) + " is required")
+            if isinstance(o, MultiArgumentOptionInfo) and o.present:
+                if len(o.value) < o.min:
+                    context.error("No enough argument given to " + Util.cli_option_name(o.default_name))
                 
         if isinstance(context.subcommand, SubcommandInfo):
             for o in context.subcommand.options:

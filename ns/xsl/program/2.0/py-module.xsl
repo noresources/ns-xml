@@ -191,6 +191,7 @@
 			<text>.required = True</text>
 			<call-template name="endl" />
 		</if>
+		
 		<if test="$optionNode/prg:default">
 			<choose>
 				<when test="$optionNode/self::prg:argument">
@@ -204,6 +205,7 @@
 				<!-- @todo group default -->
 			</choose>
 		</if>
+		
 		<if test="$optionNode/prg:select[@restrict = 'true']">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -214,6 +216,7 @@
 			<text>))</text>
 			<call-template name="endl" />
 		</if>
+		
 		<if test="$optionNode/prg:type/prg:number">
 			<variable name="numberNode" select="$optionNode/prg:type/prg:number" />
 			<value-of select="$indent" />
@@ -239,6 +242,21 @@
 			<text>))</text>
 			<call-template name="endl" />
 		</if>
+		
+		<if test="$optionNode/@min">
+			<value-of select="$indent" />
+			<value-of select="$pyVarName" />
+			<text>.min = </text><value-of select="$optionNode/@min" />
+			<call-template name="endl" />
+		</if>
+		
+		<if test="$optionNode/@max">
+			<value-of select="$indent" />
+			<value-of select="$pyVarName" />
+			<text>.max = </text><value-of select="$optionNode/@max" />
+			<call-template name="endl" />
+		</if>
+		
 		<if test="$optionNode/prg:type/prg:path[@exist = 'true']">
 			<variable name="pathNode" select="$optionNode/prg:type/prg:path" />
 			<value-of select="$indent" />
