@@ -7,6 +7,16 @@
 	<sh:functions>
 		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_realpath'])" />
 		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_relativepath'])" />
+		<sh:function name="filesystempath_to_nmepath">
+			<sh:parameter name="sourceBasePath" />
+			<sh:parameter name="outputBasePath" />
+			<sh:parameter name="path" />
+			<sh:body><![CDATA[
+local output="$(echo "${path#${sourceBasePath}}" | tr -d "/" | tr " " "_")"
+output="${outputBasePath}/${output}"
+echo "${output}"
+			]]></sh:body>
+		</sh:function>
 	</sh:functions>
 	<sh:code><![CDATA[
 scriptFilePath="$(ns_realpath "${0}")"
@@ -71,13 +81,28 @@ if update_item html
 then
 	htmlArticlePath="${rootPath}/doc/html/articles"
 	
-	find "${creolePath}" -name "*.wiki" | while read f
+	for e in wiki jpg png gif
 	do
-		output="${htmlArticlePath}${f#${creolePath}}"
-		output="${output%wiki}html"
-		echo "${output}"
-		mkdir -p "$(dirname "${output}")"
-		nme --easylink "$.html" < "${f}" > "${output}"
+		find "${creolePath}" -name "*.${e}" | while read f
+		do
+			#output="${htmlArticlePath}${f#${creolePath}}"
+			
+			#output="$(echo "${f#${creolePath}}" | tr -d "/")"
+			#output="${htmlArticlePath}/${output}"
+			
+			output="$(filesystempath_to_nmepath "${creolePath}" "${htmlArticlePath}" "${f}")"
+			
+			[ "${e}" == "wiki" ] && output="${output%wiki}html"
+			echo "${output}"
+			mkdir -p "$(dirname "${output}")"
+			if [ "${e}" == "wiki" ]
+			then
+				nme --easylink "$.html" < "${f}" > "${output}"
+				sed --in-place "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
+			else
+				rsync -lprt "${f}" "${output}"
+			fi
+		done
 	done
 fi
 
