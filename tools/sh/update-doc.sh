@@ -487,7 +487,7 @@ then
 	find "${appXshPath}" -name "*.xml" | while read f
 	do
 		b="$(basename "${f}")"
-		xsltproc -o "${outputPath}/${b%xml}wiki" "${creoleXslStylesheet}" "${f}" 
+		xsltproc --xinclude -o "${outputPath}/${b%xml}wiki" "${creoleXslStylesheet}" "${f}" 
 	done
 fi
 
