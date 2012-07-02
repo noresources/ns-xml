@@ -10,7 +10,7 @@ class OptionResultContainer:
 class ParserResultUtil:
     
     @classmethod
-    def get_option_attr(self, o):
+    def get_option_attr(cls, o):
         """Return the name of the variable in a parser result"""
         if len(o.varname) > 0:
             return o.varname
@@ -22,7 +22,7 @@ class ParserResultUtil:
             return None
 
     @classmethod
-    def set_options(self, e, options, root = None):
+    def set_options(cls, e, options, root = None):
         """Fill the OptionResultContainer instance""" 
         r = root
         if r == None:
@@ -133,9 +133,13 @@ class GroupOptionResult:
         self.is_set = info.present
         ParserResultUtil.set_options(self.options, info.options, root)
         if info.type == GroupOptionType.Exclusive:
-            setattr(self, "selected_option", info.selected_option)
             if isinstance(info.selected_option, OptionInfo):
-                setattr(self, "selected_option_name", ParserResultUtil.get_option_attr(info.selected_option))
+                attr = ParserResultUtil.get_option_attr(info.selected_option)
+                setattr(self, "selected_option", getattr(self.options, attr))
+                setattr(self, "selected_option_name", attr)
+            else:
+                setattr(self, "selected_option", None)
+                setattr(self, "selected_option_name", "")
                              
 class SubcommandResult:
     def __init__(self, info):
@@ -196,6 +200,7 @@ class Parser:
                         programInfo.values.append(arg)
               
             else:
+                context.debug("Failed to validate")
                 if isinstance(context.option, ArgumentOptionInfo):
                     context.unset_current_option()
                     

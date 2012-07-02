@@ -526,11 +526,14 @@ defaultCssFile="${rootPath}/resources/css/xsl.doc.html.css"
 [ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
 [ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 
+xsltDocOutputPath="$(ns_realpath "${xsltDocOutputPath}")"
+
 if update_item xsl
 then
 	find "${xslPath}" -name "*.xsl" | while read f
 	do
-		output="${xsltDocOutputPath}${f#${xslPath}}"
+		output="${f#${xslPath}}"
+		output="${xsltDocOutputPath}${output}"
 		output="${output%xsl}html"
 		echo "${output}"
 		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${output}")"

@@ -65,6 +65,8 @@ class NumberValidator(Validator):
         if not math.isnan(self.max) and (v > self.max):
             self.error(ctx, "Argument have to be inferior or equal to " + str(self.max) + ". " + str(v) + " given")
             return False
+        
+        return True
             
 class PathValidator(Validator):
     def __init__(self, typeList, accessString):

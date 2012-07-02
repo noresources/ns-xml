@@ -50,7 +50,7 @@ class OptionInfo:
         self.value = value
         self.set_present()
 
-    def set_present(self, fromOption=None):
+    def set_present(self, fromOption = None):
         self.present = True
         if self.owner:
             self.owner.set_present(self)
@@ -84,7 +84,7 @@ class GroupOptionInfo(OptionInfo):
         self.selected_option = None
         self.type = type
            
-    def set_present(self, fromOption=None):
+    def set_present(self, fromOption = None):
         self.present = True
         if isinstance(fromOption, OptionInfo):
             self.selected_option = fromOption
