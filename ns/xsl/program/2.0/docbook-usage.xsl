@@ -113,6 +113,16 @@
 		</xsl:if>
 	</xsl:template>
 
+	<xsl:template match="prg:br | prg:endl">
+		<xsl:element name="db:para" />
+	</xsl:template>
+	
+	<xsl:template match="prg:block">
+		<xsl:element name="db:blockquote" >
+			<xsl:apply-templates />
+		</xsl:element>
+	</xsl:template>
+
 	<xsl:template match="/prg:program">
 
 		<xsl:variable name="programNode" select="." />
