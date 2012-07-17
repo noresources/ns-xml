@@ -66,7 +66,9 @@
 							<value-of select="normalize-space(.)" />
 							<choose>
 								<when test="position() = (last() - 1)">
-									<text> or </text>
+									<text> </text>
+									<value-of select="$prg.usage.str.or" />
+									<text> </text>
 								</when>
 								<when test="position() != last()">
 									<text>, </text>
@@ -102,6 +104,7 @@
 		</choose>
 	</template>
 
+	<!-- Display all option's names like they could appear on the command line -->
 	<template name="prg.usage.allOptionNameDisplay">
 		<param name="optionNode" select="." />
 		<for-each select="$optionNode/prg:names/prg:short|$optionNode/prg:names/prg:long">
@@ -338,7 +341,24 @@
 		</param>
 		<variable name="inGroup" select="$optionsNode/../self::prg:group" />
 
-		<for-each select="$optionsNode/*">
+		<!-- Group all short-named switches -->
+		<if test="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
+			<text>-</text>
+			<for-each select="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
+				<apply-templates select="./prg:names/prg:short[1]" />
+			</for-each>
+			<text> </text>
+		</if>
+		
+		<if test="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
+			<text>[-</text>
+			<for-each select="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
+				<apply-templates select="./prg:names/prg:short[1]" />
+			</for-each>
+			<text>] </text>
+		</if>
+
+		<for-each select="$optionsNode/prg:switch[not(prg:names/prg:short)] | $optionsNode/prg:argument | $optionsNode/prg:multiargument | $optionsNode/prg:group">
 			<if test="not(@required = 'true') and not($inGroup)">
 				<text>[</text>
 			</if>

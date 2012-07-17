@@ -15,7 +15,7 @@ case "${1}" in
 xsh | sh | shell)
 cat << EOFSCUSAGE
 xsh: Build a XUL application which will run a Shell script defined through the bash XML schema
-Usage: build-xulapp xsh -s <path> [-p]
+Usage: build-xulapp xsh [-p] -s <path>
 With:
   -s, --shell: XML shell file
   	A xml file following the bash XML schema
@@ -53,10 +53,10 @@ fi
 cat << EOFUSAGE
 build-xulapp: Build (or update) a xul application launcher
 Usage: 
-  build-xulapp <subcommand [subcommand option(s)]> [--help] -o <path> [-x <path>] [-t <...>] [-u] [-S] [-W <number> -H <number> -d] [-j <path> --resources <path [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative -n]
+  build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
-      options: -s <path> [-p]
+      options: [-p] -s <path>
     python, py: Build a XUL application which will run a python script built with the program XML schema
       options: -p <path> [-m <...>]
     command, cmd: Build a XUL application which will run an existing command

@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use XML description file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-S] [-p] [-d] [--help] -o <path>
+  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [--help] -o <path>
   With:
     ns-xml source path options
     	--ns-xml-path: ns-xml source path
@@ -764,7 +764,7 @@ fi
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
-	programVersion="$(xsltproc "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+	programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
 	#echo "Program schema version ${programVersion}"
 	
 	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]

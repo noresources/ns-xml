@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 build-pyscript: Python script builder which use XML description file to automatically generate command line processing and help messages
 Usage: 
-  build-pyscript -p <path> [-m <...>] [-u] -x <path> [-S] [-d] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
+  build-pyscript [-uSd] -p <path> [-m <...>] -x <path> [--help] [--ns-xml-path <path> --ns-xml-path-relative]
   With:
     -p, --python: Python script path
     	Location of the Python script body. The parser module will be created at the 

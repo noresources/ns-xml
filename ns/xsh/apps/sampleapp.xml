@@ -25,6 +25,22 @@
 			</prg:names>
 			<prg:ui mode="disabled"/>
 		</prg:switch>
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>
+					verboseProgram
+				</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>verbose</prg:long>
+				<prg:long>bleeeeh</prg:long>
+				<prg:short>v</prg:short>
+			</prg:names>
+			<prg:ui mode="disabled"/>
+			<prg:documentation>
+				<prg:abstract>More text!</prg:abstract>
+			</prg:documentation>
+		</prg:switch>
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>uiArg</prg:variable>

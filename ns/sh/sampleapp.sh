@@ -45,7 +45,7 @@ fi
 cat << EOFUSAGE
 sampleapp: Sample application
 Usage: 
-  sampleapp <subcommand [subcommand option(s)]> [--help] [--ui-only <...>] [--standard-arg <...>] [-s] [--switch-alone-in-group] [(--basic-argument <...> --string-argument <string> | --argument-with-default <...> | (--numeric-argument <number> | --float-argument <number>))] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
+  sampleapp <subcommand [subcommand option(s)]> [-s] [--help] [--ui-only <...>] [--standard-arg <...>] [--switch-alone-in-group] [(--basic-argument <...> --string-argument <string> | --argument-with-default <...> | (--numeric-argument <number> | --float-argument <number>))] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
   With subcommand:
     sub: A sub-command (sub)
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]

@@ -7,21 +7,13 @@
 	<import href="../../languages/wikicreole.xsl" />
 	<import href="../../languages/wikicreole-extensions.xsl" />
 	<import href="usage.chunks.xsl" />
+	<import href="usage.strings.xsl" />
 
 	<output method="text" encoding="utf-8" />
 
 	<!-- <param name="prg.usage.indentChar" select="':'"/> -->
 	<!-- <param name="prg.usage.lineMaxLength" select="40" /> -->
 	
-	<param name="prg.usage.creole.authorLabel">
-		<text>Author</text>
-	</param>
-	<param name="prg.usage.creole.versionLabel">
-		<text>Version</text>
-	</param>
-	<param name="prg.usage.creole.usageLabel">
-		<text>Usage</text>
-	</param>
 	<param name="prg.usage.creole.subcommandInlineUsageLabel">
 		<text>subcommand [subcommand option(s)]</text>
 	</param>
@@ -47,18 +39,18 @@
 			<with-param name="content" select="normalize-space(prg:documentation/prg:abstract)" />
 		</call-template>
 		<call-template name="creole.simpleDefinition">
-			<with-param name="title" select="$prg.usage.creole.authorLabel" />
+			<with-param name="title" select="$prg.usage.str.author" />
 			<with-param name="definition" select="normalize-space(prg:author)" />
 		</call-template>
 		<call-template name="creole.simpleDefinition">
-			<with-param name="title" select="$prg.usage.creole.versionLabel" />
+			<with-param name="title" select="$prg.usage.str.version" />
 			<with-param name="definition" select="normalize-space(prg:version)" />
 		</call-template>
 		<call-template name="endl" />
 
 		<call-template name="creole.heading">
 			<with-param name="level" select="2" />
-			<with-param name="content" select="$prg.usage.creole.usageLabel" />
+			<with-param name="content" select="$prg.usage.str.usage" />
 		</call-template>
 
 		<!-- Inline usage -->
@@ -146,7 +138,7 @@
 				</if>
 				<if test="prg:options">
 					<call-template name="creole.heading">
-						<with-param name="content" select="$prg.usage.creole.usageLabel" />
+						<with-param name="content" select="$prg.usage.str.usage" />
 						<with-param name="level" select="5" />
 					</call-template>
 

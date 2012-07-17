@@ -59,7 +59,7 @@ fi
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
-	programVersion="$(xsltproc "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+	programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
 	#echo "Program schema version ${programVersion}"
 	
 	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
