@@ -5,6 +5,7 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="./base.xsl" />
+	<import href="usage.strings.xsl" />
 
 	<param name="prg.usage.indentChar" select="'&#9;'" />
 	<param name="prg.usage.wrap" select="true()" />
