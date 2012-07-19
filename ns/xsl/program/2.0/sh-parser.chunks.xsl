@@ -957,10 +957,7 @@
 										<text> == "-" ]</text>
 									</with-param>
 									<with-param name="then">
-										<text>return </text>
-										<call-template name="sh.var">
-											<with-param name="name" select="$prg.sh.parser.vName_OK" />
-										</call-template>
+										<text>break</text>
 									</with-param>
 								</call-template>
 								

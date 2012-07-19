@@ -5,7 +5,6 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:db="http://docbook.org/ns/docbook">
 
 	<xsl:import href="usage.chunks.xsl" />
-	<xsl:import href="usage.strings.xsl" />
 
 	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 

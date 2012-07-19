@@ -3,9 +3,6 @@
 
 <!-- Program usage text strings (english) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
-
-	<import href="./base.xsl" />
-
 	<variable name="prg.usage.str.or" select="'or'" />
 	<variable name="prg.usage.str.author" select="'Author'" />
 	<variable name="prg.usage.str.version" select="'Version'" />

@@ -4,7 +4,7 @@
 <!-- Program usage text chunks -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="./base.xsl" />
+	<import href="base.xsl" />
 	<import href="usage.strings.xsl" />
 
 	<param name="prg.usage.indentChar" select="'&#9;'" />
@@ -431,4 +431,27 @@
 			</choose>
 		</for-each>
 	</template>
+	
+	<!-- Default behavior for documentation blocks -->
+	
+	<template match="prg:br">
+		<call-template name="endl" />
+	</template>
+
+	<template match="prg:endl">
+		<call-template name="endl" />
+	</template>
+
+	<template match="prg:block">
+		<call-template name="endl" />
+		<call-template name="str.prependLine">
+			<with-param name="prependedText" select="'&#9;'" />
+			<with-param name="text">
+				<apply-templates />
+			</with-param>
+			<with-param name="wrap" select="true()" />
+			<with-param name="lineMaxLength" select="80" />
+		</call-template>
+	</template>
+	
 </stylesheet>

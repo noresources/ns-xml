@@ -5,9 +5,9 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 
 	<import href="../../languages/bash.xsl" />
-	<import href="sh-usage.chunks.xsl" />
-	<import href="sh-parser.chunks.xsl" />
+		<import href="sh-parser.chunks.xsl" />
 	<import href="sh-parser.functions.xsl" />
+	<import href="sh-usage.chunks.xsl" />
 
 	<output method="text" encoding="utf-8" />
 
@@ -16,7 +16,7 @@
 	</param>
 
 	<!-- Help string -->
-	<template name="prg.sh.usage.programHelp">
+	<template name="prg.sh.usage.programUsage">
 		<param name="programNode" select="." />
 
 		<!-- Usage function -->
@@ -80,7 +80,7 @@
 													<text>With</text>
 													<text>:</text>
 													<call-template name="code.block">
-														<with-param name="indentChar" select="$prg.sh.indentChar" />
+														<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 														<with-param name="addFinalEndl" select="false()" />
 														<with-param name="content">
 															<call-template name="prg.usage.optionListDescription">
@@ -90,7 +90,7 @@
 															<!-- Program documentation & details -->
 															<if test="./prg:documentation/prg:details">
 																<call-template name="code.block">
-																	<with-param name="indentChar" select="$prg.sh.indentChar" />
+																	<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 																	<with-param name="addFinalEndl" select="false()" />
 																	<with-param name="content">
 																		<apply-templates select="./prg:documentation/prg:details" />
@@ -127,7 +127,7 @@
 				<call-template name="endl" />
 				<text>Usage: </text>
 				<call-template name="code.block">
-					<with-param name="indentChar" select="$prg.sh.indentChar" />
+					<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 					<with-param name="content">
 						<value-of select="$programNode/prg:name" />
 
@@ -151,7 +151,7 @@
 							<call-template name="endl" />
 							<text>With subcommand:</text>
 							<call-template name="code.block">
-								<with-param name="indentChar" select="$prg.sh.indentChar" />
+								<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 								<with-param name="addFinalEndl" select="false()" />
 								<with-param name="content">
 									<for-each select="$programNode/prg:subcommands/prg:subcommand">
@@ -166,7 +166,7 @@
 										<!-- Option descritption -->
 										<if test="./prg:options">
 											<call-template name="code.block">
-												<with-param name="indentChar" select="$prg.sh.indentChar" />
+												<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 												<with-param name="addFinalEndl" select="false()" />
 												<with-param name="content">
 													<text>options: </text>
@@ -194,7 +194,7 @@
 							</if>
 							<text>:</text>
 							<call-template name="code.block">
-								<with-param name="indentChar" select="$prg.sh.indentChar" />
+								<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 								<with-param name="addFinalEndl" select="false()" />
 								<with-param name="content">
 									<call-template name="prg.usage.optionListDescription">
@@ -210,7 +210,7 @@
 				<!-- @todo use str.prependLine + wrap -->
 				<if test="$programNode/prg:documentation/prg:details">
 					<call-template name="code.block">
-						<with-param name="indentChar" select="$prg.sh.indentChar" />
+						<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 						<with-param name="addFinalEndl" select="false()" />
 						<with-param name="content">
 							<apply-templates select="$programNode/prg:documentation/prg:details" />
@@ -272,7 +272,7 @@
 							<text>Program help</text>
 						</with-param>
 					</call-template>
-					<call-template name="prg.sh.usage.programHelp">
+					<call-template name="prg.sh.usage.programUsage">
 						<with-param name="programNode" select="$programNode" />
 					</call-template>
 					<call-template name="endl" />

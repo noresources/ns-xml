@@ -95,7 +95,7 @@ fi
 prefixParam=""
 if ${prefixSubcommandBoundVariableName}
 then
-	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
 fi
 
 if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"

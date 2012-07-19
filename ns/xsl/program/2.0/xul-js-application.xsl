@@ -4,9 +4,9 @@
 <!-- Javascript code base of a xul application based on program schema -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="./xul-base.xsl" />
 	<import href="../../languages/javascript.xsl" />
-
+	<import href="./xul-base.xsl" />
+	
 	<output method="text" encoding="utf-8" />
 
 	<template match="text()">

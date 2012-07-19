@@ -6,8 +6,6 @@
 
 	<import href="sh-parser.base.xsl" />
 	
-	<!-- Variable and function names -->
-	
 	<variable name="prg.sh.parser.vName_shell">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">

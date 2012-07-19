@@ -6,14 +6,16 @@
 
 	<import href="usage.chunks.xsl" />
 
+	<param name="prg.sh.usage.indentChar">
+		<text>&#32;&#32;</text>
+	</param>
+	
 	<template match="prg:block">
 		<call-template name="endl" />
 		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="$prg.sh.indentChar" />
+			<with-param name="prependedText" select="$prg.sh.usage.indentChar" />
 			<with-param name="text">
-				<text>&lt;</text>
 				<call-template name="prg.usage.descriptionDisplay" />
-				<text>&gt;</text>
 			</with-param>
 			<!-- 
 			<with-param name="wrap" select="true()" />

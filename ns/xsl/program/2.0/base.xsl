@@ -11,7 +11,7 @@
 	<param name="prg.debug" select="false()" />
 
 	<!-- Strip spaces -->
-	<template match="prg:variable|prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:license|prg:version|">
+	<template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:license|prg:version|">
 		<value-of select="normalize-space(.)" />
 	</template>
 	

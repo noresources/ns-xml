@@ -4,13 +4,9 @@
 <!-- Basic templates and variable used in most of shell generation stylesheets -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="base.xsl" />
 	<import href="../../languages/shellscript.xsl" />
-
-	<param name="prg.sh.indentChar">
-		<text>&#32;&#32;</text>
-	</param>
-
+	<import href="base.xsl" />
+	
 	<!-- Display of on option name using the UNIX conventions -->
 	<!-- - Single minus for mono-character options -->
 	<!-- - Double minus for multi-characters options -->
@@ -41,26 +37,6 @@
 				</call-template>
 			</otherwise>
 		</choose>
-	</template>
-
-	<template match="prg:br">
-		<call-template name="endl" />
-	</template>
-
-	<template match="prg:endl">
-		<call-template name="endl" />
-	</template>
-
-	<template match="prg:block">
-		<call-template name="endl" />
-		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="$prg.sh.indentChar" />
-			<with-param name="text">
-				<apply-templates />
-			</with-param>
-			<with-param name="wrap" select="true()" />
-			<with-param name="lineMaxLength" select="80" />
-		</call-template>
 	</template>
 
 </stylesheet>

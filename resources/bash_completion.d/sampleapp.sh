@@ -162,7 +162,7 @@ __sampleapp_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--help --ui-only --standard-arg --simpleswitch --switch-alone-in-group --basic-argument --string-argument --argument-with-default --numeric-argument --float-argument --existing-file-argument --rw-folder-argument --mixed-fskind-argument --multi-argument --multi-select-argument --multi-xml --hostname --simple-pattern-sh --strict-enum --non-strict-enum -s -H -P -E -e"
+	local globalargs="--help --verbose --bleeeeh --ui-only --standard-arg --simpleswitch --switch-alone-in-group --tlxg1 --tlxg2 --basic-argument --string-argument --argument-with-default --numeric-argument --float-argument --existing-file-argument --rw-folder-argument --mixed-fskind-argument --multi-argument --multi-select-argument --multi-xml --hostname --simple-pattern-sh --strict-enum --non-strict-enum -v -s -H -P -E -e"
 	local args="${globalargs}"
 	
 	# Subcommand proposal
@@ -235,6 +235,38 @@ __sampleapp_bashcompletion()
 			
 			;;
 		"standard-arg")
+			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+			done
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+			done
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"tlxg1")
+			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+			done
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+			done
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"tlxg2")
 			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
 			do

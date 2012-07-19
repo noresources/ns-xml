@@ -7,7 +7,6 @@
 	<import href="../../languages/wikicreole.xsl" />
 	<import href="../../languages/wikicreole-extensions.xsl" />
 	<import href="usage.chunks.xsl" />
-	<import href="usage.strings.xsl" />
 
 	<output method="text" encoding="utf-8" />
 

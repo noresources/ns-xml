@@ -34,7 +34,7 @@ fi
 prefixParam=""
 if ${xsh_prefixSubcommandBoundVariableName}
 then
-	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
 fi
 
 # Validate bash scheam

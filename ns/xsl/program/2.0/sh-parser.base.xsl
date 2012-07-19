@@ -6,7 +6,7 @@
 
 	<import href="sh-base.xsl" />
 	
-	<param name="prg.sh.parser.prefixSubcommandOptionVariable" select="false()" />
+	<param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
 	
 	<template name="prg.sh.parser.boundVariableName">
 		<param name="variableNode" />
@@ -17,7 +17,7 @@
 				<value-of select="normalize-space($variableNode)" />
 			</when>
 			<when test="$node/self::prg:subcommand">
-				<if test="$prg.sh.parser.prefixSubcommandOptionVariable">
+				<if test="$prg.sh.parser.prefixSubcommandOptionVariable = 'yes'">
 					<value-of select="normalize-space($node/prg:name)" />
 					<text>_</text>
 				</if>

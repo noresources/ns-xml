@@ -19,7 +19,7 @@ With:
   --switch, --sc-switch: Switch of the sub command
   	The bound variable name can be the same as another subcommand variable or 
   	one of the global option. In this case, you have to set the prg.sh.parser.
-  	prefixSubcommandOptionVariable xslt parameter to true() (the default)
+  	prefixSubcommandOptionVariable xslt parameter to 'yes'
   --sc-existing-file-argument: Sub command file argument
   --sc-strict-enum: Sub command argument (strict set)	
   	The argument value have to be one of the following:	
@@ -45,7 +45,7 @@ fi
 cat << EOFUSAGE
 sampleapp: Sample application
 Usage: 
-  sampleapp <subcommand [subcommand option(s)]> [-s] [--help] [--ui-only <...>] [--standard-arg <...>] [--switch-alone-in-group] [(--basic-argument <...> --string-argument <string> | --argument-with-default <...> | (--numeric-argument <number> | --float-argument <number>))] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
+  sampleapp <subcommand [subcommand option(s)]> [-vs] [--help] [--ui-only <...>] [--standard-arg <...>] [--switch-alone-in-group] [(--tlxg1 <...> | --tlxg2 <...>)] [(--basic-argument <...> --string-argument <string> | --argument-with-default <...> | (--numeric-argument <number> | --float-argument <number>))] [--existing-file-argument <path>] [--rw-folder-argument <path>] [--mixed-fskind-argument <path>] [--multi-argument <...  [ ... ]> --multi-select-argument <...  [ ... ]> --multi-xml <path [ ... ]>] [-H <...>] [-P <path>] [-E <...>] [-e <...>]
   With subcommand:
     sub: A sub-command (sub)
       options: [--switch] [--sc-existing-file-argument <path>] [--sc-strict-enum <...>]
@@ -53,6 +53,7 @@ Usage:
     version:
   With global options:
     --help: 
+    --verbose, --bleeeeh, -v: More text!
     --ui-only: A single argument option automatically set in the UI
     --standard-arg: Basic argument option
     	This option will accept any kind of argument
@@ -62,6 +63,10 @@ Usage:
     	--switch-alone-in-group: Another switch
     		This swith is in a group with only one option. So, the group is hidden and 
     		the option appears at the same level
+    
+    Exclusive option group
+    	--tlxg1: ArgGA
+    	--tlxg2: ArgG2
     
     Exclusive option group
     	Nested group (basic type arguments)
@@ -154,6 +159,7 @@ parser_index=${parser_startindex}
 # Switch options
 
 displayHelp=false
+verboseProgram=false
 switch=false
 grpSwitch=false
 sub_switch=false
@@ -161,6 +167,8 @@ sub_switch=false
 
 uiArg=
 standardArg=
+tlxg1=
+tlxg2=
 garg=
 gsarg=
 dgarg="Default value"
@@ -501,6 +509,16 @@ parse_process_option()
 			displayHelp=true
 			parse_setoptionpresence G_1_help
 			;;
+		verbose | bleeeeh)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			verboseProgram=true
+			parse_setoptionpresence G_2_verbose
+			;;
 		ui-only)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -526,7 +544,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			uiArg="${parser_item}"
-			parse_setoptionpresence G_2_ui-only
+			parse_setoptionpresence G_3_ui-only
 			;;
 		standard-arg)
 			if [ ! -z "${parser_optiontail}" ]
@@ -553,7 +571,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			standardArg="${parser_item}"
-			parse_setoptionpresence G_3_standard-arg
+			parse_setoptionpresence G_4_standard-arg
 			;;
 		simpleswitch)
 			if [ ! -z "${parser_optiontail}" ]
@@ -563,7 +581,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			switch=true
-			parse_setoptionpresence G_4_simpleswitch
+			parse_setoptionpresence G_5_simpleswitch
 			;;
 		existing-file-argument)
 			if [ ! -z "${parser_optiontail}" ]
@@ -596,7 +614,7 @@ parse_process_option()
 			fi
 			
 			gfarg="${parser_item}"
-			parse_setoptionpresence G_7_existing-file-argument
+			parse_setoptionpresence G_9_existing-file-argument
 			;;
 		rw-folder-argument)
 			if [ ! -z "${parser_optiontail}" ]
@@ -641,7 +659,7 @@ parse_process_option()
 			fi
 			
 			gFarg="${parser_item}"
-			parse_setoptionpresence G_8_rw-folder-argument
+			parse_setoptionpresence G_10_rw-folder-argument
 			;;
 		mixed-fskind-argument)
 			if [ ! -z "${parser_optiontail}" ]
@@ -680,7 +698,7 @@ parse_process_option()
 			fi
 			
 			gmfarg="${parser_item}"
-			parse_setoptionpresence G_9_mixed-fskind-argument
+			parse_setoptionpresence G_11_mixed-fskind-argument
 			;;
 		hostname)
 			if [ ! -z "${parser_optiontail}" ]
@@ -707,7 +725,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			
-			parse_setoptionpresence G_11_hostname
+			parse_setoptionpresence G_13_hostname
 			;;
 		simple-pattern-sh)
 			if [ ! -z "${parser_optiontail}" ]
@@ -740,7 +758,7 @@ parse_process_option()
 			fi
 			
 			
-			parse_setoptionpresence G_12_simple-pattern-sh
+			parse_setoptionpresence G_14_simple-pattern-sh
 			;;
 		strict-enum)
 			if [ ! -z "${parser_optiontail}" ]
@@ -773,7 +791,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			strictEnum="${parser_item}"
-			parse_setoptionpresence G_13_strict-enum
+			parse_setoptionpresence G_15_strict-enum
 			;;
 		non-strict-enum)
 			if [ ! -z "${parser_optiontail}" ]
@@ -800,7 +818,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nonStrictEnum="${parser_item}"
-			parse_setoptionpresence G_14_non-strict-enum
+			parse_setoptionpresence G_16_non-strict-enum
 			;;
 		switch-alone-in-group)
 			# Group checks
@@ -812,7 +830,65 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			grpSwitch=true
-			parse_setoptionpresence G_5_g_1_switch-alone-in-group;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_6_g_1_switch-alone-in-group;parse_setoptionpresence G_6_g
+			;;
+		tlxg1)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			tlxg1="${parser_item}"
+			parse_setoptionpresence G_7_g_1_tlxg1;parse_setoptionpresence G_7_g
+			;;
+		tlxg2)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			tlxg2="${parser_item}"
+			parse_setoptionpresence G_7_g_2_tlxg2;parse_setoptionpresence G_7_g
 			;;
 		basic-argument)
 			# Group checks
@@ -849,7 +925,7 @@ parse_process_option()
 			garg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
 			nestedGroup="garg"
-			parse_setoptionpresence G_6_g_1_g_1_basic-argument;parse_setoptionpresence G_6_g_1_g;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_8_g_1_g_1_basic-argument;parse_setoptionpresence G_8_g_1_g;parse_setoptionpresence G_8_g
 			;;
 		string-argument)
 			# Group checks
@@ -886,7 +962,7 @@ parse_process_option()
 			gsarg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
 			nestedGroup="gsarg"
-			parse_setoptionpresence G_6_g_1_g_2_string-argument;parse_setoptionpresence G_6_g_1_g;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_8_g_1_g_2_string-argument;parse_setoptionpresence G_8_g_1_g;parse_setoptionpresence G_8_g
 			;;
 		argument-with-default)
 			# Group checks
@@ -922,7 +998,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			dgarg="${parser_item}"
 			globalArgumentsGroup="dgarg"
-			parse_setoptionpresence G_6_g_2_argument-with-default;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_8_g_2_argument-with-default;parse_setoptionpresence G_8_g
 			;;
 		numeric-argument)
 			# Group checks
@@ -965,7 +1041,7 @@ parse_process_option()
 			gnarg="${parser_item}"
 			globalArgumentsGroup="nestedExclusiveGroup"
 			nestedExclusiveGroup="gnarg"
-			parse_setoptionpresence G_6_g_3_g_1_numeric-argument;parse_setoptionpresence G_6_g_3_g;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_8_g_3_g_1_numeric-argument;parse_setoptionpresence G_8_g_3_g;parse_setoptionpresence G_8_g
 			;;
 		float-argument)
 			# Group checks
@@ -1008,7 +1084,7 @@ parse_process_option()
 			gn2arg="${parser_item}"
 			globalArgumentsGroup="nestedExclusiveGroup"
 			nestedExclusiveGroup="gn2arg"
-			parse_setoptionpresence G_6_g_3_g_2_float-argument;parse_setoptionpresence G_6_g_3_g;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_8_g_3_g_2_float-argument;parse_setoptionpresence G_8_g_3_g;parse_setoptionpresence G_8_g
 			;;
 		multi-argument)
 			# Group checks
@@ -1040,7 +1116,7 @@ parse_process_option()
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
 				then
-					return ${PARSER_OK}
+					break
 				fi
 				
 				parser_index=$(expr ${parser_index} + 1)
@@ -1057,7 +1133,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			parse_setoptionpresence G_10_g_1_multi-argument;parse_setoptionpresence G_10_g
+			parse_setoptionpresence G_12_g_1_multi-argument;parse_setoptionpresence G_12_g
 			;;
 		multi-select-argument)
 			# Group checks
@@ -1090,7 +1166,7 @@ parse_process_option()
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
 				then
-					return ${PARSER_OK}
+					break
 				fi
 				
 				parser_index=$(expr ${parser_index} + 1)
@@ -1113,7 +1189,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			parse_setoptionpresence G_10_g_2_multi-select-argument;parse_setoptionpresence G_10_g
+			parse_setoptionpresence G_12_g_2_multi-select-argument;parse_setoptionpresence G_12_g
 			;;
 		multi-xml)
 			# Group checks
@@ -1140,7 +1216,7 @@ parse_process_option()
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
 				then
-					return ${PARSER_OK}
+					break
 				fi
 				
 				parser_index=$(expr ${parser_index} + 1)
@@ -1157,7 +1233,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			parse_setoptionpresence G_10_g_3_multi-xml;parse_setoptionpresence G_10_g
+			parse_setoptionpresence G_12_g_3_multi-xml;parse_setoptionpresence G_12_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -1176,9 +1252,13 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		v)
+			verboseProgram=true
+			parse_setoptionpresence G_2_verbose
+			;;
 		s)
 			switch=true
-			parse_setoptionpresence G_4_simpleswitch
+			parse_setoptionpresence G_5_simpleswitch
 			;;
 		H)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1205,7 +1285,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			
-			parse_setoptionpresence G_11_hostname
+			parse_setoptionpresence G_13_hostname
 			;;
 		P)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1238,7 +1318,7 @@ parse_process_option()
 			fi
 			
 			
-			parse_setoptionpresence G_12_simple-pattern-sh
+			parse_setoptionpresence G_14_simple-pattern-sh
 			;;
 		E)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1271,7 +1351,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			strictEnum="${parser_item}"
-			parse_setoptionpresence G_13_strict-enum
+			parse_setoptionpresence G_15_strict-enum
 			;;
 		e)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1298,7 +1378,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nonStrictEnum="${parser_item}"
-			parse_setoptionpresence G_14_non-strict-enum
+			parse_setoptionpresence G_16_non-strict-enum
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -1342,11 +1422,11 @@ parse()
 		fi
 	done
 	
-	# Set default option for group G_6_g (if not already set)
+	# Set default option for group G_8_g (if not already set)
 	if [ "${globalArgumentsGroup:0:1}" = "@" ]
 	then
 		globalArgumentsGroup="dgarg"
-		parse_setoptionpresence G_6_g
+		parse_setoptionpresence G_8_g
 	fi
 	
 	parse_checkrequired

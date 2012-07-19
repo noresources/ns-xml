@@ -109,6 +109,36 @@
 		<prg:group type="exclusive">
 			<prg:documentation>
 				<prg:abstract>Exclusive option group</prg:abstract>
+				<prg:details>This group can be defined in gengetopt (top level, exclusive, switch-less)</prg:details>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>tlxg1</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ArgGA</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>tlxg1</prg:long>
+					</prg:names>
+				</prg:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>tlxg2</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>ArgG2</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>tlxg2</prg:long>
+					</prg:names>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
+		<prg:group type="exclusive">
+			<prg:documentation>
+				<prg:abstract>Exclusive option group</prg:abstract>
 			</prg:documentation>
 			<prg:databinding>
 				<prg:variable>globalArgumentsGroup</prg:variable>
@@ -441,7 +471,7 @@ some values in autocompletion but will accept any other values</prg:details>
 						<prg:abstract>Switch of the sub command</prg:abstract>
 						<prg:details>The bound variable name can be the same as another subcommand variable 
 or one of the global option. In this case, you have to set the 
-prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to true() (the default)</prg:details>
+prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to 'yes'</prg:details>
 					</prg:documentation>
 				</prg:switch>
 				<prg:argument>

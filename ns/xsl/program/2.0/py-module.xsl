@@ -4,8 +4,8 @@
 <!-- Create the Python module to manage the program options -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="base.xsl" />
 	<import href="../../languages/base.xsl" />
+	<import href="base.xsl" />
 	<import href="usage.chunks.xsl" />
 
 	<output method="text" encoding="utf-8" />

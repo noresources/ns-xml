@@ -93,7 +93,6 @@ Usage:
     		The script is copied in the chrome/content directory and is available 
     		through the following url
     		  chrome://<xulAppName>/content/<xulAppName>-user.js
-    		  							
     	--resources: Additional resources
     		A list of path or file to add in the application bundle.
     		These items are copied in the chrome/userdata folder of the application 
@@ -1017,7 +1016,7 @@ parse_process_option()
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
 				then
-					return ${PARSER_OK}
+					break
 				fi
 				
 				parser_index=$(expr ${parser_index} + 1)
@@ -1449,7 +1448,7 @@ build_xsh()
 	prefixParam=""
 	if ${xsh_prefixSubcommandBoundVariableName}
 	then
-		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable \"true()\""
+		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
 	fi
 	
 	# Validate bash scheam
