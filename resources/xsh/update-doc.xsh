@@ -7,6 +7,7 @@
 	<sh:functions>
 		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_realpath'])" />
 		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_relativepath'])" />
+		<xi:include href="../../ns/xsh/lib/text/sed.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function)" />
 		<sh:function name="filesystempath_to_nmepath">
 			<sh:parameter name="sourceBasePath" />
 			<sh:parameter name="outputBasePath" />
@@ -77,7 +78,7 @@ then
 	done
 fi
 
-if update_item html
+if update_item html && which nme 1>/dev/null 2>&1
 then
 	htmlArticlePath="${rootPath}/doc/html/articles"
 	
@@ -98,7 +99,7 @@ then
 			if [ "${e}" == "wiki" ]
 			then
 				nme --easylink "$.html" < "${f}" > "${output}"
-				sed --in-place "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
+				ns_sed_inplace "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
 			else
 				rsync -lprt "${f}" "${output}"
 			fi

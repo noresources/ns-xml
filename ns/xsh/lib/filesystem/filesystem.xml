@@ -52,8 +52,6 @@ do
 	sub="${newsub}"
 	c="$(expr ${c} + 1)"
 done
-#echo c: ${c}
-#echo sub: ${sub}
 res="."
 for ((i=0;${i}<${c};i++))
 do

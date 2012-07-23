@@ -92,6 +92,11 @@ parse_displayerrors()
 parse_pathaccesscheck()
 {
 	local file="${1}"
+	if [ ! -a "${file}" ]
+	then
+		return 0
+	fi
+	
 	local accessString="${2}"
 	while [ ! -z "${accessString}" ]
 	do
@@ -274,7 +279,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -d "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -d "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -313,7 +318,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -f "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -409,8 +414,6 @@ ns_relativepath()
 		sub="${newsub}"
 		c="$(expr ${c} + 1)"
 	done
-	#echo c: ${c}
-	#echo sub: ${sub}
 	res="."
 	for ((i=0;${i}<${c};i++))
 	do
@@ -419,6 +422,41 @@ ns_relativepath()
 	res="${res}${from#${sub}}"
 	res="${res#./}"
 	echo "${res}"
+}
+ns_sed_inplace()
+{
+	local regex="${1}"
+	shift
+	# sedForm
+	# 1: modern linux => sed --in-place
+	# 2: Mac OS X 10.5 => sed -i ""
+	local sedForm=1
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		local macOSXVersion="$(sw_vers -productVersion)"
+		if [ ! -z "${macOSXVersion}" ]
+		then
+			local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
+			local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
+			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -le 5 ]
+			then
+				sedForm=2
+			fi
+		fi	
+	fi
+	
+	while [ $# -gt 0 ]
+	do	
+		if [ ${sedForm} -eq 1 ]
+		then
+			sed --in-place "${regex}" "${1}"
+		elif [ ${sedForm} -eq 2 ]
+		then
+			sed -i "" "${regex}" "${1}"
+		fi
+		
+		shift
+	done
 }
 filesystempath_to_nmepath()
 {
@@ -432,7 +470,6 @@ filesystempath_to_nmepath()
 	output="${outputBasePath}/${output}"
 	echo "${output}"
 }
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -491,7 +528,7 @@ then
 	done
 fi
 
-if update_item html
+if update_item html && which nme 1>/dev/null 2>&1
 then
 	htmlArticlePath="${rootPath}/doc/html/articles"
 	
@@ -512,7 +549,7 @@ then
 			if [ "${e}" == "wiki" ]
 			then
 				nme --easylink "$.html" < "${f}" > "${output}"
-				sed --in-place "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
+				ns_sed_inplace "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
 			else
 				rsync -lprt "${f}" "${output}"
 			fi

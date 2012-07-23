@@ -61,7 +61,7 @@ do
 		fi
 	fi
 	
-	programVersion="$(xsltproc "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
+	programVersion="$(xsltproc --xinclude "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
 	#echo "Program schema version ${programVersion}"
 	
 	echo "Update bash completion for ${bn}.sh (${bashCompletionOutputPath}/${bn}.sh)"		
