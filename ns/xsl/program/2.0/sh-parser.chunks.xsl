@@ -118,9 +118,9 @@
 			<with-param name="name" select="$variableName" />
 			<with-param name="quoted" select="true()" />
 			<with-param name="start" select="1" />
-			</call-template>
+		</call-template>
 	</template>
-	
+
 	<template name="prg.sh.parser.argumentPreprocess">
 		<param name="optionNode" select="." />
 		<param name="onError" />
@@ -207,7 +207,7 @@
 			<call-template name="endl" />
 			<value-of select="$prg.sh.parser.vName_optiontail" />
 			<text>=""</text>
-			
+
 			<call-template name="endl" />
 			<call-template name="prg.sh.parser.unescapeValue" />
 		</if>
@@ -242,10 +242,10 @@
 		<call-template name="endl" />
 		<value-of select="$prg.sh.parser.vName_optiontail" />
 		<text>=""</text>
-		
+
 		<call-template name="endl" />
 		<call-template name="prg.sh.parser.unescapeValue" />
-		
+
 	</template>
 
 	<template name="prg.sh.parser.optionSetValue">
@@ -407,7 +407,8 @@
 			</call-template>
 
 			<!-- Exclusive clause -->
-			<if test="$groupOptionNode[@type = 'exclusive'] 
+			<if
+				test="$groupOptionNode[@type = 'exclusive'] 
 						and $groupOptionNode/prg:databinding/prg:variable 
 						and $optionNode/prg:databinding/prg:variable">
 				<!-- if ! ([ -z "${configureOptionMode}" ] || [ "${configureOptionMode}" = "configureOptionString" ] || [ "${configureOptionMode:0:1}" = "@" ]) -->
@@ -546,7 +547,9 @@
 
 		<call-template name="sh.if">
 			<with-param name="condition">
-				<text>! (</text>
+				<text>[ -a "</text>
+				<value-of select="$value" />
+				<text>" ]  &amp;&amp; ! (</text>
 				<for-each select="$kindsNode/*">
 					<if test="position() != 1">
 						<text> || </text>
@@ -657,7 +660,7 @@
 						<with-param name="currentItem" select="$currentItem" />
 					</call-template>
 				</if>
-				<if test="$pathNode/prg:kinds and ($pathNode/@exist or $pathNode/@access)">
+				<if test="$pathNode/prg:kinds and (($pathNode/@exist = 'true') or $pathNode/@access)">
 					<call-template name="prg.sh.parser.pathTypeKindsCheck">
 						<with-param name="value" select="$value" />
 						<with-param name="kindsNode" select="$pathNode/prg:kinds" />
@@ -960,7 +963,7 @@
 										<text>break</text>
 									</with-param>
 								</call-template>
-								
+
 								<call-template name="endl" />
 								<call-template name="prg.sh.parser.indexIncrement" />
 								<call-template name="endl" />
@@ -970,7 +973,7 @@
 								<!-- Checks -->
 								<call-template name="prg.sh.parser.unescapeValue" />
 								<call-template name="endl" />
-								
+
 								<call-template name="prg.sh.parser.optionValueTypeCheck">
 									<with-param name="node" select="$optionNode" />
 									<with-param name="onError" select="$onError" />

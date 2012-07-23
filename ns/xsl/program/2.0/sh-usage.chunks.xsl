@@ -10,6 +10,10 @@
 		<text>&#32;&#32;</text>
 	</param>
 	
+	<template match="prg:details/text()">
+		<value-of select="normalize-space(.)" />
+	</template>
+	
 	<template match="prg:block">
 		<call-template name="endl" />
 		<call-template name="str.prependLine">

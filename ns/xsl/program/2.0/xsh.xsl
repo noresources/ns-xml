@@ -2,10 +2,11 @@
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
 <!-- Build a shell script by combining program option parsing & usage from the XML program schema and shell code and functions from the XML bash schema -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
+<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program"
+	xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 
 	<import href="../../languages/bash.xsl" />
-		<import href="sh-parser.chunks.xsl" />
+	<import href="sh-parser.chunks.xsl" />
 	<import href="sh-parser.functions.xsl" />
 	<import href="sh-usage.chunks.xsl" />
 
@@ -55,13 +56,13 @@
 											</with-param>
 											<with-param name="content">
 												<text>cat &lt;&lt; EOFSCUSAGE</text>
-												<call-template name="endl" />
+												<call-template name="unixEndl" />
 												<value-of select="./prg:name" />
 												<text>: </text>
 												<call-template name="prg.usage.descriptionDisplay">
 													<with-param name="textNode" select="./prg:documentation/prg:abstract" />
 												</call-template>
-												<call-template name="endl" />
+												<call-template name="unixEndl" />
 
 												<text>Usage: </text>
 												<value-of select="../../prg:name" />
@@ -75,7 +76,7 @@
 															<text> </text>
 														</with-param>
 													</call-template>
-													<call-template name="endl" />
+													<call-template name="unixEndl" />
 
 													<text>With</text>
 													<text>:</text>
@@ -100,7 +101,7 @@
 														</with-param>
 													</call-template>
 												</if>
-												<call-template name="endl" />
+												<call-template name="unixEndl" />
 
 												<text>EOFSCUSAGE</text>
 											</with-param>
@@ -108,14 +109,14 @@
 									</for-each>
 								</with-param>
 							</call-template>
-							<call-template name="endl" />
+							<call-template name="unixEndl" />
 							<text>return 0</text>
 						</with-param>
 					</call-template>
 				</if>
 
 				<text>cat &lt;&lt; EOFUSAGE</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<value-of select="$programNode/prg:name" />
 				<text>: </text>
@@ -124,7 +125,7 @@
 				<call-template name="prg.usage.descriptionDisplay">
 					<with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>Usage: </text>
 				<call-template name="code.block">
 					<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
@@ -148,7 +149,7 @@
 
 						<!-- subcommands descriptions -->
 						<if test="$programNode/prg:subcommands">
-							<call-template name="endl" />
+							<call-template name="unixEndl" />
 							<text>With subcommand:</text>
 							<call-template name="code.block">
 								<with-param name="indentChar" select="$prg.sh.usage.indentChar" />
@@ -179,7 +180,7 @@
 												</with-param>
 											</call-template>
 										</if>
-										<call-template name="endl" />
+										<call-template name="unixEndl" />
 									</for-each>
 								</with-param>
 							</call-template>
@@ -187,7 +188,7 @@
 
 						<!-- Option descritption -->
 						<if test="$programNode/prg:options">
-							<call-template name="endl" />
+							<call-template name="unixEndl" />
 							<text>With</text>
 							<if test="$programNode/prg:subcommands">
 								<text> global options</text>
@@ -216,13 +217,22 @@
 							<apply-templates select="$programNode/prg:documentation/prg:details" />
 						</with-param>
 					</call-template>
-					<call-template name="endl" />
+					<call-template name="unixEndl" />
 				</if>
 				<text>EOFUSAGE</text>
 			</with-param>
 		</call-template>
 	</template>
 
+	<template match="sh:code">
+		<call-template name="str.trim">
+			<with-param name="text">
+				<apply-templates />
+			</with-param>
+		</call-template>
+		<call-template name="unixEndl" />
+	</template>
+	
 	<template match="/sh:program">
 		<text>#!</text>
 		<choose>
@@ -234,7 +244,7 @@
 			</otherwise>
 		</choose>
 
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 
 		<choose>
 			<when test="./sh:info">
@@ -244,25 +254,25 @@
 						<call-template name="sh.comment">
 							<with-param name="content">
 								<text>####################################</text>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<if test="$programNode/prg:license">
 									<value-of select="$programNode/prg:license" />
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 								<if test="$programNode/prg:author">
 									<text>Author: </text>
 									<value-of select="$programNode/prg:author" />
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 								<if test="$programNode/prg:version">
 									<text>Version: </text>
 									<value-of select="$programNode/prg:version" />
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 								<if test="$programNode/prg:documentation/prg:abstract">
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 									<apply-templates select="$programNode/prg:documentation/prg:abstract" />
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 							</with-param>
 						</call-template>
@@ -275,7 +285,7 @@
 					<call-template name="prg.sh.usage.programUsage">
 						<with-param name="programNode" select="$programNode" />
 					</call-template>
-					<call-template name="endl" />
+					<call-template name="unixEndl" />
 					<call-template name="sh.comment">
 						<with-param name="content">
 							<text>Program parameter parsing</text>
@@ -284,7 +294,7 @@
 					<call-template name="prg.sh.parser.main">
 						<with-param name="programNode" select="$programNode" />
 					</call-template>
-					<call-template name="endl" />
+					<call-template name="unixEndl" />
 				</if>
 			</when>
 		</choose>

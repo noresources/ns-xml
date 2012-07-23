@@ -117,6 +117,11 @@ parse_displayerrors()
 parse_pathaccesscheck()
 {
 	local file="${1}"
+	if [ ! -a "${file}" ]
+	then
+		return 0
+	fi
+	
 	local accessString="${2}"
 	while [ ! -z "${accessString}" ]
 	do
@@ -286,7 +291,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -f "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -362,7 +367,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -f "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -489,7 +494,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -f "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -559,7 +564,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
-			if ! ([ -f "${parser_item}" ])
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
 			then
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
@@ -714,7 +719,6 @@ xml_validate()
 	
 	return 0
 }
-
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -779,4 +783,3 @@ if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPat
 then
 	error 4 "Failed to create Program module"
 fi
-

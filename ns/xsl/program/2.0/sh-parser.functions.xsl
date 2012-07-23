@@ -27,7 +27,7 @@
 			</with-param>
 			<with-param name="content">
 				<text>local message="${1}"</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>local m="</text>
 				<text>[</text>
 				<call-template name="sh.var">
@@ -49,13 +49,13 @@
 					</with-param>
 				</call-template>
 				<text>"</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<text>local c=</text>
 				<call-template name="sh.arrayLength">
 					<with-param name="name" select="$tableName" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<text>c=$(expr </text>
 				<call-template name="sh.var">
@@ -68,7 +68,7 @@
 					<with-param name="name" select="$prg.sh.parser.vName_startindex" />
 				</call-template>
 				<text>)</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				
 				<value-of select="$tableName" />
@@ -148,11 +148,11 @@
 				<text>exit 1</text>
 			</with-param>
 		</call-template>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 
 		<!-- displayerror -->
 		<call-template name="prg.sh.parser.displayErrorFunction" />
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 
 		<!-- parser_debug -->
 		<if test="$prg.debug">
@@ -163,7 +163,7 @@
 				</with-param>
 			</call-template>
 		</if>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 
 	</template>
 
@@ -180,13 +180,25 @@
 					<with-param name="name" select="1" />
 					<with-param name="quoted" select="true()" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
+				
+				<!-- We can't check access on non-existing file -->
+				<call-template name="sh.if">
+					<with-param name="condition">
+						<text>[ ! -a "${file}" ]</text>
+					</with-param>
+					<with-param name="then">
+						<text>return 0</text>
+					</with-param>
+				</call-template>
+				<call-template name="unixEndl" />
+				
 				<text>local accessString=</text>
 				<call-template name="sh.var">
 					<with-param name="name" select="2" />
 					<with-param name="quoted" select="true()" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<call-template name="sh.while">
 					<with-param name="condition">
 						<text>[ ! -z </text>
@@ -215,7 +227,7 @@
 							<with-param name="quoted" />
 						</call-template>
 						<text> ] || return 1;</text>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 						<text>accessString=</text>
 						<call-template name="sh.var">
 							<with-param name="name">
@@ -226,7 +238,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return 0</text>
 			</with-param>
 		</call-template>
@@ -270,7 +282,7 @@
 						<text>local idPart="$(echo </text>
 						<value-of select="$requiredVar" />
 						<text> | cut -f 1 -d":" )"</text>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 
 						<call-template name="sh.if">
 							<with-param name="condition">
@@ -304,13 +316,13 @@
 										<text>""</text>
 									</with-param>
 								</call-template>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<text>return 0</text>
 							</with-param>
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return 1</text>
 			</with-param>
 		</call-template>
@@ -323,7 +335,7 @@
 						<text>First round: set default values</text>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<variable name="requiredVar">
 					<call-template name="sh.var">
@@ -369,15 +381,15 @@
 						<text>local todoPart="$(echo </text>
 						<value-of select="$requiredVar" />
 						<text> | cut -f 3 -d":" )"</text>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 						<text>[ -z "${todoPart}" ] || eval "${todoPart}"</text>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 
 				<text>local c=0</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<call-template name="sh.incrementalFor">
 					<with-param name="init" select="$init" />
 					<with-param name="limit" select="$limit" />
@@ -388,7 +400,7 @@
 								<text>local displayPart="$(echo </text>
 								<value-of select="$requiredVar" />
 								<text> | cut -f 2 -d":" )"</text>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<call-template name="sh.arrayAppend">
 									<with-param name="name" select="$prg.sh.parser.vName_errors" />
 									<with-param name="value">
@@ -401,7 +413,7 @@
 										<text>"</text>
 									</with-param>
 								</call-template>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 
 								<call-template name="sh.varincrement">
 									<with-param name="name">
@@ -412,7 +424,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return </text>
 				<call-template name="sh.var">
 					<with-param name="name">
@@ -430,7 +442,7 @@
 			<with-param name="name" select="$prg.sh.parser.fName_checkminmax" />
 			<with-param name="content">
 				<text>local errorCount=0</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.comment">
 					<with-param name="content">
@@ -475,7 +487,7 @@
 									</with-param>
 								</call-template>
 
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<call-template name="sh.varincrement">
 									<with-param name="name">
 										<text>errorCount</text>
@@ -486,7 +498,7 @@
 					</if>
 				</for-each>
 
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return ${errorCount}</text>
 			</with-param>
 		</call-template>
@@ -499,10 +511,10 @@
 			</with-param>
 			<with-param name="content">
 				<text>local ref="${1}"</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<text>shift 1</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.while">
 					<with-param name="condition">
@@ -520,7 +532,7 @@
 						<text>shift</text>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return 1</text>
 			</with-param>
 		</call-template>
@@ -537,10 +549,10 @@
 				<call-template name="sh.arrayLength">
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<text>local value="${1}"</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.if">
 					<with-param name="condition">
@@ -563,7 +575,7 @@
 										<text>"Positional argument not allowed"</text>
 									</with-param>
 								</call-template>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<text>return </text>
 								<value-of select="$prg.sh.parser.var_ERROR" />
 							</otherwise>
@@ -597,7 +609,7 @@
 															<text>"</text>
 														</with-param>
 													</call-template>
-													<call-template name="endl" />
+													<call-template name="unixEndl" />
 													<text>return </text>
 													<value-of select="$prg.sh.parser.var_ERROR" />
 												</otherwise>
@@ -670,7 +682,7 @@
 					</with-param>
 					<with-param name="quoted" select="true()" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<if test="$prg.debug">
 					<value-of select="$prg.sh.parser.fName_debug" />
@@ -691,7 +703,7 @@
 						<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
 					</call-template>
 					<text>)"</text>
-					<call-template name="endl" />
+					<call-template name="unixEndl" />
 				</if>
 
 				<call-template name="sh.if">
@@ -721,7 +733,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.case">
 					<with-param name="case">
@@ -775,7 +787,7 @@
 						</for-each>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return </text>
 				<call-template name="sh.var">
 					<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
@@ -804,7 +816,7 @@
 				<with-param name="name" select="$prg.sh.parser.vName_option" />
 			</call-template>
 			<text>\""</text>
-			<call-template name="endl" />
+			<call-template name="unixEndl" />
 			<text>return </text>
 			<value-of select="$prg.sh.parser.var_ERROR" />
 		</variable>
@@ -830,7 +842,7 @@
 						<if test="$prg.debug">
 							<value-of select="$prg.sh.parser.fName_debug" />
 							<text> "Subcommand option check"</text>
-							<call-template name="endl" />
+							<call-template name="unixEndl" />
 						</if>
 
 						<call-template name="sh.if">
@@ -842,7 +854,7 @@
 								<if test="$prg.debug">
 									<value-of select="$prg.sh.parser.fName_debug" />
 									<text> "Subcommand option parsing success"</text>
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 								<text>return </text>
 								<call-template name="sh.var">
@@ -867,7 +879,7 @@
 								<if test="$prg.debug">
 									<value-of select="$prg.sh.parser.fName_debug" />
 									<text> "End of items"</text>
-									<call-template name="endl" />
+									<call-template name="unixEndl" />
 								</if>
 								<text>return </text>
 								<call-template name="sh.var">
@@ -877,7 +889,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<!-- get current item -->
 				<value-of select="$prg.sh.parser.vName_item" />
@@ -891,8 +903,8 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.if">
 					<with-param name="condition">
@@ -910,7 +922,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<if test="$prg.debug">
 					<value-of select="$prg.sh.parser.fName_debug" />
@@ -931,7 +943,7 @@
 						<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
 					</call-template>
 					<text>)"</text>
-					<call-template name="endl" />
+					<call-template name="unixEndl" />
 				</if>
 				
 				<!-- End of options -->
@@ -941,12 +953,12 @@
 					<with-param name="quoted" select="true()" />
 				</call-template>
 				<text> = "--" ]</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>then</text>
 				<call-template name="code.block">
 					<with-param name="content">
 						<call-template name="prg.sh.parser.copyValues" />
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 						<text>return </text>
 						<call-template name="sh.var">
 							<with-param name="name" select="$prg.sh.parser.vName_OK" />
@@ -961,7 +973,7 @@
 					<with-param name="quoted" select="true()" />
 				</call-template>
 				<text> = "-" ]</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>then</text>
 				<call-template name="code.block">
 					<with-param name="content">
@@ -980,7 +992,7 @@
 					<with-param name="length" select="2" />
 				</call-template>
 				<text> = "\-" ]</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>then</text>
 				<call-template name="code.block">
 					<with-param name="content">
@@ -1031,7 +1043,7 @@
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
 				</call-template>
 				<text> -eq 0 ]</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>then</text>
 				<call-template name="code.block">
 					<with-param name="content">
@@ -1094,7 +1106,7 @@
 					</with-param>
 				</call-template>
 				<text>fi</text>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>return </text>
 				<call-template name="sh.var">
 					<with-param name="name" select="$prg.sh.parser.vName_OK" />
@@ -1127,7 +1139,7 @@
 							<with-param name="name" select="0" />
 							<with-param name="quoted" select="true()" />
 						</call-template>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 
 						<call-template name="sh.if">
 							<with-param name="condition">
@@ -1140,7 +1152,7 @@
 							</with-param>
 							<with-param name="then">
 								<call-template name="prg.sh.parser.indexIncrement" />
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<value-of select="$prg.sh.parser.vName_subindex" />
 								<text>=0</text>
 							</with-param>
@@ -1152,8 +1164,8 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				<call-template name="endl" />
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
+				<call-template name="unixEndl" />
 
 				<!-- Set group default options -->
 				<for-each select="$programNode//prg:group[prg:default]">
@@ -1170,7 +1182,7 @@
 						<text># Set default option for group </text>
 						<value-of select="$groupNodeId" />
 						<text> (if not already set)</text>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 						<call-template name="sh.if">
 							<with-param name="condition">
 								<text>[ "${</text>
@@ -1182,23 +1194,23 @@
 								<text>="</text>
 								<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 								<text>"</text>
-								<call-template name="endl" />
+								<call-template name="unixEndl" />
 								<value-of select="$prg.sh.parser.fName_setoptionpresence" />
 								<text> </text>
 								<value-of select="$groupNodeId" />
 							</with-param>
 						</call-template>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 					</if>
 				</for-each>
 
 				<!-- Check required options -->
 				<value-of select="$prg.sh.parser.fName_checkrequired" />
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<!-- Check multiargument min attribute -->
 				<value-of select="$prg.sh.parser.fName_checkminmax" />
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<!-- Return error count -->
 				<variable name="errorCount">
@@ -1209,7 +1221,7 @@
 						</with-param>
 					</call-template>
 				</variable>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<text>local </text>
 				<value-of select="$errorCount" />
@@ -1217,7 +1229,7 @@
 				<call-template name="sh.arrayLength">
 					<with-param name="name" select="$prg.sh.parser.vName_errors" />
 				</call-template>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 
 				<call-template name="sh.if">
 					<with-param name="condition">

@@ -328,7 +328,7 @@
 						<text>[ ! -z "${access}" ]</text>
 					</with-param>
 					<with-param name="do">
-						<text>res="${res} -perm /u=${access:0:1},g=${access:0:1},o==${access:0:1}"</text>
+						<text>res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"</text>
 						<call-template name="endl" />
 						<text>access="${access:1}"</text>
 					</with-param>
