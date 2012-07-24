@@ -1555,6 +1555,9 @@ then
 	macOSXArchitecture="$(uname -m)"
 fi
 
+defaultWindowWidth=${windowWidth}
+defaultWindowHeight=${windowHeight}
+
 if ! parse "${@}"
 then
 	if ${displayHelp}
@@ -1788,8 +1791,8 @@ fi
 info " - Building UI layout"
 #The xul for the main window
 xsltOptions="--xinclude --stringparam prg.xul.appName ${xulAppName}"
-[ -z "${windowWidth}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowWidth ${windowWidth}"
-[ -z "${windowHeight}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowHeight ${windowHeight}"
+[ -z "${windowWidth}" ] || [ "${defaultWindowWidth}" = "${windowWidth}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowWidth ${windowWidth}"
+[ -z "${windowHeight}" ] || [ "${defaultWindowHeight}" = "${windowHeight}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowHeight ${windowHeight}"
  
 xsltOptions="${xsltOptions} --stringparam prg.xul.platform ${targetPlatform}"
  
