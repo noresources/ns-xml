@@ -224,7 +224,7 @@
 				}
 				catch (e)
 				{
-					alert("itemarrangementbuttonbox constructor error: " + e);
+					//alert("itemarrangementbuttonbox constructor error: " + e);
 					return;
 				}
 				

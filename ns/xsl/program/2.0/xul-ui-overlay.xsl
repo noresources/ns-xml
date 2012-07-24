@@ -26,7 +26,7 @@
 					<xsl:attribute name="key">W</xsl:attribute>
 					<xsl:attribute name="modifiers">accel</xsl:attribute>
 					<xsl:attribute name="oncommand">
-						<xsl:text>alert('close'); window.close();</xsl:text>
+						<xsl:text>window.close();</xsl:text>
 					</xsl:attribute>
 				</xsl:element>
 				<xsl:element name="xul:key">
