@@ -8,10 +8,11 @@
 		<prg:abstract>Test application (multiargument behavior)</prg:abstract>
 	</prg:documentation>
 	<prg:options>
-		<!-- Switch -->
+		<!-- Switch A -->
 		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
-		<!-- Argument -->
+		<!-- Argument B -->
 		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+		
 		<prg:multiargument id="prg.unittest.option.multiargC">
 			<prg:databinding>
 				<prg:variable>multiargC</prg:variable>

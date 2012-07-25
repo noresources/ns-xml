@@ -52,12 +52,18 @@ do
 	fi
 done
 
+uniqueApp="${1}"
+uniqueTest="${2}"
+
 find "${testPathBase}" -mindepth 1 -maxdepth 1 -type d | sort | while read d
 do
 	if [ -f "${d}/xml/program.xml" ]
 	then
-		echo "${d}"
 		app="$(basename "${d}")"
+		
+		[ ! -z "${uniqueApp}" ] && [ "${app}" != "${uniqueApp}" ] && continue 
+		
+		echo "${d}"
 		
 		xmlDescription="${d}/xml/program.xml"
 		

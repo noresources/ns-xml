@@ -2,15 +2,19 @@
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<output method="text" encoding="utf-8" />
-	<param name="interpreter"><text>python</text></param>	
-	<include href="../../ns/xsl/languages/base.xsl"/>
-		
+	<param name="interpreter">
+		<text>python</text>
+	</param>
+	<include href="../../ns/xsl/languages/base.xsl" />
+
 	<template match="prg:databinding/prg:variable">
 		<value-of select="normalize-space(.)" />
 	</template>
-	
+
 	<template match="/">
-		<text>#!/usr/bin/env </text><value-of select="$interpreter"/><text><![CDATA[
+		<text>#!/usr/bin/env </text>
+		<value-of select="$interpreter" />
+		<text><![CDATA[
 import sys
 import Program
 
@@ -49,9 +53,9 @@ else:
 		<!-- Global args -->
 		<if test="/prg:program/prg:options">
 			<variable name="root" select="/prg:program/prg:options" />
-			<apply-templates select="$root//prg:switch | $root//prg:argument | $root//prg:multiargument" />
+			<apply-templates select="$root//prg:switch | $root//prg:argument | $root//prg:multiargument | .//prg:group" />
 		</if>
-		
+
 		<for-each select="/prg:program/prg:subcommands/*">
 			<if test="./prg:options">
 				<text>if r.subcommand and r.subcommand.name == "</text>
@@ -59,12 +63,12 @@ else:
 				<text>":</text>
 				<call-template name="code.block">
 					<with-param name="content">
-						<apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument" />
-					</with-param>	
+						<apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument | .//prg:group" />
+					</with-param>
 				</call-template>
 			</if>
 		</for-each>
-		
+
 	</template>
 
 	<template name="prg.unittest.py.variablePrefix">
@@ -81,9 +85,10 @@ else:
 			</when>
 		</choose>
 	</template>
-	
+
 	<template name="prg.py.unittest.variableNameTree">
 		<param name="node" />
+		<param name="leaf" select="true()" />
 		<choose>
 			<when test="$node/self::prg:subcommand">
 				<text>r.subcommand.options.</text>
@@ -91,13 +96,17 @@ else:
 			<when test="$node/self::prg:program">
 				<text>r.options.</text>
 			</when>
-			<when test="$node/..">
+			<when test="$node/../..">
 				<call-template name="prg.py.unittest.variableNameTree">
-					<with-param name="node" select="$node/.." />
+					<with-param name="node" select="$node/../.." />
+					<with-param name="leaf" select="false()" />
 				</call-template>
 			</when>
-		</choose>		
+		</choose>
 		<apply-templates select="$node/prg:databinding/prg:variable" />
+		<if test="$node/self::prg:group and not($leaf)">
+			<text>.options.</text>
+		</if>
 	</template>
 
 	<template match="//prg:switch">
@@ -139,6 +148,23 @@ else:
 				<with-param name="node" select="." />
 			</call-template>
 			<text>)&#10;</text>
+		</if>
+	</template>
+
+	<template match="//prg:group">
+		<if test="./prg:databinding/prg:variable">
+			<text>print "</text>
+			<call-template name="prg.unittest.py.variablePrefix" />
+			<apply-templates select="./prg:databinding/prg:variable" />
+			<text>="</text>
+			<if test="./@type = 'exclusive'">
+				<text> + u.argument_to_string(</text>
+				<call-template name="prg.py.unittest.variableNameTree">
+					<with-param name="node" select="." />
+				</call-template>
+				<text>.selected_option_name)</text>
+			</if>
+			<text>&#10;</text>
 		</if>
 	</template>
 </stylesheet>

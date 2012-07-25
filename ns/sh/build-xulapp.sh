@@ -1791,6 +1791,8 @@ fi
 info " - Building UI layout"
 #The xul for the main window
 xsltOptions="--xinclude --stringparam prg.xul.appName ${xulAppName}"
+# Do not force width and height if it was not set by the user
+# The XUL XSLT stylesheets are made to use the same default values as build-xulapp 
 [ -z "${windowWidth}" ] || [ "${defaultWindowWidth}" = "${windowWidth}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowWidth ${windowWidth}"
 [ -z "${windowHeight}" ] || [ "${defaultWindowHeight}" = "${windowHeight}" ] || xsltOptions="${xsltOptions} --param prg.xul.windowHeight ${windowHeight}"
  

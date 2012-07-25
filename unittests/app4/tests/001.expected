@@ -1,4 +1,4 @@
-CLI: "sub", "-c", "abc", "def", "ghi", "This should be ok"
+CLI: "sub", "-d", "abc", "def", "ghi", "This should be ok"
 Value count: 3
 Values: "def", "ghi", "This should be ok"
 Error count: 0

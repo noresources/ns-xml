@@ -290,7 +290,9 @@ class Parser:
                         if isinstance(context.option, ArgumentOptionInfo):
                             context.set_argument_skipping(True, 1)
                         elif isinstance(context.option, MultiArgumentOptionInfo):
-                            context.set_argument_skipping(True, -1)
+                            "Skip one argument or more ?"
+                            """context.set_argument_skipping(True, -1)"""
+                            context.set_argument_skipping(True, 1)
                         context.unset_current_option()
                 else:
                     context.error("Invalid option name " + Util.cli_option_name(option))
@@ -325,7 +327,9 @@ class Parser:
                                     context.set_argument_skipping(True, 1)
                                 elif isinstance(context.option, MultiArgumentOptionInfo):
                                     "Ignore all subsequent arguments (until a new option is found)"
-                                    context.set_argument_skipping(True, -1)
+                                    "Skip one argument or more ?"
+                                    """context.set_argument_skipping(True, -1)"""
+                                    context.set_argument_skipping(True, 1)
                                 context.unset_current_option()
                             "Forget remaining characters in any case"
                             break

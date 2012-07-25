@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<prg:name>app4</prg:name>
+	<prg:name>app5</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
-		<prg:abstract>Test application (subcommand and multiargument behavior)</prg:abstract>
+		<prg:abstract>Test application (multi argument features)</prg:abstract>
 	</prg:documentation>
 	<prg:options>
-		<prg:argument id="argumentF">
+		<prg:argument id="prg.unittest.option.argumentF">
 			<prg:databinding>
 				<prg:variable>argumentF</prg:variable>
 			</prg:databinding>
@@ -25,7 +25,7 @@
 				<prg:option>ghi jkl</prg:option>
 			</prg:select>
 		</prg:argument>	
-		<prg:argument id="argumentG">
+		<prg:argument id="prg.unittest.option.argumentG">
 			<prg:databinding>
 				<prg:variable>argumentG</prg:variable>
 			</prg:databinding>
@@ -42,7 +42,7 @@
 				<prg:option>stu vwx</prg:option>
 			</prg:select>
 		</prg:argument>
-		<prg:multiargument id="multiArgumentH" min="2" max="3">
+		<prg:multiargument id="prg.unittest.option.multiArgumentH" min="2" max="3">
 			<prg:databinding>
 				<prg:variable>multiArgumentH</prg:variable>
 			</prg:databinding>
@@ -60,7 +60,7 @@
 			</prg:select>
 		</prg:multiargument>
 		
-		<prg:multiargument id="multiArgumentI">
+		<prg:multiargument id="prg.unittest.option.multiArgumentI">
 			<prg:databinding>
 				<prg:variable>multiArgumentI</prg:variable>
 			</prg:databinding>

@@ -19,22 +19,22 @@
 				<prg:alias>subcommand-alias</prg:alias>
 			</prg:aliases>
 			<prg:options>
-				<prg:argument>
+				<prg:argument id="prg.unittest.option.argumentD">
 					<prg:databinding>
 						<prg:variable>argumentD</prg:variable>
 					</prg:databinding>
 					<prg:names>
 						<prg:long>argument-d</prg:long>
-						<prg:short>c</prg:short>
+						<prg:short>d</prg:short>
 					</prg:names>
 				</prg:argument>
-				<prg:switch>
+				<prg:switch id="prg.unittest.option.switchE">
 					<prg:databinding>
 						<prg:variable>switchE</prg:variable>
 					</prg:databinding>
 					<prg:names>
 						<!-- 'a' overrides the global name -->
-						<prg:short>a</prg:short>
+						<prg:short>e</prg:short>
 						<prg:long>switch-e</prg:long>
 					</prg:names>
 				</prg:switch>

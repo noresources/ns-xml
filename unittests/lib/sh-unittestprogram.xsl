@@ -60,7 +60,7 @@ echo "Subcommand: ${parser_subcommand}"
 		<!-- Global args -->
 		<if test="/prg:program/prg:options">
 			<variable name="root" select="/prg:program/prg:options" />
-			<apply-templates select="$root//prg:switch | $root//prg:argument | $root//prg:multiargument" />
+			<apply-templates select="$root//prg:switch | $root//prg:argument | $root//prg:multiargument | .//prg:group" />
 		</if>
 		
 		<for-each select="/prg:program/prg:subcommands/*">
@@ -69,7 +69,7 @@ echo "Subcommand: ${parser_subcommand}"
 				<apply-templates select="prg:name" />
 				<text>" ]; then</text>
 				<text>&#10;</text>
-				<apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument" />
+				<apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument | .//prg:group" />
 				<text>fi</text>
 				<text>&#10;</text>
 			</if>
@@ -93,4 +93,11 @@ echo "Subcommand: ${parser_subcommand}"
 			<text>echo </text><apply-templates select="prg:databinding/prg:variable"/>=${<apply-templates select="prg:databinding/prg:variable"/>[*]}<text>&#10;</text>
 		</if>	
 	</template>
+	
+	<template match="//prg:group">
+		<if test="./prg:databinding/prg:variable">
+			<text>echo </text><apply-templates select="prg:databinding/prg:variable"/>=${<apply-templates select="prg:databinding/prg:variable"/>}<text>&#10;</text>
+		</if>	
+	</template>
+	
 </stylesheet>
