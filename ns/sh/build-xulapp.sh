@@ -19,7 +19,7 @@ Usage: build-xulapp xsh [-p] -s <path>
 With:
   -s, --shell: XML shell file
   	A xml file following the bash XML schema
-  	The file may include a XML program definition
+  	The file may include a program interface XML definition
   --prefix-sc-variables, -p: Prefix subcommand options bound variable names
   	This will prefix all subcommand options bound variable name by the 
   	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
@@ -64,7 +64,7 @@ Usage:
   With global options:
     --help: Display program usage
     -o, --output: Output folder path for the XUL application structure
-    -x, --xml-description: Program XML description file
+    -x, --xml-description: Program program interface XML definition file
     	Location of the XML program description file. Expect a valid XML file 
     	following the http://xsd.nore.fr/program schema
     --target-platform, --target, -t: Target platform	

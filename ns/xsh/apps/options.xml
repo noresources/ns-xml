@@ -89,6 +89,19 @@
 				<prg:kinds>
 					<prg:file />
 				</prg:kinds>
+				<prg:patterns restrict="true">
+					<prg:pattern>
+						<prg:name>XML file</prg:name>
+						<prg:rules>
+							<prg:rule>
+								<prg:endWith>xml</prg:endWith>
+							</prg:rule>
+							<prg:rule>
+								<prg:endWith>XML</prg:endWith>
+							</prg:rule>
+						</prg:rules>
+					</prg:pattern>
+				</prg:patterns>
 			</prg:path>
 		</prg:type>
 	</prg:argument>

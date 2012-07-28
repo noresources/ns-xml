@@ -103,7 +103,7 @@ __new_xsh_bashcompletion()
 			
 			;;
 		"output" | "path" | "o")
-			__new_xsh_appendfsitems "${current}" $(__new_xsh_getfindpermoptions rw) -type d 
+			__new_xsh_appendfsitems "${current}" $(__new_xsh_getfindpermoptions rw)  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -111,7 +111,7 @@ __new_xsh_bashcompletion()
 			
 			;;
 		"ns-xml-path")
-			__new_xsh_appendfsitems "${current}" -type d 
+			__new_xsh_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

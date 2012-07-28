@@ -6,7 +6,7 @@
 	<prg:version>1.0</prg:version>
 	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
 	<prg:documentation>
-		<prg:abstract>Python script builder which use XML description file to automatically generate command line processing and help messages</prg:abstract>
+		<prg:abstract>Python script builder which use program interface XML definition file to automatically generate command line processing and help messages</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Python script builder</prg:label>
@@ -72,7 +72,7 @@
 			</prg:names>
 		</prg:switch>
 
-		<!-- XML description file -->
+		<!-- program interface XML definition file -->
 		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])" />
 
 		<!-- Skip validation -->

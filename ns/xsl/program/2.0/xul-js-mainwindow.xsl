@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
-<!-- Javascript code base of a xul application based on program schema -->
+<!-- Javascript code base of a xul application based on program interface definition schema -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="../../languages/javascript.xsl" />

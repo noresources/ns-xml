@@ -364,7 +364,7 @@ __sampleapp_bashcompletion()
 			
 			;;
 		"rw-folder-argument")
-			__sampleapp_appendfsitems "${current}" $(__sampleapp_getfindpermoptions rw) -type d 
+			__sampleapp_appendfsitems "${current}" $(__sampleapp_getfindpermoptions rw)  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -372,7 +372,7 @@ __sampleapp_bashcompletion()
 			
 			;;
 		"mixed-fskind-argument")
-			__sampleapp_appendfsitems "${current}" $(__sampleapp_getfindpermoptions rw) -type f -o -type d -o -type l 
+			__sampleapp_appendfsitems "${current}" $(__sampleapp_getfindpermoptions rw)  -type f -o  -type d -o  -type l 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

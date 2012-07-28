@@ -95,7 +95,7 @@
 			<!-- In build-xulapp, the documentation change a bit -->
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)" />
 			<prg:documentation>
-				<prg:abstract>Program XML description file</prg:abstract>
+				<prg:abstract>Program program interface XML definition file</prg:abstract>
 				<prg:details>Location of the XML program description file. Expect a valid XML file following the http://xsd.nore.fr/program schema</prg:details>
 			</prg:documentation>
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:names)" />

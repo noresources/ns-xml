@@ -83,7 +83,7 @@ __sc_xsh_bashcompletion()
 	
 	case "${option}" in
 	"shell" | "s")
-		__build_xulapp_appendfsitems "${current}" -type f 
+		__build_xulapp_appendfsitems "${current}"  -type f 
 		if [ ${#COMPREPLY[*]} -gt 0 ]
 		then
 			return 0
@@ -109,7 +109,7 @@ __sc_python_bashcompletion()
 	
 	case "${option}" in
 	"python" | "p")
-		__build_xulapp_appendfsitems "${current}" -type f 
+		__build_xulapp_appendfsitems "${current}"  -type f 
 		if [ ${#COMPREPLY[*]} -gt 0 ]
 		then
 			return 0
@@ -251,7 +251,7 @@ __build_xulapp_bashcompletion()
 	then
 		case "${option}" in
 		"output" | "o")
-			__build_xulapp_appendfsitems "${current}" -type d 
+			__build_xulapp_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -259,7 +259,7 @@ __build_xulapp_bashcompletion()
 			
 			;;
 		"xml-description" | "x")
-			__build_xulapp_appendfsitems "${current}" -type f 
+			__build_xulapp_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -315,7 +315,7 @@ __build_xulapp_bashcompletion()
 			
 			;;
 		"init-script" | "j")
-			__build_xulapp_appendfsitems "${current}" -type f 
+			__build_xulapp_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -323,7 +323,7 @@ __build_xulapp_bashcompletion()
 			
 			;;
 		"ns-xml-path")
-			__build_xulapp_appendfsitems "${current}" -type d 
+			__build_xulapp_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

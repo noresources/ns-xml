@@ -901,6 +901,30 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
@@ -929,7 +953,6 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			garg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
-			nestedGroup="garg"
 			parse_setoptionpresence G_8_g_1_g_1_basic-argument;parse_setoptionpresence G_8_g_1_g;parse_setoptionpresence G_8_g
 			;;
 		string-argument)
@@ -938,6 +961,30 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
@@ -966,7 +1013,6 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			gsarg="${parser_item}"
 			globalArgumentsGroup="nestedGroup"
-			nestedGroup="gsarg"
 			parse_setoptionpresence G_8_g_1_g_2_string-argument;parse_setoptionpresence G_8_g_1_g;parse_setoptionpresence G_8_g
 			;;
 		argument-with-default)
@@ -975,6 +1021,30 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "dgarg" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
@@ -1011,12 +1081,60 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedExclusiveGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -z "${nestedExclusiveGroup}" ] || [ "${nestedExclusiveGroup}" = "gnarg" ] || [ "${nestedExclusiveGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"nestedExclusiveGroup\" was previously set (${nestedExclusiveGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
@@ -1054,12 +1172,60 @@ parse_process_option()
 			if ! ([ -z "${globalArgumentsGroup}" ] || [ "${globalArgumentsGroup}" = "nestedExclusiveGroup" ] || [ "${globalArgumentsGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"globalArgumentsGroup\" was previously set (${globalArgumentsGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			
 			if ! ([ -z "${nestedExclusiveGroup}" ] || [ "${nestedExclusiveGroup}" = "gn2arg" ] || [ "${nestedExclusiveGroup:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"nestedExclusiveGroup\" was previously set (${nestedExclusiveGroup})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
 				return ${PARSER_ERROR}
 			fi
 			

@@ -4,13 +4,13 @@
 # Author: Renaud Guillard
 # Version: 2.0
 # 
-# Shell script builder which use XML description file to automatically generate command line processing and help messages
+# Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 #
 # Program help
 usage()
 {
 cat << EOFUSAGE
-build-shellscript: Shell script builder which use XML description file to automatically generate command line processing and help messages
+build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
   build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [--help] -o <path>
   With:
@@ -24,7 +24,7 @@ Usage:
     	before any XSLT processing
     -s, --shell: XML shell file
     	A xml file following the bash XML schema
-    	The file may include a XML program definition
+    	The file may include a program interface XML definition
     --skip-validation, --no-validation, -S: Skip XML Schema validations
     	The default behavior of the program is to validate the given xml-based 
     	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 

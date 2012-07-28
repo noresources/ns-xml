@@ -4,13 +4,13 @@
 # Author: Renaud Guillard
 # Version: 1.0
 # 
-# Python script builder which use XML description file to automatically generate command line processing and help messages
+# Python script builder which use program interface XML definition file to automatically generate command line processing and help messages
 #
 # Program help
 usage()
 {
 cat << EOFUSAGE
-build-pyscript: Python script builder which use XML description file to automatically generate command line processing and help messages
+build-pyscript: Python script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
   build-pyscript [-uSd] -p <path> [-m <...>] -x <path> [--help] [--ns-xml-path <path> --ns-xml-path-relative]
   With:

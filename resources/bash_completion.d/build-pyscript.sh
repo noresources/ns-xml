@@ -94,7 +94,7 @@ __build_pyscript_bashcompletion()
 	then
 		case "${option}" in
 		"python" | "p")
-			__build_pyscript_appendfsitems "${current}" -type f 
+			__build_pyscript_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -118,7 +118,7 @@ __build_pyscript_bashcompletion()
 			
 			;;
 		"xml-description" | "x")
-			__build_pyscript_appendfsitems "${current}" -type f 
+			__build_pyscript_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -126,7 +126,7 @@ __build_pyscript_bashcompletion()
 			
 			;;
 		"ns-xml-path")
-			__build_pyscript_appendfsitems "${current}" -type d 
+			__build_pyscript_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

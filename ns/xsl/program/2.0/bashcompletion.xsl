@@ -625,13 +625,10 @@
 		</call-template>
 	</template>
 
+	<!-- Add path type related restrictions -->
 	<template name="prg.bash.completion.argumentCompletionPath">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
+		<param name="optionName" select="'option'" />
+		<param name="currentVarName" select="'current'" />
 		<param name="root" />
 
 		<variable name="pathNode" select="$root/prg:type/prg:path" />
@@ -680,13 +677,13 @@
 			<for-each select="$kinds/* [self::prg:file or self::prg:folder or self::prg:symlink]">
 				<choose>
 					<when test="./self::prg:file">
-						<text>-type f</text>
+						<text> -type f</text>
 					</when>
 					<when test="./self::prg:folder">
-						<text>-type d</text>
+						<text> -type d</text>
 					</when>
 					<when test="./self::prg:symlink">
-						<text>-type l</text>
+						<text> -type l</text>
 					</when>
 				</choose>
 				<if test="position() != last()">

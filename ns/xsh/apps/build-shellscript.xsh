@@ -64,13 +64,13 @@ then
 	
 	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
 	then
-		echo "Invalid program schema version"
+		echo "Invalid program interface definition schema version"
 		exit 3
 	fi
 
 	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 	then
-		echo "program schema error - abort"
+		echo "program interface definition schema error - abort"
 		exit 4
 	fi
 fi

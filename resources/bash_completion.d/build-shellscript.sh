@@ -94,7 +94,7 @@ __build_shellscript_bashcompletion()
 	then
 		case "${option}" in
 		"ns-xml-path")
-			__build_shellscript_appendfsitems "${current}" -type d 
+			__build_shellscript_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -102,7 +102,7 @@ __build_shellscript_bashcompletion()
 			
 			;;
 		"xml-description" | "x")
-			__build_shellscript_appendfsitems "${current}" -type f 
+			__build_shellscript_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -110,7 +110,7 @@ __build_shellscript_bashcompletion()
 			
 			;;
 		"shell" | "s")
-			__build_shellscript_appendfsitems "${current}" -type f 
+			__build_shellscript_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -118,7 +118,7 @@ __build_shellscript_bashcompletion()
 			
 			;;
 		"output" | "o")
-			__build_shellscript_appendfsitems "${current}" -type f 
+			__build_shellscript_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

@@ -7,7 +7,7 @@
 	<prg:documentation>
 		<prg:abstract>Sample application
 	</prg:abstract>
-		<prg:details>This application demonstrates most of the possibilities offered by the program schema to define and display command line options</prg:details>
+		<prg:details>This application demonstrates most of the possibilities offered by the program interface definition schema to define and display command line options</prg:details>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Sample application</prg:label>

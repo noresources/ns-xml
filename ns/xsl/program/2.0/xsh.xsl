@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
 
-<!-- Build a shell script by combining program option parsing & usage from the XML program schema and shell code and functions from the XML bash schema -->
+<!-- Build a shell script by combining program option parsing & usage from the XML program interface definition schema and shell code and functions from the XML bash schema -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program"
 	xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="exsl">
 

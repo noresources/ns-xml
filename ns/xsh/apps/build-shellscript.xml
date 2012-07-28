@@ -6,7 +6,7 @@
 	<prg:version>2.0</prg:version>
 	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
 	<prg:documentation>
-		<prg:abstract>Shell script builder which use XML description file to automatically generate command line processing and help messages</prg:abstract>
+		<prg:abstract>Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Shellscript builder</prg:label>
@@ -16,7 +16,7 @@
 		<!-- ns-xml path -->
 		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
 
-		<!-- XML description file -->
+		<!-- program interface XML definition file -->
 		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
 
 		<prg:argument required="true" id="xmlShellFileDescriptionPath">
@@ -28,7 +28,7 @@
 				<prg:details>
 					A xml file following the bash XML schema
 					<prg:endl />
-					The file may include a XML program definition
+					The file may include a program interface XML definition
 				</prg:details>
 			</prg:documentation>
 			<prg:type>
