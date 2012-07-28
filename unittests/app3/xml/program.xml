@@ -19,6 +19,7 @@
 				<prg:alias>subcommand-alias</prg:alias>
 			</prg:aliases>
 			<prg:options>
+
 				<prg:argument id="prg.unittest.option.argumentD">
 					<prg:databinding>
 						<prg:variable>argumentD</prg:variable>
@@ -38,6 +39,19 @@
 						<prg:long>switch-e</prg:long>
 					</prg:names>
 				</prg:switch>
+
+				<!-- A switch with the same names as prg.unittest.option.switchA -->
+				<prg:switch id="prg.unittest.option.switchA2">
+					<prg:databinding>
+						<prg:variable>switchA2</prg:variable>
+					</prg:databinding>
+					<prg:names>
+						<prg:short>a</prg:short>
+						<prg:long>switch-a</prg:long>
+					</prg:names>
+					<prg:ui mode="disabled" />
+				</prg:switch>
+
 			</prg:options>
 			<prg:values>
 				<prg:other />

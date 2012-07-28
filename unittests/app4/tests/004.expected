@@ -8,3 +8,4 @@ argumentB=
 multiargC=abc def ghi
 sub_argumentD=
 sub_switchE=False
+sub_switchA2=False
