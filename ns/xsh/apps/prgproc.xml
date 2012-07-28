@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- {} -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>prgproc</prg:name>
+	<prg:author>renaud</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:license>Copyright © 2012 by Renaud GUillard (dev@niao.fr)</prg:license>
+	<prg:documentation>
+		<prg:abstract>Process a program interface XML definition with one of the available XSLT stylesheets</prg:abstract>
+		<prg:details>
+			This tool automatically select the good version of the XSLT stylesheet according to the @version attribute
+			of the given XML file.
+		</prg:details>
+	</prg:documentation>
+
+	<prg:options>
+		<!-- program interface XML definition file -->
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
+
+		<prg:argument required="true">
+			<prg:databinding>
+				<prg:variable>xslName</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>XSL transformation to apply</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>xslt</prg:long>
+				<prg:long>xsl</prg:long>
+				<prg:short>t</prg:short>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>bashcompletion</prg:option>
+				<prg:option>c-gengetopt</prg:option>
+				<prg:option>docbook-usage</prg:option>
+				<prg:option>wikicreole-usage</prg:option>
+			</prg:select>
+		</prg:argument>
+
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>output</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Output file</prg:abstract>
+				<prg:details>If no output file is provided, the transformation result will
+					be sent to the standard output.
+				</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>output</prg:long>
+				<prg:short>o</prg:short>
+			</prg:names>
+			<prg:type>
+				<prg:path access="w">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+
+		<prg:multiargument min="2">
+			<prg:databinding>
+				<prg:variable>parameters</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>pass a (parameter,value) pair</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>param</prg:long>
+				<prg:long>params</prg:long>
+				<prg:short>p</prg:short>
+			</prg:names>
+		</prg:multiargument>
+
+		<prg:multiargument min="2">
+			<prg:databinding>
+				<prg:variable>stringParameters</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>pass a (parameter, UTF8 string value) pair</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>stringparam</prg:long>
+				<prg:long>stringparams</prg:long>
+				<prg:short>s</prg:short>
+			</prg:names>
+		</prg:multiargument>
+
+		<!-- ns-xml path -->
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
+
+		<!-- Help -->
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+
+	</prg:options>
+</prg:program>
