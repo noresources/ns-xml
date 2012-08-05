@@ -12,11 +12,21 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--help] [--xsl-output <path>] [--xsl-css <path>]
+  update-doc [--help] [--xsl-output <path>] [--xsl-css <path>] [(--index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)]
   With:
     --help: Display program usage
     --xsl-output: XSLT output path
     --xsl-css: XSLT CSS file
+    Directory index settings
+    	URL
+    		--index-url: Index URL
+    		--relative-index-url: Index URL is relative to root
+    	
+    	File
+    		--index: Index page source file path
+    		--index-name: Index page output file name	
+    			Default value: index.php
+    		--copy-anywhere: Copy index file in all directories
 EOFUSAGE
 }
 
@@ -50,10 +60,15 @@ parser_index=${parser_startindex}
 # Switch options
 
 displayHelp=false
+indexUrlRelativeToRoot=false
+indexCopyInFolders=false
 # Single argument options
 
 xsltDocOutputPath=
 xsltDocCssFile=
+indexUrl=
+indexFile=
+indexFileOutputName="index.php"
 
 parse_addwarning()
 {
@@ -327,6 +342,242 @@ parse_process_option()
 			xsltDocCssFile="${parser_item}"
 			parse_setoptionpresence G_3_xsl-css
 			;;
+		index-url)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeUrl" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			indexUrl="${parser_item}"
+			indexMode="indexModeUrl"
+			parse_setoptionpresence G_4_g_1_g_1_index-url;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			;;
+		relative-index-url)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeUrl" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			indexUrlRelativeToRoot=true
+			indexMode="indexModeUrl"
+			parse_setoptionpresence G_4_g_1_g_2_relative-index-url;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			;;
+		index)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if [ ! -e "${parser_item}" ]
+			then
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! parse_pathaccesscheck "${parser_item}" "r"
+			then
+				parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+			then
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			indexFile="${parser_item}"
+			indexMode="indexModeFile"
+			parse_setoptionpresence G_4_g_2_g_1_index;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			;;
+		index-name)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			indexFileOutputName="${parser_item}"
+			indexMode="indexModeFile"
+			parse_setoptionpresence G_4_g_2_g_2_index-name;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			;;
+		copy-anywhere)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			indexCopyInFolders=true
+			indexMode="indexModeFile"
+			parse_setoptionpresence G_4_g_2_g_3_copy-anywhere;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
 			return ${PARSER_ERROR}
@@ -560,26 +811,65 @@ fi
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
 defaultCssFile="${rootPath}/resources/css/xsl.doc.html.css"
 
-[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
-[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
-
-xsltDocOutputPath="$(ns_realpath "${xsltDocOutputPath}")"
-
 if update_item xsl
 then
+	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
+	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
+	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
+	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 
+	
+	xsltDocOutputPath="$(ns_realpath "${xsltDocOutputPath}")"
+	xslDirectoryIndexMode="auto"
+		
+	if [ "${indexMode}" = "indexModeFile" ]
+	then
+		if ${indexCopyInFolders}
+		then
+			xslDirectoryIndexMode="per-folder"
+		else
+			xslDirectoryIndexMode="root"
+		fi
+		
+		outputIndexPath="${xsltDocOutputPath}/${indexFileOutputName}"
+		
+		echo "Create index (${xslDirectoryIndexMode}) from \"${indexFile}\"" 	
+				
+		if [ "${indexFile}" != "${outputIndexPath}" ]
+		then
+			rsync -lprt "${indexFile}" "${outputIndexPath}"
+		fi
+	fi
+		
 	find "${xslPath}" -name "*.xsl" | while read f
 	do
 		output="${f#${xslPath}}"
 		output="${xsltDocOutputPath}${output}"
 		output="${output%xsl}html"
-		echo "${output}"
-		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${output}")"
+		outputFolder="$(dirname "${output}")"
+		mkdir -p "${outputFolder}"
+		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
 		title="${output#${xsltDocOutputPath}/}"
 		title="${title%.html}"
-		mkdir -p "$(dirname "${output}")"
+		 
+		
+		if [ "${indexMode}" = "indexModeUrl" ]
+		then
+			echo -n ""
+		elif [ "${indexMode}" = "indexModeFile" ]
+		then
+			outputIndexPath="${outputFolder}/${indexFileOutputName}"
+			if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
+			then
+				cp -pf "${indexFile}" "${outputIndexPath}"
+			fi
+		fi
+		
 		xsltproc --xinclude -o "${output}" \
-			--stringparam xsl.doc.html.fileName "${title}"\
-			--stringparam xsl.doc.html.stylesheetPath "${cssPath}"\
+			--stringparam "xsl.doc.html.fileName" "${title}" \
+			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+			--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
+			--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
 			"${xslStylesheet}" "${f}"
+
 	done
 fi

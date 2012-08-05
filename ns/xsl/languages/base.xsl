@@ -52,7 +52,9 @@
 	<template name="code.block">
 		<param name="content" />
 		<param name="indentChar" select="$code.indentChar" />
-		<param name="endl"><call-template name="endl" /></param>
+		<param name="endl">
+			<call-template name="endl" />
+		</param>
 		<param name="addInitialEndl" select="true()" />
 		<param name="addFinalEndl" select="true()" />
 		<if test="$addInitialEndl">
@@ -78,4 +80,196 @@
 		</if>
 	</template>
 
+
+	<!-- Transform a identifier name from a naming style to another -->
+	<template name="code.identifierNamingStyle">
+		<!-- Identifier to transform -->
+		<param name="identifier" />
+		<!-- Current naming style of the identifier. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'auto' -->
+		<param name="from" select="'auto'" />
+		<!-- Targeted naming style. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen' -->
+		<param name="to" select="'camelCase'" />
+		<!-- A string that will never appear in an identifier string -->
+		<param name="transitionalChar" select="'&#10;'" />
+
+		<choose>
+			<when test="$from = 'auto'">
+				<variable name="autoDetectFrom">
+					<call-template name="code.identifierNamingStyleAutoDetect">
+						<with-param name="identifier" select="$identifier" />
+					</call-template>
+				</variable>
+				<call-template name="code.identifierNamingStyle">
+					<with-param name="identifier" select="$identifier" />
+					<with-param name="from" select="$autoDetectFrom" />
+					<with-param name="to" select="$to" />
+				</call-template>
+			</when>
+			<when test="$from = $to">
+				<value-of select="$identifier" />
+			</when>
+			<when test="($to = 'underscore') or ($to = 'hyphen')">
+				<variable name="prefixFrom">
+					<choose>
+						<when test="($to = 'underscore')">
+							<text>-</text>
+						</when>
+						<otherwise>
+							<text>_</text>
+						</otherwise>
+					</choose>
+				</variable>
+
+				<variable name="prefixTo">
+					<choose>
+						<when test="($to = 'underscore')">
+							<text>_</text>
+						</when>
+						<otherwise>
+							<text>-</text>
+						</otherwise>
+					</choose>
+				</variable>
+
+				<call-template name="code.identifierNamingStyleLowerPrepend">
+					<with-param name="identifier" select="translate($identifier, $prefixFrom, $prefixTo)" />
+					<with-param name="prefix" select="$prefixTo" />
+				</call-template>
+			</when>
+			<when test="($to = 'camelCase') or ($to = 'CamelCase')">
+				<variable name="result">
+					<call-template name="code.identifierNamingStyleUpperUnprepend">
+						<with-param name="identifier" select="translate($identifier, '-_', concat($transitionalChar, $transitionalChar))" />
+						<with-param name="prefix" select="$transitionalChar" />
+					</call-template>
+				</variable>
+
+				<choose>
+					<when test="$to = 'camelCase'">
+						<call-template name="str.toLower">
+							<with-param name="text" select="substring($result, 1, 1)" />
+						</call-template>
+						<value-of select="substring($result, 2)" />
+					</when>
+					<otherwise>
+						<call-template name="str.toUpper">
+							<with-param name="text" select="substring($result, 1, 1)" />
+						</call-template>
+						<value-of select="substring($result, 2)" />
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				<value-of select="$identifier" />
+			</otherwise>
+		</choose>
+	</template>
+
+	<!-- Auto-detect identifier naming convention -->
+	<template name="code.identifierNamingStyleAutoDetect">
+		<param name="identifier" />
+
+		<choose>
+			<when test="contains($identifier, '_')">
+				<text>underscore</text>
+			</when>
+			<when test="contains($identifier, '-')">
+				<text>hyphen</text>
+			</when>
+			<otherwise>
+				<variable name="lower" select="translate($identifier, 'abcdefghijklmnopqrstuvwxyz', 'aaaaaaaaaaaaaaaaaaaaaaaaaa')" />
+				<choose>
+					<when test="starts-with($lower, 'a')">
+						<text>camelCase</text>
+					</when>
+					<otherwise>
+						<text>CamelCase</text>
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</template>
+
+	<template name="code.identifierNamingStyleLowerPrepend">
+		<param name="identifier" />
+		<param name="prefix" />
+		<param name="index" select="1" />
+
+		<variable name="lowerLetter" select="substring($str.smallCase, $index, 1)" />
+		<variable name="upperLetter" select="substring($str.upperCase, $index, 1)" />
+
+		<!-- <value-of select="$lowerLetter"/>
+			<text> </text>
+			<value-of select="$upperLetter"/> -->
+
+		<variable name="result">
+			<call-template name="str.replaceAll">
+				<with-param name="text">
+					<call-template name="str.replaceAll">
+						<with-param name="text" select="$identifier" />
+						<with-param name="replace" select="concat($prefix, $upperLetter)" />
+						<with-param name="by" select="$upperLetter" />
+					</call-template>
+				</with-param>
+				<with-param name="replace" select="$upperLetter" />
+				<with-param name="by" select="concat($prefix, $lowerLetter)" />
+			</call-template>
+		</variable>
+
+		<choose>
+			<when test="$index &lt; 26">
+				<call-template name="code.identifierNamingStyleLowerPrepend">
+					<with-param name="identifier" select="$result" />
+					<with-param name="prefix" select="$prefix" />
+					<with-param name="index" select="$index + 1" />
+				</call-template>
+			</when>
+			<otherwise>
+				<choose>
+					<when test="starts-with($result, $prefix)">
+						<value-of select="substring($result, string-length($prefix) + 1)" />
+					</when>
+					<otherwise>
+						<value-of select="$result" />
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</template>
+
+	<template name="code.identifierNamingStyleUpperUnprepend">
+		<param name="identifier" />
+		<param name="prefix" />
+		<param name="index" select="1" />
+
+		<variable name="lowerLetter" select="substring($str.smallCase, $index, 1)" />
+		<variable name="upperLetter" select="substring($str.upperCase, $index, 1)" />
+
+		<variable name="result">
+			<call-template name="str.replaceAll">
+				<with-param name="text">
+					<call-template name="str.replaceAll">
+						<with-param name="text" select="$identifier" />
+						<with-param name="replace" select="concat($prefix, $upperLetter)" />
+						<with-param name="by" select="$upperLetter" />
+					</call-template>
+				</with-param>
+				<with-param name="replace" select="concat($prefix, $lowerLetter)" />
+				<with-param name="by" select="$upperLetter" />
+			</call-template>
+		</variable>
+
+		<choose>
+			<when test="$index &lt; 26">
+				<call-template name="code.identifierNamingStyleUpperUnprepend">
+					<with-param name="identifier" select="$result" />
+					<with-param name="prefix" select="$prefix" />
+					<with-param name="index" select="$index + 1" />
+				</call-template>
+			</when>
+			<otherwise>
+				<value-of select="$result" />
+			</otherwise>
+		</choose>
+	</template>
 </stylesheet>

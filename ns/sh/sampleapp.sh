@@ -125,7 +125,7 @@ Usage:
     	The argument can be:	
     		nOptionA, nValueB, nItemC or nItemD with space
 
-  This application demonstrates most of the possibilities offered by the program schema to define and display command line options
+  This application demonstrates most of the possibilities offered by the program interface definition schema to define and display command line options
 EOFUSAGE
 }
 

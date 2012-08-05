@@ -1611,7 +1611,7 @@ info "Program schema version ${programVersion}"
 
 if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
 then
-	error "Invalid program schema version"
+	error "Invalid program interface definition schema version"
 fi  
 
 requiredTemplates="xul-ui-mainwindow xul-js-mainwindow xul-js-application get-programinfo"

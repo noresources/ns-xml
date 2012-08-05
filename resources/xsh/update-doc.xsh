@@ -110,27 +110,66 @@ fi
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
 defaultCssFile="${rootPath}/resources/css/xsl.doc.html.css"
 
-[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
-[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
-
-xsltDocOutputPath="$(ns_realpath "${xsltDocOutputPath}")"
-
 if update_item xsl
 then
+	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
+	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
+	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
+	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 
+	
+	xsltDocOutputPath="$(ns_realpath "${xsltDocOutputPath}")"
+	xslDirectoryIndexMode="auto"
+		
+	if [ "${indexMode}" = "indexModeFile" ]
+	then
+		if ${indexCopyInFolders}
+		then
+			xslDirectoryIndexMode="per-folder"
+		else
+			xslDirectoryIndexMode="root"
+		fi
+		
+		outputIndexPath="${xsltDocOutputPath}/${indexFileOutputName}"
+		
+		echo "Create index (${xslDirectoryIndexMode}) from \"${indexFile}\"" 	
+				
+		if [ "${indexFile}" != "${outputIndexPath}" ]
+		then
+			rsync -lprt "${indexFile}" "${outputIndexPath}"
+		fi
+	fi
+		
 	find "${xslPath}" -name "*.xsl" | while read f
 	do
 		output="${f#${xslPath}}"
 		output="${xsltDocOutputPath}${output}"
 		output="${output%xsl}html"
-		echo "${output}"
-		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${output}")"
+		outputFolder="$(dirname "${output}")"
+		mkdir -p "${outputFolder}"
+		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
 		title="${output#${xsltDocOutputPath}/}"
 		title="${title%.html}"
-		mkdir -p "$(dirname "${output}")"
+		 
+		
+		if [ "${indexMode}" = "indexModeUrl" ]
+		then
+			echo -n ""
+		elif [ "${indexMode}" = "indexModeFile" ]
+		then
+			outputIndexPath="${outputFolder}/${indexFileOutputName}"
+			if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
+			then
+				cp -pf "${indexFile}" "${outputIndexPath}"
+			fi
+		fi
+		
 		xsltproc --xinclude -o "${output}" \
-			--stringparam xsl.doc.html.fileName "${title}"\
-			--stringparam xsl.doc.html.stylesheetPath "${cssPath}"\
+			--stringparam "xsl.doc.html.fileName" "${title}" \
+			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+			--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
+			--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
 			"${xslStylesheet}" "${f}"
+
 	done
 fi
 ]]></sh:code>

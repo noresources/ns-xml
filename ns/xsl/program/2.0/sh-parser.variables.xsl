@@ -177,7 +177,7 @@
 
 	<variable name="prg.sh.parser.vName_OK">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -196,7 +196,7 @@
 
 	<variable name="prg.sh.parser.vName_ERROR">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -215,7 +215,7 @@
 
 	<variable name="prg.sh.parser.vName_SC_OK">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -228,7 +228,7 @@
 	
 	<variable name="prg.sh.parser.vName_SC_ERROR">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -241,7 +241,7 @@
 
 	<variable name="prg.sh.parser.vName_SC_UNKNOWN">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -254,7 +254,7 @@
 
 	<variable name="prg.sh.parser.vName_SC_SKIP">
 		<call-template name="str.toUpper">
-			<with-param name="content">
+			<with-param name="text">
 				<call-template name="prg.prefixedName">
 					<with-param name="name">
 						<value-of select="$prg.sh.parser.variableNamePrefix" />

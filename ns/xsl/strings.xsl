@@ -31,8 +31,11 @@
 		<text>&#13;</text>
 	</template>
 
+	<!-- Indicates if text contains blank chars -->
 	<template name="str.isBlank">
-		<param name="text" select="." />
+		<!-- Text to check -->
+		<param name="text" />
+		<!-- Reserved -->
 		<param name="_position" select="1" />
 
 		<variable name="c" select="substring($text, 1, 1)" />
@@ -57,7 +60,9 @@
 		</choose>
 	</template>
 
+	<!-- Indicates if a characted is a blank character -->
 	<template name="str.isBlankChar">
+		<!-- Characted to test -->
 		<param name="char" select="substring(., 1, 1)" />
 		<param name="_position" select="1" />
 
@@ -137,6 +142,7 @@
 		</choose>
 	</template>
 
+	<!-- Count occurences of a string in another -->
 	<template name="str.count">
 		<!-- Text to process -->
 		<param name="text" />
@@ -144,7 +150,7 @@
 		<!-- Substring to count -->
 		<param name="substring" />
 
-		<!-- Internal parameter -->
+		<!-- Reserved -->
 		<param name="_count" select="0" />
 
 		<choose>
@@ -179,10 +185,6 @@
 	<template name="str.elementLocalPart">
 		<param name="node" select="." />
 		<value-of select="substring-after(name($node), ':' )" />
-	</template>
-
-	<template>
-
 	</template>
 
 	<!-- Find the last breakable character index -->
@@ -290,7 +292,7 @@
 							<with-param name="text" select="$splititem" />
 						</call-template>
 					</variable>
-					
+
 					<variable name="b" select="substring($splititem, $breakPosition, 1)" />
 
 					<variable name="isBlank">
@@ -324,12 +326,12 @@
 							</otherwise>
 						</choose>
 					</variable>
-					
+
 					<if test="string-length($part) &gt; 0">
 						<value-of select="$part" />
 						<value-of select="$endlChar" />
 					</if>
-					
+
 					<variable name="remaining" select="substring($item, $len + 1)" />
 
 					<!-- remaining part -->
@@ -380,9 +382,9 @@
 				<with-param name="text" select="$prependedText" />
 			</call-template>
 		</variable>
-		
+
 		<variable name="realLineMaxLength" select="$lineMaxLength - string-length($fullPrependedText)" />
-		
+
 		<variable name="content">
 			<choose>
 				<when test="$wrap">
@@ -463,13 +465,46 @@
 	<variable name="str.upperCase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
 	<template name="str.toUpper">
-		<param name="content" select="." />
-		<value-of select="translate($content, $str.smallCase, $str.upperCase)" />
+		<param name="text" select="." />
+		<value-of select="translate($text, $str.smallCase, $str.upperCase)" />
 	</template>
 
 	<template name="str.toLower">
-		<param name="content" select="." />
-		<value-of select="translate($content, $str.upperCase, $str.smallCase)" />
+		<param name="text" select="." />
+		<value-of select="translate($text, $str.upperCase, $str.smallCase)" />
 	</template>
 
+	<variable name="str.ascii">
+		<text> !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</text>
+	</variable>
+	<variable name="str.hex">
+		<text>0123456789ABCDEF</text>
+	</variable>
+
+	<!-- http://lists.xml.org/archives/xml-dev/200109/msg00248.html -->
+	<template name="str.asciiToHex">
+		<param name="text" />
+		<param name="prefix" />
+		<param name="suffix" />
+		<if test="$text">
+			<variable name="firstChar" select="substring($text, 1, 1)" />
+			<variable name="asciiValue" select="string-length(substring-before($str.ascii, $firstChar)) + 32" />
+			<variable name="hexDigit1" select="substring($str.hex, floor($asciiValue div 16) + 1, 1)" />
+			<variable name="hexDigit2" select="substring($str.hex, $asciiValue mod 16 + 1, 1)" />
+			<if test="$prefix">
+				<value-of select="$prefix" />
+			</if>
+			<value-of select="concat($hexDigit1, $hexDigit2)" />
+			<if test="$suffix">
+				<value-of select="$suffix" />
+			</if>
+			<if test="string-length($text) &gt; 1">
+				<call-template name="str.asciiToHex">
+					<with-param name="text" select="substring($text, 2)" />
+					<with-param name="prefix" select="$prefix" />
+					<with-param name="suffix" select="$suffix" />
+				</call-template>
+			</if>
+		</if>
+	</template>
 </stylesheet>
