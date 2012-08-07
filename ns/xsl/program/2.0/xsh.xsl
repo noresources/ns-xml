@@ -13,7 +13,7 @@
 	<output method="text" encoding="utf-8" />
 
 	<param name="prg.xsh.defaultInterpreter">
-		<text>/bin/bash</text>
+		<text>/usr/bin/env bash</text>
 	</param>
 
 	<!-- Help string -->

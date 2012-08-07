@@ -108,7 +108,18 @@
 	<!-- Display all option's names like they could appear on the command line -->
 	<template name="prg.usage.allOptionNameDisplay">
 		<param name="optionNode" select="." />
-		<for-each select="$optionNode/prg:names/prg:short|$optionNode/prg:names/prg:long">
+		<for-each select="$optionNode/prg:names/prg:short">
+			<call-template name="prg.cliOptionName">
+				<with-param name="nameNode" select="." />
+			</call-template>
+			<if test="(position() != last())">
+				<text>, </text>
+			</if>
+		</for-each>
+		<if test="$optionNode/prg:names/prg:short and $optionNode/prg:names/prg:long">
+			<text>, </text>
+		</if>
+		<for-each select="$optionNode/prg:names/prg:long">
 			<call-template name="prg.cliOptionName">
 				<with-param name="nameNode" select="." />
 			</call-template>
