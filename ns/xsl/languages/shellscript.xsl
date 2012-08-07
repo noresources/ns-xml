@@ -22,18 +22,18 @@
 						</call-template>
 					</when>
 					<otherwise>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 						<call-template name="str.trim">
 							<with-param name="text">
 								<value-of select="$content" />
 							</with-param>
 						</call-template>
-						<call-template name="endl" />
+						<call-template name="unixEndl" />
 					</otherwise>
 				</choose>
 			</when>
 			<otherwise>
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 			</otherwise>
 		</choose>
 	</template>
@@ -100,13 +100,15 @@
 		</call-template>
 	</template>
 
+	<!-- Operations on itself -->
 	<template name="sh.var.selfexpr">
-		<!-- Operations on itself -->
+		<!-- Variable name -->
 		<param name="name" />
-		<param name="operator">
-			<text>+</text>
-		</param>
+		<!-- Operator -->
+		<param name="operator" select="'+'" />
+		<!-- Second operand -->
 		<param name="value" select="1" />
+
 		<value-of select="normalize-space($name)" />
 		<text>=$(expr </text>
 		<call-template name="sh.var">
@@ -125,7 +127,7 @@
 		<call-template name="sh.var.selfexpr">
 			<with-param name="name" select="$name" />
 			<with-param name="value" select="$value" />
-			<with-param name="operator"><text>+</text></with-param>
+			<with-param name="operator" select="'+'" />
 		</call-template>
 	</template>
 
@@ -255,14 +257,14 @@
 		<param name="indent" select="true()" />
 		<value-of select="normalize-space($name)" />
 		<text>()</text>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 		<text>{</text>
 		<call-template name="sh.block">
 			<with-param name="content" select="$content" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
 		<text>}</text>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 	</template>
 
 	<template name="sh.while">
@@ -272,7 +274,7 @@
 
 		<text>while </text>
 		<value-of select="normalize-space($condition)" />
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 		<text>do</text>
 		<call-template name="sh.block">
 			<with-param name="indent" select="$indent" />
@@ -290,7 +292,7 @@
 
 		<text>for </text>
 		<value-of select="normalize-space($condition)" />
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 		<text>do</text>
 		<call-template name="sh.block">
 			<with-param name="indent" select="$indent" />
@@ -306,9 +308,7 @@
 			<text>i</text>
 		</param>
 		<param name="init" select="0" />
-		<param name="operator">
-			<text>&lt;</text>
-		</param>
+		<param name="operator" select="'&lt;'" />
 		<param name="limit" />
 		<param name="increment" select="1" />
 		<param name="do" />
@@ -356,23 +356,27 @@
 		<param name="else" />
 		<param name="indent" select="true()" />
 
-		<text>if </text>
-		<value-of select="normalize-space($condition)" />
-		<call-template name="endl" />
-		<text>then</text>
-		<call-template name="sh.block">
-			<with-param name="indent" select="$indent" />
-			<with-param name="content" select="$then" />
-		</call-template>
-		<if test="$else">
-			<text>else</text>
+		<variable name="ncond" select="normalize-space($condition)" />
+
+		<if test="(string-length($ncond) + string-length($then)) &gt; 0">
+			<text>if </text>
+			<value-of select="$ncond" />
+			<call-template name="unixEndl" />
+			<text>then</text>
 			<call-template name="sh.block">
 				<with-param name="indent" select="$indent" />
-				<with-param name="content" select="$else" />
+				<with-param name="content" select="$then" />
 			</call-template>
+			<if test="$else and (string-length($else) &gt; 0)">
+				<text>else</text>
+				<call-template name="sh.block">
+					<with-param name="indent" select="$indent" />
+					<with-param name="content" select="$else" />
+				</call-template>
+			</if>
+			<text>fi</text>
 		</if>
-		<text>fi</text>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 	</template>
 
 	<template name="sh.case">
@@ -383,9 +387,9 @@
 		<text>case "</text>
 		<value-of select="$case" />
 		<text>" in</text>
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 		<value-of select="$in" />
-		<call-template name="endl" />
+		<call-template name="unixEndl" />
 		<text>esac</text>
 	</template>
 
@@ -400,7 +404,7 @@
 			<with-param name="indent" select="$indent" />
 			<with-param name="content">
 				<value-of select="$content" />
-				<call-template name="endl" />
+				<call-template name="unixEndl" />
 				<text>;;</text>
 			</with-param>
 		</call-template>
