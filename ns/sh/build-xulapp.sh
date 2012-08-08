@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ####################################
 # Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)
 # Author: Renaud Guillard
@@ -20,7 +20,7 @@ With:
   -s, --shell: XML shell file
   	A xml file following the bash XML schema
   	The file may include a program interface XML definition
-  --prefix-sc-variables, -p: Prefix subcommand options bound variable names
+  -p, --prefix-sc-variables: Prefix subcommand options bound variable names
   	This will prefix all subcommand options bound variable name by the 
   	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
 EOFSCUSAGE
@@ -43,7 +43,7 @@ cat << EOFSCUSAGE
 command: Build a XUL application which will run an existing command
 Usage: build-xulapp command -c <...>
 With:
-  --command, --cmd, -c: Launch the given existing command
+  -c, --command, --cmd: Launch the given existing command
 EOFSCUSAGE
 ;;
 
@@ -67,26 +67,26 @@ Usage:
     -x, --xml-description: Program program interface XML definition file
     	Location of the XML program description file. Expect a valid XML file 
     	following the http://xsd.nore.fr/program schema
-    --target-platform, --target, -t: Target platform	
+    -t, --target-platform, --target: Target platform	
     	The argument value have to be one of the following:	
     		host, linux or macosx
     	Default value: host
     -u, --update: Update application if folder already exists
-    --skip-validation, --no-validation, -S: Skip XML Schema validations
+    -S, --skip-validation, --no-validation: Skip XML Schema validations
     	The default behavior of the program is to validate the given xml-based 
     	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
     	option will disable schema validations
     User interface
-    	--window-width, -W: Window width
+    	-W, --window-width: Window width
     		Force the application main window witdh	
     		Default value: 1024
-    	--window-height, -H: Window height
+    	-H, --window-height: Window height
     		Force the application main window height	
     		Default value: 768
     	-d, --debug: Add debug console and options into the built interface
     
     User data
-    	--init-script, -j: User-defined post-initialization script
+    	-j, --init-script: User-defined post-initialization script
     		A Javascript file loaded after the main ui object initialization stage
     		If a onInitialize() function is available, it will be called with the main 
     		ui object as the first argument
@@ -135,7 +135,7 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 
-parser_required[${#parser_required[*]}]="G_2_output:--output"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_output:--output"
 # Switch options
 
 xsh_prefixSubcommandBoundVariableName=false
@@ -237,7 +237,7 @@ parse_checkrequired()
 		if [ ! -z "${parser_required[${i}]}" ]
 		then
 			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
-			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
 	done
@@ -267,23 +267,25 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value="${1}"
+	local value
+	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
+	shift
 	if [ -z "${parser_subcommand}" ]
 	then
-		parser_errors[${#parser_errors[*]}]="Positional argument not allowed"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed"
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
 		xsh)
-			parser_errors[${#parser_errors[*]}]="Positional argument not allowed in subcommand xsh"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand xsh"
 			return ${PARSER_ERROR}
 			;;
 		python)
-			parser_errors[${#parser_errors[*]}]="Positional argument not allowed in subcommand python"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python"
 			return ${PARSER_ERROR}
 			;;
 		command)
-			parser_errors[${#parser_errors[*]}]="Positional argument not allowed in subcommand command"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand command"
 			return ${PARSER_ERROR}
 			;;
 		*)
@@ -292,7 +294,7 @@ parse_addvalue()
 		
 		esac
 	fi
-	parser_values[${#parser_values[*]}]="${1}"
+	parser_values[$(expr ${#parser_values[*]} + ${parser_startindex})]="${value}"
 }
 parse_process_subcommand_option()
 {
@@ -1011,7 +1013,7 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 				
-				userDataPaths[${#userDataPaths[*]}]="${parser_item}"
+				userDataPaths[$(expr ${#userDataPaths[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -1019,7 +1021,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -1039,7 +1041,7 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 				
-				userDataPaths[${#userDataPaths[*]}]="${parser_item}"
+				userDataPaths[$(expr ${#userDataPaths[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -1363,15 +1365,15 @@ parse_process_option()
 		case "${parser_item}" in
 		xsh | sh | shell)
 			parser_subcommand="xsh"
-			parser_required[${#parser_required[*]}]="SC_1_xsh_1_shell:--shell"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_1_xsh_1_shell:--shell"
 			;;
 		python | py)
 			parser_subcommand="python"
-			parser_required[${#parser_required[*]}]="SC_2_python_1_python:--python"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_2_python_1_python:--python"
 			;;
 		command | cmd)
 			parser_subcommand="command"
-			parser_required[${#parser_required[*]}]="SC_3_command_1_command:--command"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_command_1_command:--command"
 			;;
 		*)
 			parse_addvalue "${parser_item}"
@@ -1410,8 +1412,12 @@ parse()
 
 ns_realpath()
 {
-	local path="${1}"
-	shift
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -1503,10 +1509,19 @@ build_command()
 }
 xml_validate()
 {
-	local schema="${1}"
-	shift
-	local xml="${1}"
-	shift
+	local schema
+	if [ $# -gt 0 ]
+	then
+		schema="${1}"
+		shift
+	fi
+	
+	local xml
+	if [ $# -gt 0 ]
+	then
+		xml="${1}"
+		shift
+	fi
 	local tmpOut="/tmp/xml_validate.tmp"
 	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then

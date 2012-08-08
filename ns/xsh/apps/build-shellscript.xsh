@@ -86,19 +86,34 @@ then
 fi
 
 # Process xsh file
+xsltprocArgs=(--xinclude)
 debugParam=""
 if ${debugMode}
 then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--param"
+	xsltprocArgs[${#xsltprocArgs[*]}]="prg.debug"
+	xsltprocArgs[${#xsltprocArgs[*]}]="true()"
 	debugParam="--stringparam prg.debug \"true()\""
 fi
 
 prefixParam=""
 if ${prefixSubcommandBoundVariableName}
 then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.prefixSubcommandOptionVariable"
+	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
 	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
 fi
 
-if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
+if [ ! -z "${defaultInterpreter}" ]
+then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreter"
+	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreter}"
+fi
+
+#if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
+if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
 	exit 6

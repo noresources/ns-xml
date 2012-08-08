@@ -76,7 +76,7 @@ __build_shellscript_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--ns-xml-path --ns-xml-path-relative --xml-description --shell --skip-validation --no-validation --prefix-sc-variables --debug --help --output -x -s -S -p -d -o"
+	local globalargs="--ns-xml-path --ns-xml-path-relative --xml-description --shell --skip-validation --no-validation --interpreter --prefix-sc-variables --debug --help --output -x -s -S -i -p -d -o"
 	local args="${globalargs}"
 	
 	
@@ -111,6 +111,31 @@ __build_shellscript_bashcompletion()
 			;;
 		"shell" | "s")
 			__build_shellscript_appendfsitems "${current}"  -type f 
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"interpreter" | "i")
+			COMPREPLY=()
+			for e in "/usr/bin/env bash" "/bin/bash" "/usr/bin/env zsh" "/bin/zsh"
+			do
+				local res="$(compgen -W "${e}" -- "${current}")"
+				if [ ! -z "${res}" ]
+				then
+					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
+				fi
+			done
+			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+			done
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+			done
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0

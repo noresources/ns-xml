@@ -22,9 +22,13 @@ logFile="${projectPath}/${scriptName}.log"
 pythonInterpreters=(python2.6 python2.7 python)
 rm -f "${logFile}"
 
-NORMAL_COLOR="\\033[0;39m"
-ERROR_COLOR="\\033[1;31m"
-GREEN_COLOR="\\033[1;32m"
+#http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+#NORMAL_COLOR="$(tput sgr0)"
+#ERROR_COLOR="$(tput setaf 1)"
+#SUCCESS_COLOR="$(tput setaf 2)"
+NORMAL_COLOR=""
+ERROR_COLOR=""
+SUCCESS_COLOR=""
 
 error()
 {
@@ -55,6 +59,22 @@ done
 uniqueApp="${1}"
 uniqueTest="${2}"
 
+shells=(bash zsh)
+for s in ${shells[*]}
+do
+	if which ${s} 1>/dev/null 2>&1
+	then
+		available_shells[${#available_shells[*]}]=${s}
+	fi
+done
+resultLineFormat="%-10s |"
+for s in ${available_shells[*]}
+do
+	resultLineFormat="${resultLineFormat} %-7s |"	
+done
+
+resultLineFormat="${resultLineFormat} %-7s | %7s\n"
+
 find "${testPathBase}" -mindepth 1 -maxdepth 1 -type d | sort | while read d
 do
 	if [ -f "${d}/xml/program.xml" ]
@@ -63,26 +83,35 @@ do
 		
 		[ ! -z "${uniqueApp}" ] && [ "${app}" != "${uniqueApp}" ] && continue 
 		
+	
 		echo "${d}"
+		
+		printf "${resultLineFormat}" "Test" ${available_shells[*]} "Python" "RESULT"
 		
 		xmlDescription="${d}/xml/program.xml"
 		
-		### Shell ###
+		tmpScriptBasename="${d}/program"
 		
+		### Shell ###
 		# Write the test body shell script
 		xsltproc --xinclude -o "${d}/xsh/program.body.sh" "${testPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${d}/xsh/program.body.sh"  
+				
+		for s in ${available_shells[*]}
+		do
+			shScript="${tmpScriptBasename}.${s}"
+			shScripts[${#shScripts[*]}]="${shScript}"
+			"${projectPath}/ns/sh/build-shellscript.sh" -i "/usr/bin/env ${s}" -p -x "${xmlDescription}" -s "${d}/xsh/program.xsh" -o "${shScript}" || error "Failed to create ${shScript}"
+			chmod 755 "${shScript}"
+		done
 		
-		# Build the whole script
-		shScript="${d}/program.sh"
-		"${projectPath}/ns/sh/build-shellscript.sh" -p -x "${xmlDescription}" -s "${d}/xsh/program.xsh" -o "${shScript}" || error "Failed to create ${shScript}"  
 		rm -f "${d}/xsh/program.body.sh"
-		chmod 755 "${shScript}"
+		
 		
 		### Python ###
 		if [ ! -z "${pythonInterpreter}" ]
 		then
 			# Generate python script using the xslt stylesheet
-			pyScript="${d}/program.py"
+			pyScript="${tmpScriptBasename}.py"
 			xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${testPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
 			chmod 755 "${pyScript}"
 			
@@ -98,11 +127,18 @@ do
 			result="${base}.result"
 			expected="${base}.expected"
 			# Create a temporary script
-			tmpShellScript="${shScript}-test-${app}-${testnumber}.sh"
+			tmpShellScript="${tmpScriptBasename}-test-${app}-${testnumber}.sh"
 			cli="$(cat "${t}")"
 			cat > "${tmpShellScript}" << EOFSH
 #!/usr/bin/env bash
-"${shScript}" ${cli} > "${result}-sh"
+$(
+i=0
+for s in ${available_shells[*]}
+do
+	shScript="${shScripts[${i}]}"
+	echo "\"${shScript}\" ${cli} > \"${result}-${s}\""
+	i=$(expr ${i} + 1)
+done)
 EOFSH
 			if [ ! -z "${pythonInterpreter}" ]
 			then
@@ -112,58 +148,76 @@ EOFSH
 			fi
 			chmod 755 "${tmpShellScript}"	
 			"${tmpShellScript}"
-			echo -n "${app}/sh/${testnumber}:"
-			log " ---- ${app}/sh/${testnumber} ---- "
+		
+			resultLine[0]="${app}/${testnumber}"
+			log " ---- ${app}/${testnumber} ---- "
 			passed=true
 			if [ -f "${expected}" ]
 			then
-				if ! diff "${expected}" "${result}-sh" >> "${logFile}"
-				then
-					passed=false
-					echo -en " ${ERROR_COLOR}[sh: FAILED]${NORMAL_COLOR}"
-				else
-					echo -en " ${GREEN_COLOR}[sh: passed]${NORMAL_COLOR}"
-					rm -f "${result}-sh"
-				fi
+				i=0
+				for s in ${available_shells[*]}
+				do
+					if ! diff "${expected}" "${result}-${s}" >> "${logFile}"
+					then
+						passed=false
+						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+					else
+						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+						rm -f "${result}-${s}"
+					fi
+					i=$(expr ${i} + 1)
+				done
 				
 				if [ ! -z "${pythonInterpreter}" ]
 				then
 					if ! diff "${expected}" "${result}-py" >> "${logFile}"
 					then
 						passed=false
-						echo -en " ${ERROR_COLOR}[py: FAILED]${NORMAL_COLOR}"
+						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
 					else
-						echo -en " ${GREEN_COLOR}[py: passed]${NORMAL_COLOR}"
+						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
 						rm -f "${result}-py"
 					fi
 				else
-					echo -en " ${GREEN_COLOR}[py: ignore]${NORMAL_COLOR}"
+					resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}ignore${NORMAL_COLOR}"
 				fi
 			else
 				passed=true
-				echo -en " ${GREEN_COLOR}[IGNORED]${NORMAL_COLOR}"
-				cp "${result}-sh" "${expected}"
+				for s in ${available_shells[*]} python
+				do
+					resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
+				done
+				cp "${result}-python" "${expected}"
 			fi
 			
 			if ${passed}
 			then
-				echo -e " ${GREEN_COLOR}[passed]${NORMAL_COLOR}"
+				resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
 				rm -f "${tmpShellScript}"
-			else 
-				echo -e " ${ERROR_COLOR}[FAILED]${NORMAL_COLOR}"
+			else
+				resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
 			fi
-		done 
-		
+			
+			printf "${resultLineFormat}" "${resultLine[@]}"
+			unset resultLine
+		done
+				
 		# Remove if no error
 		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
 		then
 			rm -f "${pyScript}"
 			rm -fr "${d}/Program"
 		fi
-		if [ $(find "${d}/tests" -name "*.result-sh" | wc -l) -eq 0 ]
-		then
-			rm -f "${shScript}"
-		fi
+		i=0
+		for s in ${available_shells[*]}
+		do
+			if [ $(find "${d}/tests" -name "*.result-${s}" | wc -l) -eq 0 ]
+			then
+				rm -f "${shScripts[${i}]}"
+			fi
+			i=$(expr ${i} + 1)
+		done
+		unset shScripts
 	fi					
 done
 

@@ -41,6 +41,12 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<variable name="prg.sh.parser.var_startindex">
+		<call-template name="sh.var">
+			<with-param name="name" select="$prg.sh.parser.vName_startindex" />
+		</call-template>
+	</variable>
 
 	<variable name="prg.sh.parser.vName_index">
 		<call-template name="prg.prefixedName">

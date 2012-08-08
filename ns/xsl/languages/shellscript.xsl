@@ -152,13 +152,30 @@
 	<template name="sh.arrayAppend">
 		<param name="name" />
 		<param name="value" />
+		<param name="startIndex" select="0" />
+		
+		<variable name="index">
+			<choose>
+				<when test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
+					<text>$(expr </text>
+					<call-template name="sh.arrayLength">
+						<with-param name="name" select="$name" />
+					</call-template>
+					<text> + </text>
+					<value-of select="$startIndex" />
+					<text>)</text>
+				</when>
+				<otherwise>
+					<call-template name="sh.arrayLength">
+						<with-param name="name" select="$name" />
+					</call-template>
+				</otherwise>
+			</choose>
+		</variable>
+		
 		<call-template name="sh.arraySetIndex">
 			<with-param name="name" select="$name" />
-			<with-param name="index">
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$name" />
-				</call-template>
-			</with-param>
+			<with-param name="index" select="$index" />
 			<with-param name="value" select="$value" />
 		</call-template>
 	</template>

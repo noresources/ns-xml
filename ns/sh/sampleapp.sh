@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ####################################
 # Author: Renaud Guillard
 # Version: 1.0
@@ -53,7 +53,7 @@ Usage:
     version:
   With global options:
     --help: 
-    --verbose, --bleeeeh, -v: More text!
+    -v, --verbose, --bleeeeh: More text!
     --ui-only: A single argument option automatically set in the UI
     --standard-arg: Basic argument option
     	This option will accept any kind of argument
@@ -111,15 +111,15 @@ Usage:
     	--multi-xml: Xml files
     		Expect a file. XML files are welcome but others are accepted
     
-    --hostname, -H: Hostname
+    -H, --hostname: Hostname
     	Accept a host name. In console mode, the autocompletion will propose hosts 
     	defined in /etc/hosts.
-    --simple-pattern-sh, -P: 
-    --strict-enum, -E: Strict enumeration	
+    -P, --simple-pattern-sh: 
+    -E, --strict-enum: Strict enumeration	
     	The argument value have to be one of the following:	
     		Option A, Value B, Item C or ItemD with space
     	Default value: Value B
-    --non-strict-enum, -e: Non-restrictive enumeration
+    -e, --non-strict-enum: Non-restrictive enumeration
     	Non restricive enumeration will only propose some values in autocompletion 
     	but will accept any other values	
     	The argument can be:	
@@ -262,7 +262,7 @@ parse_checkrequired()
 		if [ ! -z "${parser_required[${i}]}" ]
 		then
 			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
-			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
 	done
@@ -274,7 +274,7 @@ parse_checkminmax()
 	# Check min argument for multiargument
 	if [ ${#gma[*]} -gt 0 ] && [ ${#gma[*]} -lt 2 ]
 	then
-		parser_errors[${#parser_errors[*]}]="Invalid argument count for option \"--multi-argument\". At least 2 expected, ${#gma[*]} given"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--multi-argument\". At least 2 expected, ${#gma[*]} given"
 		errorCount=$(expr ${errorCount} + 1)
 	fi
 	
@@ -297,7 +297,9 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value="${1}"
+	local value
+	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
+	shift
 	if [ -z "${parser_subcommand}" ]
 	then
 		case "${position}" in
@@ -341,7 +343,7 @@ parse_addvalue()
 			esac
 			;;
 		version)
-			parser_errors[${#parser_errors[*]}]="Positional argument not allowed in subcommand version"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand version"
 			return ${PARSER_ERROR}
 			;;
 		*)
@@ -350,7 +352,7 @@ parse_addvalue()
 		
 		esac
 	fi
-	parser_values[${#parser_values[*]}]="${1}"
+	parser_values[$(expr ${#parser_values[*]} + ${parser_startindex})]="${value}"
 }
 parse_process_subcommand_option()
 {
@@ -1277,7 +1279,7 @@ parse_process_option()
 			fi
 			if [ -z "${parser_item}" ]
 			then
-				gma[${#gma[*]}]="${parser_item}"
+				gma[$(expr ${#gma[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -1285,7 +1287,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ${parser_ma_total_count} -lt 3 ] && [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -1293,7 +1295,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				gma[${#gma[*]}]="${parser_item}"
+				gma[$(expr ${#gma[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -1327,7 +1329,7 @@ parse_process_option()
 					
 					return ${PARSER_ERROR}
 				fi
-				gmsa[${#gmsa[*]}]="${parser_item}"
+				gmsa[$(expr ${#gmsa[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -1335,7 +1337,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -1349,7 +1351,7 @@ parse_process_option()
 					
 					return ${PARSER_ERROR}
 				fi
-				gmsa[${#gmsa[*]}]="${parser_item}"
+				gmsa[$(expr ${#gmsa[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -1377,7 +1379,7 @@ parse_process_option()
 			local parser_ma_total_count=${#gmaxml[*]}
 			if [ -z "${parser_item}" ]
 			then
-				gmaxml[${#gmaxml[*]}]="${parser_item}"
+				gmaxml[$(expr ${#gmaxml[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -1385,7 +1387,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -1393,7 +1395,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				gmaxml[${#gmaxml[*]}]="${parser_item}"
+				gmaxml[$(expr ${#gmaxml[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -1613,8 +1615,12 @@ parse()
 
 dummy_function()
 {
-	local dummyParam="${1}"
-	shift
+	local dummyParam
+	if [ $# -gt 0 ]
+	then
+		dummyParam="${1}"
+		shift
+	fi
 	echo "Dummy message  with   spaces"   
 	
 			
@@ -1622,8 +1628,12 @@ dummy_function()
 }
 ns_issymlink()
 {
-	local path="${1}"
-	shift
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	[ ! -z "${path}" ] && [ -L "${path}" ]
 }
 #echo "Wait a moment (just for fun!)"

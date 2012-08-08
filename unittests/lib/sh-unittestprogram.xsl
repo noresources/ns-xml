@@ -33,26 +33,33 @@
 		<text><![CDATA[parse "${@}"
 echo -n "CLI: "
 cpt="${#}"
-for ((i=1;${i}<=${cpt};i++))
+i=1
+for argv in "${@}"
 do
 	if [ ${i} -gt 1 ]
 	then
 		echo -n ", "
 	fi
-	echo -n "\"${!i}\""
+	echo -n "\"${argv}\""
+	i=$(expr ${i} + 1)
 done
 echo ""
 echo "Value count: ${#parser_values[*]}"
 cpt="${#parser_values[*]}"
 echo -n "Values: "
-for ((i=0;${i}<${cpt};i++))
-do
-	if [ ${i} -gt 0 ]
-	then
-		echo -n ", "
-	fi
-	echo -n "\"${parser_values[${i}]}\""
-done
+i=1
+if [ ${#parser_values[*]} -gt 0 ]
+then
+	for v in "${parser_values[@]}"
+	do
+		if [ ${i} -gt 1 ]
+		then
+			echo -n ", "
+		fi
+		echo -n "\"${v}\""
+		i=$(expr ${i} + 1)
+	done
+fi
 echo ""
 echo "Error count: ${#parser_errors[*]}"
 echo "Subcommand: ${parser_subcommand}"
@@ -65,7 +72,7 @@ echo "Subcommand: ${parser_subcommand}"
 		
 		<for-each select="/prg:program/prg:subcommands/*">
 			<if test="./prg:options">
-				<text>if [ "${parser_subcommand}" == "</text>
+				<text>if [ "${parser_subcommand}" = "</text>
 				<apply-templates select="prg:name" />
 				<text>" ]; then</text>
 				<text>&#10;</text>

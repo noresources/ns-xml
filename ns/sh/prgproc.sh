@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud GUillard (dev@niao.fr)
 # Author: renaud
@@ -17,15 +17,15 @@ Usage:
     -x, --xml-description: Program description file
     	If the program description file is provided, the xml file will be validated 
     	before any XSLT processing
-    --xslt, --xsl, -t: XSL transformation to apply	
+    -t, --xslt, --xsl: XSL transformation to apply	
     	The argument value have to be one of the following:	
     		bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
-    --output, -o: Output file
+    -o, --output: Output file
     	If no output file is provided, the transformation result will be sent to the 
     	standard output.
-    --param, --params, -p: pass a (parameter,value) pair	
+    -p, --param, --params: pass a (parameter,value) pair	
     	Minimal argument count: 2
-    --stringparam, --stringparams, -s: pass a (parameter, UTF8 string value) pair	
+    -s, --stringparam, --stringparams: pass a (parameter, UTF8 string value) pair	
     	Minimal argument count: 2
     ns-xml source path options
     	--ns-xml-path: ns-xml source path
@@ -65,7 +65,7 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 
-parser_required[${#parser_required[*]}]="G_2_xslt:--xslt"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_xslt:--xslt"
 # Switch options
 
 nsxmlPathRelative=false
@@ -155,7 +155,7 @@ parse_checkrequired()
 		if [ ! -z "${parser_required[${i}]}" ]
 		then
 			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
-			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
 	done
@@ -167,12 +167,12 @@ parse_checkminmax()
 	# Check min argument for multiargument
 	if [ ${#parameters[*]} -gt 0 ] && [ ${#parameters[*]} -lt 2 ]
 	then
-		parser_errors[${#parser_errors[*]}]="Invalid argument count for option \"--param\". At least 2 expected, ${#parameters[*]} given"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--param\". At least 2 expected, ${#parameters[*]} given"
 		errorCount=$(expr ${errorCount} + 1)
 	fi
 	if [ ${#stringParameters[*]} -gt 0 ] && [ ${#stringParameters[*]} -lt 2 ]
 	then
-		parser_errors[${#parser_errors[*]}]="Invalid argument count for option \"--stringparam\". At least 2 expected, ${#stringParameters[*]} given"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--stringparam\". At least 2 expected, ${#stringParameters[*]} given"
 		errorCount=$(expr ${errorCount} + 1)
 	fi
 	
@@ -195,10 +195,12 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value="${1}"
+	local value
+	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
+	shift
 	if [ -z "${parser_subcommand}" ]
 	then
-		parser_errors[${#parser_errors[*]}]="Positional argument not allowed"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed"
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
@@ -208,7 +210,7 @@ parse_addvalue()
 		
 		esac
 	fi
-	parser_values[${#parser_values[*]}]="${1}"
+	parser_values[$(expr ${#parser_values[*]} + ${parser_startindex})]="${value}"
 }
 parse_process_subcommand_option()
 {
@@ -218,9 +220,6 @@ parse_process_subcommand_option()
 		return ${PARSER_SC_SKIP}
 	fi
 	
-	case "${parser_subcommand}" in
-	
-	esac
 	return ${PARSER_SC_OK}
 }
 parse_process_option()
@@ -392,7 +391,7 @@ parse_process_option()
 			local parser_ma_total_count=${#parameters[*]}
 			if [ -z "${parser_item}" ]
 			then
-				parameters[${#parameters[*]}]="${parser_item}"
+				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -400,7 +399,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -408,7 +407,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[${#parameters[*]}]="${parser_item}"
+				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -434,7 +433,7 @@ parse_process_option()
 			local parser_ma_total_count=${#stringParameters[*]}
 			if [ -z "${parser_item}" ]
 			then
-				stringParameters[${#stringParameters[*]}]="${parser_item}"
+				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -442,7 +441,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -450,7 +449,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[${#stringParameters[*]}]="${parser_item}"
+				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -655,7 +654,7 @@ parse_process_option()
 			local parser_ma_total_count=${#parameters[*]}
 			if [ -z "${parser_item}" ]
 			then
-				parameters[${#parameters[*]}]="${parser_item}"
+				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -663,7 +662,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -671,7 +670,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[${#parameters[*]}]="${parser_item}"
+				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -697,7 +696,7 @@ parse_process_option()
 			local parser_ma_total_count=${#stringParameters[*]}
 			if [ -z "${parser_item}" ]
 			then
-				stringParameters[${#stringParameters[*]}]="${parser_item}"
+				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -705,7 +704,7 @@ parse_process_option()
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
 			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" == "-" ]
+				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
 					break
 				fi
@@ -713,7 +712,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[${#stringParameters[*]}]="${parser_item}"
+				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -772,8 +771,12 @@ parse()
 
 ns_realpath()
 {
-	local path="${1}"
-	shift
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -790,9 +793,14 @@ ns_realpath()
 }
 error()
 {
-	local errno=${1}
-	[ -z "${errno}" ] && errno=1
-	shift
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
 	local message="${@}"
 	if [ -z "${errno##*[!0-9]*}" ]
 	then 
@@ -821,8 +829,12 @@ chunk_check_nsxml_ns_path()
 }
 get_program_version()
 {
-	local file="${1}"
-	shift
+	local file
+	if [ $# -gt 0 ]
+	then
+		file="${1}"
+		shift
+	fi
 	local tmpXslFile="/tmp/get_program_version.xsl"
 	cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -849,10 +861,19 @@ GETPROGRAMVERSIONXSLEOF
 }
 xml_validate()
 {
-	local schema="${1}"
-	shift
-	local xml="${1}"
-	shift
+	local schema
+	if [ $# -gt 0 ]
+	then
+		schema="${1}"
+		shift
+	fi
+	
+	local xml
+	if [ $# -gt 0 ]
+	then
+		xml="${1}"
+		shift
+	fi
 	local tmpOut="/tmp/xml_validate.tmp"
 	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then

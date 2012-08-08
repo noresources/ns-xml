@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ####################################
 # Copyright (c) 2013 by Renaud Guillard (dev@niao.fr)
 # Author: Renaud Guillard
@@ -14,10 +14,10 @@ new-xsh: A script to create XSH (XML + SH) files
 Usage: 
   new-xsh [-sd] -n <string> [-o <path>] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
   With:
-    --name, -n: XSH program name
-    --output, --path, -o: Output path	
+    -n, --name: XSH program name
+    -o, --output, --path: Output path	
     	Default value: .
-    --sample, -s: Add basic sample code and options
+    -s, --sample: Add basic sample code and options
     	Add some basic xsh functions in XSH file, --help option definition in XML 
     	file and common parsing code in SH file.
     -d, --debug: Generate debug messages in help and command line parsing functions
@@ -58,7 +58,7 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 
-parser_required[${#parser_required[*]}]="G_1_name:--name"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_name:--name"
 # Switch options
 
 addSamples=false
@@ -149,7 +149,7 @@ parse_checkrequired()
 		if [ ! -z "${parser_required[${i}]}" ]
 		then
 			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
-			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
 	done
@@ -179,10 +179,12 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value="${1}"
+	local value
+	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
+	shift
 	if [ -z "${parser_subcommand}" ]
 	then
-		parser_errors[${#parser_errors[*]}]="Positional argument not allowed"
+		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed"
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
@@ -192,7 +194,7 @@ parse_addvalue()
 		
 		esac
 	fi
-	parser_values[${#parser_values[*]}]="${1}"
+	parser_values[$(expr ${#parser_values[*]} + ${parser_startindex})]="${value}"
 }
 parse_process_subcommand_option()
 {
@@ -202,9 +204,6 @@ parse_process_subcommand_option()
 		return ${PARSER_SC_SKIP}
 	fi
 	
-	case "${parser_subcommand}" in
-	
-	esac
 	return ${PARSER_SC_OK}
 }
 parse_process_option()
@@ -538,8 +537,12 @@ parse()
 
 ns_realpath()
 {
-	local path="${1}"
-	shift
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -556,9 +559,14 @@ ns_realpath()
 }
 error()
 {
-	local errno=${1}
-	[ -z "${errno}" ] && errno=1
-	shift
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
 	local message="${@}"
 	if [ -z "${errno##*[!0-9]*}" ]
 	then 
@@ -587,8 +595,12 @@ chunk_check_nsxml_ns_path()
 }
 get_program_version()
 {
-	local file="${1}"
-	shift
+	local file
+	if [ $# -gt 0 ]
+	then
+		file="${1}"
+		shift
+	fi
 	local tmpXslFile="/tmp/get_program_version.xsl"
 	cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -615,10 +627,19 @@ GETPROGRAMVERSIONXSLEOF
 }
 xml_validate()
 {
-	local schema="${1}"
-	shift
-	local xml="${1}"
-	shift
+	local schema
+	if [ $# -gt 0 ]
+	then
+		schema="${1}"
+		shift
+	fi
+	
+	local xml
+	if [ $# -gt 0 ]
+	then
+		xml="${1}"
+		shift
+	fi
 	local tmpOut="/tmp/xml_validate.tmp"
 	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
 	then

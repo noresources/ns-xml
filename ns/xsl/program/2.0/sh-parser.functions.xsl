@@ -17,7 +17,7 @@
 			<value-of select="$name" />
 			<text>s</text>
 		</variable>
-		
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name">
 				<value-of select="$prg.prefix" />
@@ -31,18 +31,18 @@
 				<text>local m="</text>
 				<text>[</text>
 				<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_option" />
+					<with-param name="name" select="$prg.sh.parser.vName_option" />
 				</call-template>
 				<text>:</text>
 				<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_index" />
+					<with-param name="name" select="$prg.sh.parser.vName_index" />
 				</call-template>
 				<text>:</text>
 				<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_subindex" />
+					<with-param name="name" select="$prg.sh.parser.vName_subindex" />
 				</call-template>
 				<text>] </text>
-				
+
 				<call-template name="sh.var">
 					<with-param name="name">
 						<text>message</text>
@@ -64,13 +64,11 @@
 					</with-param>
 				</call-template>
 				<text> + </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-				</call-template>
+				<value-of select="$prg.sh.parser.var_startindex" />
 				<text>)</text>
 				<call-template name="unixEndl" />
 
-				
+
 				<value-of select="$tableName" />
 				<text>[</text>
 				<call-template name="sh.var">
@@ -94,11 +92,7 @@
 			<with-param name="name" select="$prg.sh.parser.fName_displayerrors" />
 			<with-param name="content">
 				<call-template name="sh.incrementalFor">
-					<with-param name="init">
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-						</call-template>
-					</with-param>
+					<with-param name="init" select="$prg.sh.parser.var_startindex" />
 					<with-param name="operator">
 						<text>&lt;</text>
 					</with-param>
@@ -181,7 +175,7 @@
 					<with-param name="quoted" select="true()" />
 				</call-template>
 				<call-template name="unixEndl" />
-				
+
 				<!-- We can't check access on non-existing file -->
 				<call-template name="sh.if">
 					<with-param name="condition">
@@ -192,7 +186,7 @@
 					</with-param>
 				</call-template>
 				<call-template name="unixEndl" />
-				
+
 				<text>local accessString=</text>
 				<call-template name="sh.var">
 					<with-param name="name" select="2" />
@@ -249,16 +243,10 @@
 			<with-param name="name" select="$prg.sh.parser.fName_setoptionpresence" />
 			<with-param name="content">
 				<call-template name="sh.incrementalFor">
-					<with-param name="init">
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-						</call-template>
-					</with-param>
+					<with-param name="init" select="$prg.sh.parser.var_startindex" />
 					<with-param name="limit">
 						<text>$(expr </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-						</call-template>
+						<value-of select="$prg.sh.parser.var_startindex" />
 						<text> + </text>
 						<call-template name="sh.arrayLength">
 							<with-param name="name" select="$prg.sh.parser.vName_required" />
@@ -351,16 +339,10 @@
 					</call-template>
 				</variable>
 
-				<variable name="init">
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-					</call-template>
-				</variable>
+				<variable name="init" select="$prg.sh.parser.var_startindex" />
 				<variable name="limit">
 					<text>$(expr </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-					</call-template>
+					<value-of select="$prg.sh.parser.var_startindex" />
 					<text> + </text>
 					<call-template name="sh.arrayLength">
 						<with-param name="name" select="$prg.sh.parser.vName_required" />
@@ -403,6 +385,7 @@
 								<call-template name="unixEndl" />
 								<call-template name="sh.arrayAppend">
 									<with-param name="name" select="$prg.sh.parser.vName_errors" />
+									<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 									<with-param name="value">
 										<text>"Missing required option </text>
 										<call-template name="sh.var">
@@ -551,7 +534,13 @@
 				</call-template>
 				<call-template name="unixEndl" />
 
-				<text>local value="${1}"</text>
+				<text>local value</text>
+				<call-template name="unixEndl" />
+				<text>if [ $# -gt 0 ] &amp;&amp; [ ! -z "${1}" ]; then value="${1}"; else return </text>
+				<value-of select="$prg.sh.parser.var_ERROR" />
+				<text>; fi</text>
+				<call-template name="unixEndl" />
+				<text>shift</text>
 				<call-template name="unixEndl" />
 
 				<call-template name="sh.if">
@@ -629,19 +618,18 @@
 							</with-param>
 						</call-template>
 					</with-param>
-
 				</call-template>
 
 				<call-template name="sh.arrayAppend">
 					<with-param name="name" select="$prg.sh.parser.vName_values" />
+					<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 					<with-param name="value">
 						<call-template name="sh.var">
-							<with-param name="name" select="1" />
+							<with-param name="name" select="'value'" />
 							<with-param name="quoted" select="true()" />
 						</call-template>
 					</with-param>
 				</call-template>
-
 			</with-param>
 		</call-template>
 	</template>
@@ -735,59 +723,62 @@
 				</call-template>
 				<call-template name="unixEndl" />
 
-				<call-template name="sh.case">
-					<with-param name="case">
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-						</call-template>
-					</with-param>
-					<with-param name="in">
-						<for-each select="$programNode/prg:subcommands/prg:subcommand">
-							<if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
-								<call-template name="sh.caseblock">
-									<with-param name="case">
-										<value-of select="./prg:name" />
-									</with-param>
-									<with-param name="content">
-										<if test="./prg:options//prg:names/prg:long">
-											<call-template name="prg.sh.parser.longOptionNameElif">
-												<with-param name="optionsNode" select="./prg:options" />
-												<with-param name="onError" select="$onError" />
-												<with-param name="onSuccess" select="$onSuccess" />
-												<with-param name="onUnknownOption" select="$onUnknownOption" />
-												<with-param name="keyword">
-													<text>if</text>
-												</with-param>
-											</call-template>
-										</if>
+				<if test="$programNode/prg:subcommands/prg:subcommand">
+					<call-template name="sh.case">
+						<with-param name="case">
+							<call-template name="sh.var">
+								<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+							</call-template>
+						</with-param>
+						<with-param name="in">
+							<for-each select="$programNode/prg:subcommands/prg:subcommand">
+								<if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
+									<call-template name="sh.caseblock">
+										<with-param name="case">
+											<value-of select="./prg:name" />
+										</with-param>
+										<with-param name="content">
+											<if test="./prg:options//prg:names/prg:long">
+												<call-template name="prg.sh.parser.longOptionNameElif">
+													<with-param name="optionsNode" select="./prg:options" />
+													<with-param name="onError" select="$onError" />
+													<with-param name="onSuccess" select="$onSuccess" />
+													<with-param name="onUnknownOption" select="$onUnknownOption" />
+													<with-param name="keyword">
+														<text>if</text>
+													</with-param>
+												</call-template>
+											</if>
 
-										<!-- short option -->
-										<if test="./prg:options//prg:names/prg:short">
-											<call-template name="prg.sh.parser.shortOptionNameElif">
-												<with-param name="optionsNode" select="./prg:options" />
-												<with-param name="onError" select="$onError" />
-												<with-param name="onSuccess" select="$onSuccess" />
-												<with-param name="onUnknownOption" select="$onUnknownOption" />
-												<with-param name="keyword">
-													<choose>
-														<when test="./prg:options//prg:names/prg:long">
-															<text>elif</text>
-														</when>
-														<otherwise>
-															<text>if</text>
-														</otherwise>
-													</choose>
-												</with-param>
-											</call-template>
-										</if>
-										<text>fi</text>
-									</with-param>
-								</call-template>
-							</if>
-						</for-each>
-					</with-param>
-				</call-template>
-				<call-template name="unixEndl" />
+											<!-- short option -->
+											<if test="./prg:options//prg:names/prg:short">
+												<call-template name="prg.sh.parser.shortOptionNameElif">
+													<with-param name="optionsNode" select="./prg:options" />
+													<with-param name="onError" select="$onError" />
+													<with-param name="onSuccess" select="$onSuccess" />
+													<with-param name="onUnknownOption" select="$onUnknownOption" />
+													<with-param name="keyword">
+														<choose>
+															<when test="./prg:options//prg:names/prg:long">
+																<text>elif</text>
+															</when>
+															<otherwise>
+																<text>if</text>
+															</otherwise>
+														</choose>
+													</with-param>
+												</call-template>
+											</if>
+											<text>fi</text>
+										</with-param>
+									</call-template>
+								</if>
+							</for-each>
+						</with-param>
+					</call-template>
+					<call-template name="unixEndl" />
+				</if>
+
 				<text>return </text>
 				<call-template name="sh.var">
 					<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
@@ -945,7 +936,7 @@
 					<text>)"</text>
 					<call-template name="unixEndl" />
 				</if>
-				
+
 				<!-- End of options -->
 				<text>if [ </text>
 				<call-template name="sh.var">
@@ -965,7 +956,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				
+
 				<!-- End of option values -->
 				<text>elif [ </text>
 				<call-template name="sh.var">
@@ -983,7 +974,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				
+
 				<!-- Protected value -->
 				<text>elif [ </text>
 				<call-template name="sh.var">
@@ -1005,7 +996,7 @@
 						</call-template>
 					</with-param>
 				</call-template>
-				
+
 				<variable name="optionsNode" select="$programNode/prg:options" />
 
 				<!-- long option -->

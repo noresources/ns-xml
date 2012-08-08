@@ -888,6 +888,7 @@
 								</call-template>
 								<call-template name="sh.arrayAppend">
 									<with-param name="name" select="$optionVariableName" />
+									<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 									<with-param name="value">
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
@@ -979,7 +980,7 @@
 											<with-param name="quoted" select="true()" />
 											<with-param name="length" select="1" />
 										</call-template>
-										<text> == "-" ]</text>
+										<text> = "-" ]</text>
 									</with-param>
 									<with-param name="then">
 										<text>break</text>
@@ -1007,6 +1008,7 @@
 
 								<call-template name="sh.arrayAppend">
 									<with-param name="name" select="$optionVariableName" />
+									<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 									<with-param name="value">
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
@@ -1134,6 +1136,7 @@
 				<call-template name="unixEndl" />
 				<call-template name="sh.arrayAppend">
 					<with-param name="name" select="$prg.sh.parser.vName_required" />
+					<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 					<with-param name="value">
 						<text>"</text>
 						<call-template name="prg.optionId">
@@ -1200,6 +1203,7 @@
 
 		<call-template name="sh.arrayAppend">
 			<with-param name="name" select="$prg.sh.parser.vName_errors" />
+			<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 			<with-param name="value" select="$value" />
 		</call-template>
 	</template>
@@ -1530,9 +1534,7 @@
 
 		<value-of select="$prg.sh.parser.vName_itemcount" />
 		<text>=$(expr </text>
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-		</call-template>
+		<value-of select="$prg.sh.parser.var_startindex" />
 		<text> + </text>
 		<call-template name="sh.var">
 			<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
@@ -1542,9 +1544,7 @@
 
 		<value-of select="$prg.sh.parser.vName_index" />
 		<text>=</text>
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-		</call-template>
+		<value-of select="$prg.sh.parser.var_startindex" />
 		<call-template name="unixEndl" />
 
 		<call-template name="unixEndl" />

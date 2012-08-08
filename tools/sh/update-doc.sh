@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@niao.fr)
 # Author: Renaud Guillard
@@ -148,7 +148,7 @@ parse_checkrequired()
 		if [ ! -z "${parser_required[${i}]}" ]
 		then
 			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
-			parser_errors[${#parser_errors[*]}]="Missing required option ${displayPart}"
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
 	done
@@ -178,7 +178,9 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value="${1}"
+	local value
+	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
+	shift
 	if [ -z "${parser_subcommand}" ]
 	then
 		case "${position}" in
@@ -194,7 +196,7 @@ parse_addvalue()
 		
 		esac
 	fi
-	parser_values[${#parser_values[*]}]="${1}"
+	parser_values[$(expr ${#parser_values[*]} + ${parser_startindex})]="${value}"
 }
 parse_process_subcommand_option()
 {
@@ -204,9 +206,6 @@ parse_process_subcommand_option()
 		return ${PARSER_SC_SKIP}
 	fi
 	
-	case "${parser_subcommand}" in
-	
-	esac
 	return ${PARSER_SC_OK}
 }
 parse_process_option()
@@ -624,8 +623,12 @@ parse()
 
 ns_realpath()
 {
-	local path="${1}"
-	shift
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	local cwd="$(pwd)"
 	[ -d "${path}" ] && cd "${path}" && path="."
 	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
@@ -642,11 +645,21 @@ ns_realpath()
 }
 ns_relativepath()
 {
-	local from="${1}"
-	shift
-	local base="${1}"
-	[ -z "${base}" ] && base="."
-	shift
+	local from
+	if [ $# -gt 0 ]
+	then
+		from="${1}"
+		shift
+	fi
+	
+	local base
+	if [ $# -gt 0 ]
+	then
+		base="${1}"
+		shift
+	else
+		base="."
+	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
 	[ ! -d "${base}" ] && base="$(dirname "${base}")"  
@@ -676,8 +689,12 @@ ns_relativepath()
 }
 ns_sed_inplace()
 {
-	local regex="${1}"
-	shift
+	local regex
+	if [ $# -gt 0 ]
+	then
+		regex="${1}"
+		shift
+	fi
 	# sedForm
 	# 1: modern linux => sed --in-place
 	# 2: Mac OS X 10.5 => sed -i ""
@@ -711,12 +728,26 @@ ns_sed_inplace()
 }
 filesystempath_to_nmepath()
 {
-	local sourceBasePath="${1}"
-	shift
-	local outputBasePath="${1}"
-	shift
-	local path="${1}"
-	shift
+	local sourceBasePath
+	if [ $# -gt 0 ]
+	then
+		sourceBasePath="${1}"
+		shift
+	fi
+	
+	local outputBasePath
+	if [ $# -gt 0 ]
+	then
+		outputBasePath="${1}"
+		shift
+	fi
+	
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
 	local output="$(echo "${path#${sourceBasePath}}" | tr -d "/" | tr " " "_")"
 	output="${outputBasePath}/${output}"
 	echo "${output}"
