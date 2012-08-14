@@ -59,12 +59,30 @@ done
 uniqueApp="${1}"
 uniqueTest="${2}"
 
+check_zsh()
+{
+	zshVersion="$(zsh --version | cut -f 2 -d" ")"
+	zshM="$(echo "${zshVersion}" | cut -f 1 -d.)"
+	zshm="$(echo "${zshVersion}" | cut -f 2 -d.)"
+	zshp="$(echo "${zshVersion}" | cut -f 3 -d.)"
+	[ ${zshM} -lt 4 ] && return 1;
+	[ ${zshM} -eq 4 ] && [ ${zshm} -lt 3 ] && return 1;
+	[ ${zshM} -eq 4 ] && [ ${zshm} -eq 3 ] && [ ${zshp} -lt 13 ] && return 1;
+	
+	return 0
+}
+
+# Supported shells
 shells=(bash zsh)
 for s in ${shells[*]}
 do
 	if which ${s} 1>/dev/null 2>&1
 	then
-		available_shells[${#available_shells[*]}]=${s}
+		check_func="check_${s}"
+		if [ "$(type -t "${check_func}")" != "function" ] || ${check_func}
+		then
+			available_shells[${#available_shells[*]}]=${s}
+		fi
 	fi
 done
 resultLineFormat="%-10s |"
