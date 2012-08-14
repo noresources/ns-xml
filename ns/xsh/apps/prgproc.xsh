@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- {} -->
-<sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<sh:program interpreter="/usr/bin/env bash" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<sh:info>
 		<xi:include href="prgproc.xml" />
 	</sh:info>
