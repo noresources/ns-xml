@@ -78,7 +78,7 @@
 		</choose>
 	</template>
 
-	<!-- Get the substring before the last occurence of the given delimiter -->
+	<!-- Get the substring before the last occurrence of the given delimiter -->
 	<template name="str.substringBeforeLast">
 		<param name="text" />
 		<param name="delimiter" />
@@ -115,7 +115,72 @@
 				<value-of select="$text" />
 			</otherwise>
 		</choose>
+	</template>
+	
+	<!-- Number of occurrence of a given string at the beginning of another string -->
+	<template name="str.startsWithCount">
+		<!-- Text -->
+		<param name="text" />
+		<!-- Substring to search -->
+		<param name="needle" />
+		<!-- Internal use -->
+		<param name="offset" select="1" />
+		<!-- Internal use -->
+		<param name="count" select="0" />
 
+		<variable name="needleLength" select="string-length($needle)" />
+		<variable name="subtext" select="substring($text, $offset)" />
+
+		<choose>
+			<when test="$needleLength = 0">
+				<value-of select="$count" />
+			</when>
+			<when test="starts-with($subtext, $needle)">
+				<call-template name="str.startsWithCount">
+					<with-param name="text" select="$text" />
+					<with-param name="needle" select="$needle" />
+					<with-param name="offset" select="$offset + $needleLength" />
+					<with-param name="count" select="$count + 1" />
+				</call-template>
+			</when>
+			<otherwise>
+				<value-of select="$count" />
+			</otherwise>
+		</choose>
+	</template>
+	
+	<!-- Number of occurrence of a given string at the end of another string -->
+	<template name="str.endsWithCount">
+		<!-- Text -->
+		<param name="text" />
+		<!-- Substring to search -->
+		<param name="needle" />
+		<!-- Internal use -->
+		<param name="offset" select="0" />
+		<!-- Internal use -->
+		<param name="count" select="0" />
+
+		<variable name="needleLength" select="string-length($needle)" />
+		<variable name="subtext" select="substring($text, 1, string-length($text) - $offset)" />
+		<variable name="subtextLength" select="string-length($subtext)" />
+		<variable name="toTest" select="substring($subtext, (($subtextLength - $needleLength) + 1))" />
+				
+		<choose>
+			<when test="($needleLength = 0) or ($subtextLength &lt; $needleLength)">
+				<value-of select="$count" />
+			</when>
+			<when test="$toTest = $needle">
+				<call-template name="str.endsWithCount">
+					<with-param name="text" select="$text" />
+					<with-param name="needle" select="$needle" />
+					<with-param name="offset" select="$offset + $needleLength" />
+					<with-param name="count" select="$count + 1" />
+				</call-template>
+			</when>
+			<otherwise>
+				<value-of select="$count" />
+			</otherwise>
+		</choose>
 	</template>
 
 	<!-- Replace a string by another -->
@@ -167,11 +232,13 @@
 		</choose>
 	</template>
 
+	<!-- Repeat a string -->
 	<template name="str.repeat">
+		<!-- Text to repeat -->
+		<param name="text" select="'&#32;'" />
+		<!-- Repetitions -->
 		<param name="iterations" select="1" />
-		<param name="text">
-			<text>&#32;</text>
-		</param>
+		
 		<if test="$iterations &gt; 0">
 			<value-of select="$text" />
 
@@ -415,8 +482,11 @@
 		</call-template>
 	</template>
 
+	<!-- Trim text at the beginning and the end -->
 	<template name="str.trim">
+		<!-- Text to trim -->
 		<param name="text" select="." />
+		
 		<variable name="lTrimmed">
 			<call-template name="str.trimLeft">
 				<with-param name="text" select="$text" />
