@@ -1,4 +1,9 @@
-"""Value validators"""
+# -*- coding: utf-8 -*-
+""" Copyright © 2012 by Renaud Guillard """
+""" Distributed under the terms of the MIT License, see LICENSE """
+
+""" Value validators """
+
 import os
 import math
 from Base import Util

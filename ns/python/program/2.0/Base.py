@@ -1,4 +1,8 @@
-"""Base and utils """
+# -*- coding: utf-8 -*-
+""" Copyright © 2012 by Renaud Guillard """
+""" Distributed under the terms of the MIT License, see LICENSE """
+
+""" Base and utils """
 
 class Util:
     @classmethod

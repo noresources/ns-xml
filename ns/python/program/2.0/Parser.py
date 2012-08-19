@@ -1,4 +1,9 @@
-"""Parser and parser result"""
+# -*- coding: utf-8 -*-
+""" Copyright © 2012 by Renaud Guillard """
+""" Distributed under the terms of the MIT License, see LICENSE """
+
+""" Parser and parser result """
+
 from Info import *
 from Base import *
 import textwrap
