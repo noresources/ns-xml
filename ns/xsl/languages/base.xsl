@@ -30,13 +30,8 @@
 			<with-param name="text">
 				<call-template name="str.replaceAll">
 					<with-param name="text" select="$content" />
-					<with-param name="replace">
-						<text>&#10;</text>
-					</with-param>
-					<with-param name="by">
-						<text>&#10;</text>
-						<value-of select="$marker" />
-					</with-param>
+					<with-param name="replace" select="'&#10;'" />
+					<with-param name="by" select="concat('&#10;', $marker)" />
 				</call-template>
 			</with-param>
 		</call-template>
@@ -65,13 +60,8 @@
 			<with-param name="text">
 				<call-template name="str.replaceAll">
 					<with-param name="text" select="$content" />
-					<with-param name="replace">
-						<text>&#10;</text>
-					</with-param>
-					<with-param name="by">
-						<text>&#10;</text>
-						<value-of select="$indentChar" />
-					</with-param>
+					<with-param name="replace" select="'&#10;'" />
+					<with-param name="by" select="concat('&#10;', $indentChar)" />
 				</call-template>
 			</with-param>
 		</call-template>
@@ -85,14 +75,15 @@
 	<template name="code.identifierNamingStyle">
 		<!-- Identifier to transform -->
 		<param name="identifier" />
-		<!-- Current naming style of the identifier. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'auto' -->
+		<!-- Current naming style of the identifier. Possible values: 'auto' (recommended), 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'mixed' -->
 		<param name="from" select="'auto'" />
-		<!-- Targeted naming style. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen' -->
+		<!-- Targeted naming style. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'none' -->
 		<param name="to" select="'camelCase'" />
 		<!-- A string that will never appear in an identifier string -->
 		<param name="transitionalChar" select="'&#10;'" />
 
 		<choose>
+			<!-- Auto-detect and re-call template -->
 			<when test="$from = 'auto'">
 				<variable name="autoDetectFrom">
 					<call-template name="code.identifierNamingStyleAutoDetect">
@@ -105,9 +96,11 @@
 					<with-param name="to" select="$to" />
 				</call-template>
 			</when>
+			<!-- Ignore if from and to are the same -->
 			<when test="$from = $to">
 				<value-of select="$identifier" />
 			</when>
+			<!-- Convert to hypen or underscore style -->
 			<when test="($to = 'underscore') or ($to = 'hyphen')">
 				<variable name="prefixFrom">
 					<choose>
@@ -119,7 +112,6 @@
 						</otherwise>
 					</choose>
 				</variable>
-
 				<variable name="prefixTo">
 					<choose>
 						<when test="($to = 'underscore')">
@@ -130,20 +122,53 @@
 						</otherwise>
 					</choose>
 				</variable>
-
 				<call-template name="code.identifierNamingStyleLowerPrepend">
-					<with-param name="identifier" select="translate($identifier, $prefixFrom, $prefixTo)" />
+					<with-param name="identifier" select="translate($identifier, '-_', concat($prefixTo, $prefixTo))" />
 					<with-param name="prefix" select="$prefixTo" />
 				</call-template>
 			</when>
+			<!-- CamelCase styles -->
 			<when test="($to = 'camelCase') or ($to = 'CamelCase')">
+				<variable name="separator">
+					<choose>
+						<when test="($from = 'underscore')">
+							<text>_</text>
+						</when>
+						<when test="($from = 'hyphen')">
+							<text>-</text>
+						</when>
+						<otherwise />
+					</choose>
+				</variable>
+				
+				<variable name="before">
+					<call-template name="str.startsWithCount">
+						<with-param name="text" select="$identifier" />
+						<with-param name="needle" select="$separator" />
+					</call-template>
+				</variable>
+				
+				<variable name="after">
+					<call-template name="str.endsWithCount">
+						<with-param name="text" select="$identifier" />
+						<with-param name="needle" select="$separator" />
+					</call-template>
+				</variable>
+				
+				<!-- temporary trim identifier -->
+				<variable name="identifierPart" select="substring($identifier, $before + 1, (string-length($identifier) - ($before + $after)))" />
+				
 				<variable name="result">
 					<call-template name="code.identifierNamingStyleUpperUnprepend">
-						<with-param name="identifier" select="translate($identifier, '-_', concat($transitionalChar, $transitionalChar))" />
+						<with-param name="identifier" select="translate($identifierPart, '-_', concat($transitionalChar, $transitionalChar))" />
 						<with-param name="prefix" select="$transitionalChar" />
 					</call-template>
 				</variable>
-
+											
+				<call-template name="str.repeat">
+					<with-param name="text" select="$separator" />
+					<with-param name="iterations" select="$before" />
+				</call-template>	
 				<choose>
 					<when test="$to = 'camelCase'">
 						<call-template name="str.toLower">
@@ -158,6 +183,10 @@
 						<value-of select="substring($result, 2)" />
 					</otherwise>
 				</choose>
+				<call-template name="str.repeat">
+					<with-param name="text" select="$separator" />
+					<with-param name="iterations" select="$after" />
+				</call-template>
 			</when>
 			<otherwise>
 				<value-of select="$identifier" />
@@ -170,8 +199,15 @@
 		<param name="identifier" />
 
 		<choose>
-			<when test="contains($identifier, '_')">
-				<text>underscore</text>
+			<when test="contains($identifier, '_')">	
+				<choose>
+					<when test="contains($identifier, '-')">
+						<text>mixed</text>
+					</when>
+					<otherwise>
+						<text>underscore</text>
+					</otherwise>
+				</choose>
 			</when>
 			<when test="contains($identifier, '-')">
 				<text>hyphen</text>
@@ -190,9 +226,13 @@
 		</choose>
 	</template>
 
+	<!-- Transform all uppercase letter to lowercase prefixed with the given characted -->
 	<template name="code.identifierNamingStyleLowerPrepend">
+		<!-- Identifier to transform -->
 		<param name="identifier" />
+		<!-- Prefix to add before any uppercase letter -->
 		<param name="prefix" />
+		<!-- Internal use -->
 		<param name="index" select="1" />
 
 		<variable name="lowerLetter" select="substring($str.smallCase, $index, 1)" />
