@@ -10,3 +10,4 @@ unittests;UnitTests
 tests;Tests
 ns/sh;Shell
 ns/xsh;XSH
+ns/c/program;C Parser
