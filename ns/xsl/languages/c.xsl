@@ -206,6 +206,8 @@
 		<param name="variableNameSuffix"/>
 		<!-- Variable name style -->
 		<param name="variableNameStyle" select="$c.indentifierNamingStyle"/>
+		<!-- Variable initial value -->
+		<param name="value"/>
 		<text>struct </text>
 		<call-template name="code.identifierNamingStyle">
 			<with-param name="identifier" select="normalize-space($name)"/>
@@ -223,6 +225,10 @@
 			<with-param name="to" select="normalize-space($variableNameStyle)"/>
 		</call-template>
 		<value-of select="normalize-space($variableNameSuffix)"/>
+		<if test="$value">
+			<text> = </text>
+			<value-of select="$value"/>
+		</if>
 		<text>;</text>
 	</template>
 
