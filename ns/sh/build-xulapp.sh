@@ -19,11 +19,11 @@ xsh: Build a XUL application which will run a Shell script defined through the b
 Usage: build-xulapp xsh [-p] -s <path>
 With:
   -s, --shell: XML shell file
-  	A xml file following the bash XML schema
-  	The file may include a program interface XML definition
+    A xml file following the bash XML schema
+    The file may include a program interface XML definition
   -p, --prefix-sc-variables: Prefix subcommand options bound variable names
-  	This will prefix all subcommand options bound variable name by the 
-  	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+    This will prefix all subcommand options bound variable name by the 
+    subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
 EOFSCUSAGE
 ;;
 python | py)
@@ -32,11 +32,11 @@ python: Build a XUL application which will run a python script built with the pr
 Usage: build-xulapp python -p <path> [-m <...>]
 With:
   -p, --python: Python script path
-  	Location of the Python script body. The parser module will be created at the 
-  	same place
+    Location of the Python script body. The parser module will be created at 
+    the same place
   -m, --module-name, --module: Python module name
-  	Set the name of the command line parser python module	
-  	Default value: Program
+    Set the name of the command line parser python module  
+    Default value: Program
 EOFSCUSAGE
 ;;
 command | cmd)
@@ -66,46 +66,46 @@ Usage:
     --help: Display program usage
     -o, --output: Output folder path for the XUL application structure
     -x, --xml-description: Program program interface XML definition file
-    	Location of the XML program description file. Expect a valid XML file 
-    	following the http://xsd.nore.fr/program schema
-    -t, --target-platform, --target: Target platform	
-    	The argument value have to be one of the following:	
-    		host, linux or macosx
-    	Default value: host
+      Location of the XML program description file. Expect a valid XML file 
+      following the http://xsd.nore.fr/program schema
+    -t, --target-platform, --target: Target platform  
+      The argument value have to be one of the following:  
+        host, linux or macosx
+      Default value: host
     -u, --update: Update application if folder already exists
     -S, --skip-validation, --no-validation: Skip XML Schema validations
-    	The default behavior of the program is to validate the given xml-based 
-    	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
-    	option will disable schema validations
+      The default behavior of the program is to validate the given xml-based 
+      file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
+      This option will disable schema validations
     User interface
-    	-W, --window-width: Window width
-    		Force the application main window witdh	
-    		Default value: 1024
-    	-H, --window-height: Window height
-    		Force the application main window height	
-    		Default value: 768
-    	-d, --debug: Add debug console and options into the built interface
+      -W, --window-width: Window width
+        Force the application main window witdh  
+        Default value: 1024
+      -H, --window-height: Window height
+        Force the application main window height  
+        Default value: 768
+      -d, --debug: Add debug console and options into the built interface
     
     User data
-    	-j, --init-script: User-defined post-initialization script
-    		A Javascript file loaded after the main ui object initialization stage
-    		If a onInitialize() function is available, it will be called with the main 
-    		ui object as the first argument
-    		The script is copied in the chrome/content directory and is available 
-    		through the following url
-    		  chrome://<xulAppName>/content/<xulAppName>-user.js
-    	--resources: Additional resources
-    		A list of path or file to add in the application bundle.
-    		These items are copied in the chrome/userdata folder of the application 
-    		bundle and a new resource url is avalailable (resource://userdata/...)
+      -j, --init-script: User-defined post-initialization script
+        A Javascript file loaded after the main ui object initialization stage
+        If a onInitialize() function is available, it will be called with the 
+        main ui object as the first argument
+        The script is copied in the chrome/content directory and is available 
+        through the following url
+          chrome://<xulAppName>/content/<xulAppName>-user.js
+      --resources: Additional resources
+        A list of path or file to add in the application bundle.
+        These items are copied in the chrome/userdata folder of the application 
+        bundle and a new resource url is avalailable (resource://userdata/...)
     
     ns-xml options
-    	--ns-xml-path: ns-xml source path
-    		Location of the ns folder of ns-xml package
-    	--ns-xml-path-relative: ns source path is relative this program path
-    	-n, --ns, --ns-xml-add: Add ns-xml sources into application resources
-    		Include the ns-xml library files (python, sh, xsl and xsd folders) in the 
-    		XUL application bundle.
+      --ns-xml-path: ns-xml source path
+        Location of the ns folder of ns-xml package
+      --ns-xml-path-relative: ns source path is relative this program path
+      -n, --ns, --ns-xml-add: Add ns-xml sources into application resources
+        Include the ns-xml library files (python, sh, xsl and xsd folders) in 
+        the XUL application bundle.
 EOFUSAGE
 }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 <!-- C language elements -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<import href="base.xsl"/>
@@ -80,6 +81,101 @@
 		</if>
 	</template>
 
+	<!-- A basic proprocessor #if with optional #else -->
+	<template name="c.preprocessor.if">
+		<!-- Condition -->
+		<param name="condition"/>
+		<!-- Content if condition evaluates to true (required) -->
+		<param name="then"/>
+		<!-- Content if condition evaluates to false (optional) -->
+		<param name="else"/>
+		<!-- Indicate if the inner code have to be indented -->
+		<param name="indent" select="false()"/>
+		<text>#if (</text>
+		<value-of select="$condition"/>
+		<text>)</text>
+		<choose>
+			<when test="$indent">
+				<call-template name="code.block">
+					<with-param name="content" select="$then"/>
+				</call-template>
+			</when>
+			<otherwise>
+				<call-template name="endl"/>
+				<value-of select="$then"/>
+			</otherwise>
+		</choose>
+		<if test="$else and string-length($else) &gt; 0">
+			<text>#else</text>
+			<choose>
+				<when test="$indent">
+					<call-template name="code.block">
+						<with-param name="content" select="$else"/>
+					</call-template>
+				</when>
+				<otherwise>
+					<call-template name="endl"/>
+					<value-of select="$else"/>
+				</otherwise>
+			</choose>
+		</if>
+		<text>#endif</text>
+	</template>
+
+	<template name="c.preprocessor.ifdef">
+		<!-- Condition -->
+		<param name="condition"/>
+		<!-- Content if condition evaluates to true (required) -->
+		<param name="then"/>
+		<!-- Content if condition evaluates to false (optional) -->
+		<param name="else"/>
+		<param name="indent" select="false()"/>
+		<call-template name="c.preprocessor.if">
+			<with-param name="condition" select="concat(concat('defined(', $condition),')')"/>
+			<with-param name="then" select="$then"/>
+			<with-param name="else" select="$else"/>
+			<with-param name="indent" select="$indent"/>
+		</call-template>
+	</template>
+
+	<template name="c.preprocessor.ifndef">
+		<!-- Condition -->
+		<param name="condition"/>
+		<!-- Content if condition evaluates to true (required) -->
+		<param name="then"/>
+		<!-- Content if condition evaluates to false (optional) -->
+		<param name="else"/>
+		<param name="indent" select="false()"/>
+		<call-template name="c.preprocessor.if">
+			<with-param name="condition" select="concat(concat('!defined(', $condition),')')"/>
+			<with-param name="then" select="$then"/>
+			<with-param name="else" select="$else"/>
+			<with-param name="indent" select="$indent"/>
+		</call-template>
+	</template>
+
+	<!-- Attempt to transform a name to fit C identifier name restriction (no 
+		spaces, et) -->
+	<template name="c.validIdentifierName">
+		<param name="name"/>
+		<!-- replace some characters into _ -->
+		<variable name="tname" select="translate(normalize-space($name),'- ','_')"/>
+		<variable name="tname2">
+			<value-of select="translate(substring($tname, 1, 1), '1234567890', '_')"/>
+			<value-of select="substring($tname, 2)"/>
+		</variable>
+		<choose>
+			<!-- @todo other C keywords -->
+			<when test="($tname2 = 'extern') or ($tname2 = 'static') or ($tname2 = 'switch')">
+				<text>_</text>
+				<value-of select="$tname2"/>
+			</when>
+			<otherwise>
+				<value-of select="$tname2"/>
+			</otherwise>
+		</choose>
+	</template>
+
 	<!-- Output a variable or parameter definition -->
 	<template name="c.identifierDefinition">
 		<!-- Variable type, including modifiers -->
@@ -88,7 +184,8 @@
 		<param name="pointer" select="0"/>
 		<!-- Variable name -->
 		<param name="name"/>
-		<!-- Name suffix. Untransformed text to append after the name. Should be used for array specification -->
+		<!-- Name suffix. Untransformed text to append after the name. Should be 
+			used for array specification -->
 		<param name="nameSuffix"/>
 		<!-- Variable value -->
 		<param name="value"/>
@@ -120,7 +217,8 @@
 		<param name="pointer" select="0"/>
 		<!-- Variable name -->
 		<param name="name"/>
-		<!-- Name suffix. Untransformed text to append after the name. Should be used for array specification -->
+		<!-- Name suffix. Untransformed text to append after the name. Should be 
+			used for array specification -->
 		<param name="nameSuffix"/>
 		<!-- Variable value -->
 		<param name="value"/>
@@ -145,7 +243,8 @@
 		<param name="pointer" select="0"/>
 		<!-- Variable name -->
 		<param name="name"/>
-		<!-- Variable Name suffix. Untransformed text to append after the name. Should be used for array specification -->
+		<!-- Variable Name suffix. Untransformed text to append after the name. 
+			Should be used for array specification -->
 		<param name="nameSuffix"/>
 		<!-- Variable value -->
 		<param name="value"/>
@@ -202,7 +301,8 @@
 		<param name="nameStyle" select="$c.structNamingStyle"/>
 		<!-- Optional variable nmae -->
 		<param name="variableName"/>
-		<!-- Variable name suffix. Untransformed text to append after the name. Should be used for array specification -->
+		<!-- Variable name suffix. Untransformed text to append after the name. 
+			Should be used for array specification -->
 		<param name="variableNameSuffix"/>
 		<!-- Variable name style -->
 		<param name="variableNameStyle" select="$c.indentifierNamingStyle"/>

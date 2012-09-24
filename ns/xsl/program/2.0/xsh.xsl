@@ -40,25 +40,25 @@
 										<call-template name="sh.caseblock">
 											<with-param name="indent" select="false()"/>
 											<with-param name="case">
-												<value-of select="./prg:name"/>
+												<value-of select="normalize-space(./prg:name)"/>
 												<for-each select="./prg:aliases/prg:alias">
 													<text> | </text>
-													<value-of select="."/>
+													<value-of select="normalize-space(.)"/>
 												</for-each>
 											</with-param>
 											<with-param name="content">
 												<text>cat &lt;&lt; EOFSCUSAGE</text>
 												<call-template name="unixEndl"/>
-												<value-of select="./prg:name"/>
+												<value-of select="normalize-space(./prg:name)"/>
 												<text>: </text>
 												<call-template name="prg.usage.descriptionDisplay">
 													<with-param name="textNode" select="./prg:documentation/prg:abstract"/>
 												</call-template>
 												<call-template name="unixEndl"/>
 												<text>Usage: </text>
-												<value-of select="../../prg:name"/>
+												<value-of select="normalize-space(../../prg:name)"/>
 												<text> </text>
-												<value-of select="./prg:name"/>
+												<value-of select="normalize-space(./prg:name)"/>
 												<if test="./prg:options">
 													<text> </text>
 													<call-template name="prg.usage.optionListInline">
@@ -104,7 +104,7 @@
 				</if>
 				<text>cat &lt;&lt; EOFUSAGE</text>
 				<call-template name="unixEndl"/>
-				<value-of select="$programNode/prg:name"/>
+				<value-of select="normalize-space($programNode/prg:name)"/>
 				<text>: </text>
 				<!-- Program description -->
 				<call-template name="prg.usage.descriptionDisplay">
@@ -115,7 +115,7 @@
 				<call-template name="code.block">
 					<with-param name="indentChar" select="$prg.sh.usage.indentChar"/>
 					<with-param name="content">
-						<value-of select="$programNode/prg:name"/>
+						<value-of select="normalize-space($programNode/prg:name)"/>
 						<if test="$programNode/prg:subcommands">
 							<text> &lt;subcommand [subcommand option(s)]&gt;</text>
 						</if>
@@ -138,10 +138,10 @@
 								<with-param name="addFinalEndl" select="false()"/>
 								<with-param name="content">
 									<for-each select="$programNode/prg:subcommands/prg:subcommand">
-										<value-of select="./prg:name"/>
+										<value-of select="normalize-space(./prg:name)"/>
 										<for-each select="./prg:aliases/prg:alias">
 											<text>, </text>
-											<value-of select="."/>
+											<value-of select="normalize-space(.)"/>
 										</for-each>
 										<text>: </text>
 										<value-of select="normalize-space(./prg:documentation/prg:abstract)"/>
@@ -187,12 +187,13 @@
 					</with-param>
 				</call-template>
 				<!-- Program documentation & details -->
-				<!-- @todo use str.prependLine + wrap -->
+				<!-- Indent level = +1 -->
 				<if test="$programNode/prg:documentation/prg:details">
-					<call-template name="code.block">
-						<with-param name="indentChar" select="$prg.sh.usage.indentChar"/>
-						<with-param name="addFinalEndl" select="false()"/>
-						<with-param name="content">
+					<call-template name="str.prependLine">
+						<with-param name="prependedText" select="$prg.usage.indentChar"/>
+						<with-param name="wrap" select="$prg.usage.wrap"/>
+						<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar)"/>
+						<with-param name="text">
 							<apply-templates select="$programNode/prg:documentation/prg:details"/>
 						</with-param>
 					</call-template>

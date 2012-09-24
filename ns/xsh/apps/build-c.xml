@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>build-c
+	</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2012 by Renaud Guillard</prg:copyright>
+	<prg:license> Distributed under the terms of the BSD License, see LICENSE</prg:license>
+	<prg:documentation>
+		<prg:abstract>Create a customized Command line argument parser in C</prg:abstract>
+		<prg:details>This is a temporary detailed description of this command line tool to test the text wrapping functionality. I hope
+		I didn't break something somewhere.</prg:details>
+	</prg:documentation>
+	<prg:options>
+		<prg:group type="exclusive">
+			<prg:databinding>
+				<prg:variable>generationMode</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Generation mode</prg:abstract>
+				<prg:details>Select what to generate</prg:details>
+			</prg:documentation>
+			<prg:options>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>generationModeBase</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generate generic utility and parser core</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>base</prg:long>
+						<prg:short>b</prg:short>
+					</prg:names>
+				</prg:switch>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>generationModeEmbed</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generate program parser and embed generic utility and parser core</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>embed</prg:long>
+						<prg:short>e</prg:short>
+					</prg:names>
+				</prg:switch>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>parserBaseFileBase</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generate program parser and include a pre-genrated utility and parser core</prg:abstract>
+						<prg:details>The namimg styles for variables, structs and functions of the program parser pre-generated files must match</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>include</prg:long>
+						<prg:short>i</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:file/>
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>C/C++ Header file</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.h</prg:endWith>
+										</prg:rule>
+										<prg:rule>
+											<prg:endWith>.H</prg:endWith>
+										</prg:rule>
+										<prg:rule>
+											<prg:endWith>.hpp</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
+		<!-- Output folder -->
+		<prg:argument id="outputfolder" required="true">
+			<prg:databinding>
+				<prg:variable>outputPath</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Output folder path for the generated files</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:short>o</prg:short>
+				<prg:long>output</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:folder/>
+					</prg:kinds>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
+		<!-- Output file base name -->
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>outputFileBase</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Output file base name</prg:abstract>
+				<prg:details> C Header file extension (.h) and C Source code extension (.c) are automatically appended to the name
+				</prg:details>
+			</prg:documentation>
+			<prg:default>&lt;auto&gt;</prg:default>
+			<prg:names>
+				<prg:long>file-base</prg:long>
+				<prg:long>file</prg:long>
+				<prg:short>f</prg:short>
+			</prg:names>
+		</prg:argument>
+		<!-- ns path -->
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>ns-xml options
+				</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])"/>
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.nsxmlRelativePath'])"/>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>addNsXml</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Add ns-xml sources into application resources</prg:abstract>
+						<prg:details> Include the ns-xml library files (python, sh, xsl and xsd folders) in the XUL application bundle.
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:short>n</prg:short>
+						<prg:long>ns</prg:long>
+						<prg:long>ns-xml-add</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
+	</prg:options>
+</prg:program>

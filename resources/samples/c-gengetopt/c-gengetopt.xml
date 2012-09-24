@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>c-gengetopt</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:license>Copyright (c) 2012 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright (c) 2012 by Renaud Guillard (dev@niao.fr)</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>XML to gengetopt</prg:abstract>
 	</prg:documentation>
@@ -18,7 +18,7 @@
 				<prg:abstract>Abstract text</prg:abstract>
 				<prg:details>
 					Detailed text with
-					<prg:br />
+					<prg:br/>
 					with line break etc.
 				</prg:details>
 			</prg:documentation>
@@ -27,7 +27,6 @@
 				<prg:short>a</prg:short>
 			</prg:names>
 		</prg:argument>
-
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>uselessToo</prg:variable>
@@ -38,21 +37,21 @@
 					If the .ggo file was generated using prg.c.ggo.allSwitchesAsEnum = 'yes' (the default),
 					The switch will be translated into a yes/no enum with optional argument where (yes == 1), (no == 0) and
 					the default value is set to "no" (0).
-					<prg:br />
+					<prg:br/>
 					Note that the naughty user may write '--switch=no'. So, the correct C code to check if the switch was
 					set is:
 					<prg:block>
 						if (args_info.switch_given &amp;&amp; (args_info.switch_arg == 1)
-						<prg:endl />
+						<prg:endl/>
 						{
-						<prg:endl />
+						<prg:endl/>
 						// switch set
-						<prg:endl />
+						<prg:endl/>
 						}
 					</prg:block>
 					If the .ggo file was generated using prg.c.ggo.allSwitchesAsEnum = 'no', a switch is translated into a
 					'flag off' option.
-					<prg:endl />
+					<prg:endl/>
 					Attention: Since flag-type options can't appear in a group,
 					this rule only apply for standalone switches and switches inside a non-exclusive group.
 				</prg:details>
@@ -62,7 +61,6 @@
 				<prg:short>b</prg:short>
 			</prg:names>
 		</prg:switch>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>stillUseless</prg:variable>
@@ -75,10 +73,9 @@
 				<prg:short>c</prg:short>
 			</prg:names>
 			<prg:type>
-				<prg:number />
+				<prg:number/>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>uselessAgain</prg:variable>
@@ -91,10 +88,9 @@
 				<prg:short>d</prg:short>
 			</prg:names>
 			<prg:type>
-				<prg:number decimal="2" />
+				<prg:number decimal="2"/>
 			</prg:type>
 		</prg:argument>
-
 		<prg:multiargument>
 			<prg:databinding>
 				<prg:variable>sob</prg:variable>
@@ -105,7 +101,7 @@
 					The 'multiple' keyword will allow the option to appear more than once and append option
 					arguments in an array rather than
 					overriding the previous value.
-					<prg:br />
+					<prg:br/>
 					However, getopt will not allow multiple argument at the same time
 					<prg:block>--multi valueA valueB</prg:block>
 					The option name have to be repeated for each value 
@@ -117,7 +113,6 @@
 				<prg:short>e</prg:short>
 			</prg:names>
 		</prg:multiargument>
-		
 		<!-- required -->
 		<prg:argument required="true">
 			<prg:databinding>
@@ -130,7 +125,6 @@
 				<prg:long>no-short</prg:long>
 			</prg:names>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>prrrt</prg:variable>
@@ -143,14 +137,13 @@
 				<prg:short>f</prg:short>
 			</prg:names>
 		</prg:argument>
-		
 		<!-- Simple exclusive group -->
 		<prg:group type="exclusive">
 			<prg:documentation>
 				<prg:abstract>A simple exclusive group</prg:abstract>
 				<prg:details>
 					This is the group description.
-					<prg:br />
+					<prg:br/>
 					Line breaks are supported
 					<prg:block>
 						Block too..
@@ -168,7 +161,6 @@
 						<prg:long>grp1a</prg:long>
 					</prg:names>
 				</prg:argument>
-				
 				<!-- typestr -->
 				<prg:argument>
 					<prg:documentation>
@@ -179,10 +171,9 @@
 						<prg:long>grp1b</prg:long>
 					</prg:names>
 					<prg:type>
-						<prg:path />
+						<prg:path/>
 					</prg:type>
 				</prg:argument>
-
 				<prg:switch>
 					<prg:documentation>
 						<prg:abstract>Switches in group are not supported</prg:abstract>
@@ -196,13 +187,12 @@
 				</prg:switch>
 			</prg:options>
 		</prg:group>
-
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>A non-exclusive option group</prg:abstract>
 				<prg:details>
 					Such type of group will be simply flattened
-					<prg:endl />
+					<prg:endl/>
 					The &lt;abstract&gt; element will serve as a section text and the &lt;details&gt; element as a section text
 				</prg:details>
 			</prg:documentation>
@@ -222,7 +212,6 @@
 						<prg:option>four values</prg:option>
 					</prg:select>
 				</prg:argument>
-
 				<prg:argument>
 					<prg:documentation>
 						<prg:abstract>Group 2 option B - strict select</prg:abstract>
@@ -240,8 +229,5 @@
 				</prg:argument>
 			</prg:options>
 		</prg:group>
-
 	</prg:options>
 </prg:program>
-
-

@@ -16,26 +16,26 @@ Usage:
   prgproc [-x <path>] -t <...> [-o <path>] [-p <...  [ ... ]>] [-s <...  [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
   With:
     -x, --xml-description: Program description file
-    	If the program description file is provided, the xml file will be validated 
-    	before any XSLT processing
-    -t, --xslt, --xsl: XSL transformation to apply	
-    	The argument value have to be one of the following:	
-    		bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
+      If the program description file is provided, the xml file will be 
+      validated before any XSLT processing
+    -t, --xslt, --xsl: XSL transformation to apply  
+      The argument value have to be one of the following:  
+        bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
     -o, --output: Output file
-    	If no output file is provided, the transformation result will be sent to the 
-    	standard output.
-    -p, --param, --params: pass a (parameter,value) pair	
-    	Minimal argument count: 2
-    -s, --stringparam, --stringparams: pass a (parameter, UTF8 string value) pair	
-    	Minimal argument count: 2
+      If no output file is provided, the transformation result will be sent to 
+      the standard output.
+    -p, --param, --params: pass a (parameter,value) pair  
+      Minimal argument count: 2
+    -s, --stringparam, --stringparams: pass a (parameter, UTF8 string value) pair  
+      Minimal argument count: 2
     ns-xml source path options
-    	--ns-xml-path: ns-xml source path
-    		Location of the ns folder of ns-xml package
-    	--ns-xml-path-relative: ns source path is relative this program path
+      --ns-xml-path: ns-xml source path
+        Location of the ns folder of ns-xml package
+      --ns-xml-path-relative: ns source path is relative this program path
     
     --help: Display program usage
-
-  This tool automatically select the good version of the XSLT stylesheet according to the @version attribute of the given XML file.
+  This tool automatically select the good version of the XSLT stylesheet 
+  according to the @version attribute of the given XML file.
 EOFUSAGE
 }
 

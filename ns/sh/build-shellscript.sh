@@ -16,27 +16,27 @@ Usage:
   build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-i <...>] [--help] -o <path>
   With:
     ns-xml source path options
-    	--ns-xml-path: ns-xml source path
-    		Location of the ns folder of ns-xml package
-    	--ns-xml-path-relative: ns source path is relative this program path
+      --ns-xml-path: ns-xml source path
+        Location of the ns folder of ns-xml package
+      --ns-xml-path-relative: ns source path is relative this program path
     
     -x, --xml-description: Program description file
-    	If the program description file is provided, the xml file will be validated 
-    	before any XSLT processing
+      If the program description file is provided, the xml file will be 
+      validated before any XSLT processing
     -s, --shell: XML shell file
-    	A xml file following the bash XML schema
-    	The file may include a program interface XML definition
+      A xml file following the bash XML schema
+      The file may include a program interface XML definition
     -S, --skip-validation, --no-validation: Skip XML Schema validations
-    	The default behavior of the program is to validate the given xml-based 
-    	file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). This 
-    	option will disable schema validations
+      The default behavior of the program is to validate the given xml-based 
+      file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
+      This option will disable schema validations
     -i, --interpreter: Default shell interpreter
-    	Use this value if the XSH file does not define one	
-    	The argument can be:	
-    		/usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
+      Use this value if the XSH file does not define one  
+      The argument can be:  
+        /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
     -p, --prefix-sc-variables: Prefix subcommand options bound variable names
-    	This will prefix all subcommand options bound variable name by the 
-    	subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+      This will prefix all subcommand options bound variable name by the 
+      subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     -o, --output: Output file path

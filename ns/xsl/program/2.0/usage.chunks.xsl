@@ -4,8 +4,11 @@
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<import href="base.xsl"/>
 	<import href="usage.strings.xsl"/>
+	<!-- String representing an indentation level -->
 	<param name="prg.usage.indentChar" select="'&#9;'"/>
+	<!-- Indicates if documentation text have to be wrapped -->
 	<param name="prg.usage.wrap" select="true()"/>
+	<!-- Maximum text line length (for text wrapping) -->
 	<param name="prg.usage.lineMaxLength" select="80"/>
 	<!-- Literal representation of an option argument/value type -->
 	<template name="prg.usage.typeDisplay">
@@ -56,10 +59,16 @@
 		<param name="mode"/>
 		<!-- Indicates if the text have to be wrapped -->
 		<param name="wrap" select="$prg.usage.wrap"/>
+		<variable name="level">
+			<call-template name="prg.optionLevel">
+				<with-param name="optionNode" select="$optionNode"/>
+			</call-template>
+		</variable>
+		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 3)"/>
 		<call-template name="str.prependLine">
 			<with-param name="prependedText" select="$prg.usage.indentChar"/>
 			<with-param name="wrap" select="$wrap"/>
-			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - 3 * string-length($prg.usage.indentChar)"/>
+			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
 			<with-param name="text">
 				<choose>
 					<when test="$mode = 'inline'">
@@ -142,6 +151,12 @@
 	<template name="prg.usage.switchDescription">
 		<param name="optionNode" select="."/>
 		<param name="details" select="true()"/>
+		<variable name="level">
+			<call-template name="prg.optionLevel">
+				<with-param name="optionNode" select="$optionNode"/>
+			</call-template>
+		</variable>
+		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
 		<call-template name="prg.usage.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode"/>
 		</call-template>
@@ -159,7 +174,7 @@
 					</call-template>
 				</with-param>
 				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2"/>
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
 			</call-template>
 		</if>
 	</template>
@@ -224,6 +239,12 @@
 	<template name="prg.usage.argumentDescription">
 		<param name="optionNode" select="."/>
 		<param name="details" select="true()"/>
+		<variable name="level">
+			<call-template name="prg.optionLevel">
+				<with-param name="optionNode" select="$optionNode"/>
+			</call-template>
+		</variable>
+		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
 		<call-template name="prg.usage.allOptionNameDisplay">
 			<with-param name="optionNode" select="$optionNode"/>
 		</call-template>
@@ -241,7 +262,7 @@
 					</call-template>
 				</with-param>
 				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2"/>
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
 			</call-template>
 		</if>
 		<variable name="argumentValueDesc">
@@ -256,7 +277,7 @@
 					<value-of select="$argumentValueDesc"/>
 				</with-param>
 				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2"/>
+				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - (string-length($prg.usage.indentChar) * 2)"/>
 			</call-template>
 		</if>
 	</template>
@@ -315,6 +336,12 @@
 	<template name="prg.usage.groupDescription">
 		<param name="optionNode" select="."/>
 		<param name="details" select="true()"/>
+		<variable name="level">
+			<call-template name="prg.optionLevel">
+				<with-param name="optionNode" select="$optionNode"/>
+			</call-template>
+		</variable>
+		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
 		<call-template name="prg.usage.descriptionDisplay">
 			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract"/>
 		</call-template>
@@ -327,7 +354,7 @@
 				</call-template>
 			</with-param>
 			<with-param name="wrap" select="$prg.usage.wrap"/>
-			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar) * 2"/>
+			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
 		</call-template>
 		<call-template name="endl"/>
 	</template>
@@ -438,12 +465,12 @@
 	<template match="prg:block">
 		<call-template name="endl"/>
 		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="'&#9;'"/>
+			<with-param name="prependedText" select="$prg.usage.indentChar"/>
 			<with-param name="text">
 				<apply-templates/>
 			</with-param>
-			<with-param name="wrap" select="true()"/>
-			<with-param name="lineMaxLength" select="80"/>
+			<with-param name="wrap" select="$prg.usage.wrap"/>
+			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength"/>
 		</call-template>
 	</template>
 
