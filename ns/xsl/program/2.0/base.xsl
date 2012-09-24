@@ -6,7 +6,7 @@
 	<param name="prg.prefix"/>
 	<param name="prg.debug" select="false()"/>
 	<!-- Strip spaces -->
-	<template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:license|prg:version">
+	<template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:copyright|prg:version">
 		<value-of select="normalize-space(.)"/>
 	</template>
 
@@ -30,6 +30,26 @@
 			</otherwise>
 		</choose>
 		<value-of select="$nameNode"/>
+	</template>
+
+	<!-- Option level in the Option tree -->
+	<template name="prg.optionLevel">
+		<!-- Option node -->
+		<param name="optionNode" select="."/>
+		<!-- For internal use -->
+		<param name="_level" select="0"/>
+		<variable name="grandParent" select="$optionNode/../.."/>
+		<choose>
+			<when test="$grandParent/self::prg:group">
+				<call-template name="prg.optionLevel">
+					<with-param name="optionNode" select="$grandParent"/>
+					<with-param name="_level" select="$_level + 1"/>
+				</call-template>
+			</when>
+			<otherwise>
+				<value-of select="$_level"/>
+			</otherwise>
+		</choose>
 	</template>
 
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
