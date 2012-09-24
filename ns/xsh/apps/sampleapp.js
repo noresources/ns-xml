@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2011 by Renaud Guillard (dev@niao.fr) 
+ * Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)
+ * Distributed under the terms of the BSD License, see LICENSE
  */
 
 function UiExtension() 

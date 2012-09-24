@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<sh:program interpreter="/usr/bin/env bash" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude" interpreter="/usr/bin/env bash">
 	<sh:info>
-		<xi:include href="build-xulapp.xml" />
+		<xi:include href="build-xulapp.xml"/>
 	</sh:info>
 	<sh:functions>
-		<xi:include href="../lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_realpath'])" />
+		<xi:include href="../lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'ns_realpath'])"/>
 		<sh:function name="log">
-			<sh:body>echo "${@}" >> "${logFile}"</sh:body>
+			<sh:body>echo "${@}" &gt;&gt; "${logFile}"</sh:body>
 		</sh:function>
 		<sh:function name="info">
 			<sh:body><![CDATA[
@@ -85,7 +86,7 @@ info " - Generate command launcher"
 echo -ne "#!/bin/bash\n${command_existingCommandPath} \${@}" > "${commandLauncherFile}"
 			]]></sh:body>
 		</sh:function>
-		<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'xml_validate'])" />
+		<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'xml_validate'])"/>
 	</sh:functions>
 	<sh:code><![CDATA[
 logFile="/tmp/$(basename "${0}").log"

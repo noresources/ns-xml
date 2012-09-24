@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
+# Copyright © 2012 by Renaud GUillard (dev@niao.fr)
+# Distributed under the terms of the BSD License, see LICENSE
 # Author: Renaud Guillard
 # Version: 1.0
 # 
@@ -52,7 +54,7 @@ Usage:
     help, hep, sos: Help about other sub commands
     version:
   With global options:
-    --help: 
+    --help: Display the help message
     -v, --verbose, --bleeeeh: More text!
     --ui-only: A single argument option automatically set in the UI
     --standard-arg: Basic argument option
@@ -156,6 +158,7 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_8_g_3_g_2_float-argument:--float-argument"
 # Switch options
 
 displayHelp=false
@@ -1664,8 +1667,18 @@ done
 
 if ! parse "${@}"
 then
+	if [ ${displayHelp} ]
+	then
+		usage
+		exit 0
+	fi
 	parse_displayerrors
 	exit 1
+fi
+if [ ${displayHelp} ]
+then
+	usage
+	exit 0
 fi
 
 echo "Sub command: ${parser_subcommand}"

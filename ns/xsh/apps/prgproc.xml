@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- {} -->
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>prgproc</prg:name>
 	<prg:author>renaud</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:license>Copyright © 2012 by Renaud GUillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright © 2012 by Renaud GUillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Process a program interface XML definition with one of the available XSLT stylesheets</prg:abstract>
 		<prg:details>
@@ -12,11 +14,9 @@
 			of the given XML file.
 		</prg:details>
 	</prg:documentation>
-
 	<prg:options>
 		<!-- program interface XML definition file -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])"/>
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>xslName</prg:variable>
@@ -36,7 +36,6 @@
 				<prg:option>wikicreole-usage</prg:option>
 			</prg:select>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>output</prg:variable>
@@ -54,12 +53,11 @@
 			<prg:type>
 				<prg:path access="w">
 					<prg:kinds>
-						<prg:file />
+						<prg:file/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:multiargument min="2">
 			<prg:databinding>
 				<prg:variable>parameters</prg:variable>
@@ -73,7 +71,6 @@
 				<prg:short>p</prg:short>
 			</prg:names>
 		</prg:multiargument>
-
 		<prg:multiargument min="2">
 			<prg:databinding>
 				<prg:variable>stringParameters</prg:variable>
@@ -87,12 +84,9 @@
 				<prg:short>s</prg:short>
 			</prg:names>
 		</prg:multiargument>
-
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
-
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 	</prg:options>
 </prg:program>

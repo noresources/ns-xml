@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>update-doc</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
-	<prg:license>Copyright © 2012 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright © 2012 by Renaud Guillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Documentation builder</prg:abstract>
 	</prg:documentation>
 	<prg:options>
-
 		<!-- Help -->
-		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
-
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>xsltDocOutputPath</prg:variable>
@@ -26,12 +26,11 @@
 			<prg:type>
 				<prg:path exist="true">
 					<prg:kinds>
-						<prg:folder />
+						<prg:folder/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>xsltDocCssFile</prg:variable>
@@ -45,7 +44,7 @@
 			<prg:type>
 				<prg:path exist="true">
 					<prg:kinds>
-						<prg:file />
+						<prg:file/>
 					</prg:kinds>
 					<prg:patterns>
 						<prg:pattern>
@@ -60,7 +59,6 @@
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:group type="exclusive">
 			<prg:databinding>
 				<prg:variable>indexMode</prg:variable>
@@ -122,7 +120,7 @@
 							<prg:type>
 								<prg:path exist="true" access="r">
 									<prg:kinds>
-										<prg:file />
+										<prg:file/>
 									</prg:kinds>
 								</prg:path>
 							</prg:type>
@@ -154,9 +152,7 @@
 				</prg:group>
 			</prg:options>
 		</prg:group>
-
 	</prg:options>
-
 	<prg:values>
 		<prg:other>
 			<prg:documentation>

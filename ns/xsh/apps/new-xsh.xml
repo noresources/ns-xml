@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>new-xsh</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:license>Copyright (c) 2013 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright (c) 2013 by Renaud Guillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>A script to create XSH (XML + SH) files</prg:abstract>
 		<prg:details>This program create the basic files needed by build-shellscript.sh to build a
@@ -14,10 +16,9 @@
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>New XSH</prg:label>
-		<prg:window width="800" height="256" />
+		<prg:window width="800" height="256"/>
 	</prg:ui>
 	<prg:options>
-
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>xshName</prg:variable>
@@ -31,10 +32,9 @@
 			</prg:names>
 			<prg:type>
 				<!-- When available, add restrictions to name ? -->
-				<prg:string />
+				<prg:string/>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>outputPath</prg:variable>
@@ -51,12 +51,11 @@
 			<prg:type>
 				<prg:path exist="true" access="rw">
 					<prg:kinds>
-						<prg:folder />
+						<prg:folder/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>addSamples</prg:variable>
@@ -74,14 +73,11 @@
 				<prg:short>s</prg:short>
 			</prg:names>
 		</prg:switch>
-
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
-
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
 	</prg:options>
 </prg:program>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>build-xulapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
-	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Build (or update) a xul application launcher</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Command line front-end builder</prg:label>
 	</prg:ui>
-
 	<prg:subcommands>
 		<prg:subcommand>
 			<prg:name>xsh</prg:name>
@@ -23,8 +23,8 @@
 				<prg:abstract>Build a XUL application which will run a Shell script defined through the bash XML schema</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath'])" />
-				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])" />
+				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath'])"/>
+				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])"/>
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>
@@ -36,8 +36,8 @@
 				<prg:abstract>Build a XUL application which will run a python script built with the program XML schema</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])" />
-				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])" />
+				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])"/>
+				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])"/>
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>
@@ -65,12 +65,9 @@
 			</prg:options>
 		</prg:subcommand>
 	</prg:subcommands>
-
 	<prg:options>
-
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
-
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<prg:argument id="outputfolder" required="true">
 			<prg:databinding>
 				<prg:variable>outputPath</prg:variable>
@@ -85,23 +82,21 @@
 			<prg:type>
 				<prg:path exist="true">
 					<prg:kinds>
-						<prg:folder />
+						<prg:folder/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 		<prg:argument id="xmlProgramDescriptionPath">
 			<!-- In build-xulapp, the documentation change a bit -->
-			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)" />
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)"/>
 			<prg:documentation>
 				<prg:abstract>Program program interface XML definition file</prg:abstract>
 				<prg:details>Location of the XML program description file. Expect a valid XML file following the http://xsd.nore.fr/program schema</prg:details>
 			</prg:documentation>
-			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:names)" />
-			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:type)" />
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:names)"/>
+			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:type)"/>
 		</prg:argument>
-
 		<prg:argument>
 			<prg:databinding>
 				<prg:variable>targetPlatform</prg:variable>
@@ -121,7 +116,6 @@
 			</prg:select>
 			<prg:default>host</prg:default>
 		</prg:argument>
-
 		<prg:switch>
 			<prg:databinding>
 				<prg:variable>update</prg:variable>
@@ -134,10 +128,8 @@
 				<prg:abstract>Update application if folder already exists</prg:abstract>
 			</prg:documentation>
 		</prg:switch>
-
 		<!-- Skip validation -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>User interface</prg:abstract>
@@ -156,7 +148,7 @@
 						<prg:short>W</prg:short>
 					</prg:names>
 					<prg:type>
-						<prg:number min="50" max="2048" />
+						<prg:number min="50" max="2048"/>
 					</prg:type>
 					<!-- This default value have to match the one in the XSLT stylesheet -->
 					<prg:default>1024</prg:default>
@@ -174,24 +166,21 @@
 						<prg:short>H</prg:short>
 					</prg:names>
 					<prg:type>
-						<prg:number min="50" max="2048" />
+						<prg:number min="50" max="2048"/>
 					</prg:type>
 					<!-- This default value have to match the one in the XSLT stylesheet -->
 					<prg:default>768</prg:default>
 				</prg:argument>
-
 				<!-- debugMode -->
 				<prg:switch>
-					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:databinding)" />
+					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:databinding)"/>
 					<prg:documentation>
 						<prg:abstract>Add debug console and options into the built interface</prg:abstract>
 					</prg:documentation>
-					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:names)" />
+					<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode']/prg:names)"/>
 				</prg:switch>
-
 			</prg:options>
 		</prg:group>
-
 		<!-- Userdata -->
 		<prg:group>
 			<prg:documentation>
@@ -206,9 +195,9 @@
 						<prg:abstract>User-defined post-initialization script</prg:abstract>
 						<prg:details>
 							A Javascript file loaded after the main ui object initialization stage
-							<prg:endl />
+							<prg:endl/>
 							If a onInitialize() function is available, it will be called with the main ui object as the first argument
-							<prg:endl />
+							<prg:endl/>
 							The script is copied in the chrome/content directory and is available through the following url
 							<prg:block>chrome://&lt;xulAppName&gt;/content/&lt;xulAppName&gt;-user.js
 							</prg:block>
@@ -221,7 +210,7 @@
 					<prg:type>
 						<prg:path exist="true">
 							<prg:kinds>
-								<prg:file />
+								<prg:file/>
 							</prg:kinds>
 							<prg:patterns>
 								<prg:pattern>
@@ -244,7 +233,7 @@
 						<prg:abstract>Additional resources</prg:abstract>
 						<prg:details>
 							A list of path or file to add in the application bundle.
-							<prg:endl />
+							<prg:endl/>
 							These items are copied in the chrome/userdata folder of the
 							application bundle and a new
 							resource url is avalailable
@@ -257,24 +246,22 @@
 					<prg:type>
 						<prg:path exist="true">
 							<prg:kinds>
-								<prg:file />
-								<prg:folder />
+								<prg:file/>
+								<prg:folder/>
 							</prg:kinds>
 						</prg:path>
 					</prg:type>
 				</prg:multiargument>
 			</prg:options>
 		</prg:group>
-
 		<!-- ns path -->
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>ns-xml options</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-
-				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])" />
-				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.nsxmlRelativePath'])" />
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])"/>
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.nsxmlRelativePath'])"/>
 				<prg:switch>
 					<prg:databinding>
 						<prg:variable>addNsXml</prg:variable>
@@ -291,6 +278,5 @@
 				</prg:switch>
 			</prg:options>
 		</prg:group>
-
 	</prg:options>
 </prg:program>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
-
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 <!-- A set of common options for ns-xml apps -->
 <prg:options xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:switch id="nsxml.option.debugMode">
@@ -15,7 +15,6 @@
 			<prg:long>debug</prg:long>
 		</prg:names>
 	</prg:switch>
-
 	<prg:group id="nsxml.option.nsxmlPathGroup">
 		<prg:documentation>
 			<prg:abstract>ns-xml source path options</prg:abstract>
@@ -36,7 +35,7 @@
 				<prg:type>
 					<prg:path>
 						<prg:kinds>
-							<prg:folder />
+							<prg:folder/>
 						</prg:kinds>
 						<prg:patterns>
 							<prg:pattern>
@@ -69,7 +68,6 @@
 			</prg:switch>
 		</prg:options>
 	</prg:group>
-
 	<prg:argument id="nsxml.option.xmlProgramDescriptionPath">
 		<prg:databinding>
 			<prg:variable>xmlProgramDescriptionPath</prg:variable>
@@ -87,7 +85,7 @@
 		<prg:type>
 			<prg:path exist="true">
 				<prg:kinds>
-					<prg:file />
+					<prg:file/>
 				</prg:kinds>
 				<prg:patterns restrict="true">
 					<prg:pattern>
@@ -105,7 +103,6 @@
 			</prg:path>
 		</prg:type>
 	</prg:argument>
-
 	<prg:argument required="true" id="nsxml.option.requiredXmlProgramDescriptionPath">
 		<prg:databinding>
 			<prg:variable>xmlProgramDescriptionPath</prg:variable>
@@ -123,12 +120,11 @@
 		<prg:type>
 			<prg:path exist="true">
 				<prg:kinds>
-					<prg:file />
+					<prg:file/>
 				</prg:kinds>
 			</prg:path>
 		</prg:type>
 	</prg:argument>
-
 	<prg:switch id="nsxml.option.skipValidation">
 		<prg:databinding>
 			<prg:variable>skipValidation</prg:variable>

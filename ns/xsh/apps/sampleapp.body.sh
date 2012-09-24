@@ -26,8 +26,18 @@ done
 
 if ! parse "${@}"
 then
+	if [ ${displayHelp} ]
+	then
+		usage
+		exit 0
+	fi
 	parse_displayerrors
 	exit 1
+fi
+if [ ${displayHelp} ]
+then
+	usage
+	exit 0
 fi
 
 echo "Sub command: ${parser_subcommand}"

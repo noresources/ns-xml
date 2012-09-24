@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)
+# Distributed under the terms of the BSD License, see LICENSE
 # Author: Renaud Guillard
 # Version: 1.0
 # 

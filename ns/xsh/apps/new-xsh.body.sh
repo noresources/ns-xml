@@ -119,7 +119,7 @@ cat > "${tmpFile}" << EOF
 	<prg:name>${xshName}</prg:name>
 	<prg:author>${author}</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:license>Copyright © $(date +%Y) by ${author}</prg:license>
+	<prg:copyright>Copyright © $(date +%Y) by ${author}</prg:copyright>
 	<prg:documentation>
 		<prg:abstract></prg:abstract>
 	</prg:documentation>

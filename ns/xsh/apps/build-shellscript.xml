@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>build-shellscript</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
-	<prg:license>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:license>
+	<prg:copyright>Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages</prg:abstract>
 	</prg:documentation>
@@ -12,13 +14,10 @@
 		<prg:label>Shellscript builder</prg:label>
 	</prg:ui>
 	<prg:options>
-		
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
 		<!-- program interface XML definition file -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])"/>
 		<prg:argument required="true" id="xmlShellFileDescriptionPath">
 			<prg:databinding>
 				<prg:variable>xmlShellFileDescriptionPath</prg:variable>
@@ -27,14 +26,14 @@
 				<prg:abstract>XML shell file</prg:abstract>
 				<prg:details>
 					A xml file following the bash XML schema
-					<prg:endl />
+					<prg:endl/>
 					The file may include a program interface XML definition
 				</prg:details>
 			</prg:documentation>
 			<prg:type>
 				<prg:path exist="true">
 					<prg:kinds>
-						<prg:file />
+						<prg:file/>
 					</prg:kinds>
 					<prg:patterns>
 						<prg:pattern>
@@ -53,12 +52,9 @@
 				<prg:long>shell</prg:long>
 			</prg:names>
 		</prg:argument>
-
 		<!-- Skip validation -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
 		<!-- Tweaks -->
-		
 		<prg:argument id="defaultInterpreter">
 			<prg:databinding>
 				<prg:variable>defaultInterpreter</prg:variable>
@@ -78,7 +74,6 @@
 				<prg:option>/bin/zsh</prg:option>
 			</prg:select>
 		</prg:argument>
-
 		<prg:switch id="prefixSubcommandBoundVariableName">
 			<prg:databinding>
 				<prg:variable>prefixSubcommandBoundVariableName</prg:variable>
@@ -94,13 +89,10 @@
 				<prg:short>p</prg:short>
 			</prg:names>
 		</prg:switch>
-
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
-
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
-		
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>outputScriptFilePath</prg:variable>
@@ -115,11 +107,10 @@
 			<prg:type>
 				<prg:path>
 					<prg:kinds>
-						<prg:file />
+						<prg:file/>
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-
 	</prg:options>
 </prg:program>

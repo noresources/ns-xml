@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0">
 	<prg:name>sampleapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2012 by Renaud GUillard (dev@niao.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Sample application
 	</prg:abstract>
@@ -20,6 +23,9 @@
 					displayHelp
 				</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Display the help message</prg:abstract>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>help</prg:long>
 			</prg:names>
@@ -218,7 +224,7 @@ A numeric argument appears as a spin box in the UI</prg:details>
 								<prg:number/>
 							</prg:type>
 						</prg:argument>
-						<prg:argument>
+						<prg:argument required="true">
 							<prg:databinding>
 								<prg:variable>gn2arg</prg:variable>
 							</prg:databinding>
