@@ -117,7 +117,7 @@
 						<value-of select="$name"/>
 					</when>
 					<otherwise>
-						<value-of select="$subcommand/prg:name"/>
+						<value-of select="normalize-space($subcommand/prg:name)"/>
 					</otherwise>
 				</choose>
 			</with-param>
@@ -772,7 +772,7 @@
 					</with-param>
 					<with-param name="content">
 						<call-template name="prg.bash.completion.subCommandCompletionFunctionName">
-							<with-param name="name" select="../../prg:name"/>
+							<with-param name="name" select="normalize-space(../../prg:name)"/>
 						</call-template>
 					</with-param>
 				</call-template>
@@ -994,7 +994,7 @@
 		<text>complete -o nospace -F </text>
 		<value-of select="$prg.bash.completion.completionFunctionName"/>
 		<text> </text>
-		<value-of select="$program/prg:name"/>
+		<value-of select="normalize-space($program/prg:name)"/>
 		<value-of select="$prg.bash.completion.programFileExtension"/>
 		<call-template name="endl"/>
 	</template>
