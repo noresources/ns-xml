@@ -53,6 +53,11 @@ do
 	shOut="${projectPath}/ns/sh/${bn}.sh"
 	if [ "${bn}" != "build-shellscript" ]
 	then
+		if [ ! -z "${1}" ] && [ "${bn}" != "${1}" ]
+		then
+			echo "skip ${bn}"
+			continue
+		fi
 		echo "Update ${b}"
 		if ! ${buildshellscript} -p -x ${fn}.xml -s ${f} -o ${shOut}
 		then
@@ -60,6 +65,7 @@ do
 			exit 1
 		fi
 	fi
+
 	
 	programVersion="$(xsltproc --xinclude "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
 	#echo "Program schema version ${programVersion}"
