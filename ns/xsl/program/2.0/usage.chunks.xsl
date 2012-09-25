@@ -349,6 +349,13 @@
 		<call-template name="str.prependLine">
 			<with-param name="prependedText" select="$prg.usage.indentChar"/>
 			<with-param name="text">
+				<if test="$details and $optionNode/prg:documentation/prg:details">
+					<call-template name="prg.usage.descriptionDisplay">
+						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details"/>
+					</call-template>
+					<call-template name="endl"/>
+					<call-template name="endl"/>
+				</if>
 				<call-template name="prg.usage.optionListDescription">
 					<with-param name="optionsNode" select="$optionNode/prg:options"/>
 				</call-template>

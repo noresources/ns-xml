@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 <!-- Usage chunks for usage -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<import href="usage.chunks.xsl"/>
