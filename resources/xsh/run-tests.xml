@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- {} -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>run-tests</prg:name>
+	<prg:author>renaud</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2012 by renaud</prg:copyright>
+	<prg:documentation>
+		<prg:abstract>Run ns-xml unittests</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:multiargument>
+			<prg:databinding>
+				<prg:variable>parsers</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Parser to test</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>parsers</prg:long>
+				<prg:short>p</prg:short>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>c</prg:option>
+				<prg:option>python</prg:option>
+				<prg:option>sh</prg:option>
+			</prg:select>
+		</prg:multiargument>
+		<prg:multiargument>
+			<prg:databinding>
+				<prg:variable>apps</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Test groups to run</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>apps</prg:long>
+				<prg:short>a</prg:short>
+			</prg:names>
+			<prg:type>
+				<prg:number/>
+			</prg:type>
+		</prg:multiargument>
+		<prg:multiargument>
+			<prg:databinding>
+				<prg:variable>tests</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Test number(s) to run</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>tests</prg:long>
+				<prg:short>t</prg:short>
+			</prg:names>
+			<prg:type>
+				<prg:number/>
+			</prg:type>
+		</prg:multiargument>
+		<!-- Help -->
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+	</prg:options>
+</prg:program>

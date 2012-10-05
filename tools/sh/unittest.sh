@@ -85,6 +85,7 @@ do
 		fi
 	fi
 done
+
 resultLineFormat="%-10s |"
 for s in ${available_shells[*]}
 do

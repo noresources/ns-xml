@@ -514,7 +514,11 @@ prg.sh.parser.prefixSubcommandOptionVariable xslt parameter to 'yes'</prg:detail
 			<prg:values>
 				<prg:other>
 					<prg:type>
-						<prg:path/>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:folder/>
+							</prg:kinds>
+						</prg:path>
 					</prg:type>
 				</prg:other>
 			</prg:values>

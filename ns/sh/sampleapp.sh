@@ -62,11 +62,15 @@ Usage:
     -s, --simpleswitch: Simple switch
       A simple switch option (true/false)
     A useless group option
+      Single-options groups will be flattened in UI
+      
       --switch-alone-in-group: Another switch
         This swith is in a group with only one option. So, the group is hidden 
         and the option appears at the same level
     
     Exclusive option group
+      This group can be defined in gengetopt (top level, exclusive, switch-less)
+      
       --tlxg1: ArgGA
       --tlxg2: ArgG2
     
@@ -98,6 +102,8 @@ Usage:
       Accept most of file system object types. On some UI and platforms, you 
       can't select a folder in the file box if files are also accepted.
     Multi argument options
+      A non-exclusive group of options which accept one or more arguments
+      
       --multi-argument: Multi argument
         A basic multi argument options  
         Minimal argument count: 2
@@ -324,6 +330,17 @@ parse_addvalue()
 		sub)
 			case "${position}" in
 			*)
+				if [ ! -e "${value}" ]
+				then
+					parse_adderror "Invalid path \"${value}\" for positional argument ${position}"
+				fi
+				
+				if [ -a "${value}" ] && ! ([ -d "${value}" ])
+				then
+					parse_adderror "Invalid patn type for positional argument ${position}"
+				fi
+				
+				
 				;;
 			
 			esac

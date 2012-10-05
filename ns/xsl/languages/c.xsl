@@ -388,4 +388,22 @@
 		</call-template>
 	</template>
 
+	<template name="c.if">
+		<param name="condition"/>
+		<param name="then"/>
+		<param name="else"/>
+		<text>if (</text>
+		<value-of select="$condition"/>
+		<text>)</text>
+		<call-template name="c.block">
+			<with-param name="content" select="$then"/>
+		</call-template>
+		<if test="$else">
+			<text>else</text>
+			<call-template name="c.block">
+				<with-param name="content" select="$else"/>
+			</call-template>
+		</if>
+	</template>
+
 </stylesheet>
