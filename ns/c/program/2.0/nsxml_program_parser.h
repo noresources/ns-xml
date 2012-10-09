@@ -134,7 +134,7 @@ NSXMLAPI enum nsxml_util_text_wrap_eol
  * @param indent_mode Indentation mode
  * @param eol End of line mode
  */
-NSXMLAPI void nsxml_util_text_wrap_options_init(struct nsxml_util_text_wrap_options* options, int tab, int line, int indent_mode, int eol);
+NSXMLAPI void nsxml_util_text_wrap_options_init(struct nsxml_util_text_wrap_options *options, int tab, int line, int indent_mode, int eol);
 
 /** Print a text using text wrapping options */
 /**
@@ -143,7 +143,7 @@ NSXMLAPI void nsxml_util_text_wrap_options_init(struct nsxml_util_text_wrap_opti
  * @param options Text wrapping option
  * @param level Initial indentation level
  */
-NSXMLAPI void nsxml_util_text_wrap_fprintf(FILE *stream, const char *text, const struct nsxml_util_text_wrap_options* options, int level);
+NSXMLAPI void nsxml_util_text_wrap_fprintf(FILE *stream, const char *text, const struct nsxml_util_text_wrap_options *options, int level);
 
 /* Messages **************************************/
 
@@ -156,7 +156,7 @@ NSXMLAPI enum nsxml_message_type
 	nsxml_message_type_warning,    /**!< nsxml_message_type_warning */
 	nsxml_message_type_error,      /**!< nsxml_message_type_error */
 	nsxml_message_type_fatal_error,/**!< nsxml_message_type_fatal_error */
-
+	
 	nsxml_message_type_count       /**!< nsxml_message_type_count */
 };
 
@@ -167,7 +167,7 @@ NSXMLAPI struct _nsxml_message
 {
 	int type;
 	char *message;
-	struct _nsxml_message* next_message;
+	struct _nsxml_message *next_message;
 };
 
 typedef struct _nsxml_message nsxml_message;
@@ -187,12 +187,12 @@ nsxml_message *nsxml_message_new_ref(nsxml_message *ref);
 struct nsxml_item_name
 {
 	char *name;
-	struct nsxml_item_name* next_name;
+	struct nsxml_item_name *next_name;
 };
 
-struct nsxml_item_name *nsxml_item_names_new (const char *, ...);
-void nsxml_item_name_free (struct nsxml_item_name *);
-int nsxml_item_name_snprintf (const struct nsxml_item_name *, char **output, size_t *output_length, const char *prefix_text);
+struct nsxml_item_name *nsxml_item_names_new(const char *, ...);
+void nsxml_item_name_free(struct nsxml_item_name *);
+int nsxml_item_name_snprintf(const struct nsxml_item_name *, char **output, size_t *output_length, const char *prefix_text);
 
 /* Validator *************************************/
 
@@ -220,9 +220,9 @@ enum nsxml_value_validator_flags
 	nsxml_value_validator_path_type_folder = (1 << 7), /**!< nsxml_value_validator_path_type_folder */
 	nsxml_value_validator_path_type_symlink = (1 << 8),/**!< nsxml_value_validator_path_type_symlink */
 	nsxml_value_validator_path_type_all =              /**!< nsxml_value_validator_path_type_all */
-					(nsxml_value_validator_path_type_file
-					| nsxml_value_validator_path_type_folder
-					| nsxml_value_validator_path_type_symlink),
+		(nsxml_value_validator_path_type_file
+		 | nsxml_value_validator_path_type_folder
+		 | nsxml_value_validator_path_type_symlink),
 	nsxml_value_validator_enum_strict = (1 << 9)       /**!< nsxml_value_validator_enum_strict */
 };
 
@@ -271,7 +271,7 @@ enum nsxml_item_type
 	nsxml_item_type_subcommand, 			/**!< nsxml_item_type_subcommand */
 	nsxml_item_type_option,     		 	/**!< nsxml_item_type_option */
 	nsxml_item_type_positional_argument, 	/** Positional argument */
-
+	
 	nsxml_item_type_count
 };
 
@@ -282,10 +282,10 @@ struct nsxml_item_info
 {
 	/** Short informations */
 	char *abstract;
-
+	
 	/** Long informations (not wrapped) */
 	char *details;
-
+	
 	/** Item type */
 	int item_type;
 };
@@ -299,7 +299,7 @@ enum nsxml_option_type
 	nsxml_option_type_argument,     /**!< nsxml_option_type_argument */
 	nsxml_option_type_multiargument,/**!< nsxml_option_type_multiargument */
 	nsxml_option_type_group,        /**!< nsxml_option_type_group */
-
+	
 	nsxml_option_type_count         /**!< nsxml_option_type_count */
 };
 
@@ -325,22 +325,22 @@ enum nsxml_option_flags
 struct nsxml_option_info
 {
 	struct nsxml_item_info item_info;
-
+	
 	/** Option type */
 	int option_type;
-
+	
 	/** Several modifiers */
 	int option_flags;
-
+	
 	/** Option variable name as described in the databinding/variable node */
 	char *var_name;
-
+	
 	/** List of option names (short and longs) */
 	struct nsxml_item_name *names;
-
+	
 	/** Parent group (if any) */
 	struct nsxml_group_option_info *parent;
-
+	
 	/** Argument value validator(s) */
 	struct nsxml_value_validator *validators;
 };
@@ -369,7 +369,7 @@ struct nsxml_argument_option_info
 	char *default_value;
 };
 
-void nsxml_argument_option_info_free(struct nsxml_argument_option_info* argumentoption_info);
+void nsxml_argument_option_info_free(struct nsxml_argument_option_info *argumentoption_info);
 
 struct nsxml_multiargument_option_info
 {
@@ -401,13 +401,13 @@ NSXMLAPI enum nsxml_positional_argument_flags
 struct nsxml_positional_argument_info
 {
 	struct nsxml_item_info item_info;
-
+	
 	int positional_argument_flags;
-
+	
 	int argument_type;
-
+	
 	int max_argument;
-
+	
 	struct nsxml_value_validator *validators;
 };
 
@@ -419,7 +419,7 @@ struct nsxml_rootitem_info
 	struct nsxml_item_info item_info;
 	int option_info_count;
 	struct nsxml_option_info **option_infos;
-
+	
 	int positional_argument_info_count;
 	struct nsxml_positional_argument_info *positional_argument_infos;
 };
@@ -438,15 +438,15 @@ NSXMLAPI struct nsxml_program_info
 	struct nsxml_subcommand_info *subcommand_infos;
 };
 
-void nsxml_item_info_cleanup(struct nsxml_item_info* item_info);
+void nsxml_item_info_cleanup(struct nsxml_item_info *item_info);
 void nsxml_option_info_name_display(FILE *, const char *);
-void nsxml_option_info_names_display(FILE *, const struct nsxml_option_info* option_info, const char *, const char *);
+void nsxml_option_info_names_display(FILE *, const struct nsxml_option_info *option_info, const char *, const char *);
 void nsxml_option_info_cleanup(struct nsxml_option_info *option_info);
 void nsxml_switch_option_info_free(struct nsxml_switch_option_info *switch_option_info);
-void nsxml_multiargument_option_info_free(struct nsxml_multiargument_option_info* multiargumentoption_info);
-void nsxml_group_option_info_free(struct nsxml_group_option_info* group_option_info);
+void nsxml_multiargument_option_info_free(struct nsxml_multiargument_option_info *multiargumentoption_info);
+void nsxml_group_option_info_free(struct nsxml_group_option_info *group_option_info);
 void nsxml_rootitem_info_cleanup(struct nsxml_rootitem_info *rootitem_info);
-void nsxml_subcommand_info_cleanup(struct nsxml_subcommand_info* subcommand_info);
+void nsxml_subcommand_info_cleanup(struct nsxml_subcommand_info *subcommand_info);
 NSXMLAPI void nsxml_program_info_cleanup(struct nsxml_program_info *info);
 NSXMLAPI void nsxml_program_info_free(struct nsxml_program_info *info);
 
@@ -494,9 +494,9 @@ struct nsxml_subcommand_name_binding
  */
 enum nsxml_parser_state_flags
 {
-	/** 
-	 * All remaining command line arguments are positional arguments. 
-	 * Occurs if a '--' marker is found 
+	/**
+	 * All remaining command line arguments are positional arguments.
+	 * Occurs if a '--' marker is found
 	 */
 	nsxml_parser_state_endofoptions = (1 << 0),
 	/** The option is recognized but is not expected in the current context */
@@ -514,71 +514,71 @@ struct nsxml_parser_state
 {
 	/** Program info */
 	const struct nsxml_program_info *program_info_ref;
-
+	
 	/** Number of option name binding arrays */
 	int option_name_binding_group_count;
-
+	
 	/** Per-group option name binding counts */
 	int *option_name_binding_counts;
-
+	
 	/**
 	 * Array of name binding groups
 	 * First index: array of bindings for program options
 	 * Other: array of bindings for each subcommand options
 	 */
 	struct nsxml_option_name_binding **option_name_bindings;
-
+	
 	int subcommand_name_binding_count;
-
+	
 	struct nsxml_subcommand_name_binding *subcommand_name_bindings;
-
+	
 	/** User input */
-
+	
 	/** Number of arguments */
 	int argc;
-
+	
 	/** Arguments values */
 	const char **argv;
-
+	
 	/** Parser state */
-
+	
 	/** Current argument index */
 	int arg_index;
-
+	
 	/** State flags */
 	int state_flags;
-
-	/** active subcommand 
+	
+	/** active subcommand
 	 * 0: none
-	 * 1-n:  
+	 * 1-n:
 	 */
 	int subcommand_index;
-
+	
 	/** Active option info */
-
+	
 	/** Option currently processed */
 	struct nsxml_option_name_binding *active_option;
-
-	/** 
+	
+	/**
 	 * Number of argument processed for the current option
-	 * @note Does not include previously processed arguments if the option appears more than once 
+	 * @note Does not include previously processed arguments if the option appears more than once
 	 */
 	size_t active_option_argc;
-
-
+	
+	
 	/**
 	 * List of argument associated to the active option
 	 * Redirect to one of state->argv;
 	 */
 	const char **active_option_argv;
-
+	
 	char active_option_cli_name[NSXML_OPTION_NAME_BUFFER_LENGTH];
 	const char *active_option_name;
-
+	
 	/** Results */
 	int anonymous_option_result_count;
 	struct nsxml_option_result **anonymous_option_results;
-
+	
 	int value_count;
 	nsxml_value *values;
 };
@@ -613,9 +613,9 @@ enum nsxml_result_type
 };
 
 /**
- * Pseudo base class for all option types. 
+ * Pseudo base class for all option types.
  * All option result have at least these members (at the same place)
- * 
+ *
  * @note For internal use
  */
 struct nsxml_option_result
@@ -649,7 +649,7 @@ struct nsxml_group_option_result
 {
 	int result_type;
 	int is_set;
-
+	
 	struct nsxml_option_result *selected_option;
 	const char *selected_option_name;
 };
@@ -711,7 +711,7 @@ struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_st
 int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
 int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, const char *value);
 int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option);
-void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding* option, int is_set);
+void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, int is_set);
 void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct nsxml_program_result *result);
 int nsxml_parse_active_option_accepts_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result);
 void nsxml_parse_append_option_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
