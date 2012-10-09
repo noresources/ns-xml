@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>build-c
+	</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2012 by Renaud Guillard</prg:copyright>
+	<prg:license> Distributed under the terms of the BSD License, see LICENSE</prg:license>
+	<prg:documentation>
+		<prg:abstract>Create a customized Command line argument parser in C</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>Input</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<!-- program interface XML definition file -->
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])"/>
+				<!-- Skip validation -->
+				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
+			</prg:options>
+		</prg:group>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>Generation options</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:group type="exclusive" required="true">
+					<prg:databinding>
+						<prg:variable>generationMode</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generation mode</prg:abstract>
+						<prg:details>Select what to generate</prg:details>
+					</prg:documentation>
+					<prg:options>
+						<prg:switch>
+							<prg:databinding>
+								<prg:variable>generateBaseOnly</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Generate ns-xml utility and parser core</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>base</prg:long>
+								<prg:short>b</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:switch>
+							<prg:databinding>
+								<prg:variable>generateEmbeded</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Generate program parser and embed generic utility and parser core</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>embed</prg:long>
+								<prg:short>e</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>generateInclude</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Generate program parser and include a pre-genrated utility and parser core</prg:abstract>
+								<prg:details>The namimg styles for variables, structs and functions of the program parser pre-generated files must match
+								</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>include</prg:long>
+								<prg:short>i</prg:short>
+							</prg:names>
+							<prg:type>
+								<prg:path exist="true">
+									<prg:kinds>
+										<prg:file/>
+									</prg:kinds>
+									<prg:patterns>
+										<prg:pattern>
+											<prg:name>C/C++ Header file</prg:name>
+											<prg:rules>
+												<prg:rule>
+													<prg:endWith>.h</prg:endWith>
+												</prg:rule>
+												<prg:rule>
+													<prg:endWith>.H</prg:endWith>
+												</prg:rule>
+												<prg:rule>
+													<prg:endWith>.hpp</prg:endWith>
+												</prg:rule>
+											</prg:rules>
+										</prg:pattern>
+									</prg:patterns>
+								</prg:path>
+							</prg:type>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>prefix</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Program struct &amp; function names prefix</prg:abstract>
+						<prg:details>The default behavior use the program name described in the 
+						XML program interface definition file</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>prefix</prg:long>
+						<prg:short>p</prg:short>
+					</prg:names>
+				</prg:argument>
+				<!-- Naming styles -->
+				<prg:group>
+					<prg:documentation>
+						<prg:abstract>Naming styles</prg:abstract>
+						<prg:details>
+							Define the coding style of the public structs, functions and variables.
+							<prg:br/>
+							The default coding style of the ns-xml utilities and parser core is 'underscore'. Which means fully lower case names
+							where words are separated with underscores.
+							<prg:block> struct nsxml_struct_name;
+							</prg:block>
+							<prg:endl/>
+							Private functions and internal struct members of the ns-xml parser core are not modified
+						</prg:details>
+					</prg:documentation>
+					<prg:options>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>structNameStyle</prg:variable>
+							</prg:databinding>
+							<prg:default>none</prg:default>
+							<prg:documentation>
+								<prg:abstract>struct naming convention</prg:abstract>
+								<prg:details>Generate struct names according the given naming convention</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>struct-style</prg:long>
+								<prg:long>struct</prg:long>
+							</prg:names>
+							<prg:select>
+								<prg:option>underscore</prg:option>
+								<prg:option>camelCase</prg:option>
+								<prg:option>CamelCase</prg:option>
+								<prg:option>none</prg:option>
+							</prg:select>
+						</prg:argument>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>functionNameStyle</prg:variable>
+							</prg:databinding>
+							<prg:default>none</prg:default>
+							<prg:documentation>
+								<prg:abstract>struct naming convention</prg:abstract>
+								<prg:details>Generate function names according the given naming convention</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>function-style</prg:long>
+								<prg:long>function</prg:long>
+								<prg:long>func</prg:long>
+							</prg:names>
+							<prg:select>
+								<prg:option>underscore</prg:option>
+								<prg:option>camelCase</prg:option>
+								<prg:option>CamelCase</prg:option>
+								<prg:option>none</prg:option>
+							</prg:select>
+						</prg:argument>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>variableNameStyle</prg:variable>
+							</prg:databinding>
+							<prg:default>none</prg:default>
+							<prg:documentation>
+								<prg:abstract>Variable naming convention</prg:abstract>
+								<prg:details>Generate variable and enum names according the given naming convention</prg:details>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>variable-style</prg:long>
+								<prg:long>variable</prg:long>
+								<prg:long>var</prg:long>
+							</prg:names>
+							<prg:select>
+								<prg:option>underscore</prg:option>
+								<prg:option>camelCase</prg:option>
+								<prg:option>CamelCase</prg:option>
+								<prg:option>none</prg:option>
+							</prg:select>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+			</prg:options>
+		</prg:group>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>Output location</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<!-- Output folder -->
+				<prg:argument id="outputfolder" required="true">
+					<prg:databinding>
+						<prg:variable>outputPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Output folder path for the generated files</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:short>o</prg:short>
+						<prg:long>output</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:folder/>
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<!-- Output file base name -->
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>outputFileBase</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Output file base name</prg:abstract>
+						<prg:details> C Header file extension (.h) and C Source code extension (.c) are automatically appended to the name
+						</prg:details>
+					</prg:documentation>
+					<prg:default>&lt;auto&gt;</prg:default>
+					<prg:names>
+						<prg:long>file-base</prg:long>
+						<prg:long>file</prg:long>
+						<prg:short>f</prg:short>
+					</prg:names>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>outputOverwrite</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Overwrite existing files</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>overwrite</prg:long>
+						<prg:long>force</prg:long>
+						<prg:short>u</prg:short>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
+		<!-- ns-xml path -->
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
+		<!-- Help -->
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+	</prg:options>
+</prg:program>
