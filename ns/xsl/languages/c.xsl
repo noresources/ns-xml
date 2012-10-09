@@ -406,4 +406,15 @@
 		</if>
 	</template>
 
+	<template name="c.while">
+		<param name="condition"/>
+		<param name="do"/>
+		<text>while (</text>
+		<value-of select="$condition"/>
+		<text>)</text>
+		<call-template name="c.block">
+			<with-param name="content" select="$do"/>
+		</call-template>
+	</template>
+
 </stylesheet>
