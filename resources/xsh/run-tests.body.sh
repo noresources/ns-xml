@@ -86,6 +86,28 @@ do
 	fi
 done
 
+# C compilers
+if [ -z "${CC}" ]
+then
+	for c in gcc clang
+	do
+		if which ${c} 1>/dev/null 2>&1
+		then
+			cc=${c}
+			break
+		fi
+	done
+else
+	cc=${CC}
+fi
+
+if [ -z "${CFLAGS}" ]
+then
+	cflags="-Wall -pedantic -g -O0"
+else
+	cflags="${CFLAGS}"
+fi
+
 # Test groups
 if [ ${#apps[@]} -eq 0 ]
 then
@@ -112,17 +134,26 @@ testPython=false
 testC=false
 if [ ${#parsers[@]} -eq 0 ]
 then
+	# Autodetect available parsers
 	if [ ${#available_shells[@]} -gt 0 ]
 	then
 		testSh=true
 		parsers=("${parsers[@]}" sh)
 		parserNames=("${parserNames[@]}" "${available_shells[@]}")
 	fi
+	
 	if [ ! -z "${pythonInterpreter}" ]
 	then
 		testPython=true
 		parsers=("${parsers[@]}" python)
 		parserNames=("${parserNames[@]}" "Python")
+	fi
+	
+	if which ${cc} 1>/dev/null 2>&1
+	then
+		testC=true
+		parsers=("${parsers[@]}" c)
+		parserNames=("${parserNames[@]}" "C/${cc}")
 	fi
 else
 	for ((i=0;${i}<${#parsers[@]};i++))
@@ -135,21 +166,64 @@ else
 		then
 			parserNames=("${parserNames[@]}" "Python")
 			testPython=true
+		elif which ${cc} 1>/dev/null 2>&1
+		then
+			parserNames=("${parserNames[@]}" "C/${cc}")
+			testC=true
 		fi
 	done 
 fi
 
+resultLineFormat="    %10s |"
+if ${testSh}
+then
+	for s in ${available_shells[*]}
+	do
+		resultLineFormat="${resultLineFormat} %-7s |"	
+	done
+fi
+
+if ${testPython}
+then
+	resultLineFormat="${resultLineFormat} %-7s |"
+fi
+
+if ${testC}
+then
+	resultLineFormat="${resultLineFormat} %-7s |"
+	
+	# Valgrind
+	testValgrind=false
+	if which valgrind 1>/dev/null 2>&1
+	then
+		parserNames=("${parserNames[@]}" "C/Valgrind")
+		resultLineFormat="${resultLineFormat} %-10s |"
+	
+		testValgrind=true
+		valgrindArgs=("--tool=memcheck" "--leak-check=full" "--undef-value-errors=yes" "--xml=yes")
+		if [ "$(uname -s)" = "Darwin" ]
+		then
+			valgrindArgs=("${valgrindArgs[@]}" "--dsymutil=yes")
+		fi
+		
+		valgrindOutputXslFile="$(mktemp --suffix -valgrind.xsl)"
+		cat > "${valgrindOutputXslFile}" << EOF
+<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+<output method="text" encoding="utf-8" />
+    <template match="/">
+    	<value-of select="count(//error)" />
+    </template>
+</stylesheet>
+EOF
+	fi
+fi
+
+resultLineFormat="${resultLineFormat} %7s\n"
+
 echo "Apps: ${selectedApps[@]}"
 echo "Parsers: ${parserNames[@]}"
 
-resultLineFormat="    %-10s |"
-for s in ${available_shells[*]}
-do
-	resultLineFormat="${resultLineFormat} %-7s |"	
-done
-
-resultLineFormat="${resultLineFormat} %-7s | %7s\n"
-
+# Testing ...
 for ((ai=0;${ai}<${#selectedApps[@]};ai++))
 do
 	app="${selectedApps[${ai}]}"
@@ -208,18 +282,34 @@ EOF
 	
 	if ${testPython}
 	then
-		if [ ! -z "${pythonInterpreter}" ]
-		then
-			# Generate python script using the xslt stylesheet
-			pyScript="${tmpScriptBasename}.py"
-			xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${testPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
-			chmod 755 "${pyScript}"
-			
-			# Create python module
-			"${projectPath}/ns/sh/build-pyscript.sh" -p "${pyScript}" -u -x "${xmlDescription}"
-		fi
+		# Generate python script using the xslt stylesheet
+		pyScript="${tmpScriptBasename}.py"
+		xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${testPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
+		chmod 755 "${pyScript}"
+		
+		# Create python module
+		"${projectPath}/ns/sh/build-pyscript.sh" -p "${pyScript}" -u -x "${xmlDescription}"
 	fi
 	
+	if ${testC}
+	then
+		cParserBase="${tmpScriptBasename}-parser"
+		cProgram="${tmpScriptBasename}-exe"
+		xsltproc --xinclude -o "${cProgram}.c" "${testPathBase}/lib/c-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${cProgram} source"
+		
+		# Create C files
+		"${projectPath}/ns/sh/build-c.sh" -eu \
+			-x "${xmlDescription}" \
+			-o "$(dirname "${tmpScriptBasename}")" \
+			-f "$(basename "${cParserBase}")" \
+			-p "app" || error "Failed to generated C parser"
+			
+		# Build program
+		gcc -Wall -pedantic -g -O0 \
+		-o "${cProgram}" \
+		"${cProgram}.c" "${cParserBase}.c" || error "Failed to build C program"   
+	fi
+		
 	# Run tests
 	for ((ti=0;${ti}<${#groupTests[@]};ti++))
 	do
@@ -234,7 +324,7 @@ EOF
 #!/usr/bin/env bash
 EOFSH
 		cli="$(cat "${t}")"
-		if ${testSh}
+		if ${testSh} && [ ! -f "${base}.no-sh" ]
 		then
 			cat >> "${tmpShellScript}" << EOFSH
 $(
@@ -247,16 +337,33 @@ do
 done)
 EOFSH
 		fi
-		if ${testPython}
+		if ${testPython} && [ ! -f "${base}.no-py" ]
 		then
 			cat >> "${tmpShellScript}" << EOFSH
 "${pyScript}" ${cli} > "${result}-py"
 EOFSH
 		fi
 		
+		if ${testC} && [ ! -f "${base}.no-c" ]
+		then
+			cat >> "${tmpShellScript}" << EOFSH
+"${cProgram}" ${cli} > "${result}-c"
+EOFSH
+			if ${testValgrind}
+			then
+				valgrindXmlFile="${base}-valgrind.xml"
+				cat >> "${tmpShellScript}" << EOSH
+valgrind ${valgrindArgs[@]} --xml-file="${valgrindXmlFile}" "${cProgram}" ${cli} 1>/dev/null 2>&1
+EOSH
+								
+			fi
+		fi
+		
 		# Run parsers 
 		chmod 755 "${tmpShellScript}"	
 		"${tmpShellScript}"
+		
+		# Analyze results
 		
 		resultLine=
 		resultLine[0]="    ${testnumber}"
@@ -267,37 +374,90 @@ EOFSH
 			i=0
 			if ${testSh}
 			then
-				for s in ${available_shells[*]}
-				do
-					if ! diff "${expected}" "${result}-${s}" >> "${logFile}"
+				if [ -f "${base}.no-sh" ]
+				then
+					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+				else
+					for s in ${available_shells[*]}
+					do
+						if ! diff "${expected}" "${result}-${s}" >> "${logFile}"
+						then
+							passed=false
+							resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+						else
+							resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+							rm -f "${result}-${s}"
+						fi
+						i=$(expr ${i} + 1)
+					done
+				fi
+			fi
+			
+			if ${testPython}
+			then
+				if [ -f "${base}.no-py" ]
+				then
+					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+				else
+					if ! diff "${expected}" "${result}-py" >> "${logFile}"
 					then
 						passed=false
 						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
 					else
 						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
-						rm -f "${result}-${s}"
+						rm -f "${result}-py"
 					fi
-					i=$(expr ${i} + 1)
-				done
+				fi
 			fi
 			
-			if ${testPython}
+			if ${testC}
 			then
-				if ! diff "${expected}" "${result}-py" >> "${logFile}"
+				if [ -f "${base}.no-c" ]
 				then
-					passed=false
-					resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+					if ${testValgrind}
+					then
+						resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+					fi	
 				else
-					resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
-					rm -f "${result}-py"
+					if ! diff "${expected}" "${result}-c" >> "${logFile}"
+					then
+						passed=false
+						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+					else
+						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+						rm -f "${result}-c"
+					
+						# Valgrind
+						if ${testValgrind}
+						then
+							if [ -f "${valgrindXmlFile}" ] 
+							then
+								res=$(xsltproc "${valgrindOutputXslFile}" "${valgrindXmlFile}")
+								if [ ! -z "${res}" ] && [ ${res} -eq 0 ]
+								then
+									resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+									rm -f "${valgrindXmlFile}"
+									rm -f "${valgrindShellFile}"
+								else
+									passed=false
+									resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}LEAK${NORMAL_COLOR}"
+								fi
+							else
+								passed=false
+								resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}CALLERROR${NORMAL_COLOR}"
+							fi
+						fi
+					fi
 				fi
 			fi
 		else
+			# Test does not have a 'expected' result yet
 			passed=true
 			
 			if ${testSh}
 			then
-				for s in ${available_shells[*]} python
+				for s in ${available_shells[*]}
 				do
 					resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
 				done
@@ -305,10 +465,27 @@ EOFSH
 			
 			if ${testPython}
 			then
+				resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
+			fi
+			
+			if ${testC}
+			then
+				resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
+			fi
+			
+			# Copy one of the result as the 'expected' file
+			if ${testC}
+			then
+				cp "${result}-c" "${expected}"
+			elif ${testPython}
+			then
 				cp "${result}-python" "${expected}"
+			elif ${testSb}
+			then
+				cp "${result}-bash" "${expected}"
 			fi
 		fi
-		
+				
 		if ${passed}
 		then
 			resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
@@ -321,15 +498,7 @@ EOFSH
 		unset resultLine
 	done
 	
-	# Remove if no error
-	if ${testPython}
-	then
-		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
-		then
-			rm -f "${pyScript}"
-			rm -fr "${d}/Program"
-		fi
-	fi
+	# Remove per-group temporary files if no error
 	
 	if ${testSh}
 	then
@@ -344,4 +513,29 @@ EOFSH
 		done
 		unset shScripts
 	fi
+	
+	if ${testPython}
+	then
+		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
+		then
+			rm -f "${pyScript}"
+			rm -fr "${d}/Program"
+		fi
+	fi
+	
+	if ${testC}
+	then
+		if [ $(find "${d}/tests" -name "*.result-c" | wc -l) -eq 0 ]
+		then
+			rm -f "${cProgram}"
+			rm -f "${cProgram}.c"
+			rm -f "${cParserBase}.h"
+			rm -f "${cParserBase}.c"
+		fi
+	fi
 done
+
+
+${testC} && ${testValgrind} && rm -f "${valgrindOutputXslFile}"
+
+exit $(find "${testPathBase}" -name "*.result-*" | wc -l)

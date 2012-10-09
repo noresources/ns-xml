@@ -55,7 +55,7 @@ do
 	then
 		if [ ! -z "${1}" ] && [ "${bn}" != "${1}" ]
 		then
-			echo "skip ${bn}"
+			#echo "skip ${bn}"
 			continue
 		fi
 		echo "Update ${b}"
@@ -84,8 +84,15 @@ done
 for f in "${projectPath}/resources/xsh/"*.xsh
 do
 	o="$(basename "${f}")"
+	bn="${o%.xsh}"
+	
 	o="${o%xsh}sh"
 	x="${f%xsh}xml"
+	if [ ! -z "${1}" ] && [ "${bn}" != "${1}" ]
+	then
+		continue
+	fi
+
 	echo "${o}"
 	if [ -f "${x}" ]
 	then
