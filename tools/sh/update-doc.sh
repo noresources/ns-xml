@@ -622,6 +622,100 @@ parse()
 	return ${parser_errorcount}
 }
 
+error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
+chunk_check_nsxml_ns_path()
+{
+	if [ ! -z "${nsxmlPath}" ]
+	then
+		if ${nsxmlPathRelative}
+		then
+			nsPath="${scriptPath}/${nsxmlPath}"
+		else
+			nsPath="${nsxmlPath}"
+		fi
+		
+		[ -d "${nsPath}" ] || return 1
+		
+		nsPath="$(ns_realpath "${nsPath}")"
+	fi
+	[ -d "${nsPath}" ]
+}
+get_program_version()
+{
+	local file
+	if [ $# -gt 0 ]
+	then
+		file="${1}"
+		shift
+	fi
+	local tmpXslFile="/tmp/get_program_version.xsl"
+	cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:output method="text" encoding="utf-8" />
+	<xsl:template match="//prg:program">
+		<xsl:value-of select="@version" />
+		<xsl:text>&#10;</xsl:text>
+	</xsl:template>
+</xsl:stylesheet>
+GETPROGRAMVERSIONXSLEOF
+
+	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
+	rm -f "${tmpXslFile}"
+	if [ ! -z "${result##*[!0-9.]*}" ]
+	then
+		echo "${result}"
+		return 0
+	else
+		return 1
+	fi
+
+	
+}
+xml_validate()
+{
+	local schema
+	if [ $# -gt 0 ]
+	then
+		schema="${1}"
+		shift
+	fi
+	
+	local xml
+	if [ $# -gt 0 ]
+	then
+		xml="${1}"
+		shift
+	fi
+	local tmpOut="/tmp/xml_validate.tmp"
+	if ! xmllint --xinclude --noout --schema "${schema}" "${xml}" 1>"${tmpOut}" 2>&1
+	then
+		cat "${tmpOut}"
+		echo "Schema: ${scheam}"
+		echo "File: ${xml}"
+		return 1
+	fi
+	
+	return 0
+}
 ns_realpath()
 {
 	local path
@@ -755,9 +849,11 @@ filesystempath_to_nmepath()
 }
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
-rootPath="$(ns_realpath "${scriptPath}/../..")"
-creolePath="${rootPath}/doc/wiki/creole"
-xslPath="${rootPath}/ns/xsl"
+scriptName="$(basename "${scriptFilePath}")"
+projectPath="$(ns_realpath "${scriptPath}/../..")"
+creolePath="${projectPath}/doc/wiki/creole"
+xslPath="${projectPath}/ns/xsl"
+resourceXslPath="${projectPath}/resources/xsl"
 cwd="$(pwd)"
 
 if ! parse "${@}"
@@ -796,24 +892,60 @@ do
 	which ${tool} 1>/dev/null 2>&1 || (echo "${tool} not found" && exit 1)
 done
 
+# Set defaults if nothing selected by user
+[ ${#parser_values[*]} -eq 0 ] && parser_values=(creole html xsl)
+
 if update_item creole
 then
-	appXshPath="${rootPath}/ns/xsh/apps"
+	appXshPath="${projectPath}/ns/xsh/apps"
 	outputPath="${creolePath}/apps"
 
-	# TODO get program version 
-	creoleXslStylesheet="${xslPath}/program/2.0/wikicreole-usage.xsl"
-
+	# TODO get program version
+	
 	find "${appXshPath}" -name "*.xml" | while read f
 	do
+		programVersion="$(get_program_version "${f}")" 
+		creoleXslStylesheet="${xslPath}/program/${programVersion}/wikicreole-usage.xsl"
+		[ -f "${creoleXslStylesheet}" ] || continue
 		b="$(basename "${f}")"
 		xsltproc --xinclude -o "${outputPath}/${b%xml}wiki" "${creoleXslStylesheet}" "${f}" 
 	done
+	
+	# Spreadsheets to creole pages
+	specComplianceSource="${projectPath}/doc/documents/program/SpecificationCompliance.ods"
+	specComplianceTempPath="$(mktemp -d --suffix "${scriptName}")"
+	specComplianceOutput="${creolePath}/program/SpecificationCompliance.wiki"
+	#specComplianceXslt="${xslPath}/documents/opendocument/ods2wikicreole.xsl"
+	specComplianceXslt="${resourceXslPath}/ods2wikicreole.speccompliance.xsl"
+	
+	cd "${specComplianceTempPath}"
+	if unzip -o "${specComplianceSource}" "content.xml" 1>/dev/null 2>&1
+	then	
+		cat "${specComplianceOutput}.1" > "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+	
+		xsltproc --param odf.spreadsheet2wikicreole.tableIndex 2 "${specComplianceXslt}" content.xml >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+		
+		cat "${specComplianceOutput}.2" >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+		
+		xsltproc --param odf.spreadsheet2wikicreole.tableIndex 1 "${specComplianceXslt}" content.xml >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+		
+		cat "${specComplianceOutput}.3" >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+		
+		rm -f content.xml
+	else
+		error 2 Failed to unzip doc
+	fi
+	 
 fi
 
 if update_item html && which nme 1>/dev/null 2>&1
 then
-	htmlArticlePath="${rootPath}/doc/html/articles"
+	htmlArticlePath="${projectPath}/doc/html/articles"
 	
 	for e in wiki jpg png gif
 	do
@@ -841,11 +973,11 @@ then
 fi
 
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
-defaultCssFile="${rootPath}/resources/css/xsl.doc.html.css"
+defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 
 if update_item xsl
 then
-	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${rootPath}/doc/html/xsl"
+	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${projectPath}/doc/html/xsl"
 	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
 	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 
