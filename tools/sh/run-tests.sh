@@ -581,6 +581,26 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_isdir()
+{
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
+	[ ! -z "${path}" ] && [ -d "${path}" ]
+}
+ns_issymlink()
+{
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
+	[ ! -z "${path}" ] && [ -L "${path}" ]
+}
 ns_realpath()
 {
 	local path
@@ -618,7 +638,9 @@ ns_relativepath()
 		base="${1}"
 		shift
 	else
-		base="."
+		base="
+		.
+		        "
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -647,6 +669,48 @@ ns_relativepath()
 	res="${res#./}"
 	echo "${res}"
 }
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
+ns_mktempdir()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -d -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp -d --suffix "${key}"
+	fi
+}
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -673,7 +737,7 @@ fi
 
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 testPathBase="${projectPath}/unittests"
-tmpShellStylesheet="$(mktemp --suffix .xsl)"
+tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 programVersion="2.0"
 xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
 logFile="${projectPath}/${scriptName}.log"
@@ -855,7 +919,7 @@ then
 			valgrindArgs=("${valgrindArgs[@]}" "--dsymutil=yes")
 		fi
 		
-		valgrindOutputXslFile="$(mktemp --suffix -valgrind.xsl)"
+		valgrindOutputXslFile="$(ns_mktemp "valgrind-xsl")"
 		cat > "${valgrindOutputXslFile}" << EOF
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 <output method="text" encoding="utf-8" />

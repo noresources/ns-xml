@@ -24,7 +24,7 @@ fi
 
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 testPathBase="${projectPath}/unittests"
-tmpShellStylesheet="$(mktemp --suffix .xsl)"
+tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 programVersion="2.0"
 xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
 logFile="${projectPath}/${scriptName}.log"
@@ -206,7 +206,7 @@ then
 			valgrindArgs=("${valgrindArgs[@]}" "--dsymutil=yes")
 		fi
 		
-		valgrindOutputXslFile="$(mktemp --suffix -valgrind.xsl)"
+		valgrindOutputXslFile="$(ns_mktemp "valgrind-xsl")"
 		cat > "${valgrindOutputXslFile}" << EOF
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 <output method="text" encoding="utf-8" />

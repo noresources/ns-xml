@@ -64,7 +64,7 @@ then
 	
 	# Spreadsheets to creole pages
 	specComplianceSource="${projectPath}/doc/documents/program/SpecificationCompliance.ods"
-	specComplianceTempPath="$(mktemp -d --suffix "${scriptName}")"
+	specComplianceTempPath="$(ns_mktempdir "${scriptName}")"
 	specComplianceOutput="${creolePath}/program/SpecificationCompliance.wiki"
 	#specComplianceXslt="${xslPath}/documents/opendocument/ods2wikicreole.xsl"
 	specComplianceXslt="${resourceXslPath}/ods2wikicreole.speccompliance.xsl"

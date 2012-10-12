@@ -716,6 +716,26 @@ xml_validate()
 	
 	return 0
 }
+ns_isdir()
+{
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
+	[ ! -z "${path}" ] && [ -d "${path}" ]
+}
+ns_issymlink()
+{
+	local path
+	if [ $# -gt 0 ]
+	then
+		path="${1}"
+		shift
+	fi
+	[ ! -z "${path}" ] && [ -L "${path}" ]
+}
 ns_realpath()
 {
 	local path
@@ -753,7 +773,9 @@ ns_relativepath()
 		base="${1}"
 		shift
 	else
-		base="."
+		base="
+		.
+		        "
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -781,6 +803,48 @@ ns_relativepath()
 	res="${res}${from#${sub}}"
 	res="${res#./}"
 	echo "${res}"
+}
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
+ns_mktempdir()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -d -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp -d --suffix "${key}"
+	fi
 }
 ns_sed_inplace()
 {
@@ -913,7 +977,7 @@ then
 	
 	# Spreadsheets to creole pages
 	specComplianceSource="${projectPath}/doc/documents/program/SpecificationCompliance.ods"
-	specComplianceTempPath="$(mktemp -d --suffix "${scriptName}")"
+	specComplianceTempPath="$(ns_mktempdir "${scriptName}")"
 	specComplianceOutput="${creolePath}/program/SpecificationCompliance.wiki"
 	#specComplianceXslt="${xslPath}/documents/opendocument/ods2wikicreole.xsl"
 	specComplianceXslt="${resourceXslPath}/ods2wikicreole.speccompliance.xsl"

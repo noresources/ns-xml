@@ -436,7 +436,9 @@ ns_relativepath()
 		base="${1}"
 		shift
 	else
-		base="."
+		base="
+		.
+		        "
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -464,6 +466,48 @@ ns_relativepath()
 	res="${res}${from#${sub}}"
 	res="${res#./}"
 	echo "${res}"
+}
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
+ns_mktempdir()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -d -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp -d --suffix "${key}"
+	fi
 }
 ns_sed_inplace()
 {
@@ -558,7 +602,7 @@ transform_c()
 	local output="${2}"
 	local templateName="${3}"
 	
-	local tmpFile="$(mktemp)"
+	local tmpFile="$(ns_mktemp)"
 	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
@@ -619,7 +663,7 @@ create_identifier_variables()
 {
 	local output="${1}"
 	local header="${2}"
-	local tmpFile="$(mktemp)"
+	local tmpFile="$(ns_mktemp)"
 	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
 	
 	cat > "${tmpFile}" << EOF

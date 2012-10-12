@@ -52,7 +52,7 @@ transform_c()
 	local output="${2}"
 	local templateName="${3}"
 	
-	local tmpFile="$(mktemp)"
+	local tmpFile="$(ns_mktemp)"
 	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
@@ -113,7 +113,7 @@ create_identifier_variables()
 {
 	local output="${1}"
 	local header="${2}"
-	local tmpFile="$(mktemp)"
+	local tmpFile="$(ns_mktemp)"
 	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
 	
 	cat > "${tmpFile}" << EOF

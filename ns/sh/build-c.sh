@@ -1058,6 +1058,48 @@ ns_realpath()
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
 }
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
+ns_mktempdir()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="
+		$(date +%s)
+		        "
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -d -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp -d --suffix "${key}"
+	fi
+}
 error()
 {
 	local errno
