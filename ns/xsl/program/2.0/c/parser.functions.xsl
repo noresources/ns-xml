@@ -110,13 +110,11 @@
 			<text>][</text>
 			<value-of select="$index"/>
 			<text>].name_ref = </text>
+			<text>nsxml_item_name_get(</text>
 			<value-of select="$infoRef"/>
-			<text>-&gt;names</text>
-			<call-template name="str.repeat">
-				<with-param name="text" select="'-&gt;next_name'"/>
-				<with-param name="iterations" select="$nameIndex"/>
-			</call-template>
-			<text>-&gt;name;</text>
+			<text>-&gt;names, </text>
+			<value-of select="$nameIndex"/>
+			<text>);</text>
 			<call-template name="endl"/>
 			<value-of select="$stateVariableName"/>
 			<text>-&gt;option_name_bindings[</text>
@@ -270,14 +268,11 @@
 		<param name="subcommandIndex"/>
 		<param name="position" select="0"/>
 		<value-of select="$bindingBase"/>
-		<text>name_ref = </text>
+		<text>name_ref = nsxml_item_name_get(</text>
 		<value-of select="$infoBase"/>
-		<text>.names</text>
-		<call-template name="str.repeat">
-			<with-param name="text" select="'-&gt;next_name'"/>
-			<with-param name="iterations" select="$position"/>
-		</call-template>
-		<text>-&gt;name;</text>
+		<text>.names, </text>
+		<value-of select="$position"/>
+		<text>);</text>
 		<call-template name="endl"/>
 		<value-of select="$bindingBase"/>
 		<text>info_ref = &amp;</text>

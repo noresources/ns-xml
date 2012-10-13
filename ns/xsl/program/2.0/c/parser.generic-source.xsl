@@ -336,6 +336,44 @@ size_t nsxml_message_count(const ]]><value-of select="$prg.c.parser.structName.n
 
 /* Item names *************************************/
 
+/**
+ * Name of a parser item
+ * - Program name
+ * - Sub command name and aliases. The real name of the sub command is the first element of the list
+ * - Option names (short and long). The first name of the list is used for messages
+ */
+struct nsxml_item_name
+{
+	char *name;
+	struct nsxml_item_name *next_name;
+};
+
+const char *nsxml_item_name_get(const struct nsxml_item_name *list, int item_index)
+{
+	const struct nsxml_item_name *item_name = list;
+	if (item_name == NULL)
+	{
+		return NULL;
+	}
+
+	while ((item_index > 0) && item_name)
+	{
+		item_name = item_name->next_name;
+		--item_index;
+	}
+
+	if (item_name && (item_index == 0))
+	{
+		return item_name->name;
+	}
+
+	return NULL;
+}
+
+void nsxml_item_name_free(struct nsxml_item_name *);
+
+int nsxml_item_name_snprintf(const struct nsxml_item_name *, char **output, size_t *output_length, const char *prefix_text);
+
 struct nsxml_item_name *nsxml_item_names_new(const char *name, ...)
 {
 	struct nsxml_item_name *item = NULL;
@@ -459,7 +497,12 @@ int nsxml_item_name_snprintf(const struct nsxml_item_name *names, char **output,
 	return (int)text_buffer_length;
 }
 
+void nsxml_program_result_add_message(struct nsxml_program_result *result, int type, const char *text);
+void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int type, const char *format, ...);
+
 /* Validators *************************************/
+
+void nsxml_value_validator_free(struct nsxml_value_validator *validator);
 
 void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags)
 {
@@ -597,101 +640,6 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 	return 1;
 }
 
-int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
-{
-	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *)self;
-	int f;
-	char text_buffer[256]; /* enough for everything */
-	char *t = text_buffer;
-	int tc = 0;
-	size_t tr = 255;
-	size_t path_type_count = nsxml_usage_path_type_count(validator->flags);
-	size_t path_access_count = nsxml_usage_path_access_count(validator->flags);
-	
-	if (path_type_count > 0)
-	{
-		size_t i = 0;
-		tc = snprintf(t, tr, "%s", "Expected path type: ");
-		tr -= (size_t)tc;
-		t += tc;
-		
-		for (f = nsxml_value_validator_path_type_file; f <= nsxml_value_validator_path_type_symlink; f = (f << 1))
-		{
-			if (validator->flags & f)
-			{
-				if (i == 0)
-				{
-					if (path_type_count == 1)
-					{
-						tc = snprintf(t, tr, "%s\n", nsxml_usage_path_type_string(f));
-					}
-					else
-					{
-						tc = snprintf(t, tr, "%s", nsxml_usage_path_type_string(f));
-					}
-				}
-				else if ((i + 1) == path_type_count)
-				{
-					tc = snprintf(t, tr, " or %s\n", nsxml_usage_path_type_string(f));
-				}
-				else
-				{
-					tc += snprintf(t, tr, ", %s", nsxml_usage_path_type_string(f));
-				}
-				
-				++i;
-				tr -= (size_t)tc;
-				t += tc;
-			}
-		}
-	}
-	
-	if (path_access_count > 0)
-	{
-		size_t i = 0;
-		tc = snprintf(t, tr, "%s", "Path argument must be ");
-		tr -= (size_t)tc;
-		t += tc;
-		
-		for (f = nsxml_value_validator_path_readable; f <= nsxml_value_validator_path_executable; f = (f << 1))
-		{
-			if (validator->flags & f)
-			{
-				if (i == 0)
-				{
-					if (path_access_count == 1)
-					{
-						tc = snprintf(t, tr, "%s\n", nsxml_usage_path_access_string(f));
-					}
-					else
-					{
-						tc = snprintf(t, tr, "%s", nsxml_usage_path_access_string(f));
-					}
-				}
-				else if ((i + 1) == path_access_count)
-				{
-					tc = snprintf(t, tr, " and %s\n", nsxml_usage_path_access_string(f));
-				}
-				else
-				{
-					tc += snprintf(t, tr, ", %s", nsxml_usage_path_access_string(f));
-				}
-				
-				++i;
-				tr -= (size_t)tc;
-				t += tc;
-			}
-		}
-	}
-	
-	if ((path_access_count + path_type_count) > 0)
-	{
-		return ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "%s", text_buffer);
-	}
-	
-	return 0;
-}
-
 int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value)
 {
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
@@ -727,28 +675,6 @@ int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_
 	}
 	
 	return 1;
-}
-
-int nsxml_value_validator_usage_number(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
-{
-	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
-	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
-	int printed = 0;
-	
-	if ((nvalidator->validator.flags & min_and_max) == min_and_max)
-	{
-		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be between %.2f and %.2f", (double)nvalidator->min_value, (double)nvalidator->max_value);
-	}
-	else if (nvalidator->validator.flags & nsxml_value_validator_checkmin)
-	{
-		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be lesser or equal to %.2f", (double)nvalidator->min_value);
-	}
-	else if (nvalidator->validator.flags & nsxml_value_validator_checkmax)
-	{
-		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be greater or equal to %.2f", (double)nvalidator->max_value);
-	}
-	
-	return printed;
 }
 
 int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value)
@@ -800,22 +726,23 @@ void nsxml_value_validator_cleanup_enum(void *self)
 	evalidator->values = NULL;
 }
 
-int nsxml_value_validator_usage_enum(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
-{
-	const struct nsxml_value_validator_enum *evalidator = (const struct nsxml_value_validator_enum *) self;
-	static const char *kPrefixedText[2] =
-	{ "Possible values: ", "Expected values: " };
-	int prefix_index = 0;
-	
-	if (evalidator->validator.flags & nsxml_value_validator_enum_strict)
-	{
-		prefix_index = 1;
-	}
-	
-	return nsxml_item_name_snprintf(evalidator->values, output, output_length, kPrefixedText[prefix_index]);
-}
-
 /* Item info **************************************/
+
+/* Hidden API declarations */
+
+void nsxml_argument_option_info_free(struct nsxml_argument_option_info *argumentoption_info);
+void nsxml_positional_argument_info_cleanup(struct nsxml_positional_argument_info *info);
+void nsxml_item_info_cleanup(struct nsxml_item_info *item_info);
+void nsxml_option_info_name_display(FILE *, const char *);
+void nsxml_option_info_names_display(FILE *, const struct nsxml_option_info *option_info, const char *, const char *);
+void nsxml_option_info_cleanup(struct nsxml_option_info *option_info);
+void nsxml_switch_option_info_free(struct nsxml_switch_option_info *switch_option_info);
+void nsxml_multiargument_option_info_free(struct nsxml_multiargument_option_info *multiargumentoption_info);
+void nsxml_group_option_info_free(struct nsxml_group_option_info *group_option_info);
+void nsxml_rootitem_info_cleanup(struct nsxml_rootitem_info *rootitem_info);
+void nsxml_subcommand_info_cleanup(struct nsxml_subcommand_info *subcommand_info);
+
+/* Definitions */
 
 void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *abstract, const char *details)
 {
@@ -1038,6 +965,18 @@ void nsxml_program_info_free(struct nsxml_program_info *info)
 
 /* Option argument or positional argument value ***/
 
+/* Hidden API declarations */
+
+]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *nsxml_value_new(int, const char *);
+void nsxml_value_init(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *);
+void nsxml_value_set(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *item, int value_type, const char *value);
+void nsxml_value_append(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ **list, int type, const char *value);
+void nsxml_value_cleanup(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *single_value);
+void nsxml_value_free(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *list);
+int nsxml_argument_type_to_value_type(int argument_type);
+
+/* Declarations */
+
 ]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *nsxml_value_new(int type, const char *argv)
 {
 	]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *value = (]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *) malloc(sizeof(]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[));
@@ -1194,6 +1133,24 @@ int nsxml_argument_type_to_value_type(int argument_type)
 }
 
 /* Parser internal state **************************/
+
+/**
+ * Parser state flags
+ */
+enum nsxml_parser_state_flags
+{
+	/**
+	 * All remaining command line arguments are positional arguments.
+	 * Occurs if a '--' marker is found
+	 */
+	nsxml_parser_state_endofoptions = (1 << 0),
+	/** The option is recognized but is not expected in the current context */
+	nsxml_parser_state_option_unexpected = (1 << 1),
+	/** Do not move to the next command line argument on next iteration */
+	nsxml_parser_state_stayoncurrentitem = (1 << 2),
+	/** Processing was aborted by a fatal error */
+	nsxml_parser_state_abort = (1 << 3)
+};
 
 struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char **argv, int start_index)
 {
@@ -1551,6 +1508,156 @@ void nsxml_option_result_cleanup(void *option_result_ptr)
 }
 
 /* Usage Functions *******************************/
+
+/* Hidden API declarations */
+const char *nsxml_usage_get_first_short_name(const struct nsxml_option_info *option_info);
+const char *nsxml_usage_get_first_long_name(const struct nsxml_option_info *option_info);
+const char *nsxml_usage_option_argument_type_string(int argument_type);
+const char *nsxml_usage_path_type_string(int fs_type);
+size_t nsxml_usage_path_type_count(int fs_type);
+const char *nsxml_usage_path_access_string(int fs_access);
+size_t nsxml_usage_path_access_count(int fs_);
+void nsxml_usage_option_argument_type(FILE *stream, int argumenttype, int short_name);
+void nsxml_usage_option_inline_details(FILE *stream, const struct nsxml_option_info *info, int short_name);
+void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_info *info, int info_index, int *visited, const ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap);
+void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_info *info, int format, const ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap);
+void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *info, int format, const ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
+
+/* Validator usage definitions */
+
+int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+{
+	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *)self;
+	int f;
+	char text_buffer[256]; /* enough for everything */
+	char *t = text_buffer;
+	int tc = 0;
+	size_t tr = 255;
+	size_t path_type_count = nsxml_usage_path_type_count(validator->flags);
+	size_t path_access_count = nsxml_usage_path_access_count(validator->flags);
+
+	if (path_type_count > 0)
+	{
+		size_t i = 0;
+		tc = snprintf(t, tr, "%s", "Expected path type: ");
+		tr -= (size_t)tc;
+		t += tc;
+
+		for (f = nsxml_value_validator_path_type_file; f <= nsxml_value_validator_path_type_symlink; f = (f << 1))
+		{
+			if (validator->flags & f)
+			{
+				if (i == 0)
+				{
+					if (path_type_count == 1)
+					{
+						tc = snprintf(t, tr, "%s\n", nsxml_usage_path_type_string(f));
+					}
+					else
+					{
+						tc = snprintf(t, tr, "%s", nsxml_usage_path_type_string(f));
+					}
+				}
+				else if ((i + 1) == path_type_count)
+				{
+					tc = snprintf(t, tr, " or %s\n", nsxml_usage_path_type_string(f));
+				}
+				else
+				{
+					tc += snprintf(t, tr, ", %s", nsxml_usage_path_type_string(f));
+				}
+
+				++i;
+				tr -= (size_t)tc;
+				t += tc;
+			}
+		}
+	}
+
+	if (path_access_count > 0)
+	{
+		size_t i = 0;
+		tc = snprintf(t, tr, "%s", "Path argument must be ");
+		tr -= (size_t)tc;
+		t += tc;
+
+		for (f = nsxml_value_validator_path_readable; f <= nsxml_value_validator_path_executable; f = (f << 1))
+		{
+			if (validator->flags & f)
+			{
+				if (i == 0)
+				{
+					if (path_access_count == 1)
+					{
+						tc = snprintf(t, tr, "%s\n", nsxml_usage_path_access_string(f));
+					}
+					else
+					{
+						tc = snprintf(t, tr, "%s", nsxml_usage_path_access_string(f));
+					}
+				}
+				else if ((i + 1) == path_access_count)
+				{
+					tc = snprintf(t, tr, " and %s\n", nsxml_usage_path_access_string(f));
+				}
+				else
+				{
+					tc += snprintf(t, tr, ", %s", nsxml_usage_path_access_string(f));
+				}
+
+				++i;
+				tr -= (size_t)tc;
+				t += tc;
+			}
+		}
+	}
+
+	if ((path_access_count + path_type_count) > 0)
+	{
+		return ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "%s", text_buffer);
+	}
+
+	return 0;
+}
+
+int nsxml_value_validator_usage_number(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+{
+	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
+	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
+	int printed = 0;
+
+	if ((nvalidator->validator.flags & min_and_max) == min_and_max)
+	{
+		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be between %.2f and %.2f", (double)nvalidator->min_value, (double)nvalidator->max_value);
+	}
+	else if (nvalidator->validator.flags & nsxml_value_validator_checkmin)
+	{
+		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be lesser or equal to %.2f", (double)nvalidator->min_value);
+	}
+	else if (nvalidator->validator.flags & nsxml_value_validator_checkmax)
+	{
+		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be greater or equal to %.2f", (double)nvalidator->max_value);
+	}
+
+	return printed;
+}
+
+int nsxml_value_validator_usage_enum(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+{
+	const struct nsxml_value_validator_enum *evalidator = (const struct nsxml_value_validator_enum *) self;
+	static const char *kPrefixedText[2] =
+	{ "Possible values: ", "Expected values: " };
+	int prefix_index = 0;
+
+	if (evalidator->validator.flags & nsxml_value_validator_enum_strict)
+	{
+		prefix_index = 1;
+	}
+
+	return nsxml_item_name_snprintf(evalidator->values, output, output_length, kPrefixedText[prefix_index]);
+}
+
+/* Definitions */
 
 const char *nsxml_usage_get_first_short_name(const struct nsxml_option_info *option_info)
 {
@@ -2076,6 +2183,23 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 }
 
 /* Parser Functions ******************************/
+
+/* Hidden API declarations */
+
+struct nsxml_option_name_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index);
+struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name);
+int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
+int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, const char *value);
+int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option);
+void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, int is_set);
+void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct nsxml_program_result *result);
+int nsxml_parse_active_option_accepts_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result);
+void nsxml_parse_append_option_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
+void nsxml_parse_process_positional_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
+size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct nsxml_program_result *result);
+size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state, struct nsxml_program_result *result);
+
+/* Definitions */
 
 struct nsxml_option_name_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)
 {
