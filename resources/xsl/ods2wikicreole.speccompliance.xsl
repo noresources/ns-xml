@@ -9,11 +9,14 @@
 			<xsl:when test="./@office:value-type = 'float'">
 				<xsl:text>{{images/</xsl:text>
 				<xsl:choose>
+					<xsl:when test="./@office:value = 0">
+						<xsl:text>question-16.png|Not tested/Unknown}}</xsl:text>
+					</xsl:when>
 					<xsl:when test="./@office:value &gt; 0">
 						<xsl:text>valid-16.png|Supported}}</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text>error-16.png|Not sSupported}}</xsl:text>
+						<xsl:text>error-16.png|Not supported}}</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
