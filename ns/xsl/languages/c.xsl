@@ -335,12 +335,20 @@
 	<template name="c.functionSignature">
 		<param name="returnType" select="'void'"/>
 		<param name="name"/>
+		<!-- Function parameters -->
 		<param name="parameters"/>
 		<value-of select="normalize-space($returnType)"/>
 		<text> </text>
 		<value-of select="normalize-space($name)"/>
 		<text>(</text>
-		<value-of select="normalize-space($parameters)"/>
+		<choose>
+			<when test="$parameters">
+				<value-of select="normalize-space($parameters)"/>
+			</when>
+			<otherwise>
+				<text>void</text>
+			</otherwise>
+		</choose>
 		<text>)</text>
 	</template>
 

@@ -129,7 +129,7 @@
 				</call-template>
 				<call-template name="endl"/>
 				<call-template name="c.variableDeclaration">
-					<with-param name="type" select="'int'"/>
+					<with-param name="type" select="'size_t'"/>
 					<with-param name="nameStyle" select="'none'"/>
 					<with-param name="name" select="'value_count'"/>
 					<with-param name="variableNameStyle" select="'none'"/>
@@ -205,11 +205,12 @@
 				<text> *result</text>
 			</with-param>
 			<with-param name="content">
-				<text>nsxml_program_result_cleanup((struct nsxml_program_result *)result);</text>
+				<text>nsxml_program_result_cleanup(result);</text>
 				<call-template name="endl"/>
 				<call-template name="prg.c.parser.option_resultFunctionCall">
 					<with-param name="programNode" select="$programNode"/>
 					<with-param name="functionName" select="'nsxml_option_result_cleanup'"/>
+					<with-param name="cast" select="false()"/>
 				</call-template>
 				<text>free(result);</text>
 			</with-param>
@@ -221,7 +222,7 @@
 		<param name="programNode" select="."/>
 		<call-template name="c.functionDeclaration">
 			<with-param name="name" select="$prg.c.parser.functionName.program_result_error_count"/>
-			<with-param name="returnType" select="'int'"/>
+			<with-param name="returnType" select="'size_t'"/>
 			<with-param name="parameters">
 				<value-of select="$prg.c.parser.structName.program_result"/>
 				<text> *result</text>
@@ -233,7 +234,7 @@
 		<param name="programNode" select="."/>
 		<call-template name="c.functionDefinition">
 			<with-param name="name" select="$prg.c.parser.functionName.program_result_error_count"/>
-			<with-param name="returnType" select="'int'"/>
+			<with-param name="returnType" select="'size_t'"/>
 			<with-param name="parameters">
 				<value-of select="$prg.c.parser.structName.program_result"/>
 				<text> *result</text>
@@ -344,7 +345,7 @@
 				<call-template name="c.while">
 					<with-param name="condition" select="'m'"/>
 					<with-param name="do">
-						<text>int len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</text>
+						<text>size_t len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</text>
 						<call-template name="endl"/>
 						<text>fprintf(stream, "%s%s", ((use_prefix &amp;&amp; line_prefix) ? line_prefix : ""), m-&gt;message);</text>
 						<call-template name="endl"/>
@@ -368,7 +369,7 @@
 				<call-template name="c.if">
 					<with-param name="condition" select="'m'"/>
 					<with-param name="then">
-						<text>int len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</text>
+						<text>size_t len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</text>
 						<call-template name="endl"/>
 						<text>fprintf(stream, "%s%s", ((line_prefix) ? line_prefix : ""), m-&gt;message);</text>
 						<call-template name="endl"/>

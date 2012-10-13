@@ -36,7 +36,7 @@
 				<value-of select="$prg.c.parser.structName.program_info"/>
 				<text> *info, </text>
 				<value-of select="$prg.c.parser.structName.program_result"/>
-				<text> *result, int format, const struct </text>
+				<text> *result, int format, const </text>
 				<value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/>
 				<text> *wrap</text>
 			</with-param>
@@ -127,15 +127,10 @@
 			<value-of select="$infoRef"/>
 			<text>;</text>
 			<call-template name="endl"/>
-			<value-of select="$stateVariableName"/>
-			<text>-&gt;option_name_bindings[</text>
-			<value-of select="$bindingIndex"/>
-			<text>][</text>
-			<value-of select="$index"/>
-			<text>].result_ref = </text>
+			<text>dummy_ptr = </text>
 			<choose>
 				<when test="$optionNode/prg:databinding/prg:variable">
-					<text>(struct nsxml_option_result *)(&amp;</text>
+					<text>(&amp;</text>
 					<value-of select="$prg.c.parser.resultVariableName"/>
 					<text>-&gt;</text>
 					<choose>
@@ -161,6 +156,13 @@
 					<text>];</text>
 				</otherwise>
 			</choose>
+			<call-template name="endl"/>
+			<value-of select="$stateVariableName"/>
+			<text>-&gt;option_name_bindings[</text>
+			<value-of select="$bindingIndex"/>
+			<text>][</text>
+			<value-of select="$index"/>
+			<text>].result_ref = (struct nsxml_option_result *)dummy_ptr;</text>
 			<call-template name="endl"/>
 			<!-- Level -->
 			<value-of select="$stateVariableName"/>
@@ -208,6 +210,7 @@
 		</for-each>
 	</template>
 
+	<!--  -->
 	<template name="prg.c.parser.stateOptionBindingParentTreeAssign">
 		<param name="programNode"/>
 		<param name="stateVariableName"/>
@@ -215,13 +218,11 @@
 		<param name="level"/>
 		<param name="variableBase"/>
 		<param name="bindingIndex"/>
-		<value-of select="$variableBase"/>
-		<text>[</text>
-		<value-of select="$level"/>
-		<text>] = </text>
+		<call-template name="endl"/>
+		<text>dummy_ptr = </text>
 		<choose>
 			<when test="$parentOptionNode/prg:databinding/prg:variable">
-				<text>(struct nsxml_group_option_result *)&amp;</text>
+				<text>&amp;</text>
 				<value-of select="$prg.c.parser.resultVariableName"/>
 				<text>-&gt;</text>
 				<choose>
@@ -238,7 +239,6 @@
 				<text>;</text>
 			</when>
 			<otherwise>
-				<text>(struct nsxml_group_option_result *)</text>
 				<value-of select="$stateVariableName"/>
 				<text>-&gt;anonymous_option_results[</text>
 				<call-template name="prg.c.parser.anonymousOptionIndex">
@@ -248,6 +248,10 @@
 				<text>];</text>
 			</otherwise>
 		</choose>
+		<value-of select="$variableBase"/>
+		<text>[</text>
+		<value-of select="$level"/>
+		<text>] = (struct nsxml_group_option_result *)dummy_ptr;</text>
 		<if test="$level &gt; 0">
 			<call-template name="prg.c.parser.stateOptionBindingParentTreeAssign">
 				<with-param name="programNode" select="$programNode"/>
@@ -293,8 +297,9 @@
 		<param name="programNode" select="."/>
 		<param name="functionName"/>
 		<param name="perOptionType" select="false()"/>
+		<param name="cast" select="true()"/>
 		<variable name="typeCast">
-			<if test="not($perOptionType)">
+			<if test="not($perOptionType) and $cast">
 				<text>(struct nsxml_option_result *)</text>
 			</if>
 		</variable>
@@ -388,6 +393,8 @@
 					</call-template>
 				</variable>
 				<!-- Declarations -->
+				<text>void *dummy_ptr = NULL;</text>
+				<call-template name="endl"/>
 				<call-template name="c.structVariableDeclaration">
 					<with-param name="name" select="$stateStructName"/>
 					<with-param name="pointer" select="true()"/>
@@ -413,13 +420,17 @@
 				<call-template name="endl"/>
 				<variable name="programOptionBindingCount" select="count($programNode/prg:options//prg:names/*)"/>
 				<variable name="programBindingCount" select="count($programNode/prg:subcommands/prg:subcommand) + 1"/>
-				<text>int option_name_binding_counts[] = {</text>
+				<text>size_t option_name_binding_counts[] = {</text>
 				<value-of select="$programOptionBindingCount"/>
 				<for-each select="$programNode/prg:subcommands/prg:subcommand">
 					<text>, </text>
 					<value-of select="count(./prg:options//prg:names/*)"/>
 				</for-each>
 				<text>};</text>
+				<call-template name="endl"/>
+				<text>void *result_ptr = </text>
+				<value-of select="$resultVariableName"/>
+				<text>;</text>
 				<call-template name="endl"/>
 				<call-template name="c.inlineComment">
 					<with-param name="content" select="'Parser state'"/>
@@ -431,56 +442,64 @@
 				<text>;</text>
 				<call-template name="endl"/>
 				<if test="$anonymousValueCount &gt; 0">
-					<value-of select="$stateVariableName"/>
-					<text>-&gt;anonymous_option_results = (struct nsxml_option_result **)malloc(sizeof(struct nsxml_option_result*) * </text>
-					<value-of select="$anonymousValueCount"/>
-					<text>);</text>
-					<call-template name="endl"/>
-					<for-each select="$programNode//prg:options/*[not(prg:databinding/prg:variable)]">
-						<call-template name="c.inlineComment">
-							<with-param name="content">
-								<value-of select="name(.)"/>
-								<text> </text>
-								<apply-templates select="prg:documentation/prg:abstract"/>
-								<text> </text>
-								<apply-templates select="prg:names[prg:long|prg:short][1]"/>
-							</with-param>
-						</call-template>
-						<call-template name="endl"/>
-						<variable name="itemType">
-							<call-template name="prg.c.parser.itemTypeName">
-								<with-param name="itemNode" select="."/>
-							</call-template>
-							<text/>
-						</variable>
-						<variable name="var">
+					<call-template name="c.inlineComment">
+						<with-param name="content" select="'Anonymous options'"/>
+					</call-template>
+					<call-template name="c.block">
+						<with-param name="content">
+							<text>void *anonymous_result_ptr = NULL;</text>
+							<call-template name="endl"/>
 							<value-of select="$stateVariableName"/>
-							<text>-&gt;anonymous_option_results[</text>
-							<value-of select="position() - 1"/>
-							<text>]</text>
-						</variable>
-						<value-of select="$var"/>
-						<text> = (struct nsxml_option_result *) malloc(sizeof(struct nsxml_</text>
-						<value-of select="$itemType"/>
-						<text>_option_result));</text>
-						<call-template name="endl"/>
-						<text>nsxml_</text>
-						<value-of select="$itemType"/>
-						<text>_option_result_init((struct nsxml_</text>
-						<value-of select="$itemType"/>
-						<text>_option_result *)</text>
-						<value-of select="$stateVariableName"/>
-						<text>-&gt;anonymous_option_results[</text>
-						<value-of select="position() - 1"/>
-						<text>]);</text>
-						<call-template name="endl"/>
-					</for-each>
+							<text>-&gt;anonymous_option_results = (struct nsxml_option_result **)malloc(sizeof(struct nsxml_option_result*) * </text>
+							<value-of select="$anonymousValueCount"/>
+							<text>);</text>
+							<call-template name="endl"/>
+							<for-each select="$programNode//prg:options/*[not(prg:databinding/prg:variable)]">
+								<call-template name="c.inlineComment">
+									<with-param name="content">
+										<value-of select="name(.)"/>
+										<text> </text>
+										<apply-templates select="prg:documentation/prg:abstract"/>
+										<text> </text>
+										<apply-templates select="prg:names[prg:long|prg:short][1]"/>
+									</with-param>
+								</call-template>
+								<call-template name="endl"/>
+								<variable name="itemType">
+									<call-template name="prg.c.parser.itemTypeName">
+										<with-param name="itemNode" select="."/>
+									</call-template>
+									<text/>
+								</variable>
+								<variable name="var">
+									<value-of select="$stateVariableName"/>
+									<text>-&gt;anonymous_option_results[</text>
+									<value-of select="position() - 1"/>
+									<text>]</text>
+								</variable>
+								<text>anonymous_result_ptr = malloc(sizeof(struct nsxml_</text>
+								<value-of select="$itemType"/>
+								<text>_option_result));</text>
+								<call-template name="endl"/>
+								<value-of select="$var"/>
+								<text> = (struct nsxml_option_result *)anonymous_result_ptr;</text>
+								<call-template name="endl"/>
+								<text>nsxml_</text>
+								<value-of select="$itemType"/>
+								<text>_option_result_init((struct nsxml_</text>
+								<value-of select="$itemType"/>
+								<text>_option_result *)anonymous_result_ptr);</text>
+								<call-template name="endl"/>
+							</for-each>
+						</with-param>
+					</call-template>
+					<call-template name="endl"/>
 				</if>
 				<call-template name="c.inlineComment">
 					<with-param name="content" select="'Parser result'"/>
 				</call-template>
 				<call-template name="endl"/>
-				<text>nsxml_program_result_init((struct nsxml_program_result *)</text>
+				<text>nsxml_program_result_init(</text>
 				<value-of select="$prg.c.parser.resultVariableName"/>
 				<text>);</text>
 				<call-template name="endl"/>
@@ -570,6 +589,7 @@
 				<value-of select="$stateVariableName"/>
 				<text>, (struct nsxml_program_result*)</text>
 				<value-of select="$prg.c.parser.resultVariableName"/>
+				<text>_ptr</text>
 				<text>);</text>
 				<call-template name="endl"/>
 				<text>nsxml_parser_state_free(</text>
@@ -593,7 +613,13 @@
 				</call-template>
 			</with-param>
 			<with-param name="content">
-				<text>nsxml_usage(stream, (struct nsxml_program_info *)info, (struct nsxml_program_result *)result, format, wrap);</text>
+				<text>void *</text>
+				<value-of select="$prg.c.parser.resultVariableName"/>
+				<text>_ptr = result;</text>
+				<call-template name="endl"/>
+				<text>const void *info_ptr = info;</text>
+				<call-template name="endl"/>
+				<text>nsxml_usage(stream, (const struct nsxml_program_info *)info_ptr, (struct nsxml_program_result *)result_ptr, format, wrap);</text>
 			</with-param>
 		</call-template>
 	</template>

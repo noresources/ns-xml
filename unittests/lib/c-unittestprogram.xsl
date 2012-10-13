@@ -172,12 +172,12 @@ int main(int argc, const char **argv)
 	result = app_parse(&info, argc, argv, 1);
 	
 	/* Values */
-	printf("Value count: %d\n", result->value_count);
+	printf("Value count: %d\n", (int)result->value_count);
 	printf("Values: ");
 	value_list(result->values, "\"", "\"", ", ");
 	printf("\n");
 	
-	printf("Error count: %d\n", nsxml_message_count(result->messages[nsxml_message_type_error]) + nsxml_message_count(result->messages[nsxml_message_type_fatal_error]));
+	printf("Error count: %d\n", (int)app_result_error_count(result));
 	
 	printf("Subcommand: %s\n", ((result->subcommand_name) ? result->subcommand_name : ""));
 ]]></text><call-template name="str.prependLine"><with-param name="prependedText" select="'&#9;'"/><with-param name="text"><!-- Global args --><if test="/prg:program/prg:options"><variable name="root" select="/prg:program/prg:options"/><apply-templates select="$root//prg:switch | $root//prg:argument | $root//prg:multiargument | .//prg:group"/></if><!-- Subcommands --><for-each select="/prg:program/prg:subcommands/*"><if test="./prg:options"><!-- <apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument | .//prg:group"/> --><call-template name="c.if"><with-param name="condition"><text>result-&gt;subcommand_name &amp;&amp; strcmp(result-&gt;subcommand_name, "</text><apply-templates select="prg:name"/><text>") == 0</text></with-param><with-param name="then"><apply-templates select=".//prg:switch | .//prg:argument | .//prg:multiargument | .//prg:group"/></with-param></call-template></if></for-each></with-param></call-template><![CDATA[

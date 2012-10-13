@@ -69,10 +69,11 @@
 			<call-template name="endl"/>
 			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator));</text>
 			<call-template name="endl"/>
+			<text> validator_ptr = validator;</text>
+			<call-template name="endl"/>
 			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_path, NULL, &amp;nsxml_value_validator_usage_path, validator_flags);</text>
 			<call-template name="endl"/>
 			<text>nsxml_value_validator_add(</text>
-			<!-- <value-of select="$variable"/> -->
 			<text>&amp;</text>
 			<value-of select="$memberSet"/>
 			<text>validators</text>
@@ -95,12 +96,15 @@
 			<call-template name="endl"/>
 			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_number));</text>
 			<call-template name="endl"/>
+			<text> validator_ptr = validator;</text>
+			<call-template name="endl"/>
 			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_number, NULL, &amp;nsxml_value_validator_usage_number, validator_flags);</text>
 			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_number *)(validator))-&gt;min_value = </text>
+			<text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;min_value = </text>
 			<choose>
 				<when test="$numberNode/@min">
 					<value-of select="$numberNode/@min"/>
+					<text>F</text>
 				</when>
 				<otherwise>
 					<text>0</text>
@@ -108,10 +112,11 @@
 			</choose>
 			<text>;</text>
 			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_number *)(validator))-&gt;max_value = </text>
+			<text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;max_value = </text>
 			<choose>
 				<when test="$numberNode/@max">
 					<value-of select="$numberNode/@max"/>
+					<text>F</text>
 				</when>
 				<otherwise>
 					<text>0</text>
@@ -138,9 +143,11 @@
 			<call-template name="endl"/>
 			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_enum));</text>
 			<call-template name="endl"/>
+			<text> validator_ptr = validator;</text>
+			<call-template name="endl"/>
 			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_enum, &amp;nsxml_value_validator_cleanup_enum, &amp;nsxml_value_validator_usage_enum, validator_flags);</text>
 			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_enum *)(validator))-&gt;values = nsxml_item_names_new(</text>
+			<text>((struct nsxml_value_validator_enum *)(validator_ptr))-&gt;values = nsxml_item_names_new(</text>
 			<for-each select="$selectNode/prg:option">
 				<text>"</text>
 				<apply-templates select="."/>
@@ -243,7 +250,6 @@
 		<text>NULL), </text>
 		<choose>
 			<when test="$optionNode/../../self::prg:group">
-				<text>(struct nsxml_group_option_info *)</text>
 				<value-of select="$containerVariable"/>
 				<text>[</text>
 				<call-template name="prg.c.parser.optionIndex">
@@ -426,7 +432,7 @@
 				<value-of select="$optionNode/@min"/>
 			</when>
 			<otherwise>
-				<text>-1</text>
+				<text>1</text>
 			</otherwise>
 		</choose>
 		<text>;</text>
@@ -438,7 +444,7 @@
 				<value-of select="$optionNode/@max"/>
 			</when>
 			<otherwise>
-				<text>-1</text>
+				<text>0</text>
 			</otherwise>
 		</choose>
 		<text>;</text>
@@ -539,6 +545,8 @@
 					<with-param name="content">
 						<text>struct nsxml_option_info *o = NULL;</text>
 						<call-template name="endl"/>
+						<text>void *o_ptr = NULL;</text>
+						<call-template name="endl"/>
 						<variable name="containerVariable">
 							<value-of select="$memberSet"/>
 							<text>option_infos</text>
@@ -570,12 +578,13 @@
 									<text>o = </text>
 									<value-of select="$optionVariable"/>
 									<text>;</text>
+									<text>o_ptr = o;</text>
 									<call-template name="endl"/>
 									<call-template name="prg.c.parser.switch_optionItemInfoInit">
 										<with-param name="optionNode" select="."/>
 										<with-param name="optionInfoVariable" select="'o'"/>
 										<with-param name="variable">
-											<text>((struct nsxml_switch_option_info*)o)</text>
+											<text>((struct nsxml_switch_option_info*)o_ptr)</text>
 										</with-param>
 										<with-param name="pointer" select="true()"/>
 										<with-param name="containerVariable" select="$containerVariable"/>
@@ -588,12 +597,13 @@
 									<text>o = </text>
 									<value-of select="$optionVariable"/>
 									<text>;</text>
+									<text>o_ptr = o;</text>
 									<call-template name="endl"/>
 									<call-template name="prg.c.parser.argumentOptionItemInfoInit">
 										<with-param name="optionNode" select="."/>
 										<with-param name="optionInfoVariable" select="'o'"/>
 										<with-param name="variable">
-											<text>((struct nsxml_argument_option_info*)o)</text>
+											<text>((struct nsxml_argument_option_info*)o_ptr)</text>
 										</with-param>
 										<with-param name="pointer" select="true()"/>
 										<with-param name="containerVariable" select="$containerVariable"/>
@@ -606,12 +616,13 @@
 									<text>o = </text>
 									<value-of select="$optionVariable"/>
 									<text>;</text>
+									<text>o_ptr = o;</text>
 									<call-template name="endl"/>
 									<call-template name="prg.c.parser.multiargumentOptionItemInfoInit">
 										<with-param name="optionNode" select="."/>
 										<with-param name="optionInfoVariable" select="'o'"/>
 										<with-param name="variable">
-											<text>((struct nsxml_multiargument_option_info*)o)</text>
+											<text>((struct nsxml_multiargument_option_info*)o_ptr)</text>
 										</with-param>
 										<with-param name="pointer" select="true()"/>
 										<with-param name="containerVariable" select="$containerVariable"/>
@@ -624,12 +635,13 @@
 									<text>o = </text>
 									<value-of select="$optionVariable"/>
 									<text>;</text>
+									<text>o_ptr = o;</text>
 									<call-template name="endl"/>
 									<call-template name="prg.c.parser.group_optionItemInfoInit">
 										<with-param name="optionNode" select="."/>
 										<with-param name="optionInfoVariable" select="'o'"/>
 										<with-param name="variable">
-											<text>((struct nsxml_group_option_info*)o)</text>
+											<text>((struct nsxml_group_option_info*)o_ptr)</text>
 										</with-param>
 										<with-param name="pointer" select="true()"/>
 										<with-param name="containerVariable" select="$containerVariable"/>
@@ -651,9 +663,10 @@
 							<text>o = info-&gt;rootitem_info.option_infos[</text>
 							<value-of select="$optionIndex"/>
 							<text>];</text>
+							<text>o_ptr = o;</text>
 							<call-template name="endl"/>
 							<for-each select="$groupNode/prg:options/*">
-								<text>((struct nsxml_group_option_info *)(o))-&gt;option_info_refs[</text>
+								<text>((struct nsxml_group_option_info *)(o_ptr))-&gt;option_info_refs[</text>
 								<value-of select="position() - 1"/>
 								<text>] = info-&gt;rootitem_info.option_infos[</text>
 								<call-template name="prg.c.parser.optionIndex">
@@ -731,7 +744,7 @@
 								<value-of select="./@max"/>
 							</when>
 							<otherwise>
-								<text>-1</text>
+								<text>0</text>
 							</otherwise>
 						</choose>
 						<text>);</text>
@@ -811,10 +824,13 @@
 			</with-param>
 			<with-param name="content">
 				<text>struct nsxml_value_validator *validator;</text>
+				<text> void *validator_ptr;</text>
 				<call-template name="endl"/>
 				<text>int validator_flags;</text>
 				<call-template name="endl"/>
 				<text>validator = NULL;</text>
+				<call-template name="endl"/>
+				<text> validator_ptr = validator;</text>
 				<call-template name="endl"/>
 				<text>validator_flags = 0;</text>
 				<call-template name="endl"/>
@@ -871,9 +887,13 @@
 					</with-param>
 				</call-template>
 				<call-template name="endl"/>
-				<text>validator_flags = (int)(size_t)validator; /*shut up compiler */</text>
+				<text>/*shut up compiler */</text>
 				<call-template name="endl"/>
-				<text>validator = (struct nsxml_value_validator *)&amp;validator_flags; /*shut up compiler */</text>
+				<text>validator_flags = (int)sizeof(validator);</text>
+				<call-template name="endl"/>
+				<text>validator_ptr = &amp;validator_flags;</text>
+				<call-template name="endl"/>
+				<text> validator = (struct nsxml_value_validator *)validator_ptr;</text>
 			</with-param>
 		</call-template>
 	</template>
