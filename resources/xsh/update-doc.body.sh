@@ -7,6 +7,9 @@ xslPath="${projectPath}/ns/xsl"
 resourceXslPath="${projectPath}/resources/xsl"
 cwd="$(pwd)"
 
+# Override default path for htmlOutputPath
+htmlOutputPath="${projectPath}/doc/html/articles"
+
 if ! parse "${@}"
 then
 	if ${displayHelp}
@@ -96,25 +99,29 @@ fi
 
 if update_item html && which nme 1>/dev/null 2>&1
 then
-	htmlArticlePath="${projectPath}/doc/html/articles"
+	nmeOptions=(--easylink "${nmeEasyLink}")
+	if ${htmlBodyOnly}
+	then
+		nmeOptions=("${nmeOptions[@]}" --body)	
+	fi
 	
 	for e in wiki jpg png gif
 	do
 		find "${creolePath}" -name "*.${e}" | while read f
 		do
-			#output="${htmlArticlePath}${f#${creolePath}}"
+			#output="${htmlOutputPath}${f#${creolePath}}"
 			
 			#output="$(echo "${f#${creolePath}}" | tr -d "/")"
-			#output="${htmlArticlePath}/${output}"
+			#output="${htmlOutputPath}/${output}"
 			
-			output="$(filesystempath_to_nmepath "${creolePath}" "${htmlArticlePath}" "${f}")"
+			output="$(filesystempath_to_nmepath "${creolePath}" "${htmlOutputPath}" "${f}")"
 			
 			[ "${e}" == "wiki" ] && output="${output%wiki}html"
 			echo "${output}"
 			mkdir -p "$(dirname "${output}")"
 			if [ "${e}" == "wiki" ]
 			then
-				nme --easylink "$.html" < "${f}" > "${output}"
+				nme "${nmeOptions[@]}" < "${f}" > "${output}"
 				ns_sed_inplace "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
 			else
 				rsync -lprt "${f}" "${output}"

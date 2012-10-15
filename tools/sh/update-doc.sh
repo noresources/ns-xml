@@ -13,7 +13,7 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--help] [--xsl-output <path>] [--xsl-css <path>] [(--index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)]
+  update-doc [--help] [--xsl-output <path>] [--xsl-css <path>] [(--index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...> --html-body-only]
   With:
     --help: Display program usage
     --xsl-output: XSLT output path
@@ -28,6 +28,13 @@ Usage:
         --index-name: Index page output file name  
           Default value: index.php
         --copy-anywhere: Copy index file in all directories
+      
+    
+    HTML documentation options
+      --html-output: HTML output path
+      --nme-easylink, --easylink: NME Easy link format  
+        Default value: $.html
+      --html-body-only: Do not generate HTML header etc.
 EOFUSAGE
 }
 
@@ -63,6 +70,7 @@ parser_index=${parser_startindex}
 displayHelp=false
 indexUrlRelativeToRoot=false
 indexCopyInFolders=false
+htmlBodyOnly=false
 # Single argument options
 
 xsltDocOutputPath=
@@ -70,6 +78,8 @@ xsltDocCssFile=
 indexUrl=
 indexFile=
 indexFileOutputName="index.php"
+htmlOutputPath=
+nmeEasyLink="$.html"
 
 parse_addwarning()
 {
@@ -578,6 +588,88 @@ parse_process_option()
 			indexMode="indexModeFile"
 			parse_setoptionpresence G_4_g_2_g_3_copy-anywhere;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
 			;;
+		html-output)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! parse_pathaccesscheck "${parser_item}" "w"
+			then
+				parse_adderror "Invalid path permissions for \"${parser_item}\", w privilege(s) expected for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ -a "${parser_item}" ] && ! ([ -d "${parser_item}" ])
+			then
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			htmlOutputPath="${parser_item}"
+			parse_setoptionpresence G_5_g_1_html-output;parse_setoptionpresence G_5_g
+			;;
+		nme-easylink | easylink)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			nmeEasyLink="${parser_item}"
+			parse_setoptionpresence G_5_g_2_nme-easylink;parse_setoptionpresence G_5_g
+			;;
+		html-body-only)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			htmlBodyOnly=true
+			parse_setoptionpresence G_5_g_3_html-body-only;parse_setoptionpresence G_5_g
+			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
 			return ${PARSER_ERROR}
@@ -920,6 +1012,9 @@ xslPath="${projectPath}/ns/xsl"
 resourceXslPath="${projectPath}/resources/xsl"
 cwd="$(pwd)"
 
+# Override default path for htmlOutputPath
+htmlOutputPath="${projectPath}/doc/html/articles"
+
 if ! parse "${@}"
 then
 	if ${displayHelp}
@@ -1009,25 +1104,29 @@ fi
 
 if update_item html && which nme 1>/dev/null 2>&1
 then
-	htmlArticlePath="${projectPath}/doc/html/articles"
+	nmeOptions=(--easylink "${nmeEasyLink}")
+	if ${htmlBodyOnly}
+	then
+		nmeOptions=("${nmeOptions[@]}" --body)	
+	fi
 	
 	for e in wiki jpg png gif
 	do
 		find "${creolePath}" -name "*.${e}" | while read f
 		do
-			#output="${htmlArticlePath}${f#${creolePath}}"
+			#output="${htmlOutputPath}${f#${creolePath}}"
 			
 			#output="$(echo "${f#${creolePath}}" | tr -d "/")"
-			#output="${htmlArticlePath}/${output}"
+			#output="${htmlOutputPath}/${output}"
 			
-			output="$(filesystempath_to_nmepath "${creolePath}" "${htmlArticlePath}" "${f}")"
+			output="$(filesystempath_to_nmepath "${creolePath}" "${htmlOutputPath}" "${f}")"
 			
 			[ "${e}" == "wiki" ] && output="${output%wiki}html"
 			echo "${output}"
 			mkdir -p "$(dirname "${output}")"
 			if [ "${e}" == "wiki" ]
 			then
-				nme --easylink "$.html" < "${f}" > "${output}"
+				nme "${nmeOptions[@]}" < "${f}" > "${output}"
 				ns_sed_inplace "s/\.\(png\|jpg\|gif\)\.html/.\1/g" "${output}"
 			else
 				rsync -lprt "${f}" "${output}"

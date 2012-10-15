@@ -152,6 +152,55 @@
 				</prg:group>
 			</prg:options>
 		</prg:group>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>HTML documentation options</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>htmlOutputPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>HTML output path</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>html-output</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path access="w">
+							<prg:kinds>
+								<prg:folder/>
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>nmeEasyLink</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>NME Easy link format</prg:abstract>
+					</prg:documentation>
+					<prg:default>$.html</prg:default>
+					<prg:names>
+						<prg:long>nme-easylink</prg:long>
+						<prg:long>easylink</prg:long>
+					</prg:names>
+				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>htmlBodyOnly</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Do not generate HTML header etc.</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>html-body-only</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:group>
 	</prg:options>
 	<prg:values>
 		<prg:other>
