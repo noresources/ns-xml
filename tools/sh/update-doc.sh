@@ -13,28 +13,34 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--help] [--xsl-output <path>] [--xsl-css <path>] [(--index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...> --html-body-only]
+  update-doc [--xsl-output <path> --xsl-css <path> (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
   With:
-    --help: Display program usage
-    --xsl-output: XSLT output path
-    --xsl-css: XSLT CSS file
-    Directory index settings
-      URL
-        --index-url: Index URL
-        --relative-index-url: Index URL is relative to root
-      
-      File
-        --index: Index page source file path
-        --index-name: Index page output file name  
-          Default value: index.php
-        --copy-anywhere: Copy index file in all directories
+    XSLT documentation
+      --xsl-output: XSLT output path
+      --xsl-css: XSLT CSS file
+      Directory index settings
+        --no-index: Do not generate index nor navigation links
+        URL
+          --index-url: Index URL
+          --relative-index-url: Index URL is relative to root
+        
+        File
+          --index: Index page source file path
+          --index-name: Index page output file name  
+            Default value: index.php
+          --copy-anywhere: Copy index file in all directories
+        
       
     
     HTML documentation options
       --html-output: HTML output path
       --nme-easylink, --easylink: NME Easy link format  
         Default value: $.html
+    
+    Shared settings
       --html-body-only: Do not generate HTML header etc.
+    
+    --help: Display program usage
 EOFUSAGE
 }
 
@@ -67,10 +73,11 @@ parser_index=${parser_startindex}
 
 # Switch options
 
-displayHelp=false
+indexModeNone=false
 indexUrlRelativeToRoot=false
 indexCopyInFolders=false
 htmlBodyOnly=false
+displayHelp=false
 # Single argument options
 
 xsltDocOutputPath=
@@ -272,9 +279,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_1_help
+			parse_setoptionpresence G_4_help
 			;;
 		xsl-output)
+			# Group checks
+			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -311,9 +320,11 @@ parse_process_option()
 			fi
 			
 			xsltDocOutputPath="${parser_item}"
-			parse_setoptionpresence G_2_xsl-output
+			parse_setoptionpresence G_1_g_1_xsl-output;parse_setoptionpresence G_1_g
 			;;
 		xsl-css)
+			# Group checks
+			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -350,7 +361,26 @@ parse_process_option()
 			fi
 			
 			xsltDocCssFile="${parser_item}"
-			parse_setoptionpresence G_3_xsl-css
+			parse_setoptionpresence G_1_g_2_xsl-css;parse_setoptionpresence G_1_g
+			;;
+		no-index)
+			# Group checks
+			
+			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeNone" ] || [ "${indexMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			indexModeNone=true
+			indexMode="indexModeNone"
+			parse_setoptionpresence G_1_g_3_g_1_no-index;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		index-url)
 			# Group checks
@@ -410,7 +440,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexUrl="${parser_item}"
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_4_g_1_g_1_index-url;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_1_g_3_g_2_g_1_index-url;parse_setoptionpresence G_1_g_3_g_2_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		relative-index-url)
 			# Group checks
@@ -429,7 +459,7 @@ parse_process_option()
 			fi
 			indexUrlRelativeToRoot=true
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_4_g_1_g_2_relative-index-url;parse_setoptionpresence G_4_g_1_g;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_1_g_3_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_3_g_2_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		index)
 			# Group checks
@@ -507,7 +537,7 @@ parse_process_option()
 			
 			indexFile="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_4_g_2_g_1_index;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_1_g_3_g_3_g_1_index;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		index-name)
 			# Group checks
@@ -567,7 +597,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexFileOutputName="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_4_g_2_g_2_index-name;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_1_g_3_g_3_g_2_index-name;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		copy-anywhere)
 			# Group checks
@@ -586,7 +616,7 @@ parse_process_option()
 			fi
 			indexCopyInFolders=true
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_4_g_2_g_3_copy-anywhere;parse_setoptionpresence G_4_g_2_g;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_1_g_3_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		html-output)
 			# Group checks
@@ -627,7 +657,7 @@ parse_process_option()
 			fi
 			
 			htmlOutputPath="${parser_item}"
-			parse_setoptionpresence G_5_g_1_html-output;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_2_g_1_html-output;parse_setoptionpresence G_2_g
 			;;
 		nme-easylink | easylink)
 			# Group checks
@@ -656,7 +686,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nmeEasyLink="${parser_item}"
-			parse_setoptionpresence G_5_g_2_nme-easylink;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_2_g_2_nme-easylink;parse_setoptionpresence G_2_g
 			;;
 		html-body-only)
 			# Group checks
@@ -668,7 +698,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			htmlBodyOnly=true
-			parse_setoptionpresence G_5_g_3_html-body-only;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_3_g_1_html-body-only;parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -1165,6 +1195,20 @@ then
 		then
 			rsync -lprt "${indexFile}" "${outputIndexPath}"
 		fi
+	elif [ "${indexMode}" = "indexModeNone" ]
+	then
+		xslDirectoryIndexMode="none"
+	fi
+	
+	
+	xsltprocOptions=(--xinclude \
+		--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
+		--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
+		)
+	
+	if ${htmlBodyOnly}
+	then
+		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
 	fi
 		
 	find "${xslPath}" -name "*.xsl" | while read f
@@ -1191,11 +1235,9 @@ then
 			fi
 		fi
 		
-		xsltproc --xinclude -o "${output}" \
+		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
 			--stringparam "xsl.doc.html.fileName" "${title}" \
 			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-			--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
-			--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
 			"${xslStylesheet}" "${f}"
 
 	done

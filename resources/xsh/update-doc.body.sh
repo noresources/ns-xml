@@ -160,6 +160,20 @@ then
 		then
 			rsync -lprt "${indexFile}" "${outputIndexPath}"
 		fi
+	elif [ "${indexMode}" = "indexModeNone" ]
+	then
+		xslDirectoryIndexMode="none"
+	fi
+	
+	
+	xsltprocOptions=(--xinclude \
+		--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
+		--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
+		)
+	
+	if ${htmlBodyOnly}
+	then
+		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
 	fi
 		
 	find "${xslPath}" -name "*.xsl" | while read f
@@ -186,11 +200,9 @@ then
 			fi
 		fi
 		
-		xsltproc --xinclude -o "${output}" \
+		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
 			--stringparam "xsl.doc.html.fileName" "${title}" \
 			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-			--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
-			--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
 			"${xslStylesheet}" "${f}"
 
 	done

@@ -11,143 +11,159 @@
 		<prg:abstract>Documentation builder</prg:abstract>
 	</prg:documentation>
 	<prg:options>
-		<!-- Help -->
-		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
-		<prg:argument>
-			<prg:databinding>
-				<prg:variable>xsltDocOutputPath</prg:variable>
-			</prg:databinding>
+		<prg:group>
 			<prg:documentation>
-				<prg:abstract>XSLT output path</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>xsl-output</prg:long>
-			</prg:names>
-			<prg:type>
-				<prg:path exist="true">
-					<prg:kinds>
-						<prg:folder/>
-					</prg:kinds>
-				</prg:path>
-			</prg:type>
-		</prg:argument>
-		<prg:argument>
-			<prg:databinding>
-				<prg:variable>xsltDocCssFile</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>XSLT CSS file</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>xsl-css</prg:long>
-			</prg:names>
-			<prg:type>
-				<prg:path exist="true">
-					<prg:kinds>
-						<prg:file/>
-					</prg:kinds>
-					<prg:patterns>
-						<prg:pattern>
-							<prg:name>XSL files</prg:name>
-							<prg:rules>
-								<prg:rule>
-									<prg:endWith>.xsl</prg:endWith>
-								</prg:rule>
-							</prg:rules>
-						</prg:pattern>
-					</prg:patterns>
-				</prg:path>
-			</prg:type>
-		</prg:argument>
-		<prg:group type="exclusive">
-			<prg:databinding>
-				<prg:variable>indexMode</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Directory index settings</prg:abstract>
+				<prg:abstract>XSLT documentation</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:group>
+				<prg:argument>
 					<prg:databinding>
-						<prg:variable>indexModeUrl</prg:variable>
+						<prg:variable>xsltDocOutputPath</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>URL</prg:abstract>
+						<prg:abstract>XSLT output path</prg:abstract>
 					</prg:documentation>
-					<prg:options>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>indexUrl</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Index URL</prg:abstract>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>index-url</prg:long>
-							</prg:names>
-						</prg:argument>
-						<prg:switch>
-							<prg:databinding>
-								<prg:variable>indexUrlRelativeToRoot</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Index URL is relative to root</prg:abstract>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>relative-index-url</prg:long>
-							</prg:names>
-						</prg:switch>
-					</prg:options>
-				</prg:group>
-				<prg:group>
+					<prg:names>
+						<prg:long>xsl-output</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:folder/>
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<prg:argument>
 					<prg:databinding>
-						<prg:variable>indexModeFile</prg:variable>
+						<prg:variable>xsltDocCssFile</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>File</prg:abstract>
+						<prg:abstract>XSLT CSS file</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>xsl-css</prg:long>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:file/>
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>XSL files</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.xsl</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<prg:group type="exclusive">
+					<prg:databinding>
+						<prg:variable>indexMode</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Directory index settings</prg:abstract>
 					</prg:documentation>
 					<prg:options>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>indexFile</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Index page source file path</prg:abstract>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>index</prg:long>
-							</prg:names>
-							<prg:type>
-								<prg:path exist="true" access="r">
-									<prg:kinds>
-										<prg:file/>
-									</prg:kinds>
-								</prg:path>
-							</prg:type>
-						</prg:argument>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>indexFileOutputName</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Index page output file name</prg:abstract>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>index-name</prg:long>
-							</prg:names>
-							<prg:default>index.php</prg:default>
-						</prg:argument>
 						<prg:switch>
 							<prg:databinding>
-								<prg:variable>indexCopyInFolders</prg:variable>
+								<prg:variable>indexModeNone</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Copy index file in all directories</prg:abstract>
+								<prg:abstract>Do not generate index nor navigation links</prg:abstract>
 							</prg:documentation>
 							<prg:names>
-								<prg:long>copy-anywhere</prg:long>
+								<prg:long>no-index</prg:long>
 							</prg:names>
 						</prg:switch>
+						<prg:group>
+							<prg:databinding>
+								<prg:variable>indexModeUrl</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>URL</prg:abstract>
+							</prg:documentation>
+							<prg:options>
+								<prg:argument>
+									<prg:databinding>
+										<prg:variable>indexUrl</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Index URL</prg:abstract>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>index-url</prg:long>
+									</prg:names>
+								</prg:argument>
+								<prg:switch>
+									<prg:databinding>
+										<prg:variable>indexUrlRelativeToRoot</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Index URL is relative to root</prg:abstract>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>relative-index-url</prg:long>
+									</prg:names>
+								</prg:switch>
+							</prg:options>
+						</prg:group>
+						<prg:group>
+							<prg:databinding>
+								<prg:variable>indexModeFile</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>File</prg:abstract>
+							</prg:documentation>
+							<prg:options>
+								<prg:argument>
+									<prg:databinding>
+										<prg:variable>indexFile</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Index page source file path</prg:abstract>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>index</prg:long>
+									</prg:names>
+									<prg:type>
+										<prg:path exist="true" access="r">
+											<prg:kinds>
+												<prg:file/>
+											</prg:kinds>
+										</prg:path>
+									</prg:type>
+								</prg:argument>
+								<prg:argument>
+									<prg:databinding>
+										<prg:variable>indexFileOutputName</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Index page output file name</prg:abstract>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>index-name</prg:long>
+									</prg:names>
+									<prg:default>index.php</prg:default>
+								</prg:argument>
+								<prg:switch>
+									<prg:databinding>
+										<prg:variable>indexCopyInFolders</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Copy index file in all directories</prg:abstract>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>copy-anywhere</prg:long>
+									</prg:names>
+								</prg:switch>
+							</prg:options>
+						</prg:group>
 					</prg:options>
 				</prg:group>
 			</prg:options>
@@ -188,6 +204,13 @@
 						<prg:long>easylink</prg:long>
 					</prg:names>
 				</prg:argument>
+			</prg:options>
+		</prg:group>
+		<prg:group>
+			<prg:documentation>
+				<prg:abstract>Shared settings</prg:abstract>
+			</prg:documentation>
+			<prg:options>
 				<prg:switch>
 					<prg:databinding>
 						<prg:variable>htmlBodyOnly</prg:variable>
@@ -201,6 +224,8 @@
 				</prg:switch>
 			</prg:options>
 		</prg:group>
+		<!-- Help -->
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 	</prg:options>
 	<prg:values>
 		<prg:other>
