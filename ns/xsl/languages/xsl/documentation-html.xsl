@@ -4,32 +4,35 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:import href="../../strings.xsl"/>
 	<xsl:output method="html" indent="yes" encoding="utf-8"/>
-	<!-- A file path relative to documentation root -->
-	<xsl:param name="xsl.doc.html.fileName"/>
 	<!-- Relative path to the CSS style sheet -->
 	<xsl:param name="xsl.doc.html.stylesheetPath"/>
+	<!-- Directory index path type ('per-folder', 'root', 'none', 'auto') -->
+	<xsl:param name="xsl.doc.html.directoryIndexPathMode" select="'none'"/>
 	<!-- Path of the directory index page -->
 	<xsl:param name="xsl.doc.html.directoryIndexPath"/>
-	<!-- Directory index path type ('per-folder', 'root', 'none', 'auto')
-		- 'per-folder':
-		- 'root':
-	-->
-	<xsl:param name="xsl.doc.html.directoryIndexPathMode" select="'none'"/>
+	<!-- A file path relative to documentation root. Used to create automatic directory index links.
+	This parameters has no meaning when $xsl.doc.html.directoryIndexPath is set to 'none' -->
+	<xsl:param name="xsl.doc.html.fileName"/>
 	<!-- If true, generates a full HTML page with html tag containing head and body. Otherwise, the top level node 
 	will be a div-->
 	<xsl:param name="xsl.doc.html.fullHtmlPage" select="true()"/>
+	<!-- Parameter list title -->
 	<xsl:param name="xsl.doc.string.parameters">
 		<xsl:text>Parameters</xsl:text>
 	</xsl:param>
+	<!-- Variable list title -->
 	<xsl:param name="xsl.doc.string.variables">
 		<xsl:text>Variables</xsl:text>
 	</xsl:param>
+	<!-- Named templates list title -->
 	<xsl:param name="xsl.doc.string.templates">
 		<xsl:text>Templates</xsl:text>
 	</xsl:param>
+	<!-- Details section title -->
 	<xsl:param name="xsl.doc.string.details">
 		<xsl:text>Details</xsl:text>
 	</xsl:param>
+	<!-- Abstract section title (table of contnet) -->
 	<xsl:param name="xsl.doc.string.abstract">
 		<xsl:text>Table of content</xsl:text>
 	</xsl:param>
@@ -46,7 +49,7 @@
 			</xsl:when>
 			<xsl:when test="($node/self::xsl:param or $node/self::xsl:variable) and $node/../self::xsl:stylesheet">
 				<xsl:text>prm_</xsl:text>
-				<xsl:value-of select="$node"/>
+				<xsl:value-of select="normalize-space($node/@name)"/>
 			</xsl:when>
 			<xsl:when test="$node/self::xsl:param and $node/../self::xsl:template">
 				<xsl:call-template name="xsl.doc.elementId">
@@ -443,16 +446,11 @@
 	<!-- Stylesheet -->
 	<xsl:template match="/xsl:stylesheet">
 		<xsl:element name="h1">
-			<xsl:choose>
-				<xsl:when test="$xsl.doc.html.directoryIndexPathMode = 'none'">
-					<xsl:value-of select="$xsl.doc.html.fileName"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:call-template name="xsl.doc.html.activeTitle">
-						<xsl:with-param name="title" select="$xsl.doc.html.fileName"/>
-					</xsl:call-template>
-				</xsl:otherwise>
-			</xsl:choose>
+			<xsl:if test="$xsl.doc.html.directoryIndexPathMode != 'none'">
+				<xsl:call-template name="xsl.doc.html.activeTitle">
+					<xsl:with-param name="title" select="$xsl.doc.html.fileName"/>
+				</xsl:call-template>
+			</xsl:if>
 			<xsl:call-template name="xsl.doc.html.comment">
 				<xsl:with-param name="class">
 					<xsl:text>xsl-stylesheet-subtitle</xsl:text>
@@ -543,24 +541,19 @@
 		<xsl:comment>
 			<xsl:text>xsl.doc.html.fileName: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fileName"/>
-			<xsl:text>
-</xsl:text>
+			<xsl:call-template name="endl"/>
 			<xsl:text>xsl.doc.html.stylesheetPath: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.stylesheetPath"/>
-			<xsl:text>
-</xsl:text>
+			<xsl:call-template name="endl"/>
 			<xsl:text>xsl.doc.html.directoryIndexPath: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.directoryIndexPath"/>
-			<xsl:text>
-</xsl:text>
+			<xsl:call-template name="endl"/>
 			<xsl:text>xsl.doc.html.directoryIndexPathMode: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.directoryIndexPathMode"/>
-			<xsl:text>
-</xsl:text>
+			<xsl:call-template name="endl"/>
 			<xsl:text>xsl.doc.html.fullHtmlPage: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fullHtmlPage"/>
-			<xsl:text>
-</xsl:text>
+			<xsl:call-template name="endl"/>
 		</xsl:comment>
 		<xsl:variable name="comment">
 			<xsl:call-template name="xsl.doc.html.comment">

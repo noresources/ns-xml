@@ -13,9 +13,11 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--xsl-output <path> --xsl-css <path> (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
+  update-doc [--hg-only --xsl-output <path> --xsl-css <path> (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
   With:
     XSLT documentation
+      --hg-only: Generate documentation for XSLT files in the mercurial 
+      repository only
       --xsl-output: XSLT output path
       --xsl-css: XSLT CSS file
       Directory index settings
@@ -73,6 +75,7 @@ parser_index=${parser_startindex}
 
 # Switch options
 
+xsltHgOnly=false
 indexModeNone=false
 indexUrlRelativeToRoot=false
 indexCopyInFolders=false
@@ -281,6 +284,18 @@ parse_process_option()
 			displayHelp=true
 			parse_setoptionpresence G_4_help
 			;;
+		hg-only)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			xsltHgOnly=true
+			parse_setoptionpresence G_1_g_1_hg-only;parse_setoptionpresence G_1_g
+			;;
 		xsl-output)
 			# Group checks
 			
@@ -320,7 +335,7 @@ parse_process_option()
 			fi
 			
 			xsltDocOutputPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xsl-output;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_xsl-output;parse_setoptionpresence G_1_g
 			;;
 		xsl-css)
 			# Group checks
@@ -361,7 +376,7 @@ parse_process_option()
 			fi
 			
 			xsltDocCssFile="${parser_item}"
-			parse_setoptionpresence G_1_g_2_xsl-css;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_xsl-css;parse_setoptionpresence G_1_g
 			;;
 		no-index)
 			# Group checks
@@ -380,7 +395,7 @@ parse_process_option()
 			fi
 			indexModeNone=true
 			indexMode="indexModeNone"
-			parse_setoptionpresence G_1_g_3_g_1_no-index;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_1_no-index;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		index-url)
 			# Group checks
@@ -440,7 +455,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexUrl="${parser_item}"
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_3_g_2_g_1_index-url;parse_setoptionpresence G_1_g_3_g_2_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_2_g_1_index-url;parse_setoptionpresence G_1_g_4_g_2_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		relative-index-url)
 			# Group checks
@@ -459,7 +474,7 @@ parse_process_option()
 			fi
 			indexUrlRelativeToRoot=true
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_3_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_3_g_2_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_4_g_2_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		index)
 			# Group checks
@@ -537,7 +552,7 @@ parse_process_option()
 			
 			indexFile="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_3_g_3_g_1_index;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_3_g_1_index;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		index-name)
 			# Group checks
@@ -597,7 +612,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexFileOutputName="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_3_g_3_g_2_index-name;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_3_g_2_index-name;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		copy-anywhere)
 			# Group checks
@@ -616,7 +631,7 @@ parse_process_option()
 			fi
 			indexCopyInFolders=true
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_3_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_3_g_3_g;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
 			;;
 		html-output)
 			# Group checks
@@ -1076,6 +1091,36 @@ update_item()
 	return 1
 }
 
+xsltdoc()
+{
+	local f="${1}"
+	local output="${f#${xslPath}}"
+	output="${xsltDocOutputPath}${output}"
+	output="${output%xsl}html"
+	local outputFolder="$(dirname "${output}")"
+	mkdir -p "${outputFolder}" || error 2 "Failed to create ${outputFolder}"
+	local cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
+	local title="${output#${xsltDocOutputPath}/}"
+	title="${title%.html}"
+	
+	if [ "${indexMode}" = "indexModeUrl" ]
+	then
+		echo -n ""
+	elif [ "${indexMode}" = "indexModeFile" ]
+	then
+		local outputIndexPath="${outputFolder}/${indexFileOutputName}"
+		if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
+		then
+			cp -pf "${indexFile}" "${outputIndexPath}"
+		fi
+	fi
+	
+	xsltproc "${xsltprocOptions[@]}" -o "${output}" \
+		--stringparam "xsl.doc.html.fileName" "${title}" \
+		--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+		"${xslStylesheet}" "${f}"
+}
+
 for tool in nme find xsltproc
 do
 	which ${tool} 1>/dev/null 2>&1 || (echo "${tool} not found" && exit 1)
@@ -1171,6 +1216,7 @@ defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 if update_item xsl
 then
 	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${projectPath}/doc/html/xsl"
+	mkdir -p "${xsltDocOutputPath}" || error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
 	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
 	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 
@@ -1200,7 +1246,6 @@ then
 		xslDirectoryIndexMode="none"
 	fi
 	
-	
 	xsltprocOptions=(--xinclude \
 		--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
 		--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
@@ -1210,35 +1255,23 @@ then
 	then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
 	fi
-		
-	find "${xslPath}" -name "*.xsl" | while read f
-	do
-		output="${f#${xslPath}}"
-		output="${xsltDocOutputPath}${output}"
-		output="${output%xsl}html"
-		outputFolder="$(dirname "${output}")"
-		mkdir -p "${outputFolder}"
-		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
-		title="${output#${xsltDocOutputPath}/}"
-		title="${title%.html}"
-		 
-		
-		if [ "${indexMode}" = "indexModeUrl" ]
-		then
-			echo -n ""
-		elif [ "${indexMode}" = "indexModeFile" ]
-		then
-			outputIndexPath="${outputFolder}/${indexFileOutputName}"
-			if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
-			then
-				cp -pf "${indexFile}" "${outputIndexPath}"
-			fi
-		fi
-		
-		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
-			--stringparam "xsl.doc.html.fileName" "${title}" \
-			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-			"${xslStylesheet}" "${f}"
 
-	done
+	if ${xsltHgOnly}
+	then
+		cd "${projectPath}"
+		while read f
+		do
+			xsltdoc "${projectPath}/${f}"
+		done << EOF
+		$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+EOF
+		cd "${cwd}"		
+	else
+		while read f
+		do
+			xsltdoc "${f}"
+		done << EOF
+		$(find "${xslPath}" -name "*.xsl")
+EOF
+	fi
 fi

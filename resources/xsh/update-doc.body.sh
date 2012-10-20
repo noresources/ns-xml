@@ -41,6 +41,36 @@ update_item()
 	return 1
 }
 
+xsltdoc()
+{
+	local f="${1}"
+	local output="${f#${xslPath}}"
+	output="${xsltDocOutputPath}${output}"
+	output="${output%xsl}html"
+	local outputFolder="$(dirname "${output}")"
+	mkdir -p "${outputFolder}" || error 2 "Failed to create ${outputFolder}"
+	local cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
+	local title="${output#${xsltDocOutputPath}/}"
+	title="${title%.html}"
+	
+	if [ "${indexMode}" = "indexModeUrl" ]
+	then
+		echo -n ""
+	elif [ "${indexMode}" = "indexModeFile" ]
+	then
+		local outputIndexPath="${outputFolder}/${indexFileOutputName}"
+		if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
+		then
+			cp -pf "${indexFile}" "${outputIndexPath}"
+		fi
+	fi
+	
+	xsltproc "${xsltprocOptions[@]}" -o "${output}" \
+		--stringparam "xsl.doc.html.fileName" "${title}" \
+		--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+		"${xslStylesheet}" "${f}"
+}
+
 for tool in nme find xsltproc
 do
 	which ${tool} 1>/dev/null 2>&1 || (echo "${tool} not found" && exit 1)
@@ -136,6 +166,7 @@ defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 if update_item xsl
 then
 	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${projectPath}/doc/html/xsl"
+	mkdir -p "${xsltDocOutputPath}" || error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
 	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
 	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 
@@ -165,7 +196,6 @@ then
 		xslDirectoryIndexMode="none"
 	fi
 	
-	
 	xsltprocOptions=(--xinclude \
 		--stringparam "xsl.doc.html.directoryIndexPathMode" "${xslDirectoryIndexMode}" \
 		--stringparam "xsl.doc.html.directoryIndexPath" "${indexFileOutputName}" \
@@ -175,35 +205,23 @@ then
 	then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
 	fi
-		
-	find "${xslPath}" -name "*.xsl" | while read f
-	do
-		output="${f#${xslPath}}"
-		output="${xsltDocOutputPath}${output}"
-		output="${output%xsl}html"
-		outputFolder="$(dirname "${output}")"
-		mkdir -p "${outputFolder}"
-		cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
-		title="${output#${xsltDocOutputPath}/}"
-		title="${title%.html}"
-		 
-		
-		if [ "${indexMode}" = "indexModeUrl" ]
-		then
-			echo -n ""
-		elif [ "${indexMode}" = "indexModeFile" ]
-		then
-			outputIndexPath="${outputFolder}/${indexFileOutputName}"
-			if ${indexCopyInFolders} && [ "${indexFile}" != "${outputIndexPath}" ]
-			then
-				cp -pf "${indexFile}" "${outputIndexPath}"
-			fi
-		fi
-		
-		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
-			--stringparam "xsl.doc.html.fileName" "${title}" \
-			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-			"${xslStylesheet}" "${f}"
 
-	done
+	if ${xsltHgOnly}
+	then
+		cd "${projectPath}"
+		while read f
+		do
+			xsltdoc "${projectPath}/${f}"
+		done << EOF
+		$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+EOF
+		cd "${cwd}"		
+	else
+		while read f
+		do
+			xsltdoc "${f}"
+		done << EOF
+		$(find "${xslPath}" -name "*.xsl")
+EOF
+	fi
 fi

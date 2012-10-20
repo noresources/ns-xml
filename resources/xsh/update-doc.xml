@@ -16,6 +16,17 @@
 				<prg:abstract>XSLT documentation</prg:abstract>
 			</prg:documentation>
 			<prg:options>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>xsltHgOnly</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Generate documentation for XSLT files in the mercurial repository only</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>hg-only</prg:long>
+					</prg:names>
+				</prg:switch>
 				<prg:argument>
 					<prg:databinding>
 						<prg:variable>xsltDocOutputPath</prg:variable>
