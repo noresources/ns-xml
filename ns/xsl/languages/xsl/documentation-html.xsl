@@ -4,8 +4,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:import href="../../strings.xsl"/>
 	<xsl:output method="html" indent="yes" encoding="utf-8"/>
-	<!-- Relative path to the CSS style sheet -->
-	<xsl:param name="xsl.doc.html.stylesheetPath"/>
 	<!-- Directory index path type ('per-folder', 'root', 'none', 'auto') -->
 	<xsl:param name="xsl.doc.html.directoryIndexPathMode" select="'none'"/>
 	<!-- Path of the directory index page -->
@@ -13,9 +11,14 @@
 	<!-- A file path relative to documentation root. Used to create automatic directory index links.
 	This parameters has no meaning when $xsl.doc.html.directoryIndexPath is set to 'none' -->
 	<xsl:param name="xsl.doc.html.fileName"/>
-	<!-- If true, generates a full HTML page with html tag containing head and body. Otherwise, the top level node 
-	will be a div-->
+	<!-- If true, generates a full HTML page with html tag containing head and body. 
+	Otherwise, the documentation will be wrapped in a div -->
 	<xsl:param name="xsl.doc.html.fullHtmlPage" select="true()"/>
+	<!-- Indicates if the stylesheet abstract have to be displayed -->
+	<xsl:param name="xsl.doc.html.stylesheetAbstract" select="false()"/>
+	<!-- Relative path to the CSS style sheet to include. 
+	Require $xsl.doc.html.fullHtmlPage to be true() -->
+	<xsl:param name="xsl.doc.html.stylesheetPath"/>
 	<!-- Parameter list title -->
 	<xsl:param name="xsl.doc.string.parameters">
 		<xsl:text>Parameters</xsl:text>
@@ -199,7 +202,11 @@
 	<xsl:template name="xsl.doc.html.comment">
 		<xsl:param name="node" select="."/>
 		<xsl:param name="class"/>
-		<xsl:variable name="comment" select="preceding-sibling::node()[self::*|self::comment()][1][self::comment()]"/>
+		<xsl:variable name="comment">
+			<xsl:call-template name="str.trim">
+				<xsl:with-param name="text" select="$node/preceding-sibling::node()[self::*|self::comment()][1][self::comment()]"/>
+			</xsl:call-template>
+		</xsl:variable>
 		<xsl:if test="string-length($comment)">
 			<xsl:choose>
 				<xsl:when test="$class">
@@ -451,11 +458,13 @@
 					<xsl:with-param name="title" select="$xsl.doc.html.fileName"/>
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:call-template name="xsl.doc.html.comment">
-				<xsl:with-param name="class">
-					<xsl:text>xsl-stylesheet-subtitle</xsl:text>
-				</xsl:with-param>
-			</xsl:call-template>
+			<xsl:if test="$xsl.doc.html.stylesheetAbstract">
+				<xsl:call-template name="xsl.doc.html.comment">
+					<xsl:with-param name="class">
+						<xsl:text>xsl-stylesheet-subtitle</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:if>
 		</xsl:element>
 		<!-- TOC -->
 		<xsl:variable name="hasContent" select="./xsl:template[@name] or ./xsl:param or ./xsl:variable"/>
@@ -554,12 +563,17 @@
 			<xsl:text>xsl.doc.html.fullHtmlPage: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fullHtmlPage"/>
 			<xsl:call-template name="endl"/>
+			<xsl:text>xsl.doc.html.stylesheetAbstract: </xsl:text>
+			<xsl:value-of select="$xsl.doc.html.stylesheetAbstract"/>
+			<xsl:call-template name="endl"/>
 		</xsl:comment>
-		<xsl:variable name="comment">
+		<xsl:call-template name="endl"/>
+		<xsl:variable name="abstract">
 			<xsl:call-template name="xsl.doc.html.comment">
 				<xsl:with-param name="node" select="./xsl:stylesheet"/>
 			</xsl:call-template>
 		</xsl:variable>
+		<xsl:variable name="displayAbstract" select="(($xsl.doc.html.stylesheetAbstract = true()) and (string-length($abstract) &gt; 0))"/>
 		<xsl:choose>
 			<xsl:when test="$xsl.doc.html.fullHtmlPage">
 				<xsl:element name="html">
@@ -567,12 +581,12 @@
 						<xsl:element name="title">
 							<xsl:if test="$xsl.doc.html.fileName">
 								<xsl:value-of select="$xsl.doc.html.fileName"/>
-								<xsl:if test="string-length($comment)">
+								<xsl:if test="$displayAbstract">
 									<xsl:text> - </xsl:text>
 								</xsl:if>
 							</xsl:if>
-							<xsl:if test="string-length($comment)">
-								<xsl:value-of select="$comment"/>
+							<xsl:if test="$displayAbstract">
+								<xsl:value-of select="$abstract"/>
 							</xsl:if>
 						</xsl:element>
 						<xsl:if test="$xsl.doc.html.stylesheetPath">

@@ -13,13 +13,16 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--hg-only --xsl-output <path> --xsl-css <path> (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
+  update-doc [--hg-only --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
   With:
     XSLT documentation
       --hg-only: Generate documentation for XSLT files in the mercurial 
       repository only
       --xsl-output: XSLT output path
       --xsl-css: XSLT CSS file
+      --stylesheet-abstract, --abstract: Display XSLT stylesheet abstract
+        Consider the comment above the 'stylesheet' root node as the file 
+        abstract and display it as a HTML heading
       Directory index settings
         --no-index: Do not generate index nor navigation links
         URL
@@ -76,6 +79,7 @@ parser_index=${parser_startindex}
 # Switch options
 
 xsltHgOnly=false
+xsltAbstract=false
 indexModeNone=false
 indexUrlRelativeToRoot=false
 indexCopyInFolders=false
@@ -378,6 +382,18 @@ parse_process_option()
 			xsltDocCssFile="${parser_item}"
 			parse_setoptionpresence G_1_g_3_xsl-css;parse_setoptionpresence G_1_g
 			;;
+		stylesheet-abstract | abstract)
+			# Group checks
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			xsltAbstract=true
+			parse_setoptionpresence G_1_g_4_stylesheet-abstract;parse_setoptionpresence G_1_g
+			;;
 		no-index)
 			# Group checks
 			
@@ -395,7 +411,7 @@ parse_process_option()
 			fi
 			indexModeNone=true
 			indexMode="indexModeNone"
-			parse_setoptionpresence G_1_g_4_g_1_no-index;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_1_no-index;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		index-url)
 			# Group checks
@@ -455,7 +471,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexUrl="${parser_item}"
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_4_g_2_g_1_index-url;parse_setoptionpresence G_1_g_4_g_2_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_2_g_1_index-url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		relative-index-url)
 			# Group checks
@@ -474,7 +490,7 @@ parse_process_option()
 			fi
 			indexUrlRelativeToRoot=true
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_4_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_4_g_2_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		index)
 			# Group checks
@@ -552,7 +568,7 @@ parse_process_option()
 			
 			indexFile="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_4_g_3_g_1_index;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_1_index;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		index-name)
 			# Group checks
@@ -612,7 +628,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexFileOutputName="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_4_g_3_g_2_index-name;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_2_index-name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		copy-anywhere)
 			# Group checks
@@ -631,7 +647,7 @@ parse_process_option()
 			fi
 			indexCopyInFolders=true
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_4_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_4_g_3_g;parse_setoptionpresence G_1_g_4_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		html-output)
 			# Group checks
@@ -1115,10 +1131,21 @@ xsltdoc()
 		fi
 	fi
 	
-	xsltproc "${xsltprocOptions[@]}" -o "${output}" \
-		--stringparam "xsl.doc.html.fileName" "${title}" \
-		--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-		"${xslStylesheet}" "${f}"
+	testXsltOptions=(--xinclude)
+	if ${xsltAbstract}
+	then
+		testXsltOptions=("${testXsltOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
+	fi
+	
+	available="$(xsltproc "${testXsltOptions[@]}" "${xslTestStylesheet}" "${f}")"
+	
+	if [ ${available} = "yes" ]
+	then
+		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
+			--stringparam "xsl.doc.html.fileName" "${title}" \
+			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+			"${xslStylesheet}" "${f}"
+	fi
 }
 
 for tool in nme find xsltproc
@@ -1211,6 +1238,7 @@ then
 fi
 
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
+xslTestStylesheet="${xslPath}/languages/xsl/documentation-html-available.xsl"
 defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 
 if update_item xsl
@@ -1254,6 +1282,11 @@ then
 	if ${htmlBodyOnly}
 	then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
+	fi
+	
+	if ${xsltAbstract}
+	then
+		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
 	fi
 
 	if ${xsltHgOnly}

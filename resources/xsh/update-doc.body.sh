@@ -65,10 +65,21 @@ xsltdoc()
 		fi
 	fi
 	
-	xsltproc "${xsltprocOptions[@]}" -o "${output}" \
-		--stringparam "xsl.doc.html.fileName" "${title}" \
-		--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
-		"${xslStylesheet}" "${f}"
+	testXsltOptions=(--xinclude)
+	if ${xsltAbstract}
+	then
+		testXsltOptions=("${testXsltOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
+	fi
+	
+	available="$(xsltproc "${testXsltOptions[@]}" "${xslTestStylesheet}" "${f}")"
+	
+	if [ ${available} = "yes" ]
+	then
+		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
+			--stringparam "xsl.doc.html.fileName" "${title}" \
+			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+			"${xslStylesheet}" "${f}"
+	fi
 }
 
 for tool in nme find xsltproc
@@ -161,6 +172,7 @@ then
 fi
 
 xslStylesheet="${xslPath}/languages/xsl/documentation-html.xsl"
+xslTestStylesheet="${xslPath}/languages/xsl/documentation-html-available.xsl"
 defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 
 if update_item xsl
@@ -204,6 +216,11 @@ then
 	if ${htmlBodyOnly}
 	then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.fullHtmlPage" "false()")
+	fi
+	
+	if ${xsltAbstract}
+	then
+		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
 	fi
 
 	if ${xsltHgOnly}

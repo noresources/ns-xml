@@ -73,6 +73,20 @@
 						</prg:path>
 					</prg:type>
 				</prg:argument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>xsltAbstract</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Display XSLT stylesheet abstract</prg:abstract>
+						<prg:details>Consider the comment above the 'stylesheet' root node as the file abstract and display
+				            it as a HTML heading</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>stylesheet-abstract</prg:long>
+						<prg:long>abstract</prg:long>
+					</prg:names>
+				</prg:switch>
 				<prg:group type="exclusive">
 					<prg:databinding>
 						<prg:variable>indexMode</prg:variable>
