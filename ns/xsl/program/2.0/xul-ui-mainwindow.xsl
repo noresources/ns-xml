@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
 
 <!-- Create the main XUL window -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">

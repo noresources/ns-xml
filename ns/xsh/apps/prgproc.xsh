@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
 <sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude" interpreter="/usr/bin/env bash">
 	<sh:info>

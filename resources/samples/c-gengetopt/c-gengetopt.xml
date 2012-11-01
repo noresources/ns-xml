@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>c-gengetopt</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:copyright>Copyright (c) 2012 by Renaud Guillard (dev@niao.fr)</prg:copyright>
+	<prg:copyright>Copyright © 2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>XML to gengetopt</prg:abstract>
 	</prg:documentation>

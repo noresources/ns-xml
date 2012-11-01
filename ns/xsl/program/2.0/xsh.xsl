@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
+
 <!-- Build a shell script by combining program option parsing & usage from the XML program interface definition schema and shell code and functions from the XML bash schema -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" version="1.0" extension-element-prefixes="exsl">
 	<import href="../../languages/bash.xsl"/>

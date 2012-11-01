@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+
 <!-- String manipulation functions -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<param name="str.endlChar">

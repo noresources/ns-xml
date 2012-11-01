@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
+
 <!--  -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" version="1.0">
 	<xsl:import href="../../languages/wikicreole.xsl"/>

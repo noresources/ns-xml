@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
+
 <!-- List of variable, structs and function names which can be modified by the user -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<import href="parser.base.xsl"/>

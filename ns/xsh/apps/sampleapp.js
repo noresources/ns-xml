@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 by Renaud Guillard (dev@niao.fr)
+ * Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
  * Distributed under the terms of the BSD License, see LICENSE
  */
 

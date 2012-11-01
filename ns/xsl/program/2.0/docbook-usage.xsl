@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011 by Renaud Guillard (dev@niao.fr) -->
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+
 <!-- Generate a wiki page using the Creole syntaxe (http://www.wikicreole.org/) -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:db="http://docbook.org/ns/docbook" version="1.0">
 	<xsl:import href="usage.chunks.xsl"/>
