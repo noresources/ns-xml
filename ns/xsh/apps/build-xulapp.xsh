@@ -185,15 +185,15 @@ then
 	error "Invalid program interface definition schema version"
 fi  
 
-requiredTemplates="xul-ui-mainwindow xul-js-mainwindow xul-js-application get-programinfo"
+requiredTemplates="ui-mainwindow js-mainwindow js-application ../get-programinfo"
 if [ "${targetPlatform}" == "macosx" ]
 then
-	requiredTemplates="${requiredTemplates} macosx-plist xul-ui-hiddenwindow"
+	requiredTemplates="${requiredTemplates} macosx-plist ui-hiddenwindow"
 fi
 
 for template in ${requiredTemplates}
 do
-	stylesheet="${nsPath}/xsl/program/${programVersion}/${template}.xsl"
+	stylesheet="${nsPath}/xsl/program/${programVersion}/xul/${template}.xsl"
 	if [ ! -f "${stylesheet}" ]
 	then
 		error "Missing XSLT stylesheet file \"${stylesheet}\""
@@ -375,13 +375,13 @@ then
 fi
 
 info " -- Main window"
-if ! xsltproc ${xsltOptions} -o "${appMainXulFile}" "${programStylesheetPath}/xul-ui-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
+if ! xsltproc ${xsltOptions} -o "${appMainXulFile}" "${programStylesheetPath}/xul/ui-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL main window layout (${appMainXulFile} - ${xsltOptions})"
 fi
 
 info " -- Overlay"
-if ! xsltproc ${xsltOptions} -o "${appOverlayXulFile}" "${programStylesheetPath}/xul-ui-overlay.xsl" "${xmlProgramDescriptionPath}"  
+if ! xsltproc ${xsltOptions} -o "${appOverlayXulFile}" "${programStylesheetPath}/xul/ui-overlay.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOptions})"
 fi
@@ -389,7 +389,7 @@ fi
 if [ "${targetPlatform}" == "macosx" ]
 then
 	info " -- Mac OS X hidden window"
-	if ! xsltproc ${xsltOptions} -o "${appHiddenWindowXulFile}" "${programStylesheetPath}/xul-ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
+	if ! xsltproc ${xsltOptions} -o "${appHiddenWindowXulFile}" "${programStylesheetPath}/xul/ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
 	then
 		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOptions})"
 	fi 
@@ -417,12 +417,12 @@ do
 done
 
 info " - Building Javascript code"
-if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.jsm" "${programStylesheetPath}/xul-js-application.xsl" "${xmlProgramDescriptionPath}"  
+if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.jsm" "${programStylesheetPath}/xul/js-application.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL application code"
 fi
 
-if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.js" "${programStylesheetPath}/xul-js-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
+if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.js" "${programStylesheetPath}/xul/js-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
 	error "Error while building XUL main window code"
 fi
@@ -446,7 +446,7 @@ then
 	mkdir -p "${outputPath}/Contents/Resources"
 	
 	info " - Create/Update Mac OS X application property list"
-	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/macosx-plist.xsl" "${xmlProgramDescriptionPath}"  
+	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/xul/macosx-plist.xsl" "${xmlProgramDescriptionPath}"  
 	then
 		error "Error while building XUL main window code"
 	fi

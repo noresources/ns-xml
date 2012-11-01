@@ -5,8 +5,8 @@
 <!-- Create a Mac OS X property list for the XUL frontend application -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="../../documents/macosx-plist.xsl" />
-	<import href="xul-base.xsl" />
+	<import href="../../../documents/macosx-plist.xsl" />
+	<import href="base.xsl" />
 
 	<output method="xml" doctype-system="http://www.apple.com/DTDs/PropertyList-1.0.dtd" doctype-public="-//Apple Computer//DTD PLIST 1.0//EN" encoding="utf-8" indent="yes" />
 

@@ -5,7 +5,7 @@
 <!-- XUL hidden window for Mac OS X -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<xsl:import href="./xul-ui-base.xsl" />
+	<xsl:import href="ui-base.xsl" />
 
 	<xsl:output method="xml" encoding="utf-8" indent="yes" />
 

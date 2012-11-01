@@ -5,7 +5,7 @@
 <!-- Base templates for XUL UI elements -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-	<import href="./xul-base.xsl" />
+	<import href="base.xsl" />
 	
 	<variable name="prg.xul.availableSubcommands" select="/prg:program/prg:subcommands/prg:subcommand[not(prg:ui/@mode = 'disabled')]" />
 
