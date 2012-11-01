@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
-
 <!-- C Source code in customizable XSLT form -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="parser.generic-names.xsl"/>
-	<output method="text" encoding="utf-8"/>
-	<param name="prg.c.parser.header.filePath" select="'cmdline.h'"/>
+<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform"
+	xmlns:prg="http://xsd.nore.fr/program" version="1.0">
+	<import href="parser.generic-names.xsl" />
+	<output method="text" encoding="utf-8" />
+	<param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
+	
 	<variable name="prg.c.parser.genericHeader"><![CDATA[
 /**************************************************************************************$
  *
  ***************************************************************************************
- * Copyright © 2012 by Renaud Guillard (dev@nore.fr)
+ * Copyright © 2012 by Renaud Guillard (dev@niao.fr)
  * Distributed under the terms of the BSD License, see LICENSE
  ***************************************************************************************
  */
@@ -753,8 +754,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 
 #endif /* __NSXML_PROGRAM_PARSER_H__ */
 ]]></variable>
+
 	<template match="//prg:program">
 		<value-of select="$prg.c.parser.genericHeader"/>
 	</template>
-
 </stylesheet>
+
