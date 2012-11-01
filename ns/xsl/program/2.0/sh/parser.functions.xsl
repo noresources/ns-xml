@@ -5,8 +5,8 @@
 <!-- Shell parser function definitions -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="sh-parser.base.xsl" />
-	<import href="sh-parser.variables.xsl" />
+	<import href="parser.base.xsl" />
+	<import href="parser.variables.xsl" />
 
 	<!-- Message functions -->
 	<template name="prg.sh.parser.addMessageFunctionHelper">
@@ -214,7 +214,7 @@
 							<with-param name="start" select="0" />
 							<with-param name="length" select="1" />
 						</call-template>
-						<text> </text>
+						<value-of select="' '" />
 						<call-template name="sh.var">
 							<with-param name="name">
 								<text>file</text>
@@ -280,7 +280,7 @@
 									<with-param name="name">
 										<text>idPart</text>
 									</with-param>
-									<with-param name="quoted" select="true()"></with-param>
+									<with-param name="quoted" select="true()" />
 								</call-template>
 								<text> = </text>
 								<call-template name="sh.var">
@@ -434,7 +434,7 @@
 					</with-param>
 				</call-template>
 
-				<for-each select="$programNode//prg:multiargument[@min > 0]">
+				<for-each select="$programNode//prg:multiargument[@min &gt; 0]">
 					<variable name="optionName">
 						<call-template name="prg.sh.optionDisplayName">
 							<with-param name="optionNode" select="." />
@@ -989,7 +989,7 @@
 				<call-template name="code.block">
 					<with-param name="content">
 						<value-of select="$prg.sh.parser.fName_addvalue" />
-						<text> </text>
+						<value-of select="' '" />
 						<call-template name="sh.var">
 							<with-param name="name" select="$prg.sh.parser.vName_item" />
 							<with-param name="quoted" select="true()" />
@@ -1073,7 +1073,7 @@
 									<with-param name="content">
 										<!-- It's the first value -->
 										<value-of select="$prg.sh.parser.fName_addvalue" />
-										<text> </text>
+										<value-of select="' '" />
 										<call-template name="sh.var">
 											<with-param name="name" select="$prg.sh.parser.vName_item" />
 											<with-param name="quoted" select="true()" />
@@ -1090,7 +1090,7 @@
 				<call-template name="code.block">
 					<with-param name="content">
 						<value-of select="$prg.sh.parser.fName_addvalue" />
-						<text> </text>
+						<value-of select="' '" />
 						<call-template name="sh.var">
 							<with-param name="name" select="$prg.sh.parser.vName_item" />
 							<with-param name="quoted" select="true()" />
@@ -1126,7 +1126,7 @@
 					</with-param>
 					<with-param name="do">
 						<value-of select="$prg.sh.parser.fName_process_option" />
-						<text> </text>
+						<value-of select="' '" />
 						<call-template name="sh.var">
 							<with-param name="name" select="0" />
 							<with-param name="quoted" select="true()" />
@@ -1188,7 +1188,7 @@
 								<text>"</text>
 								<call-template name="unixEndl" />
 								<value-of select="$prg.sh.parser.fName_setoptionpresence" />
-								<text> </text>
+								<value-of select="' '" />
 								<value-of select="$groupNodeId" />
 							</with-param>
 						</call-template>

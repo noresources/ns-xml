@@ -5,9 +5,9 @@
 <!-- Basic templates and variable used in most of shell generation stylesheets -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="../../languages/shellscript.xsl" />
-	<import href="base.xsl" />
-	
+	<import href="../../../languages/shellscript.xsl" />
+	<import href="../base.xsl" />
+
 	<!-- Display of on option name using the UNIX conventions -->
 	<!-- - Single minus for mono-character options -->
 	<!-- - Double minus for multi-characters options -->

@@ -5,14 +5,14 @@
 <!-- Shell parser base templates -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="sh-base.xsl" />
-	
+	<import href="base.xsl" />
+
 	<param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
-	
+
 	<template name="prg.sh.parser.boundVariableName">
 		<param name="variableNode" />
 		<param name="node" select="$variableNode/../.." />
-		
+
 		<choose>
 			<when test="$node/self::prg:program">
 				<value-of select="normalize-space($variableNode)" />
@@ -35,7 +35,7 @@
 			</otherwise>
 		</choose>
 	</template>
-	
+
 	<!-- Prefix of all parser functions -->
 	<variable name="prg.sh.parser.functionNamePrefix">
 		<text>parse_</text>
@@ -51,5 +51,5 @@
 			<with-param name="variableNode" select="." />
 		</call-template>
 	</template>
-	
+
 </stylesheet>

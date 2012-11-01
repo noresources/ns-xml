@@ -6,8 +6,7 @@
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
 	<import href="base.xsl" />
-	<import href="sh-base.xsl" />
-	<import href="sh-parser.variables.xsl" />
+	<import href="parser.variables.xsl" />
 
 	<!-- "$parser_index++" -->
 	<template name="prg.sh.parser.indexIncrement">
@@ -51,7 +50,7 @@
 			</with-param>
 			<with-param name="do">
 				<value-of select="$prg.sh.parser.fName_addvalue" />
-				<text> </text>
+				<value-of select="' '" />
 				<call-template name="sh.var">
 					<with-param name="name" select="$prg.sh.parser.vName_input" />
 					<with-param name="quoted" select="true()" />
@@ -82,7 +81,7 @@
 		<variable name="parentNode" select="$optionNode/../.." />
 
 		<value-of select="$prg.sh.parser.fName_setoptionpresence" />
-		<text> </text>
+		<value-of select="' '" />
 		<call-template name="prg.optionId">
 			<with-param name="optionNode" select="$optionNode" />
 		</call-template>
@@ -126,90 +125,90 @@
 		<param name="optionNode" select="." />
 		<param name="onError" />
 
-			<call-template name="sh.if">
-				<with-param name="condition">
-					<text>[ ! -z </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-						<with-param name="quoted" select="true()" />
-					</call-template>
-					<text> ]</text>
-				</with-param>
-				<with-param name="then">
-					<value-of select="$prg.sh.parser.vName_item" />
-					<text>=</text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-						<with-param name="quoted" select="true()" />
-					</call-template>
-				</with-param>
-				<with-param name="else">
-					<call-template name="prg.sh.parser.indexIncrement" />
-					<call-template name="unixEndl" />
+		<call-template name="sh.if">
+			<with-param name="condition">
+				<text>[ ! -z </text>
+				<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_optiontail" />
+					<with-param name="quoted" select="true()" />
+				</call-template>
+				<text> ]</text>
+			</with-param>
+			<with-param name="then">
+				<value-of select="$prg.sh.parser.vName_item" />
+				<text>=</text>
+				<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_optiontail" />
+					<with-param name="quoted" select="true()" />
+				</call-template>
+			</with-param>
+			<with-param name="else">
+				<call-template name="prg.sh.parser.indexIncrement" />
+				<call-template name="unixEndl" />
 
-					<call-template name="sh.if">
-						<with-param name="condition">
-							<text>[ </text>
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_index" />
-							</call-template>
-							<text> -ge </text>
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-							</call-template>
-							<text> ]</text>
-						</with-param>
-						<with-param name="then">
-							<value-of select="$prg.sh.parser.fName_adderror" />
-							<text> "End of input reached - Argument expected"</text>
-							<if test="$onError">
-								<call-template name="unixEndl" />
-								<value-of select="$onError" />
-							</if>
-						</with-param>
-					</call-template>
-					<call-template name="unixEndl" />
-
-					<call-template name="prg.sh.parser.itemUpdate" />
-					<call-template name="unixEndl" />
-
-					<call-template name="sh.if">
-						<with-param name="condition">
-							<text>[ </text>
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_item" />
-								<with-param name="quoted" select="true()" />
-							</call-template>
-							<text> = "--" ]</text>
-						</with-param>
-						<with-param name="then">
-							<value-of select="$prg.sh.parser.fName_adderror" />
-							<text> "End of option marker found - Argument expected"</text>
+				<call-template name="sh.if">
+					<with-param name="condition">
+						<text>[ </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_index" />
+						</call-template>
+						<text> -ge </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+						</call-template>
+						<text> ]</text>
+					</with-param>
+					<with-param name="then">
+						<value-of select="$prg.sh.parser.fName_adderror" />
+						<text> "End of input reached - Argument expected"</text>
+						<if test="$onError">
 							<call-template name="unixEndl" />
-							<call-template name="sh.var.selfexpr">
-								<with-param name="name" select="$prg.sh.parser.vName_index" />
-								<with-param name="operator">
-									<text>-</text>
-								</with-param>
-							</call-template>
-							<if test="$onError">
-								<call-template name="unixEndl" />
-								<value-of select="$onError" />
-							</if>
-						</with-param>
-					</call-template>
-				</with-param>
-			</call-template>
+							<value-of select="$onError" />
+						</if>
+					</with-param>
+				</call-template>
+				<call-template name="unixEndl" />
 
-			<call-template name="unixEndl" />
-			<value-of select="$prg.sh.parser.vName_subindex" />
-			<text>=0</text>
-			<call-template name="unixEndl" />
-			<value-of select="$prg.sh.parser.vName_optiontail" />
-			<text>=""</text>
+				<call-template name="prg.sh.parser.itemUpdate" />
+				<call-template name="unixEndl" />
 
-			<call-template name="unixEndl" />
-			<call-template name="prg.sh.parser.unescapeValue" />
+				<call-template name="sh.if">
+					<with-param name="condition">
+						<text>[ </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_item" />
+							<with-param name="quoted" select="true()" />
+						</call-template>
+						<text> = "--" ]</text>
+					</with-param>
+					<with-param name="then">
+						<value-of select="$prg.sh.parser.fName_adderror" />
+						<text> "End of option marker found - Argument expected"</text>
+						<call-template name="unixEndl" />
+						<call-template name="sh.var.selfexpr">
+							<with-param name="name" select="$prg.sh.parser.vName_index" />
+							<with-param name="operator">
+								<text>-</text>
+							</with-param>
+						</call-template>
+						<if test="$onError">
+							<call-template name="unixEndl" />
+							<value-of select="$onError" />
+						</if>
+					</with-param>
+				</call-template>
+			</with-param>
+		</call-template>
+
+		<call-template name="unixEndl" />
+		<value-of select="$prg.sh.parser.vName_subindex" />
+		<text>=0</text>
+		<call-template name="unixEndl" />
+		<value-of select="$prg.sh.parser.vName_optiontail" />
+		<text>=""</text>
+
+		<call-template name="unixEndl" />
+		<call-template name="prg.sh.parser.unescapeValue" />
 	</template>
 
 	<template name="prg.sh.parser.multiargumentPreprocess">
@@ -756,7 +755,7 @@
 			</call-template>
 		</variable>
 
-		<if test="$max and ($max > 0)">
+		<if test="$max and ($max &gt; 0)">
 			<call-template name="sh.if">
 				<with-param name="condition">
 					<text>[ </text>
@@ -937,7 +936,7 @@
 
 						<call-template name="sh.while">
 							<with-param name="condition">
-								<if test="$optionNode/@max and ($optionNode/@max > 0)">
+								<if test="$optionNode/@max and ($optionNode/@max &gt; 0)">
 									<text>[ </text>
 									<call-template name="sh.var">
 										<with-param name="name" select="$prg.sh.parser.vName_ma_total_count" />

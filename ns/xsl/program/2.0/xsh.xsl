@@ -5,13 +5,17 @@
 <!-- Build a shell script by combining program option parsing & usage from the XML program interface definition schema and shell code and functions from the XML bash schema -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:exsl="http://exslt.org/common" version="1.0" extension-element-prefixes="exsl">
 	<import href="../../languages/bash.xsl"/>
-	<import href="sh-parser.chunks.xsl"/>
-	<import href="sh-parser.functions.xsl"/>
-	<import href="sh-usage.chunks.xsl"/>
+	<import href="sh/parser.chunks.xsl"/>
+	<import href="sh/parser.functions.xsl"/>
+	<import href="sh/usage.chunks.xsl"/>
+	
 	<output method="text" encoding="utf-8"/>
+	
+	<!-- Unix shell interpreter directive -->
 	<param name="prg.xsh.defaultInterpreter">
 		<text>/usr/bin/env bash</text>
 	</param>
+	
 	<!-- Help string -->
 	<template name="prg.sh.usage.programUsage">
 		<param name="programNode" select="."/>

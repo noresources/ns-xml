@@ -4,10 +4,12 @@
 
 <!-- Usage chunks for usage -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="usage.chunks.xsl"/>
+	<import href="../usage.chunks.xsl"/>
+	
 	<param name="prg.sh.usage.indentChar">
 		<text>  </text>
 	</param>
+	
 	<!-- override default param prg.usage.indentChar -->
 	<variable name="prg.usage.indentChar" select="$prg.sh.usage.indentChar"/>
 	<template match="prg:details/text()">

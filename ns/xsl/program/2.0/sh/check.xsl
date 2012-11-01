@@ -5,21 +5,21 @@
 <!-- Create a self test to check several issues that can't be checked using xml schema -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<xsl:import href="../../languages/shellscript.xsl" />
-	
+	<xsl:import href="../../../languages/shellscript.xsl" />
+
 	<xsl:output method="text" indent="yes" encoding="utf-8" />
-	
+
 	<xsl:template match="/prg:program">
 		<xsl:text># Check option consitency</xsl:text>
 		<xsl:call-template name="endl" />
 		<xsl:text>global_switches="</xsl:text>
 		<xsl:for-each select="./prg:options//prg:switch/prg:names/prg:short">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:for-each select="./prg:options//prg:switch/prg:names/prg:long">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:text>"</xsl:text>
 
@@ -31,19 +31,19 @@
 		<xsl:text>global_args="</xsl:text>
 		<xsl:for-each select="./prg:options//prg:argument/prg:names/prg:short">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:for-each select="./prg:options//prg:multiargument/prg:names/prg:short">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:for-each select="./prg:options//prg:argument/prg:names/prg:long">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:for-each select="./prg:options//prg:multiargument/prg:names/prg:long">
 			<xsl:value-of select="." />
-			<xsl:text> </xsl:text>
+			<xsl:text />
 		</xsl:for-each>
 		<xsl:text>"</xsl:text>
 
@@ -67,11 +67,11 @@
 					<xsl:with-param name="scoptions">
 						<xsl:for-each select="prg:options//prg:switch/prg:names/prg:short">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 						<xsl:for-each select="prg:options//prg:switch/prg:names/prg:long">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 					</xsl:with-param>
 				</xsl:call-template>
@@ -90,19 +90,19 @@
 					<xsl:with-param name="scoptions">
 						<xsl:for-each select="prg:options//prg:argument/prg:names/prg:short">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 						<xsl:for-each select="prg:options//prg:argument/prg:names/prg:long">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 						<xsl:for-each select="prg:options//prg:multiargument/prg:names/prg:short">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 						<xsl:for-each select="prg:options//prg:multiargument/prg:names/prg:long">
 							<xsl:value-of select="." />
-							<xsl:text> </xsl:text>
+							<xsl:text />
 						</xsl:for-each>
 					</xsl:with-param>
 				</xsl:call-template>
