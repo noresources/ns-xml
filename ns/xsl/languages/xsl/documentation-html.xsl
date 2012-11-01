@@ -181,7 +181,7 @@
 			<xsl:with-param name="depth" select="$depth"/>
 			<xsl:with-param name="level" select="($depth + 1)"/>
 		</xsl:call-template>
-		<xsl:text/>
+		<xsl:text />
 		<xsl:call-template name="xsl.doc.html.activePath">
 			<xsl:with-param name="path">
 				<xsl:call-template name="str.substringBeforeLast">
@@ -604,13 +604,13 @@
 						</xsl:if>
 					</xsl:element>
 					<xsl:element name="body">
-						<xsl:apply-templates/>
+						<xsl:apply-templates />
 					</xsl:element>
 				</xsl:element>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:element name="div">
-					<xsl:apply-templates/>
+					<xsl:apply-templates />
 				</xsl:element>
 			</xsl:otherwise>
 		</xsl:choose>

@@ -15,9 +15,10 @@ if something can be processed. Otherwise 'no' -->
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="displayAbstract" select="(($xsl.doc.html.stylesheetAbstract = true()) and (string-length($abstract) &gt; 0))"/>
-		<xsl:variable name="hasContent" select="./xsl:stylesheet/xsl:template[@name] or ./xsl:stylesheet/xsl:param or ./xsl:stylesheet/xsl:variable"/>
+		<xsl:variable name="templateCount" select="count(./xsl:stylesheet/xsl:template[@name])"/>
+		<xsl:variable name="varCount" select="count(./xsl:param|./xsl:variable)"/>
 		<xsl:choose>
-			<xsl:when test="$displayAbstract or ($hasContent)">
+			<xsl:when test="$displayAbstract or (($templateCount + $varCount) &gt; 0)">
 				<xsl:text>yes</xsl:text>
 			</xsl:when>
 			<xsl:otherwise>

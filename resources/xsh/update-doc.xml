@@ -40,7 +40,7 @@
 					<prg:type>
 						<prg:path exist="true">
 							<prg:kinds>
-								<prg:folder/>
+								<prg:folder />
 							</prg:kinds>
 						</prg:path>
 					</prg:type>
@@ -58,7 +58,7 @@
 					<prg:type>
 						<prg:path exist="true">
 							<prg:kinds>
-								<prg:file/>
+								<prg:file />
 							</prg:kinds>
 							<prg:patterns>
 								<prg:pattern>
@@ -159,7 +159,7 @@
 									<prg:type>
 										<prg:path exist="true" access="r">
 											<prg:kinds>
-												<prg:file/>
+												<prg:file />
 											</prg:kinds>
 										</prg:path>
 									</prg:type>
@@ -211,7 +211,7 @@
 					<prg:type>
 						<prg:path access="w">
 							<prg:kinds>
-								<prg:folder/>
+								<prg:folder />
 							</prg:kinds>
 						</prg:path>
 					</prg:type>
