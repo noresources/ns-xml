@@ -801,7 +801,7 @@ done
 
 # Create the Program module
 xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
-if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py-module.xsl" "${xmlProgramDescriptionPath}"
+if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
 then
 	error 4 "Failed to create Program module"
 fi

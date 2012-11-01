@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
-
 <!-- Create the Python module to manage the program options -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
-
-	<import href="../../languages/base.xsl" />
-	<import href="base.xsl" />
-	<import href="usage.chunks.xsl" />
-
+	<import href="../../../languages/base.xsl" />
+	<import href="../base.xsl" />
+	<import href="../usage.chunks.xsl" />
+	
 	<output method="text" encoding="utf-8" />
-
+	
 	<template name="prg.py.module.tempVarName">
 		<param name="node" select="." />
 		<call-template name="str.replaceAll">
@@ -27,7 +25,6 @@
 			</with-param>
 		</call-template>
 	</template>
-
 	<template name="prg.py.module.nodeValueStringList">
 		<param name="rootNode" />
 		<text>[</text>
@@ -41,7 +38,6 @@
 		</for-each>
 		<text>]</text>
 	</template>
-
 	<template name="prg.py.module.nodeNameStringList">
 		<param name="rootNode" />
 		<text>[</text>
@@ -55,12 +51,10 @@
 		</for-each>
 		<text>]</text>
 	</template>
-
 	<template name="prg.py.module.usageStrings">
 		<param name="pyVarName" />
 		<param name="optionsNode" />
 		<param name="indent" />
-
 		<value-of select="$indent" />
 		<value-of select="$pyVarName" />
 		<text>.usage["inline"] = """</text>
@@ -72,7 +66,6 @@
 		</call-template>
 		<text>"""</text>
 		<call-template name="endl" />
-
 		<value-of select="$indent" />
 		<value-of select="$pyVarName" />
 		<text>.usage["abstract"] = """</text>
@@ -82,7 +75,6 @@
 		</call-template>
 		<text>"""</text>
 		<call-template name="endl" />
-
 		<value-of select="$indent" />
 		<value-of select="$pyVarName" />
 		<text>.usage["details"] = """</text>
@@ -93,14 +85,12 @@
 		<text>"""</text>
 		<call-template name="endl" />
 	</template>
-
 	<template name="prg.py.module.option">
 		<param name="parentVarName">
 			<text>self.program</text>
 		</param>
 		<param name="indent" />
 		<param name="optionNode" select="." />
-
 		<variable name="variableName" select="normalize-space($optionNode/prg:databinding/prg:variable)" />
 		<variable name="pyVarName">
 			<call-template name="prg.py.module.tempVarName">
@@ -123,7 +113,6 @@
 				</when>
 			</choose>
 		</variable>
-
 		<value-of select="$indent" />
 		<value-of select="$pyVarName" />
 		<text> = </text>
@@ -132,7 +121,6 @@
 		<value-of select="$variableName" />
 		<text>")</text>
 		<call-template name="endl" />
-
 		<if test="$optionNode/prg:names">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -142,7 +130,6 @@
 			</call-template>
 			<text>)</text>
 			<call-template name="endl" />
-
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.documentation.option_names = "</text>
@@ -152,7 +139,6 @@
 			<text>"</text>
 			<call-template name="endl" />
 		</if>
-
 		<if test="$optionNode/self::prg:argument or $optionNode/self::prg:multiargument">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -163,7 +149,6 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-
 		<if test="$optionNode/prg:documentation/prg:abstract">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -174,7 +159,6 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-
 		<if test="$optionNode/prg:documentation/prg:details">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -185,14 +169,12 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-
 		<if test="$optionNode/@required = 'true'">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
 			<text>.required = True</text>
 			<call-template name="endl" />
 		</if>
-		
 		<if test="$optionNode/prg:default">
 			<choose>
 				<when test="$optionNode/self::prg:argument">
@@ -206,7 +188,6 @@
 				<!-- @todo group default -->
 			</choose>
 		</if>
-		
 		<if test="$optionNode/prg:select[@restrict = 'true']">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -217,7 +198,6 @@
 			<text>))</text>
 			<call-template name="endl" />
 		</if>
-		
 		<if test="$optionNode/prg:type/prg:number">
 			<variable name="numberNode" select="$optionNode/prg:type/prg:number" />
 			<value-of select="$indent" />
@@ -243,21 +223,20 @@
 			<text>))</text>
 			<call-template name="endl" />
 		</if>
-		
 		<if test="$optionNode/@min">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
-			<text>.min = </text><value-of select="$optionNode/@min" />
+			<text>.min = </text>
+			<value-of select="$optionNode/@min" />
 			<call-template name="endl" />
 		</if>
-		
 		<if test="$optionNode/@max">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
-			<text>.max = </text><value-of select="$optionNode/@max" />
+			<text>.max = </text>
+			<value-of select="$optionNode/@max" />
 			<call-template name="endl" />
 		</if>
-		
 		<if test="$optionNode/prg:type/prg:path[@exist = 'true']">
 			<variable name="pathNode" select="$optionNode/prg:type/prg:path" />
 			<value-of select="$indent" />
@@ -290,7 +269,6 @@
 				<!-- </if> -->
 			</for-each>
 		</if>
-
 		<value-of select="$indent" />
 		<value-of select="$parentVarName" />
 		<text>.add_option(</text>
@@ -298,26 +276,22 @@
 		<text>)</text>
 		<call-template name="endl" />
 	</template>
-
 	<template name="prg.py.module.subcommand">
 		<param name="parentVarName">
 			<text>self.program</text>
 		</param>
 		<param name="subcommandNode" select="." />
 		<param name="indent" />
-
 		<variable name="pyVarName">
 			<text>_sc_</text>
 			<value-of select="$subcommandNode/prg:name" />
 		</variable>
-
 		<value-of select="$indent" />
 		<value-of select="$pyVarName" />
 		<text> = SubcommandInfo("</text>
 		<value-of select="$subcommandNode/prg:name" />
 		<text>")</text>
 		<call-template name="endl" />
-
 		<if test="$subcommandNode/prg:documentation/prg:abstract">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -326,7 +300,6 @@
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-
 		<if test="$subcommandNode/prg:aliases">
 			<value-of select="$indent" />
 			<value-of select="$pyVarName" />
@@ -336,9 +309,7 @@
 			</call-template>
 			<call-template name="endl" />
 		</if>
-
 		<variable name="optionsNode" select="$subcommandNode/prg:options"></variable>
-
 		<for-each select="$optionsNode/*">
 			<call-template name="prg.py.module.option">
 				<with-param name="optionNode" select="." />
@@ -346,13 +317,11 @@
 				<with-param name="indent" select="$indent" />
 			</call-template>
 		</for-each>
-
 		<call-template name="prg.py.module.usageStrings">
 			<with-param name="pyVarName" select="$pyVarName" />
 			<with-param name="optionsNode" select="$optionsNode" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
-
 		<value-of select="$indent" />
 		<value-of select="$parentVarName" />
 		<text>.add_subcommand(</text>
@@ -360,14 +329,12 @@
 		<text>)</text>
 		<call-template name="endl" />
 	</template>
-
 	<template name="prg.py.module.buildOptionInfo">
 		<param name="parentVarName">
 			<text>self.program</text>
 		</param>
 		<param name="optionsNode" select="." />
 		<param name="indent" />
-
 		<if test="$optionsNode">
 			<for-each select="$optionsNode/*">
 				<call-template name="prg.py.module.option">
@@ -382,14 +349,12 @@
 			<with-param name="indent" select="$indent" />
 		</call-template>
 	</template>
-
 	<template name="prg.py.module.buildSubcommandInfo">
 		<param name="parentVarName">
 			<text>self.program</text>
 		</param>
 		<param name="indent" />
 		<param name="subcommandsNode" select="." />
-
 		<for-each select="$subcommandsNode/*">
 			<call-template name="prg.py.module.subcommand">
 				<with-param name="parentVarName" select="$parentVarName" />
@@ -398,12 +363,10 @@
 			</call-template>
 		</for-each>
 	</template>
-
 	<template match="//prg:program">
 		<variable name="indent">
 			<text>&#9;&#9;</text>
 		</variable>
-
 		<text>"""Auto generated module"""</text>
 		<call-template name="endl" />
 		<text>from Validators import *</text>
@@ -424,7 +387,6 @@ class Program:
 		<value-of select="./prg:name" />
 		<text>")</text>
 		<call-template name="endl" />
-
 		<if test="./prg:documentation/prg:abstract">
 			<value-of select="$indent" />
 			<text>self.program.documentation["abstract"] = """</text>
@@ -432,22 +394,18 @@ class Program:
 			<text>"""</text>
 			<call-template name="endl" />
 		</if>
-
 		<!-- Options -->
 		<call-template name="endl" />
 		<call-template name="prg.py.module.buildOptionInfo">
 			<with-param name="optionsNode" select="./prg:options" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
-
 		<!-- Subcommands -->
 		<call-template name="prg.py.module.buildSubcommandInfo">
 			<with-param name="subcommandsNode" select="./prg:subcommands" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
-
 		<!-- Values -->
-
 		<!-- parse and usage method --><![CDATA[
 	def parse(self, argv):
 		""" Parse the given command line arguments and return a ParserResult object"""
@@ -459,5 +417,4 @@ class Program:
 		return ParserResultUtil.usage(self.program, result, flags) 
 	]]>
 	</template>
-
 </stylesheet>
