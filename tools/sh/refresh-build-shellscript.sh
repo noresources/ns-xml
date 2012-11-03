@@ -1,5 +1,10 @@
 #!/bin/bash
-# Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
+# ####################################
+# Copyright © 2012 by Renaud Guillard (dev@nore.fr)
+# Distributed under the terms of the BSD License, see LICENSE
+# ####################################
+# Regenerate build-shellscript 'by hand'
+# ####################################
 
 if ! which realpath 1>/dev/null 2>&1
 then

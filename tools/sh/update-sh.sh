@@ -40,8 +40,21 @@ fi
 # Rebuild build-shellscript.sh
 ${projectPath}/tools/sh/refresh-build-shellscript.sh
 buildshellscript="${projectPath}/ns/sh/build-shellscript.sh"
+xulBuilder="${projectPath}/ns/sh/build-xulapp.sh"
 
 [ -x "${buildshellscript}" ] || (echo "${buildshellscript} not executable" && exit 1)
+
+buildXul=false
+singleBuild=""
+for ((i=1;${i}<=${#};i++))
+do
+	if [ "${!i}" == "xul" ]
+	then
+		buildXul=true
+	else
+		singleBuild="${!i}"
+	fi
+done
 
 completionCommands=
 
@@ -53,9 +66,9 @@ do
 	shOut="${projectPath}/ns/sh/${bn}.sh"
 	if [ "${bn}" != "build-shellscript" ]
 	then
-		if [ ! -z "${1}" ] && [ "${bn}" != "${1}" ]
+		if [ ! -z "${singleBuild}" ] && [ "${bn}" != "${singleBuild}" ]
 		then
-			#echo "skip ${bn}"
+			#echo "Skip ${bn}"
 			continue
 		fi
 		echo "Update ${b}"
@@ -65,7 +78,11 @@ do
 			exit 1
 		fi
 	fi
-
+	
+	if [ ! -z "${singleBuild}" ] && [ "${bn}" != "${singleBuild}" ]
+	then
+		continue
+	fi
 	
 	programVersion="$(xsltproc --xinclude "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
 	#echo "Program schema version ${programVersion}"
@@ -79,8 +96,36 @@ do
 		echo "Error while updating bash completion for ${b}"
 		exit 1 
 	fi
+	
+	if ${buildXul}
+	then
+		xulOutputPath="${projectPath}/xul"
+		xulOptions=(xsh \
+			-u \
+			-x "${f%xsh}xml" \
+			-s "${f}" \
+			-d
+		)
+		[ -f "${f%xsh}js" ] && xulOptions=("${xulOptions[@]}" -j "${f%xsh}js")
+		
+		for t in linux macosx
+		do
+			echo "Build XUL application for ${t}"
+			mkdir -p "${xulOutputPath}/${t}"
+			if ! ${xulBuilder} \
+				"${xulOptions[@]}" \
+				-t ${t} \
+				-o "${xulOutputPath}/${t}" \
+				-n 
+			then
+				echo "Failed to build XUL UI for ${f%xsh} (${t})"
+				exit 1
+			fi
+		done
+	fi
 done
 
+echo "Update tools"
 for f in "${projectPath}/resources/xsh/"*.xsh
 do
 	o="$(basename "${f}")"
@@ -88,7 +133,7 @@ do
 	
 	o="${o%xsh}sh"
 	x="${f%xsh}xml"
-	if [ ! -z "${1}" ] && [ "${bn}" != "${1}" ]
+	if [ ! -z "${singleBuild}" ] && [ "${bn}" != "${singleBuild}" ]
 	then
 		continue
 	fi
