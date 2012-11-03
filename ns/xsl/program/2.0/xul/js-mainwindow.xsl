@@ -13,6 +13,10 @@
 	<template match="text()">
 		<value-of select="normalize-space(.)" />
 	</template>
+	
+	<template match="prg:name">
+		<value-of select="normalize-space(.)" />
+	</template>
 
 	<template name="prg.xul.optionSpecs">
 		<param name="optionNode" select="." />
@@ -115,7 +119,7 @@ function MainWindow(app)
 	</if>
 		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<text>		"</text>
-			<value-of select="prg:name" />
+			<apply-templates select="prg:name" />
 			<text>":</text>
 			<call-template name="endl" />
 			<text>		{</text>
@@ -162,7 +166,7 @@ function MainWindow(app)
 	</if>
 		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<text>		"</text>
-			<value-of select="prg:name" />
+			<apply-templates select="prg:name" />
 			<text>":</text>
 			<call-template name="endl" />
 			<text>		[</text>
@@ -210,7 +214,7 @@ function MainWindow(app)
 	</if>
 		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<text>		"</text>
-			<value-of select="prg:name" />
+			<apply-templates select="prg:name" />
 			<text>":</text>
 			<call-template name="endl" />
 			<text>		{</text>
@@ -704,7 +708,7 @@ MainWindow.prototype.handleValueChange = function(event, object)
 
 MainWindow.prototype.updatePreview = function()
 {
-	var command = "]]><value-of select="/prg:program/prg:name" /><![CDATA[";
+	var command = "]]><apply-templates select="/prg:program/prg:name" /><![CDATA[";
 	var args = this.getCommandArguments();
 	this.setPreview(command + " " + args.join(" "));
 }
@@ -771,7 +775,7 @@ MainWindow.prototype.execute = function()
 	this.disable("execute");
 	
 	var args = this.getCommandArguments();
-	var command = "]]><value-of select="/prg:program/prg:name" /><![CDATA[";
+	var command = "]]><apply-templates select="/prg:program/prg:name" /><![CDATA[";
 	this.setPreview(command + " " + args.join(" "));
 	
 	var commandPath = this.app.getApplicationPath() + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA["; 

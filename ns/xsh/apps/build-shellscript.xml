@@ -12,6 +12,7 @@
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Shellscript builder</prg:label>
+		<prg:window width="800" height="320" />
 	</prg:ui>
 	<prg:options>
 		<!-- ns-xml path -->
@@ -37,7 +38,7 @@
 					</prg:kinds>
 					<prg:patterns>
 						<prg:pattern>
-							<prg:name>Xml shell file</prg:name>
+							<prg:name>XML shell file</prg:name>
 							<prg:rules>
 								<prg:rule>
 									<prg:endWith>.xsh</prg:endWith>

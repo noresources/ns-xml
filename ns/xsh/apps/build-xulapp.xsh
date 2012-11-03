@@ -176,7 +176,7 @@ then
 	nsPath="$(ns_realpath "${nsPath}")"
 fi
 
-# finding schema version
+# find schema version
 programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
 info "Program schema version ${programVersion}"
 
@@ -185,6 +185,7 @@ then
 	error "Invalid program interface definition schema version"
 fi  
 
+# Check required templates
 requiredTemplates="ui-mainwindow js-mainwindow js-application ../get-programinfo"
 if [ "${targetPlatform}" == "macosx" ]
 then
@@ -220,7 +221,15 @@ appBuildID="$(date +%Y%m%d-%s)"
 # Append application name to output path (auto)
 outputPathBase="$(basename "${outputPath}")"
 
-[ "${outputPathBase}" != "${appName}" ] && [ "${outputPathBase}" != "${appDisplayName}" ] && outputPath="${outputPath}/${appDisplayName}"
+if [ "${outputPathBase}" != "${appName}" ] && [ "${outputPathBase}" != "${appDisplayName}" ]
+then
+	if [ "${targetPlatform}" == "macosx" ]
+	then
+		outputPath="${outputPath}/${appDisplayName}"
+	else
+		outputPath="${outputPath}/${appName}"
+	fi
+fi
 appRootPath="${outputPath}"
 
 if [ "${targetPlatform}" == "macosx" ]
