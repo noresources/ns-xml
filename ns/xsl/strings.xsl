@@ -4,29 +4,47 @@
 
 <!-- String manipulation functions -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">
-	<param name="str.endlChar">
+	
+	<!-- UNIX-style end of line character (LF) -->
+	<variable name="str.unix.endl">
 		<value-of select="'&#10;'"/>
+	</variable>
+	
+	<!-- MacOS-style end of line character (CR) -->
+	<variable name="str.mac.endl">
+		<value-of select="'&#13;'"/>
+	</variable>
+	
+	<!-- Windows-style end of line character (CRLF) -->
+	<variable name="str.windows.endl">
+		<value-of select="'&#13;&#10;'"/>
+	</variable>
+	
+	<!-- Default End-of-line character(s) -->
+	<param name="str.endl">
+		<value-of select="$str.unix.endl"/>
 	</param>
+	
 	<param name="str.blanks" select="'&#9; '"/>
-	<!-- Add a new line -->
+	
+	<!-- Add a new line. Deprecated: use str.endl directly -->
 	<template name="endl">
-		<value-of select="$str.endlChar"/>
+		<value-of select="$str.endl"/>
 	</template>
 
-	<!-- Unix-style end-of-line marker -->
+	<!-- Unix-style end-of-line marker. Deprecated: use str.unix.endl directly -->
 	<template name="unixEndl">
-		<value-of select="'&#10;'"/>
+		<value-of select="$str.unix.endl"/>
 	</template>
 
-	<!-- Microsoft Windows end-of-line marker -->
+	<!-- Microsoft Windows end-of-line marker. Deprecated: use str.windows.endl directly -->
 	<template name="windowsEndl">
-		<value-of select="'&#13;'"/>
-		<value-of select="'&#10;'"/>
+		<value-of select="$str.windows.endl"/>
 	</template>
 
-	<!-- MacOS end-of-line marker -->
+	<!-- MacOS end-of-line marker. Deprecated: use str.mac.endl directly -->
 	<template name="macEndl">
-		<value-of select="'&#13;'"/>
+		<value-of select="$str.mac.endl"/>
 	</template>
 
 	<!-- Indicates if text contains blank chars -->
@@ -306,7 +324,7 @@
 		<!-- Maximum number of character per line -->
 		<param name="lineMaxLength" select="80"/>
 		<!-- End-of-line string -->
-		<param name="endlChar" select="$str.endlChar"/>
+		<param name="endlChar" select="$str.endl"/>
 		<variable name="hasEndl" select="contains($text, $endlChar)"/>
 		<variable name="item">
 			<choose>
@@ -402,7 +420,7 @@
 		<param name="prependedText">
 			<text>	</text>
 		</param>
-		<param name="endlChar" select="$str.endlChar"/>
+		<param name="endlChar" select="$str.endl"/>
 		<param name="wrap" select="false()"/>
 		<param name="lineMaxLength" select="80"/>
 		<variable name="fullPrependedText">
