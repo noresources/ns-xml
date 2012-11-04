@@ -20,7 +20,7 @@
 	<xsl:param name="xsl.doc.html.stylesheetAbstract" select="false()"/>
 	<!-- Relative path to the CSS style sheet to include. 
 	Require $xsl.doc.html.fullHtmlPage to be true() -->
-	<xsl:param name="xsl.doc.html.stylesheetPath"/>
+	<xsl:param name="xsl.doc.html.cssPath"/>
 	<!-- Parameter list title -->
 	<xsl:param name="xsl.doc.string.parameters">
 		<xsl:text>Parameters</xsl:text>
@@ -553,8 +553,8 @@
 			<xsl:text>xsl.doc.html.fileName: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fileName"/>
 			<xsl:call-template name="endl"/>
-			<xsl:text>xsl.doc.html.stylesheetPath: </xsl:text>
-			<xsl:value-of select="$xsl.doc.html.stylesheetPath"/>
+			<xsl:text>xsl.doc.html.cssPath: </xsl:text>
+			<xsl:value-of select="$xsl.doc.html.cssPath"/>
 			<xsl:call-template name="endl"/>
 			<xsl:text>xsl.doc.html.directoryIndexPath: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.directoryIndexPath"/>
@@ -591,7 +591,7 @@
 								<xsl:value-of select="$abstract"/>
 							</xsl:if>
 						</xsl:element>
-						<xsl:if test="$xsl.doc.html.stylesheetPath">
+						<xsl:if test="$xsl.doc.html.cssPath">
 							<xsl:element name="link">
 								<xsl:attribute name="type">
 									<xsl:text>text/css</xsl:text>
@@ -600,7 +600,7 @@
 									<xsl:text>stylesheet</xsl:text>
 								</xsl:attribute>
 								<xsl:attribute name="href">
-									<xsl:value-of select="normalize-space($xsl.doc.html.stylesheetPath)"/>
+									<xsl:value-of select="normalize-space($xsl.doc.html.cssPath)"/>
 								</xsl:attribute>
 							</xsl:element>
 						</xsl:if>

@@ -77,7 +77,7 @@ xsltdoc()
 	then
 		xsltproc "${xsltprocOptions[@]}" -o "${output}" \
 			--stringparam "xsl.doc.html.fileName" "${title}" \
-			--stringparam "xsl.doc.html.stylesheetPath" "${cssPath}" \
+			--stringparam "xsl.doc.html.cssPath" "${cssPath}" \
 			"${xslStylesheet}" "${f}"
 	fi
 }
