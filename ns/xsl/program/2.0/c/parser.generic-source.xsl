@@ -353,22 +353,23 @@ struct nsxml_item_name
 const char *nsxml_item_name_get(const struct nsxml_item_name *list, int item_index)
 {
 	const struct nsxml_item_name *item_name = list;
+	
 	if (item_name == NULL)
 	{
 		return NULL;
 	}
-
+	
 	while ((item_index > 0) && item_name)
 	{
 		item_name = item_name->next_name;
 		--item_index;
 	}
-
+	
 	if (item_name && (item_index == 0))
 	{
 		return item_name->name;
 	}
-
+	
 	return NULL;
 }
 
@@ -1537,14 +1538,14 @@ int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option
 	size_t tr = 255;
 	size_t path_type_count = nsxml_usage_path_type_count(validator->flags);
 	size_t path_access_count = nsxml_usage_path_access_count(validator->flags);
-
+	
 	if (path_type_count > 0)
 	{
 		size_t i = 0;
 		tc = snprintf(t, tr, "%s", "Expected path type: ");
 		tr -= (size_t)tc;
 		t += tc;
-
+		
 		for (f = nsxml_value_validator_path_type_file; f <= nsxml_value_validator_path_type_symlink; f = (f << 1))
 		{
 			if (validator->flags & f)
@@ -1568,21 +1569,21 @@ int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option
 				{
 					tc += snprintf(t, tr, ", %s", nsxml_usage_path_type_string(f));
 				}
-
+				
 				++i;
 				tr -= (size_t)tc;
 				t += tc;
 			}
 		}
 	}
-
+	
 	if (path_access_count > 0)
 	{
 		size_t i = 0;
 		tc = snprintf(t, tr, "%s", "Path argument must be ");
 		tr -= (size_t)tc;
 		t += tc;
-
+		
 		for (f = nsxml_value_validator_path_readable; f <= nsxml_value_validator_path_executable; f = (f << 1))
 		{
 			if (validator->flags & f)
@@ -1606,19 +1607,19 @@ int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option
 				{
 					tc += snprintf(t, tr, ", %s", nsxml_usage_path_access_string(f));
 				}
-
+				
 				++i;
 				tr -= (size_t)tc;
 				t += tc;
 			}
 		}
 	}
-
+	
 	if ((path_access_count + path_type_count) > 0)
 	{
 		return ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "%s", text_buffer);
 	}
-
+	
 	return 0;
 }
 
@@ -1627,7 +1628,7 @@ int nsxml_value_validator_usage_number(const void *self, const struct nsxml_opti
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
 	int printed = 0;
-
+	
 	if ((nvalidator->validator.flags & min_and_max) == min_and_max)
 	{
 		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be between %.2f and %.2f", (double)nvalidator->min_value, (double)nvalidator->max_value);
@@ -1640,7 +1641,7 @@ int nsxml_value_validator_usage_number(const void *self, const struct nsxml_opti
 	{
 		printed = ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be greater or equal to %.2f", (double)nvalidator->max_value);
 	}
-
+	
 	return printed;
 }
 
@@ -1650,12 +1651,12 @@ int nsxml_value_validator_usage_enum(const void *self, const struct nsxml_option
 	static const char *kPrefixedText[2] =
 	{ "Possible values: ", "Expected values: " };
 	int prefix_index = 0;
-
+	
 	if (evalidator->validator.flags & nsxml_value_validator_enum_strict)
 	{
 		prefix_index = 1;
 	}
-
+	
 	return nsxml_item_name_snprintf(evalidator->values, output, output_length, kPrefixedText[prefix_index]);
 }
 

@@ -603,7 +603,7 @@ struct nsxml_option_result
 struct nsxml_switch_option_result
 {
 	int result_type;
-
+	
 	/**
 	 * Set to 1 if the option is present at least once on the command line
 	 */
@@ -616,12 +616,12 @@ struct nsxml_switch_option_result
 struct nsxml_argument_option_result
 {
 	int result_type;
-
+	
 	/**
 	 * Set to 1 if the option is present at least once on the command line
 	 */
 	int is_set;
-
+	
 	/**
 	 * Option argument value
 	 */
@@ -634,17 +634,17 @@ struct nsxml_argument_option_result
 struct nsxml_multiargument_option_result
 {
 	int result_type;
-
+	
 	/**
 	 * Set to 1 if the option is present at least once on the command line
 	 */
 	int is_set;
-
+	
 	/**
 	 * Number of arguments
 	 */
 	size_t argument_count;
-
+	
 	/**
 	 * Option arguments value
 	 */
@@ -689,24 +689,24 @@ struct nsxml_program_result
 	 * grouped by severity
 	 */
 	nsxml_message *messages[nsxml_message_type_count];
-
+	
 	/**
 	 * A list of messages generated during the command line parsing
 	 * sorted by apparition
 	 */
 	nsxml_message *first_message;
-
+	
 	/**
 	 * Name of the selected subcommand if any
 	 * @note The pointer refers to the subcommand name allocated in the program info structure
 	 */
 	const char *subcommand_name;
-
+	
 	/**
 	 * Number of positional argument
 	 */
 	size_t value_count;
-
+	
 	/**
 	 * List of positional arguments
 	 */
