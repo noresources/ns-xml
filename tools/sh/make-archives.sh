@@ -38,10 +38,30 @@ prg=(\
 	ns/xsl/documents/gengetopts-base.xsl \
 	ns/xsl/languages \
 	ns/xsl/program/2.0 \
-	ns/xsl/strings.xsl	
+	ns/xsl/strings.xsl \
+	LICENSE
 )
 
-prg_linux=("${prg[@]}")
+prg_linux=( \
+	"${prg[@]}" \
+	--transform "s,xul/linux,ns/xul," \
+	xul/linux/build-c \
+	xul/linux/build-pyscript \
+	xul/linux/build-shellscript \
+	xul/linux/build-xulapp \
+	xul/linux/new-xsh
+)
+
+prg_macosx=( \
+	"${prg[@]}" \
+	--transform \
+	"s,xul/macosx,ns/xul," \
+	"xul/macosx/C parser generator.app" \
+	"xul/macosx/Python script builder.app" \
+	"xul/macosx/Shellscript builder.app" \
+	"xul/macosx/XUL front-end builder.app" \
+	"xul/macosx/XML Shellscript generator.app"
+)
 
 xslt=(\
 	--transform \
@@ -53,7 +73,8 @@ xslt=(\
 	doc/html/xsl/strings.html \
 	ns/xsl/documents \
 	ns/xsl/languages \
-	ns/xsl/strings.xsl
+	ns/xsl/strings.xsl \
+	LICENSE
 )
 
 error()
@@ -70,8 +91,9 @@ make_archive()
 	shift
 	
 	mkdir -p "${projectPath}/archives"
-	tar -C "${projectPath}" --transform "s,^,${name}/," -cvzf "archives/${name}-${hgnode}.tgz" "${@}"
+	tar -C "${projectPath}" --transform "s,^,${name}/," -cvzf "archives/${name}-${hgnode}.tgz" "${@}" || error 2
 }
 
-make_archive "ns-xml-pidf" "${prg[@]}"
+make_archive "ns-xml-pidf-linux" "${prg_linux[@]}"
+make_archive "ns-xml-pidf-macosx" "${prg_macosx[@]}"
 make_archive "ns-xml-xsltlib" "${xslt[@]}"

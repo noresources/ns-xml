@@ -1009,8 +1009,8 @@ ns_sed_inplace()
 	fi
 	# sedForm
 	# 1: modern linux => sed --in-place
-	# 2: Mac OS X 10.6 - => sed -i ""
-	# TODO: test on Mac OS X 10.7+
+	# 2: Mac OS X 10.5-10.8 - => sed -i ""
+	# TODO test Mac OS X < 10.5
 	local sedForm=1
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -1019,7 +1019,7 @@ ns_sed_inplace()
 		then
 			local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
 			local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
-			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -le 6 ]
+			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then
 				sedForm=2
 			fi

@@ -103,8 +103,7 @@ do
 		xulOptions=(xsh \
 			-u \
 			-x "${f%xsh}xml" \
-			-s "${f}" \
-			-d
+			-s "${f}"
 		)
 		[ -f "${f%xsh}js" ] && xulOptions=("${xulOptions[@]}" -j "${f%xsh}js")
 		

@@ -519,8 +519,8 @@ ns_sed_inplace()
 	fi
 	# sedForm
 	# 1: modern linux => sed --in-place
-	# 2: Mac OS X 10.6 - => sed -i ""
-	# TODO: test on Mac OS X 10.7+
+	# 2: Mac OS X 10.5-10.8 - => sed -i ""
+	# TODO test Mac OS X < 10.5
 	local sedForm=1
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -529,7 +529,7 @@ ns_sed_inplace()
 		then
 			local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
 			local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
-			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -le 6 ]
+			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then
 				sedForm=2
 			fi
@@ -619,7 +619,7 @@ transform_c()
 	
 	<variable name="prg.c.parser.${templateName}"><![CDATA[
 EOF
-	#embed file (replate XML entities
+	#embed file (replate XML entities)
 	#sed "s/>/&gt;/g" "${input}" | sed "s/</&lt;/g" >> "${tmpFile}"
 	cat "${input}" >> "${tmpFile}"
 	cat >> "${tmpFile}" << EOF
@@ -632,7 +632,7 @@ EOF
 
 EOF
 	
-	# Replace hardoced name by transformable ones
+	# Replace hardoced names by transformable ones
 	for t in "${transformableStructs[@]}"
 	do
 		#echo "Transform struct $t"
@@ -716,6 +716,7 @@ EOF
 	done
 	
 	echo -e "</stylesheet>" >> "${tmpFile}"
+	#xmllint --format --output "${tmpFile}" "${tmpFile}"
 	
 	# Finally 
 	mv "${tmpFile}" "${output}"

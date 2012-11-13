@@ -68,7 +68,7 @@ transform_c()
 	
 	<variable name="prg.c.parser.${templateName}"><![CDATA[
 EOF
-	#embed file (replate XML entities
+	#embed file (replate XML entities)
 	#sed "s/>/&gt;/g" "${input}" | sed "s/</&lt;/g" >> "${tmpFile}"
 	cat "${input}" >> "${tmpFile}"
 	cat >> "${tmpFile}" << EOF
@@ -81,7 +81,7 @@ EOF
 
 EOF
 	
-	# Replace hardoced name by transformable ones
+	# Replace hardoced names by transformable ones
 	for t in "${transformableStructs[@]}"
 	do
 		#echo "Transform struct $t"
@@ -165,6 +165,7 @@ EOF
 	done
 	
 	echo -e "</stylesheet>" >> "${tmpFile}"
+	#xmllint --format --output "${tmpFile}" "${tmpFile}"
 	
 	# Finally 
 	mv "${tmpFile}" "${output}"
