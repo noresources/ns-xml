@@ -5,7 +5,7 @@
 # Author: Renaud Guillard
 # Version: 2.0
 # 
-# Build (or update) a xul application launcher
+# Build (or update) a XUL application launcher
 #
 # Program help
 usage()
@@ -52,7 +52,7 @@ esac
 return 0
 fi
 cat << EOFUSAGE
-build-xulapp: Build (or update) a xul application launcher
+build-xulapp: Build (or update) a XUL application launcher
 Usage: 
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
@@ -2049,8 +2049,8 @@ debug "Application: \${appIniPath}"
 if [ "\${platform}" == "macosx" ]
 then
 	use_framework || use_xulrunner || use_firefox
-else 
-	use_xulrunner || use_firefox
+else
+	use_firefox || use_xulrunner
 fi
 EOF
 chmod 755 "${launcherPath}"

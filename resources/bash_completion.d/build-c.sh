@@ -135,15 +135,6 @@ __build_c_bashcompletion()
 					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 				fi
 			done
-			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
-			done
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
-			done
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -160,15 +151,6 @@ __build_c_bashcompletion()
 					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 				fi
 			done
-			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
-			done
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
-			done
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -184,15 +166,6 @@ __build_c_bashcompletion()
 				then
 					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 				fi
-			done
-			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
-			done
-			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-			do
-				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then

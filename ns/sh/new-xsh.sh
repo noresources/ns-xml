@@ -13,7 +13,7 @@ usage()
 cat << EOFUSAGE
 new-xsh: A script to create XSH (XML + SH) files
 Usage: 
-  new-xsh [-sd] -n <string> [-o <path>] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
+  new-xsh [-s] -n <string> [-o <path>] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
   With:
     -n, --name: XSH program name
     -o, --output, --path: Output path  
@@ -21,7 +21,6 @@ Usage:
     -s, --sample: Add basic sample code and options
       Add some basic xsh functions in XSH file, --help option definition in XML 
       file and common parsing code in SH file.
-    -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     ns-xml source path options
       --ns-xml-path: ns-xml source path
@@ -63,7 +62,6 @@ parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_name
 # Switch options
 
 addSamples=false
-debugMode=false
 displayHelp=false
 nsxmlPathRelative=false
 # Single argument options
@@ -334,16 +332,6 @@ parse_process_option()
 			addSamples=true
 			parse_setoptionpresence G_3_sample
 			;;
-		debug)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
-				return ${PARSER_ERROR}
-			fi
-			debugMode=true
-			parse_setoptionpresence G_4_debug
-			;;
 		help)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -352,7 +340,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_5_help
+			parse_setoptionpresence G_4_help
 			;;
 		ns-xml-path)
 			# Group checks
@@ -381,7 +369,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_6_g_1_ns-xml-path;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_5_g_1_ns-xml-path;parse_setoptionpresence G_5_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -393,7 +381,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_6_g_2_ns-xml-path-relative;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_5_g_2_ns-xml-path-relative;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -487,10 +475,6 @@ parse_process_option()
 		s)
 			addSamples=true
 			parse_setoptionpresence G_3_sample
-			;;
-		d)
-			debugMode=true
-			parse_setoptionpresence G_4_debug
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""

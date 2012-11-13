@@ -604,8 +604,8 @@ debug "Application: \${appIniPath}"
 if [ "\${platform}" == "macosx" ]
 then
 	use_framework || use_xulrunner || use_firefox
-else 
-	use_xulrunner || use_firefox
+else
+	use_firefox || use_xulrunner
 fi
 EOF
 chmod 755 "${launcherPath}"

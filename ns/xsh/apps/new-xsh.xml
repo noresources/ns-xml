@@ -15,8 +15,8 @@
 		</prg:details>
 	</prg:documentation>
 	<prg:ui>
-		<prg:label>New XSH</prg:label>
-		<prg:window width="800" height="256"/>
+		<prg:label>XML Shellscript generator</prg:label>
+		<prg:window width="640" height="256"/>
 	</prg:ui>
 	<prg:options>
 		<prg:argument required="true">
@@ -74,7 +74,7 @@
 			</prg:names>
 		</prg:switch>
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
+		<!-- <xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/> -->
 		<!-- Help -->
 		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<!-- ns-xml path -->

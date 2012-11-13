@@ -11,6 +11,9 @@
 	<prg:documentation>
 		<prg:abstract>Create a customized Command line argument parser in C</prg:abstract>
 	</prg:documentation>
+	<prg:ui>
+	    <prg:label>C parser generator</prg:label>
+	</prg:ui>
 	<prg:options>
 		<prg:group>
 			<prg:documentation>
@@ -143,7 +146,7 @@
 								<prg:long>struct-style</prg:long>
 								<prg:long>struct</prg:long>
 							</prg:names>
-							<prg:select>
+							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
 								<prg:option>CamelCase</prg:option>
@@ -164,7 +167,7 @@
 								<prg:long>function</prg:long>
 								<prg:long>func</prg:long>
 							</prg:names>
-							<prg:select>
+							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
 								<prg:option>CamelCase</prg:option>
@@ -185,7 +188,7 @@
 								<prg:long>variable</prg:long>
 								<prg:long>var</prg:long>
 							</prg:names>
-							<prg:select>
+							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
 								<prg:option>CamelCase</prg:option>

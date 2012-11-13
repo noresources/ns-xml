@@ -8,10 +8,10 @@
 	<prg:copyright>Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
-		<prg:abstract>Build (or update) a xul application launcher</prg:abstract>
+		<prg:abstract>Build (or update) a XUL application launcher</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
-		<prg:label>Command line front-end builder</prg:label>
+		<prg:label>XUL front-end builder</prg:label>
 	</prg:ui>
 	<prg:subcommands>
 		<prg:subcommand>
@@ -89,7 +89,7 @@
 			</prg:type>
 		</prg:argument>
 		<prg:argument id="xmlProgramDescriptionPath">
-			<!-- In build-xulapp, the documentation change a bit -->
+			<!-- In build-xulapp, the documentation changes a bit -->
 			<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath']/prg:databinding)"/>
 			<prg:documentation>
 				<prg:abstract>Program interface definition file</prg:abstract>

@@ -76,7 +76,7 @@ __new_xsh_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--name --output --path --sample --debug --help --ns-xml-path --ns-xml-path-relative -n -o -s -d"
+	local globalargs="--name --output --path --sample --help --ns-xml-path --ns-xml-path-relative -n -o -s"
 	local args="${globalargs}"
 	
 	

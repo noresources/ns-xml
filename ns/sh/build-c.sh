@@ -50,18 +50,18 @@ Usage:
         
         --struct-style, --struct: struct naming convention
           Generate struct names according the given naming convention  
-          The argument can be:  
+          The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
         --function-style, --function, --func: struct naming convention
           Generate function names according the given naming convention  
-          The argument can be:  
+          The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
         --variable-style, --variable, --var: Variable naming convention
           Generate variable and enum names according the given naming 
         convention  
-          The argument can be:  
+          The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
       
@@ -541,6 +541,12 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_option}\""
+				
+				return ${PARSER_ERROR}
+			fi
 			structNameStyle="${parser_item}"
 			parse_setoptionpresence G_2_g_3_g_1_struct-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
@@ -570,6 +576,12 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_option}\""
+				
+				return ${PARSER_ERROR}
+			fi
 			functionNameStyle="${parser_item}"
 			parse_setoptionpresence G_2_g_3_g_2_function-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
@@ -599,6 +611,12 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_option}\""
+				
+				return ${PARSER_ERROR}
+			fi
 			variableNameStyle="${parser_item}"
 			parse_setoptionpresence G_2_g_3_g_3_variable-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
