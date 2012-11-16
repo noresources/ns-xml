@@ -7,11 +7,16 @@
 
 	<import href="base.xsl" />
 
-	<variable name="sh.endl" select="'&#10;'" />
+	<!-- End of line character for UNIX shell scripts -->
+	<variable name="sh.endl" select="$str.unix.endl" />
 
+	<!-- UNIX shell script code block (Indented code block) -->
 	<template name="sh.block">
+		<!-- Indent the content if true (the default) -->
 		<param name="indent" select="true()" />
+		<!-- Code snippet -->
 		<param name="content" />
+		<!-- Add a End-of-line at end of block -->
 		<param name="addFinalEndl" select="true()" />
 		<choose>
 			<when test="$content">
@@ -23,23 +28,25 @@
 						</call-template>
 					</when>
 					<otherwise>
-						<call-template name="unixEndl" />
+						<value-of select="$sh.endl" />
 						<call-template name="str.trim">
 							<with-param name="text">
 								<value-of select="$content" />
 							</with-param>
 						</call-template>
-						<call-template name="unixEndl" />
+						<value-of select="$sh.endl" />
 					</otherwise>
 				</choose>
 			</when>
 			<otherwise>
-				<call-template name="unixEndl" />
+				<value-of select="$sh.endl" />
 			</otherwise>
 		</choose>
 	</template>
 
+	<!-- UNIX shell comment block -->
 	<template name="sh.comment">
+		<!-- Comment text -->
 		<param name="content" select="." />
 		<call-template name="code.comment">
 			<with-param name="marker">
@@ -49,12 +56,17 @@
 		</call-template>
 	</template>
 
-	<!-- Shell variable call -->
+	<!-- UNIX shell variable call -->
 	<template name="sh.var">
+		<!-- Variable nmme -->
 		<param name="name" />
+		<!-- Treat the variable as an array and retrieve the $index element (not compatible with all shells) -->
 		<param name="index" />
+		<!-- Retrieve a substring of the variable content starting at offset $start (not compatible with all shells) -->
 		<param name="start" />
+		<!-- Retrieve a substring of $lenght character of the variable content (not compatible with all shells) -->
 		<param name="length" />
+		<!-- Add quotes around -->
 		<param name="quoted" select="false()" />
 		<if test="$quoted">
 			<text>"</text>
@@ -89,8 +101,11 @@
 		</if>
 	</template>
 
+	<!-- Create the expression to retrieve a variable value length (${#var}) -->
 	<template name="sh.varLength">
+		<!-- Variable name -->
 		<param name="name" />
+		<!-- Add quotes around -->
 		<param name="quoted" select="false()" />
 		<call-template name="sh.var">
 			<with-param name="name">
@@ -122,8 +137,11 @@
 		<text>)</text>
 	</template>
 
+	<!-- Treat the variable as an integer value and increment its value -->
 	<template name="sh.varincrement">
+		<!-- Variable name -->
 		<param name="name" />
+		<!-- Increment value -->
 		<param name="value" select="1" />
 		<call-template name="sh.var.selfexpr">
 			<with-param name="name" select="$name" />
@@ -132,16 +150,22 @@
 		</call-template>
 	</template>
 
+	<!-- Create the expression to retrieve an array element count (not compatible with all shells) -->
 	<template name="sh.arrayLength">
+		<!-- Variable name -->
 		<param name="name" />
 		<text>${#</text>
 		<value-of select="normalize-space($name)" />
 		<text>[*]}</text>
 	</template>
 
+	<!-- Set an element of an array variable (not compatible with all shells) -->
 	<template name="sh.arraySetIndex">
+		<!-- Variable name -->
 		<param name="name" />
+		<!-- Array index -->
 		<param name="index" />
+		<!-- Element value -->
 		<param name="value" />
 		<value-of select="normalize-space($name)" />
 		<text>[</text>
@@ -150,11 +174,16 @@
 		<value-of select="normalize-space($value)" />
 	</template>
 
+	<!-- TODO replace startIndex by interpreter param -->
+	<!-- Append a new element to an array variable -->
 	<template name="sh.arrayAppend">
+		<!-- Variable name -->
 		<param name="name" />
+		<!-- New element value -->
 		<param name="value" />
+		<!-- First element of the array (depends on interpreter type) -->
 		<param name="startIndex" select="0" />
-		
+
 		<variable name="index">
 			<choose>
 				<when test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
@@ -173,7 +202,7 @@
 				</otherwise>
 			</choose>
 		</variable>
-		
+
 		<call-template name="sh.arraySetIndex">
 			<with-param name="name" select="$name" />
 			<with-param name="index" select="$index" />
@@ -181,12 +210,14 @@
 		</call-template>
 	</template>
 
+	<!-- Copy array elements to another variable (not compatible with all shells) -->
 	<template name="sh.arrayCopy">
+		<!-- Input variable name -->
 		<param name="from" />
+		<!-- Output variable name -->
 		<param name="to" />
-		<param name="indexVariableName">
-			<text>i</text>
-		</param>
+		<!-- Name of the index variable used in loop -->
+		<param name="indexVariableName" select="'i'" />
 		<param name="append" select="true()" />
 
 		<variable name="indexVariable">
@@ -236,12 +267,15 @@
 		</call-template>
 	</template>
 
+	<!-- Iterate through array elements -->
 	<template name="sh.arrayForEach">
+		<!-- Array variable name -->
 		<param name="name" />
-		<param name="indexVariableName">
-			<text>i</text>
-		</param>
+		<!-- Internal loop index variable name -->
+		<param name="indexVariableName" select="'i'" />
+		<!-- First index to consider -->
 		<param name="startIndex" select="0" />
+		<!-- Code to execute for each element -->
 		<param name="do" />
 
 		<variable name="indexVariable">
@@ -268,31 +302,46 @@
 		</call-template>
 	</template>
 
-	<!-- Shell function definition -->
+	<!-- UNIX shell function definition (not compatible with all shells) -->
 	<template name="sh.functionDefinition">
+		<!-- Function name -->
 		<param name="name" />
+		<!-- Function body -->
 		<param name="content" />
+		<!-- Indicates if the function body have to be indented-->
 		<param name="indent" select="true()" />
+		<!-- UNIX shell interpreter type -->
+		<param name="interpreter" select="'sh'" />
+		
+		<if test="$interpreter = 'ksh'">
+			<text>function </text>
+		</if>
 		<value-of select="normalize-space($name)" />
-		<text>()</text>
-		<call-template name="unixEndl" />
+		<if test="not(interpreter = 'ksh')">
+			<text>()</text>
+		</if>
+		<value-of select="$sh.endl" />
 		<text>{</text>
 		<call-template name="sh.block">
 			<with-param name="content" select="$content" />
 			<with-param name="indent" select="$indent" />
 		</call-template>
 		<text>}</text>
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 	</template>
 
+	<!-- While statement -->
 	<template name="sh.while">
+		<!-- Condition -->
 		<param name="condition" />
+		<!-- Loop code -->
 		<param name="do" />
+		<!--  -->
 		<param name="indent" select="true()" />
 
 		<text>while </text>
 		<value-of select="normalize-space($condition)" />
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 		<text>do</text>
 		<call-template name="sh.block">
 			<with-param name="indent" select="$indent" />
@@ -303,14 +352,17 @@
 		<text>done</text>
 	</template>
 
+	<!-- For statement -->
 	<template name="sh.for">
+		<!--  -->
 		<param name="condition" />
+		
 		<param name="do" />
 		<param name="indent" select="true()" />
 
 		<text>for </text>
 		<value-of select="normalize-space($condition)" />
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 		<text>do</text>
 		<call-template name="sh.block">
 			<with-param name="indent" select="$indent" />
@@ -321,6 +373,7 @@
 		<text>done</text>
 	</template>
 
+	<!-- for in n .... m -->
 	<template name="sh.incrementalFor">
 		<param name="variable">
 			<text>i</text>
@@ -368,9 +421,13 @@
 		</call-template>
 	</template>
 
+	<!-- IF statement -->
 	<template name="sh.if">
+		<!-- Condition -->
 		<param name="condition" />
+		<!-- Code to execute if the condition is true -->
 		<param name="then" />
+		<!-- Code to execute if the condition is false -->
 		<param name="else" />
 		<param name="indent" select="true()" />
 
@@ -379,7 +436,7 @@
 		<if test="(string-length($ncond) + string-length($then)) &gt; 0">
 			<text>if </text>
 			<value-of select="$ncond" />
-			<call-template name="unixEndl" />
+			<value-of select="$sh.endl" />
 			<text>then</text>
 			<call-template name="sh.block">
 				<with-param name="indent" select="$indent" />
@@ -394,23 +451,27 @@
 			</if>
 			<text>fi</text>
 		</if>
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 	</template>
 
+	<!-- CASE statement -->
 	<template name="sh.case">
+		<!-- Case variable name -->
 		<param name="case" />
+		<!-- Case body -->
 		<param name="in" />
 		<param name="indent" select="true()" />
 
 		<text>case "</text>
 		<value-of select="$case" />
 		<text>" in</text>
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 		<value-of select="$in" />
-		<call-template name="unixEndl" />
+		<value-of select="$sh.endl" />
 		<text>esac</text>
 	</template>
 
+	<!--  -->
 	<template name="sh.caseblock">
 		<param name="case" />
 		<param name="content" />
@@ -422,7 +483,7 @@
 			<with-param name="indent" select="$indent" />
 			<with-param name="content">
 				<value-of select="$content" />
-				<call-template name="unixEndl" />
+				<value-of select="$sh.endl" />
 				<text>;;</text>
 			</with-param>
 		</call-template>
