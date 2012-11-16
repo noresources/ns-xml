@@ -158,6 +158,19 @@
 		</choose>
 	</template>
 
+	<template name="str.endsWith">
+		<!-- Text -->
+		<param name="text"/>
+		<!-- Substring to search -->
+		<param name="needle"/>
+		
+		<variable name="needleLength" select="string-length($needle)"/>
+		<variable name="textLength" select="string-length($text)"/>
+		<variable name="end" select="substring($text, (($textLength - $needleLength) + 1))"/>
+		
+		<value-of select="($end = $needle)" />	
+	</template>
+	
 	<!-- Number of occurrence of a given string at the end of another string -->
 	<template name="str.endsWithCount">
 		<!-- Text -->
