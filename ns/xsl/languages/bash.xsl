@@ -12,17 +12,20 @@
 	<xsl:param name="bash.def.elementType" />
 	<xsl:param name="bash.def.functionName" />
 
-	<xsl:template match="sh:body">
+	<xsl:template match="sh:code">
 		<xsl:call-template name="str.trim">
-			<xsl:with-param name="text" select="." />
+			<xsl:with-param name="text">
+				<xsl:apply-templates />
+			</xsl:with-param>
 		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
 	</xsl:template>
 
 	<xsl:template match="sh:function">
 		<xsl:if test="(not($bash.def.elementType) or ($bash.def.elementType = 'function')) and (not($bash.def.functionName) or ($bash.def.functionName = @name))">
 			<xsl:value-of select="normalize-space(@name)" />
 			<text>()</text>
-			<xsl:call-template name="unixEndl" />
+			<xsl:value-of select="$sh.endl" />
 			<xsl:text>{</xsl:text>
 
 			<!-- parameters -->
@@ -31,7 +34,7 @@
 					<xsl:with-param name="addFinalEndl" select="false()" />
 					<xsl:with-param name="addInitialEndl" select="false()" />
 					<xsl:with-param name="endl">
-						<xsl:call-template name="unixEndl" />
+						<xsl:value-of select="$sh.endl" />
 					</xsl:with-param>
 					<xsl:with-param name="content">
 						<xsl:for-each select="sh:parameter">
@@ -39,7 +42,7 @@
 							<xsl:variable name="quoted" select="not(@type) or (@type = 'string')" />
 							<xsl:text>local </xsl:text>
 							<xsl:value-of select="normalize-space(@name)" />
-							<xsl:call-template name="unixEndl" />
+							<xsl:value-of select="$sh.endl" />
 
 							<xsl:call-template name="sh.if">
 								<xsl:with-param name="condition">
@@ -52,7 +55,7 @@
 										<xsl:with-param name="name" select="1" />
 										<xsl:with-param name="quoted" select="$quoted" />
 									</xsl:call-template>
-									<xsl:call-template name="unixEndl" />
+									<xsl:value-of select="$sh.endl" />
 									<text>shift</text>
 								</xsl:with-param>
 								<xsl:with-param name="else">
@@ -69,7 +72,7 @@
 									</xsl:if>
 								</xsl:with-param>
 							</xsl:call-template>
-							<xsl:call-template name="unixEndl" />
+							<xsl:value-of select="$sh.endl" />
 						</xsl:for-each>
 					</xsl:with-param>
 				</xsl:call-template>
@@ -92,15 +95,15 @@
 								</xsl:call-template>
 							</xsl:otherwise>
 						</xsl:choose>
-						<xsl:call-template name="unixEndl" />
+						<xsl:value-of select="$sh.endl" />
 					</xsl:for-each>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="unixEndl" />
+					<xsl:value-of select="$sh.endl" />
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:text>}</xsl:text>
-			<xsl:call-template name="unixEndl" />
+			<xsl:value-of select="$sh.endl" />
 		</xsl:if>
 	</xsl:template>
 
