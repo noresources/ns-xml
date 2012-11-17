@@ -277,9 +277,14 @@
 		<param name="_position" select="1"/>
 		<!-- Internal use -->
 		<param name="_bestValue" select="-1"/>
+		<!-- the first 2 characters are always breakable,
+		the others requires a space after -->
 		<variable name="breakables" select="' &#9;,;:?.!'"/>
 		<variable name="c">
 			<value-of select="substring($breakables, $_position, 1)"/>
+			<if test="$_position &gt; 2">
+				<value-of select="' '" />
+			</if>
 		</variable>
 		<choose>
 			<when test="(string-length($text) &gt; 0) and (string-length($c) = 1)">
@@ -338,7 +343,10 @@
 		<param name="lineMaxLength" select="80"/>
 		<!-- End-of-line string -->
 		<param name="endlChar" select="$str.endl"/>
+		
 		<variable name="hasEndl" select="contains($text, $endlChar)"/>
+		
+		<!-- Get a line -->
 		<variable name="item">
 			<choose>
 				<when test="$hasEndl">
@@ -349,11 +357,21 @@
 				</otherwise>
 			</choose>
 		</variable>
+		
+		<!-- Get left blanks -->
+		<variable name="leftTrimmedItem">
+			<call-template name="str.trimLeft">
+				<with-param name="text" select="$item" />
+			</call-template>
+		</variable>
+		<variable name="leftBlankCount" select="(string-length($item) - string-length($leftTrimmedItem))" />
+		<variable name="remainingPartPadding" select="substring($item, 1, $leftBlankCount)" />
+		
 		<if test="string-length($item) &gt; 0">
 			<!-- <text>(process: </text><value-of select="$item" /><text> of </text><value-of select="$text" /><text>)</text> -->
 			<choose>
 				<when test="string-length($item) &gt; $lineMaxLength">
-					<!-- Text chunk -->
+					<!-- Text chunk before line length limit -->
 					<variable name="splititem" select="substring($item, 1, $lineMaxLength)"/>
 					<!-- Position of the last breakable char in text chunk -->
 					<variable name="breakPosition">
@@ -381,9 +399,10 @@
 							</otherwise>
 						</choose>
 					</variable>
+					<!-- Text chunk before breakable -->
 					<variable name="part">
 						<choose>
-							<when test="$breakPosition = 1 and ($isBlank &gt; 0)">
+							<when test="($breakPosition = 1) and ($isBlank &gt; 0)">
 								<value-of select="substring($item, 2, $len - 1)"/>
 							</when>
 							<otherwise>
@@ -395,7 +414,7 @@
 						<value-of select="$part"/>
 						<value-of select="$endlChar"/>
 					</if>
-					<variable name="remaining" select="substring($item, $len + 1)"/>
+					<variable name="remaining" select="concat($remainingPartPadding, substring($item, $len + 1))"/>
 					<!-- remaining part -->
 					<if test="string-length($remaining) &gt; 0">
 						<!-- <text>(remain: </text><value-of select="$remaining" /><text>)</text> -->
@@ -481,12 +500,9 @@
 				<with-param name="text" select="$text"/>
 			</call-template>
 		</variable>
-		<variable name="trimmed">
-			<call-template name="str.trimRight">
-				<with-param name="text" select="$lTrimmed"/>
-			</call-template>
-		</variable>
-		<value-of select="$trimmed"/>
+		<call-template name="str.trimRight">
+			<with-param name="text" select="$lTrimmed"/>
+		</call-template>
 	</template>
 
 	<template name="str.trimLeft">
