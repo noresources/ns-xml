@@ -713,6 +713,7 @@ ns_mktempdir()
 }
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
+scriptName="$(basename "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
 cwd="$(pwd)"
 
@@ -786,7 +787,7 @@ do
 done
 
 # Supported shells
-shells=(bash zsh)
+shells=(bash zsh ksh)
 for s in ${shells[*]}
 do
 	if which ${s} 1>/dev/null 2>&1
@@ -936,6 +937,7 @@ resultLineFormat="${resultLineFormat} %7s\n"
 echo "Apps: ${selectedApps[@]}"
 echo "Parsers: ${parserNames[@]}"
 
+
 # Testing ...
 for ((ai=0;${ai}<${#selectedApps[@]};ai++))
 do
@@ -980,22 +982,47 @@ EOF
 	
 	if ${testSh}
 	then
-		# Write the test body shell script
-		xsltproc --xinclude -o "${d}/xsh/program.body.sh" "${testPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${d}/xsh/program.body.sh"  
+		log "Generate ${app} XSH file"
+		xshFile="${tmpScriptBasename}-xsh.xsh"
+		xshBodyFile="${tmpScriptBasename}-xsh.body.sh"
+		cat > "${xshFile}" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<xsh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
+<xsh:info>
+	<xi:include href="xml/program.xml" />
+</xsh:info>
+<xsh:functions>
+	<xi:include href="../lib/functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)" />
+</xsh:functions>
+<xsh:code>
+<xi:include href="./$(basename "${xshBodyFile}")" parse="text" />
+</xsh:code>
+</xsh:program>
+EOF
+		xsltproc --xinclude -o "${xshBodyFile}" "${testPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${xshBodyFile}"  
+		
 		for s in ${available_shells[*]}
 		do
 			shScript="${tmpScriptBasename}.${s}"
 			shScripts[${#shScripts[*]}]="${shScript}"
-			"${projectPath}/ns/sh/build-shellscript.sh" -i "/usr/bin/env ${s}" -p -x "${xmlDescription}" -s "${d}/xsh/program.xsh" -o "${shScript}" || error "Failed to create ${shScript}"
+			buildShScriptArgs=(\
+				-i ${s} \
+				-p \
+				-x "${xmlDescription}" \
+				-s "${xshFile}" \
+				-o "${shScript}"\
+			)
+			log "Generating ${app} ${s} program (${buildShScriptArgs[@]})"
+			"${projectPath}/ns/sh/build-shellscript.sh" "${buildShScriptArgs[@]}" || error "Failed to create ${shScript}" 
 			chmod 755 "${shScript}"
 		done
 		
-		rm -f "${d}/xsh/program.body.sh"
+		rm -f "${xshBodyFile}"
 	fi
 	
 	if ${testPython}
 	then
-		# Generate python script using the xslt stylesheet
+		log "Generate python script"
 		pyScript="${tmpScriptBasename}.py"
 		xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${testPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
 		chmod 755 "${pyScript}"
@@ -1010,20 +1037,20 @@ EOF
 		cProgram="${tmpScriptBasename}-exe"
 		xsltproc --xinclude -o "${cProgram}.c" "${testPathBase}/lib/c-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${cProgram} source"
 		
-		# Create C files
+		log "Create C files"
 		"${projectPath}/ns/sh/build-c.sh" -eu \
 			-x "${xmlDescription}" \
 			-o "$(dirname "${tmpScriptBasename}")" \
 			-f "$(basename "${cParserBase}")" \
 			-p "app" || error "Failed to generated C parser"
 			
-		# Build program
+		log "Build C program"
 		gcc -Wall -pedantic -g -O0 \
 		-o "${cProgram}" \
 		"${cProgram}.c" "${cParserBase}.c" || error "Failed to build C program"   
 	fi
-		
-	# Run tests
+	
+	log "Run test(s)"
 	for ((ti=0;${ti}<${#groupTests[@]};ti++))
 	do
 		t="${groupTestBasePath}/${groupTests[${ti}]}"
@@ -1045,7 +1072,7 @@ shi=0
 for s in ${available_shells[*]}
 do
 	shScript="${shScripts[${shi}]}"
-	echo "\"${shScript}\" ${cli} > \"${result}-${s}\""
+	echo "\"${shScript}\" ${cli} > \"${result}-${s}\" 2>>\"${logFile}\""
 	shi=$(expr ${shi} + 1)
 done)
 EOFSH
@@ -1053,14 +1080,14 @@ EOFSH
 		if ${testPython} && [ ! -f "${base}.no-py" ]
 		then
 			cat >> "${tmpShellScript}" << EOFSH
-"${pyScript}" ${cli} > "${result}-py"
+"${pyScript}" ${cli} > "${result}-py"  2>>"${logFile}"
 EOFSH
 		fi
 		
 		if ${testC} && [ ! -f "${base}.no-c" ]
 		then
 			cat >> "${tmpShellScript}" << EOFSH
-"${cProgram}" ${cli} > "${result}-c"
+"${cProgram}" ${cli} > "${result}-c"  2>>"${logFile}"
 EOFSH
 			if ${testValgrind}
 			then
@@ -1072,15 +1099,17 @@ EOSH
 			fi
 		fi
 		
-		# Run parsers 
+		log " ---- ${app}/${testnumber} ---- "
+		
+		# Run parsers
 		chmod 755 "${tmpShellScript}"	
-		"${tmpShellScript}"
+		"${tmpShellScript}" 2>> "${logFile}"
 		
 		# Analyze results
 		
 		resultLine=
 		resultLine[0]="    ${testnumber}"
-		log " ---- ${app}/${testnumber} ---- "
+		
 		passed=true
 		if [ -f "${expected}" ]
 		then
@@ -1093,7 +1122,7 @@ EOSH
 				else
 					for s in ${available_shells[*]}
 					do
-						if ! diff "${expected}" "${result}-${s}" >> "${logFile}"
+						if [ ! -f "${result}-${s}" ] || ! diff "${expected}" "${result}-${s}" >> "${logFile}"
 						then
 							passed=false
 							resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
@@ -1112,7 +1141,7 @@ EOSH
 				then
 					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
 				else
-					if ! diff "${expected}" "${result}-py" >> "${logFile}"
+					if [ ! -f "${result}-py" ] || ! diff "${expected}" "${result}-py" >> "${logFile}"
 					then
 						passed=false
 						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
@@ -1133,7 +1162,7 @@ EOSH
 						resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
 					fi	
 				else
-					if ! diff "${expected}" "${result}-c" >> "${logFile}"
+					if [ ! -f "${result}-c" ] || ! diff "${expected}" "${result}-c" >> "${logFile}"
 					then
 						passed=false
 						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
@@ -1216,14 +1245,21 @@ EOSH
 	if ${testSh}
 	then
 		si=0
+		hasErrors=false
 		for s in ${available_shells[*]}
 		do
 			if [ $(find "${d}/tests" -name "*.result-${s}" | wc -l) -eq 0 ]
 			then
 				rm -f "${shScripts[${si}]}"
+			else
+				hasErrors=true
 			fi
 			si=$(expr ${si} + 1)
 		done
+		if ! ${hasErrors}
+		then
+			rm -f "${xshFile}"
+		fi
 		unset shScripts
 	fi
 	

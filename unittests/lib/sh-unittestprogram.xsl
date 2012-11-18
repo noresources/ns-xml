@@ -29,7 +29,8 @@
 	</template>
 
 	<template match="/">
-		<text><![CDATA[parse "${@}"
+		<text><![CDATA[
+parse "${@}"
 echo -n "CLI: "
 cpt="${#}"
 i=1
