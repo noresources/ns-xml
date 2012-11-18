@@ -60,7 +60,7 @@ Usage:
           Default value: none
         --variable-style, --variable, --var: Variable naming convention
           Generate variable and enum names according the given naming 
-        convention  
+          convention  
           The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
@@ -1173,6 +1173,7 @@ get_program_version()
 	</xsl:template>
 </xsl:stylesheet>
 GETPROGRAMVERSIONXSLEOF
+
 
 	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
 	rm -f "${tmpXslFile}"

@@ -598,6 +598,7 @@ get_program_version()
 </xsl:stylesheet>
 GETPROGRAMVERSIONXSLEOF
 
+
 	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
 	rm -f "${tmpXslFile}"
 	if [ ! -z "${result##*[!0-9.]*}" ]
@@ -749,7 +750,7 @@ EOF
 
 xmllint --output "${xshFile}" "${tmpFile}"
 
-# Xml file
+# XML file
 cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <!-- {} -->

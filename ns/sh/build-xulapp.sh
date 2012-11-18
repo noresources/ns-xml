@@ -16,14 +16,26 @@ case "${1}" in
 xsh | sh | shell)
 cat << EOFSCUSAGE
 xsh: Build a XUL application which will run a Shell script defined through the bash XML schema
-Usage: build-xulapp xsh [-p] -s <path>
+Usage: build-xulapp xsh [-p] -s <path> [(-i <...> | -I <...>)]
 With:
   -s, --shell: XML shell file
-    A xml file following the bash XML schema
+    A XML file following the bash XML schema
     The file may include a program interface XML definition
   -p, --prefix-sc-variables: Prefix subcommand options bound variable names
     This will prefix all subcommand options bound variable name by the 
     subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
+  Default interpreter
+    -i, --interpreter: Default shell interpreter type
+      The interpreter family to use if the XSH file does not define one.
+        Attention: This parameter is only available for XSH file using the 
+        XSH XML schema (http://xsd.nore.fr/xsh). The old 
+        http://xsd.nore.fr/bash XSD schema is not supported.  
+      The argument can be:  
+        bash, zsh or ksh
+    -I, --interpreter-cmd: Default shell interpreter invocation directive
+      This value if used if the XSH file does not define one  
+      The argument can be:  
+        /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
 EOFSCUSAGE
 ;;
 python | py)
@@ -57,7 +69,7 @@ Usage:
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
-      options: [-p] -s <path>
+      options: [-p] -s <path> [(-i <...> | -I <...>)]
     python, py: Build a XUL application which will run a python script built with the program XML schema
       options: -p <path> [-m <...>]
     command, cmd: Build a XUL application which will run an existing command
@@ -149,6 +161,8 @@ addNsXml=false
 # Single argument options
 
 xsh_xmlShellFileDescriptionPath=
+xsh_defaultInterpreterType=
+xsh_defaultInterpreterCommand=
 python_pythonScriptPath=
 python_moduleName="Program"
 command_existingCommandPath=
@@ -366,6 +380,126 @@ parse_process_subcommand_option()
 				xsh_prefixSubcommandBoundVariableName=true
 				parse_setoptionpresence SC_1_xsh_2_prefix-sc-variables
 				;;
+			interpreter)
+				# Group checks
+				
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_defaultInterpreterType="${parser_item}"
+				xsh_defaultInterpreter="xsh_defaultInterpreterType"
+				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
+				;;
+			interpreter-cmd)
+				# Group checks
+				
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_defaultInterpreterCommand="${parser_item}"
+				xsh_defaultInterpreter="xsh_defaultInterpreterCommand"
+				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
+				;;
 			*)
 				return ${PARSER_SC_SKIP}
 				;;
@@ -424,6 +558,126 @@ parse_process_subcommand_option()
 			p)
 				xsh_prefixSubcommandBoundVariableName=true
 				parse_setoptionpresence SC_1_xsh_2_prefix-sc-variables
+				;;
+			i)
+				# Group checks
+				
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_defaultInterpreterType="${parser_item}"
+				xsh_defaultInterpreter="xsh_defaultInterpreterType"
+				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
+				;;
+			I)
+				# Group checks
+				
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_defaultInterpreterCommand="${parser_item}"
+				xsh_defaultInterpreter="xsh_defaultInterpreterCommand"
+				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1450,32 +1704,60 @@ error()
 }
 build_xsh()
 {
+	local prefixSubcommandBoundVariableName="${xsh_prefixSubcommandBoundVariableName}"
+	local xmlShellFileDescriptionPath="${xsh_xmlShellFileDescriptionPath}"
+	local defaultInterpreterCommand="${xsh_defaultInterpreterCommand}"
+	local defaultInterpreterType="${xsh_defaultInterpreterType}"
+	local outputScriptFilePath="${commandLauncherFile}"
 	info " - Generate shell file"
-	debugParam=""
+	# Validate against bash or xsh schema
+	if ! ${skipValidation}
+	then
+		shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
+		if ! xml_validate "${nsPath}/xsd/${shSchema}" "${xmlShellFileDescriptionPath}" 
+		then
+			echo "bash schema error - abort"
+			exit 5
+		fi
+	fi
+	
+	# Process xsh file
+	xsltprocArgs=(--xinclude)
 	if ${debugMode}
 	then
-		debugParam="--stringparam prg.debug \"true()\""
+		xsltprocArgs[${#xsltprocArgs[*]}]="--param"
+		xsltprocArgs[${#xsltprocArgs[*]}]="prg.debug"
+		xsltprocArgs[${#xsltprocArgs[*]}]="true()"
 	fi
 	
-	prefixParam=""
-	if ${xsh_prefixSubcommandBoundVariableName}
+	if ${prefixSubcommandBoundVariableName}
 	then
-		prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
+		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+		xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.prefixSubcommandOptionVariable"
+		xsltprocArgs[${#xsltprocArgs[*]}]="yes"
 	fi
 	
-	# Validate bash scheam
-	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/bash.xsd" "${xsh_xmlShellFileDescriptionPath}"
+	if [ ! -z "${defaultInterpreterCommand}" ]
 	then
-		error "bash XML schema error - abort"
+		# See ns/xsl/program/*/xsh.xsl
+		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+		xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreterCommand"
+		xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterCommand}"
+	elif [ ! -z "${defaultInterpreterType}" ]
+	then
+		# See ns/xsl/languages/xsh.xsl
+		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+		xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterType"
+		xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterType}"
 	fi
 	
-	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-	xsh_xmlShellFileDescriptionPath="$(ns_realpath "${xsh_xmlShellFileDescriptionPath}")"
-	if ! xsltproc --xinclude -o "${commandLauncherFile}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xsh_xmlShellFileDescriptionPath}"
+	if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 	then
-		echo "Fail to process xsh file \"${xsh_xmlShellFileDescriptionPath}\""
-		exit 5
+		echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
+		exit 6
 	fi
+	
+	chmod 755 "${outputScriptFilePath}"
 	return 0
 }
 build_python()
@@ -1534,14 +1816,11 @@ xml_validate()
 	
 	return 0
 }
-logFile="/tmp/$(basename "${0}").log"
-${isDebug} && echo "$(date): ${0} ${@}" > "${logFile}"
 
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
 programVersion="2.0"
-
 hostPlatform="linux"
 macOSXVersion=""
 macOSXFrameworkName="XUL.framework"
@@ -1551,6 +1830,9 @@ macOSXMajorVersion=""
 macOSXMinorVersion=""
 macOSXPatchVersion=""
 macOSXArchitecture=""
+
+logFile="/tmp/$(basename "${0}").log"
+${isDebug} && echo "$(date): ${0} ${@}" > "${logFile}"
 
 # Check (common) required programs
 for x in xmllint xsltproc egrep cut expr head tail uuidgen 
@@ -2054,3 +2336,4 @@ else
 fi
 EOF
 chmod 755 "${launcherPath}"
+

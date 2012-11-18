@@ -16,9 +16,9 @@
 	</prg:ui>
 	<prg:options>
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
 		<!-- program interface XML definition file -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])"/>
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
 		<prg:argument required="true" id="xmlShellFileDescriptionPath">
 			<prg:databinding>
 				<prg:variable>xmlShellFileDescriptionPath</prg:variable>
@@ -26,15 +26,15 @@
 			<prg:documentation>
 				<prg:abstract>XML shell file</prg:abstract>
 				<prg:details>
-					A xml file following the bash XML schema
-					<prg:endl/>
+					A XML file following the bash XML schema
+					<prg:endl />
 					The file may include a program interface XML definition
 				</prg:details>
 			</prg:documentation>
 			<prg:type>
 				<prg:path exist="true">
 					<prg:kinds>
-						<prg:file/>
+						<prg:file />
 					</prg:kinds>
 					<prg:patterns>
 						<prg:pattern>
@@ -54,27 +54,61 @@
 			</prg:names>
 		</prg:argument>
 		<!-- Skip validation -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
 		<!-- Tweaks -->
-		<prg:argument id="defaultInterpreter">
+		<prg:group id="defaultInterpreter" type="exclusive">
 			<prg:databinding>
 				<prg:variable>defaultInterpreter</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
-				<prg:abstract>Default shell interpreter</prg:abstract>
-				<prg:details>Use this value if the XSH file does not define one</prg:details>
+				<prg:abstract>Default interpreter</prg:abstract>
 			</prg:documentation>
-			<prg:names>
-				<prg:long>interpreter</prg:long>
-				<prg:short>i</prg:short>
-			</prg:names>
-			<prg:select>
-				<prg:option>/usr/bin/env bash</prg:option>
-				<prg:option>/bin/bash</prg:option>
-				<prg:option>/usr/bin/env zsh</prg:option>
-				<prg:option>/bin/zsh</prg:option>
-			</prg:select>
-		</prg:argument>
+			<prg:options>
+				<prg:argument id="defaultInterpreterType">
+					<prg:databinding>
+						<prg:variable>defaultInterpreterType</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Default shell interpreter type</prg:abstract>
+						<prg:details>
+							The interpreter family to use if the XSH file does not define one.
+							<prg:block>Attention: This parameter is only available for XSH file using the
+								XSH XML schema (http://xsd.nore.fr/xsh). The old http://xsd.nore.fr/bash XSD schema is not
+								supported.
+							</prg:block>
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>interpreter</prg:long>
+						<prg:short>i</prg:short>
+					</prg:names>
+					<prg:select>
+						<prg:option>bash</prg:option>
+						<prg:option>zsh</prg:option>
+						<prg:option>ksh</prg:option>
+					</prg:select>
+				</prg:argument>
+				<prg:argument id="defaultInterpreterCommand">
+					<prg:databinding>
+						<prg:variable>defaultInterpreterCommand</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Default shell interpreter invocation directive</prg:abstract>
+						<prg:details>This value if used if the XSH file does not define one</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>interpreter-cmd</prg:long>
+						<prg:short>I</prg:short>
+					</prg:names>
+					<prg:select>
+						<prg:option>/usr/bin/env bash</prg:option>
+						<prg:option>/bin/bash</prg:option>
+						<prg:option>/usr/bin/env zsh</prg:option>
+						<prg:option>/bin/zsh</prg:option>
+					</prg:select>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
 		<prg:switch id="prefixSubcommandBoundVariableName">
 			<prg:databinding>
 				<prg:variable>prefixSubcommandBoundVariableName</prg:variable>
@@ -82,7 +116,7 @@
 			<prg:documentation>
 				<prg:abstract>Prefix subcommand options bound variable names</prg:abstract>
 				<prg:details>This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae).
-				This avoid variable name aliasing.
+					This avoid variable name aliasing.
 				</prg:details>
 			</prg:documentation>
 			<prg:names>
@@ -91,9 +125,9 @@
 			</prg:names>
 		</prg:switch>
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>outputScriptFilePath</prg:variable>
@@ -108,7 +142,7 @@
 			<prg:type>
 				<prg:path>
 					<prg:kinds>
-						<prg:file/>
+						<prg:file />
 					</prg:kinds>
 				</prg:path>
 			</prg:type>

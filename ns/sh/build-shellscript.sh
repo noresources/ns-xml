@@ -13,7 +13,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [-i <...>] [--help] -o <path>
+  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [(-i <...> | -I <...>)] [--help] -o <path>
   With:
     ns-xml source path options
       --ns-xml-path: ns-xml source path
@@ -24,16 +24,25 @@ Usage:
       If the program description file is provided, the xml file will be 
       validated before any XSLT processing
     -s, --shell: XML shell file
-      A xml file following the bash XML schema
+      A XML file following the bash XML schema
       The file may include a program interface XML definition
     -S, --skip-validation, --no-validation: Skip XML Schema validations
       The default behavior of the program is to validate the given xml-based 
       file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
       This option will disable schema validations
-    -i, --interpreter: Default shell interpreter
-      Use this value if the XSH file does not define one  
-      The argument can be:  
-        /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
+    Default interpreter
+      -i, --interpreter: Default shell interpreter type
+        The interpreter family to use if the XSH file does not define one.
+          Attention: This parameter is only available for XSH file using the 
+          XSH XML schema (http://xsd.nore.fr/xsh). The old 
+          http://xsd.nore.fr/bash XSD schema is not supported.  
+        The argument can be:  
+          bash, zsh or ksh
+      -I, --interpreter-cmd: Default shell interpreter invocation directive
+        This value if used if the XSH file does not define one  
+        The argument can be:  
+          /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
+    
     -p, --prefix-sc-variables: Prefix subcommand options bound variable names
       This will prefix all subcommand options bound variable name by the 
       subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
@@ -84,7 +93,8 @@ displayHelp=false
 nsxmlPath=
 xmlProgramDescriptionPath=
 xmlShellFileDescriptionPath=
-defaultInterpreter=
+defaultInterpreterType=
+defaultInterpreterCommand=
 outputScriptFilePath=
 
 parse_addwarning()
@@ -355,33 +365,6 @@ parse_process_option()
 			skipValidation=true
 			parse_setoptionpresence G_4_skip-validation
 			;;
-		interpreter)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			defaultInterpreter="${parser_item}"
-			parse_setoptionpresence G_5_interpreter
-			;;
 		prefix-sc-variables)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -479,6 +462,126 @@ parse_process_option()
 			fi
 			nsxmlPathRelative=true
 			parse_setoptionpresence G_1_g_2_ns-xml-path-relative;parse_setoptionpresence G_1_g
+			;;
+		interpreter)
+			# Group checks
+			
+			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterType" ] || [ "${defaultInterpreter:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			defaultInterpreterType="${parser_item}"
+			defaultInterpreter="defaultInterpreterType"
+			parse_setoptionpresence G_5_g_1_interpreter;parse_setoptionpresence G_5_g
+			;;
+		interpreter-cmd)
+			# Group checks
+			
+			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${defaultInterpreter:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			defaultInterpreterCommand="${parser_item}"
+			defaultInterpreter="defaultInterpreterCommand"
+			parse_setoptionpresence G_5_g_2_interpreter-cmd;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -579,33 +682,6 @@ parse_process_option()
 			skipValidation=true
 			parse_setoptionpresence G_4_skip-validation
 			;;
-		i)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			defaultInterpreter="${parser_item}"
-			parse_setoptionpresence G_5_interpreter
-			;;
 		p)
 			prefixSubcommandBoundVariableName=true
 			parse_setoptionpresence G_6_prefix-sc-variables
@@ -640,6 +716,126 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
 			parse_setoptionpresence G_9_output
+			;;
+		i)
+			# Group checks
+			
+			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterType" ] || [ "${defaultInterpreter:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			defaultInterpreterType="${parser_item}"
+			defaultInterpreter="defaultInterpreterType"
+			parse_setoptionpresence G_5_g_1_interpreter;parse_setoptionpresence G_5_g
+			;;
+		I)
+			# Group checks
+			
+			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${defaultInterpreter:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			defaultInterpreterCommand="${parser_item}"
+			defaultInterpreter="defaultInterpreterCommand"
+			parse_setoptionpresence G_5_g_2_interpreter-cmd;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_adderror "Unknown option \"${parser_option}\""
@@ -763,6 +959,7 @@ get_program_version()
 </xsl:stylesheet>
 GETPROGRAMVERSIONXSLEOF
 
+
 	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
 	rm -f "${tmpXslFile}"
 	if [ ! -z "${result##*[!0-9.]*}" ]
@@ -801,6 +998,7 @@ xml_validate()
 	
 	return 0
 }
+
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -845,7 +1043,7 @@ then
 	exit 2
 fi
 
-# Validate xml program description (if given)
+# Validate XML program description (if given)
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
@@ -865,10 +1063,11 @@ then
 	fi
 fi
 
-# Validate against bash schema
+# Validate against bash or xsh schema
 if ! ${skipValidation}
 then
-	if ! xml_validate "${nsPath}/xsd/bash.xsd" "${xmlShellFileDescriptionPath}"
+	shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
+	if ! xml_validate "${nsPath}/xsd/${shSchema}" "${xmlShellFileDescriptionPath}" 
 	then
 		echo "bash schema error - abort"
 		exit 5
@@ -877,32 +1076,34 @@ fi
 
 # Process xsh file
 xsltprocArgs=(--xinclude)
-debugParam=""
 if ${debugMode}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--param"
 	xsltprocArgs[${#xsltprocArgs[*]}]="prg.debug"
 	xsltprocArgs[${#xsltprocArgs[*]}]="true()"
-	debugParam="--stringparam prg.debug \"true()\""
 fi
 
-prefixParam=""
 if ${prefixSubcommandBoundVariableName}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
 	xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.prefixSubcommandOptionVariable"
 	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
-	prefixParam="--stringparam prg.sh.parser.prefixSubcommandOptionVariable yes"
 fi
 
-if [ ! -z "${defaultInterpreter}" ]
+if [ ! -z "${defaultInterpreterCommand}" ]
 then
+	# See ns/xsl/program/*/xsh.xsl
 	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
-	xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreter"
-	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreter}"
+	xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreterCommand"
+	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterCommand}"
+elif [ ! -z "${defaultInterpreterType}" ]
+then
+	# See ns/xsl/languages/xsh.xsl
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterType"
+	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterType}"
 fi
 
-#if ! xsltproc --xinclude -o "${outputScriptFilePath}" ${prefixParam} ${debugParam} "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then
 	echo "Fail to process xsh file \"${xmlShellFileDescriptionPath}\""
@@ -910,3 +1111,4 @@ then
 fi
 
 chmod 755 "${outputScriptFilePath}"
+

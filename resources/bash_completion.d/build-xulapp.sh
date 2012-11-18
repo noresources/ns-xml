@@ -90,6 +90,56 @@ __sc_xsh_bashcompletion()
 		fi
 		
 		;;
+	"interpreter" | "i")
+		COMPREPLY=()
+		for e in "bash" "zsh" "ksh"
+		do
+			local res="$(compgen -W "${e}" -- "${current}")"
+			if [ ! -z "${res}" ]
+			then
+				COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
+			fi
+		done
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"interpreter-cmd" | "I")
+		COMPREPLY=()
+		for e in "/usr/bin/env bash" "/bin/bash" "/usr/bin/env zsh" "/bin/zsh"
+		do
+			local res="$(compgen -W "${e}" -- "${current}")"
+			if [ ! -z "${res}" ]
+			then
+				COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
+			fi
+		done
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
 	
 	esac
 	return 1

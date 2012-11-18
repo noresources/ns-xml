@@ -26,6 +26,7 @@
 			<prg:options>
 				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'xmlShellFileDescriptionPath'])"/>
 				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prefixSubcommandBoundVariableName'])"/>
+				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:group[@id = 'defaultInterpreter'])"/>
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>
