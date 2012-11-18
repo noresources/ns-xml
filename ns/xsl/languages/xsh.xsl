@@ -286,7 +286,7 @@
 				<xsl:when test="xsh:body">
 					<xsl:for-each select="xsh:body">
 						<xsl:choose>
-							<xsl:when test="@indent = 'false'">
+							<xsl:when test="@indent = 'no'">
 								<xsl:apply-templates select="." />
 							</xsl:when>
 							<xsl:otherwise>

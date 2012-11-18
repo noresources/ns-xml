@@ -40,7 +40,7 @@ fi
 		<xsh:body>
 		<xsh:local name="tmpXslFile">/tmp/get_program_version.xsl</xsh:local><![CDATA[
 cat > "${tmpXslFile}" << GETPROGRAMVERSIONXSLEOF]]></xsh:body>
-		<xsh:body indent="false"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+		<xsh:body indent="no"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:output method="text" encoding="utf-8" />
 	<xsl:template match="//prg:program">
