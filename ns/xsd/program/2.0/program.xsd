@@ -9,11 +9,13 @@
 			<pattern value=".+"/>
 		</restriction>
 	</simpleType>
+	
 	<simpleType name="literalTrueType">
 		<restriction base="string">
 			<enumeration value="true"/>
 		</restriction>
 	</simpleType>
+	
 	<simpleType name="literalFalseType">
 		<restriction base="string">
 			<enumeration value="false"/>
@@ -25,20 +27,24 @@
 			<enumeration value="false"/>
 		</restriction>
 	</simpleType>
+	
 	<simpleType name="simpleTextType">
 		<restriction base="prg:nonEmptyString">
 			<whiteSpace value="collapse"/>
 		</restriction>
 	</simpleType>
+	
 	<simpleType name="regularExpressionTypenameType">
 		<restriction base="string">
 			<enumeration value="POSIX"/>
 			<enumeration value="PCRE"/>
 		</restriction>
 	</simpleType>
+	
 	<complexType name="richTextType" mixed="true">
 		<group ref="prg:descriptionElementsGroup" minOccurs="0" maxOccurs="unbounded"/>
 	</complexType>
+	
 	<complexType name="documentationType">
 		<annotation>
 			<documentation xml:lang="en">Documentation of an element</documentation>
@@ -513,8 +519,11 @@
 			<pattern value="[a-zA-Z0-9][\w_-]*"/>
 		</restriction>
 	</simpleType>
-	<!-- Set of elements accepted in description, liecense and details elements -->
+	
 	<group name="descriptionElementsGroup">
+		<annotation>
+			<documentation xml:lang="en">Set of elements accepted in description, liecense and details elements</documentation>
+		</annotation>
 		<choice>
 			<element name="endl" type="prg:emptyType" minOccurs="0" maxOccurs="1"/>
 			<element name="br" type="prg:emptyType" minOccurs="0" maxOccurs="1"/>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh"
+	xmlns:bash="http://xsd.nore.fr/bash">
+
+	<import namespace="http://xsd.nore.fr/program" schemaLocation="../../program/2.0/program.xsd" />
+	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
+
+	<!-- temp -->
+	<import namespace="http://xsd.nore.fr/bash" schemaLocation="../../bash.xsd" />
+
+	<annotation>
+		<documentation xml:lang="en">XML-based UNIX shell script program and/or functions definition</documentation>
+	</annotation>
+
+	<simpleType name="yesNoLiteral">
+		<annotation>
+			<documentation xml:lang="en"></documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="yes" />
+			<enumeration value="no" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="identifierTypeEnum">
+		<restriction base="string">
+			<enumeration value="string" />
+			<enumeration value="numeric" />
+			<enumeration value="boolean" />
+		</restriction>
+	</simpleType>
+
+	<complexType name="functionParameterType" mixed="true">
+		<attribute name="name" type="string" />
+		<attribute name="type" type="xsh:identifierTypeEnum" use="optional" />
+	</complexType>
+
+	<complexType name="localVariableDefinitionType" mixed="true">
+		<annotation>
+			<documentation>Local variable declaration</documentation>
+		</annotation>
+		<attribute name="name" type="string" />
+		<attribute name="type" type="xsh:identifierTypeEnum" use="optional" />
+	</complexType>
+
+	<simpleType name="plainCodeType">
+		<annotation>
+			<documentation xml:lang="en">A code snippet</documentation>
+		</annotation>
+		<restriction base="string" />
+	</simpleType>
+
+	<simpleType name="interpreterCommandType">
+		<annotation>
+			<documentation xml:lang="en">Command to use to interpret the program</documentation>
+		</annotation>
+		<restriction base="string" />
+	</simpleType>
+
+	<simpleType name="interpreterNameType">
+		<annotation>
+			<documentation xml:lang="en">Family of UNIX shell</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="ash">
+				<annotation>
+					<documentation>Almquist shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="bash">
+				<annotation>
+					<documentation>Bourne-Again shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="csh">
+				<annotation>
+					<documentation>C-shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="dash">
+				<annotation>
+					<documentation>Debian Almquist shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="ksh">
+				<annotation>
+					<documentation>Korn shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="mksh">
+				<annotation>
+					<documentation>MirBSD Korn Shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="rzsh">
+				<annotation>
+					<documentation>Restricted zsh</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="tcsh">
+				<annotation>
+					<documentation>TENEX C-shell</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="zsh" />
+		</restriction>
+	</simpleType>
+
+	<group name="functionBodyElementsGroup">
+		<choice>
+			<element name="local" type="xsh:localVariableDefinitionType" minOccurs="0" maxOccurs="1" />
+		</choice>
+	</group>
+
+	<complexType name="functionBodyType" mixed="true">
+		<annotation>
+			<documentation>UNIX shell function body</documentation>
+		</annotation>
+		<group ref="xsh:functionBodyElementsGroup" minOccurs="0" maxOccurs="unbounded" />
+		<attribute name="indent" type="xsh:yesNoLiteral" use="optional" />
+	</complexType>
+
+	<complexType name="functionType">
+		<annotation>
+			<documentation xml:lang="en">UNIX shell function definition</documentation>
+		</annotation>
+		<sequence minOccurs="1" maxOccurs="1">
+			<element name="parameter" type="xsh:functionParameterType" minOccurs="0" maxOccurs="unbounded" />
+			<element name="body" minOccurs="1" maxOccurs="unbounded" type="xsh:functionBodyType" />
+		</sequence>
+		<attribute name="name">
+			<annotation>
+				<documentation>Function name</documentation>
+			</annotation>
+		</attribute>
+		<attribute ref="xml:base">
+			<annotation>
+				<documentation>Required when XInclude is used</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<element name="code" type="xsh:plainCodeType">
+		<annotation>
+			<documentation xml:lang="en">A plain text code chunk</documentation>
+		</annotation>
+	</element>
+
+	<element name="function" type="xsh:functionType" />
+
+	<group name="functionsElementsGroup">
+		<choice>
+			<element ref="xsh:function" minOccurs="0" maxOccurs="unbounded" />
+			<element ref="bash:function" minOccurs="0" maxOccurs="unbounded" />
+		</choice>
+	</group>
+
+	<element name="functions">
+		<annotation>
+			<documentation xml:lang="en">A set of UNIX shell functions</documentation>
+		</annotation>
+		<complexType>
+			<sequence minOccurs="1" maxOccurs="unbounded">
+				<!-- <element ref="xsh:function" minOccurs="1" maxOccurs="unbounded" /> -->
+				<group ref="xsh:functionsElementsGroup" />
+			</sequence>
+			<attribute ref="xml:base" />
+		</complexType>
+	</element>
+
+
+	<complexType name="programType">
+		<annotation>
+			<documentation xml:lang="en">A UNIX shell script</documentation>
+		</annotation>
+		<sequence>
+			<element name="info" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element ref="prg:program" />
+					</sequence>
+				</complexType>
+			</element>
+			<element ref="xsh:functions" minOccurs="0" maxOccurs="1" />
+			<element name="code" type="xsh:plainCodeType" minOccurs="1" maxOccurs="1" />
+		</sequence>
+		<attribute name="interpreterCommand" type="xsh:interpreterCommandType" use="optional" />
+		<attribute name="interpreterType" type="xsh:interpreterNameType" use="optional" />
+	</complexType>
+
+	<element name="program" type="xsh:programType">
+		<annotation>
+			<documentation xml:lang="en">UNIX shell program</documentation>
+		</annotation>
+	</element>
+
+</schema>
