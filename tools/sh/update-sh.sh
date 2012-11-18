@@ -63,6 +63,12 @@ do
 	fn="${f%.xsh}"
 	b="$(basename "${f}")"
 	bn="${b%.xsh}"
+	
+	if [ "${bn}" = "functions" ]
+	then
+		continue
+	fi
+	
 	shOut="${projectPath}/ns/sh/${bn}.sh"
 	if [ "${bn}" != "build-shellscript" ]
 	then

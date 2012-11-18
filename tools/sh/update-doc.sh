@@ -831,6 +831,7 @@ get_program_version()
 </xsl:stylesheet>
 GETPROGRAMVERSIONXSLEOF
 
+
 	local result="$(xsltproc --xinclude "${tmpXslFile}" "${file}")"
 	rm -f "${tmpXslFile}"
 	if [ ! -z "${result##*[!0-9.]*}" ]
