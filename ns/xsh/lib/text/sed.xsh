@@ -11,7 +11,7 @@
 # 1: modern linux => sed --in-place
 # 2: Mac OS X 10.5-10.8 - => sed -i ""
 # TODO test Mac OS X < 10.5
-]]><xsh:local name="sedForm" type="integer">1</xsh:local><![CDATA[
+]]><xsh:local name="sedForm" type="numeric">1</xsh:local><![CDATA[
 if [ "$(uname -s)" == "Darwin" ]
 then
 	]]><xsh:local name="macOSXVersion">$(sw_vers -productVersion)</xsh:local><![CDATA[

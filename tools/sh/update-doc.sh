@@ -927,9 +927,7 @@ ns_relativepath()
 		base="${1}"
 		shift
 	else
-		base="
-		.
-		        "
+		base="."
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -966,9 +964,7 @@ ns_mktemp()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -987,9 +983,7 @@ ns_mktempdir()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -1015,12 +1009,12 @@ ns_sed_inplace()
 	local sedForm=1
 	if [ "$(uname -s)" == "Darwin" ]
 	then
-		local macOSXVersion="$(sw_vers -productVersion)"
-		if [ ! -z "${macOSXVersion}" ]
+	local macOSXVersion="$(sw_vers -productVersion)"
+	if [ ! -z "${macOSXVersion}" ]
 		then
-			local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
-			local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
-			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
+	local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
+	local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
+	if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then
 				sedForm=2
 			fi
@@ -1066,6 +1060,8 @@ filesystempath_to_nmepath()
 	output="${outputBasePath}/${output}"
 	echo "${output}"
 }
+
+
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
@@ -1310,3 +1306,4 @@ EOF
 EOF
 	fi
 fi
+

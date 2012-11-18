@@ -436,9 +436,7 @@ ns_relativepath()
 		base="${1}"
 		shift
 	else
-		base="
-		.
-		        "
+		base="."
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -475,9 +473,7 @@ ns_mktemp()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -496,9 +492,7 @@ ns_mktempdir()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -524,12 +518,12 @@ ns_sed_inplace()
 	local sedForm=1
 	if [ "$(uname -s)" == "Darwin" ]
 	then
-		local macOSXVersion="$(sw_vers -productVersion)"
-		if [ ! -z "${macOSXVersion}" ]
+	local macOSXVersion="$(sw_vers -productVersion)"
+	if [ ! -z "${macOSXVersion}" ]
 		then
-			local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
-			local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
-			if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
+	local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
+	local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
+	if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then
 				sedForm=2
 			fi
@@ -549,6 +543,8 @@ ns_sed_inplace()
 		shift
 	done
 }
+
+
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -734,3 +730,4 @@ create_identifier_variables "${cXslPath}/${cXslBaseFileName}names.xsl" "${cSourc
 # Header & sources 
 transform_c "${cSourcePath}/${cSourceBaseFileName}.h" "${cXslPath}/${cXslBaseFileName}header.xsl" "genericHeader"
 transform_c "${cSourcePath}/${cSourceBaseFileName}.c" "${cXslPath}/${cXslBaseFileName}source.xsl" "genericSource"
+

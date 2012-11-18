@@ -637,6 +637,7 @@ xml_validate()
 	
 	return 0
 }
+
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -822,3 +823,4 @@ fi
 
 EOF
 fi
+
