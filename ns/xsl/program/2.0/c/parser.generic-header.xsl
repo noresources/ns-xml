@@ -10,7 +10,7 @@
 	
 	<variable name="prg.c.parser.genericHeader"><![CDATA[
 /**************************************************************************************$
- *
+ * * ns-xml c parser
  ***************************************************************************************
  * Copyright © 2012 by Renaud Guillard (dev@niao.fr)
  * Distributed under the terms of the BSD License, see LICENSE

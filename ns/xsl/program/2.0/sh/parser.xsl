@@ -9,6 +9,7 @@
 	
 	<output method="text" indent="no" encoding="utf-8" />
 	
+	<!-- Default behavior for 'standalone' program interface definition file -->
 	<template match="/">
 		<call-template name="prg.sh.parser.main">
 			<with-param name="programNode" select="/prg:program" />

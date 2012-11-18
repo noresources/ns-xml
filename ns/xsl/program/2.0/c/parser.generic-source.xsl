@@ -9,8 +9,8 @@
 	<param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
 	
 	<variable name="prg.c.parser.genericSource"><![CDATA[
-/**************************************************************************************$
- *
+/***************************************************************************************
+ * ns-xml c parser
  ***************************************************************************************
  * Copyright © 2012 by Renaud Guillard (dev@niao.fr)
  * Distributed under the terms of the BSD License, see LICENSE

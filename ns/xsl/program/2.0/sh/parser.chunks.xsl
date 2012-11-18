@@ -708,6 +708,7 @@
 		<param name="optionsNode" />
 		<param name="onError" />
 		<param name="onUnknownOption" />
+		<param name="interpreter" />
 
 		<call-template name="sh.case">
 			<with-param name="case">
@@ -720,6 +721,7 @@
 					<call-template name="prg.sh.parser.optionCase">
 						<with-param name="optionNode" select="." />
 						<with-param name="onError" select="$onError" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</for-each>
 
@@ -727,6 +729,7 @@
 					<call-template name="prg.sh.parser.optionCase">
 						<with-param name="optionNode" select="." />
 						<with-param name="onError" select="$onError" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</for-each>
 
@@ -793,6 +796,7 @@
 		<param name="optionNode" select="." />
 		<param name="shortOption" select="false()" />
 		<param name="onError" />
+		<param name="interpreter" />
 
 		<variable name="optionVariableName">
 			<apply-templates select="$optionNode/prg:databinding/prg:variable" />
@@ -848,15 +852,21 @@
 						</call-template>
 						<call-template name="unixEndl" />
 
-						<text>local </text>
-						<value-of select="$prg.sh.parser.vName_ma_local_count" />
-						<text>=0</text>
+						<call-template name="sh.local">
+							<with-param name="name" select="$prg.sh.parser.vName_ma_local_count" />
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="value" select="0" />
+						</call-template>
 						<call-template name="unixEndl" />
-						<text>local </text>
-						<value-of select="$prg.sh.parser.vName_ma_total_count" />
-						<text>=</text>
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$optionVariableName" />
+						<call-template name="sh.local">
+							<with-param name="name" select="$prg.sh.parser.vName_ma_total_count" />
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="value">
+								<call-template name="sh.arrayLength">
+									<with-param name="name" select="$optionVariableName" />
+								</call-template>
+							</with-param>
+							<with-param name="quoted" select="false()" />
 						</call-template>
 						<call-template name="unixEndl" />
 
@@ -918,18 +928,21 @@
 							</call-template>
 						</variable>
 
-						<text>local </text>
-						<value-of select="$nextitem" />
-						<text>=</text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_input" />
-							<with-param name="quoted" select="true()" />
-							<with-param name="index">
-								<text>$(expr </text>
+						<call-template name="sh.local">
+							<with-param name="name" select="$nextitem" />
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="value">
 								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_index" />
-								</call-template>
-								<text> + 1)</text>
+								<with-param name="name" select="$prg.sh.parser.vName_input" />
+								<with-param name="quoted" select="false()" />
+								<with-param name="index">
+									<text>$(expr </text>
+									<call-template name="sh.var">
+										<with-param name="name" select="$prg.sh.parser.vName_index" />
+									</call-template>
+									<text> + 1)</text>
+								</with-param>
+							</call-template>
 							</with-param>
 						</call-template>
 						<call-template name="unixEndl" />
@@ -1090,6 +1103,7 @@
 		<param name="optionsNode" />
 		<param name="onError" />
 		<param name="onUnknownOption" />
+		<param name="interpreter" />
 
 		<call-template name="sh.case">
 			<with-param name="case">
@@ -1103,6 +1117,7 @@
 						<with-param name="optionNode" select="." />
 						<with-param name="shortOption" select="true()" />
 						<with-param name="onError" select="$onError" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</for-each>
 
@@ -1111,6 +1126,7 @@
 						<with-param name="optionNode" select="." />
 						<with-param name="shortOption" select="true()" />
 						<with-param name="onError" select="$onError" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</for-each>
 
@@ -1369,6 +1385,7 @@
 		<param name="keyword">
 			<text>elif</text>
 		</param>
+		<param name="interpreter"/>
 
 		<value-of select="$keyword" />
 		<text> [ </text>
@@ -1442,6 +1459,7 @@
 					<with-param name="optionsNode" select="$optionsNode" />
 					<with-param name="onError" select="$onError" />
 					<with-param name="onUnknownOption" select="$onUnknownOption" />
+					<with-param name="interpreter" select="$interpreter" />
 				</call-template>
 
 			</with-param>

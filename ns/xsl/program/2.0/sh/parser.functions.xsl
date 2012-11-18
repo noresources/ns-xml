@@ -12,6 +12,8 @@
 	<template name="prg.sh.parser.addMessageFunctionHelper">
 		<param name="name" />
 		<param name="onEnd" />
+		<param name="interpreter" />
+		
 		<variable name="tableName">
 			<value-of select="$prg.prefix" />
 			<value-of select="$prg.sh.parser.variableNamePrefix" />
@@ -26,38 +28,52 @@
 				<text>add</text>
 				<value-of select="$name" />
 			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<text>local message="${1}"</text>
+				<call-template name="sh.local">
+					<with-param name="name" select="'message'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value" select="'${1}'" />
+				</call-template>
 				<call-template name="unixEndl" />
-				<text>local m="</text>
-				<text>[</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_option" />
-				</call-template>
-				<text>:</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_index" />
-				</call-template>
-				<text>:</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_subindex" />
-				</call-template>
-				<text>] </text>
-
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>message</text>
+				<call-template name="sh.local">
+					<with-param name="name" select="'m'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<text>[</text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_option" />
+						</call-template>
+						<text>:</text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_index" />
+						</call-template>
+						<text>:</text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_subindex" />
+						</call-template>
+						<text>] </text>
+						<call-template name="sh.var">
+							<with-param name="name">
+								<text>message</text>
+							</with-param>
+						</call-template>
 					</with-param>
 				</call-template>
-				<text>"</text>
 				<call-template name="unixEndl" />
 
-				<text>local c=</text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$tableName" />
+				<call-template name="sh.local">
+					<with-param name="name" select="'c'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.arrayLength">
+							<with-param name="name" select="$tableName" />
+						</call-template>
+					</with-param>
+					<with-param name="quoted" select="false()" />
 				</call-template>
 				<call-template name="unixEndl" />
-
+				
 				<text>c=$(expr </text>
 				<call-template name="sh.var">
 					<with-param name="name">
@@ -89,8 +105,10 @@
 	</template>
 
 	<template name="prg.sh.parser.displayErrorFunction">
+		<param name="interpreter" />
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_displayerrors" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
 				<call-template name="sh.incrementalFor">
 					<with-param name="init" select="$prg.sh.parser.var_startindex" />
@@ -122,11 +140,14 @@
 	</template>
 
 	<template name="prg.sh.parser.messageFunctions">
+		<param name="interpreter" />
+		
 		<!-- addwarning -->
 		<call-template name="prg.sh.parser.addMessageFunctionHelper">
 			<with-param name="name">
 				<text>warning</text>
 			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 
 		<!-- adderror -->
@@ -134,7 +155,9 @@
 			<with-param name="name">
 				<text>error</text>
 			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
+		
 		<call-template name="prg.sh.parser.addMessageFunctionHelper">
 			<with-param name="name">
 				<text>fatalerror</text>
@@ -142,17 +165,21 @@
 			<with-param name="onEnd">
 				<text>exit 1</text>
 			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="unixEndl" />
 
 		<!-- displayerror -->
-		<call-template name="prg.sh.parser.displayErrorFunction" />
+		<call-template name="prg.sh.parser.displayErrorFunction">
+			<with-param name="interpreter" select="$interpreter" />
+		</call-template>
 		<call-template name="unixEndl" />
 
 		<!-- parser_debug -->
 		<if test="$prg.debug">
 			<call-template name="sh.functionDefinition">
 				<with-param name="name" select="$prg.sh.parser.fName_debug" />
+				<with-param name="interpreter" select="$interpreter" />
 				<with-param name="content">
 					<text>echo "DEBUG: ${@}"</text>
 				</with-param>
@@ -167,13 +194,20 @@
 	<!-- File system item functions -->
 
 	<template name="prg.sh.parser.pathAccessCheckFunction">
+		<param name="interpreter" />
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_pathaccesscheck" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<text>local file=</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="1" />
-					<with-param name="quoted" select="true()" />
+				<call-template name="sh.local">
+					<with-param name="name" select="'file'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.var">
+							<with-param name="name" select="1" />
+						</call-template>
+					</with-param>
 				</call-template>
 				<call-template name="unixEndl" />
 
@@ -188,11 +222,16 @@
 				</call-template>
 				<call-template name="unixEndl" />
 
-				<text>local accessString=</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="2" />
-					<with-param name="quoted" select="true()" />
+				<call-template name="sh.local">
+					<with-param name="name" select="'accessString'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.var">
+							<with-param name="name" select="2" />
+						</call-template>
+					</with-param>
 				</call-template>
+
 				<call-template name="unixEndl" />
 				<call-template name="sh.while">
 					<with-param name="condition">
@@ -240,8 +279,11 @@
 	</template>
 
 	<template name="prg.sh.parser.optionSetPresenceFunctions">
+		<param name="interpreter" />
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_setoptionpresence" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
 				<call-template name="sh.incrementalFor">
 					<with-param name="init" select="$prg.sh.parser.var_startindex" />
@@ -268,9 +310,15 @@
 								</with-param>
 							</call-template>
 						</variable>
-						<text>local idPart="$(echo </text>
-						<value-of select="$requiredVar" />
-						<text> | cut -f 1 -d":" )"</text>
+						<call-template name="sh.local">
+							<with-param name="name" select="'idPart'" />
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="value">
+								<text>$(echo </text>
+								<value-of select="$requiredVar" />
+								<text> | cut -f 1 -d":" )</text>
+							</with-param>
+						</call-template>
 						<call-template name="unixEndl" />
 
 						<call-template name="sh.if">
@@ -318,6 +366,7 @@
 
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_checkrequired" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
 				<call-template name="sh.comment">
 					<with-param name="content">
@@ -361,17 +410,28 @@
 					<with-param name="init" select="$init" />
 					<with-param name="limit" select="$limit" />
 					<with-param name="do">
-						<text>local todoPart="$(echo </text>
-						<value-of select="$requiredVar" />
-						<text> | cut -f 3 -d":" )"</text>
-						<call-template name="unixEndl" />
-						<text>[ -z "${todoPart}" ] || eval "${todoPart}"</text>
+						<call-template name="sh.local">
+							<with-param name="name" select="'todoPart'" />
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="value">
+								<text>$(echo </text>
+								<value-of select="$requiredVar" />
+								<text> | cut -f 3 -d":" )"</text>
+								<call-template name="unixEndl" />
+								<text>[ -z "${todoPart}" ] || eval "${todoPart}</text>
+							</with-param>
+						</call-template>
 					</with-param>
 				</call-template>
 				<call-template name="unixEndl" />
 
+				<call-template name="sh.local">
+					<with-param name="name" select="'c'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value" select="0" />
+					<with-param name="quoted" select="false()" />
+				</call-template>
 
-				<text>local c=0</text>
 				<call-template name="unixEndl" />
 				<call-template name="sh.incrementalFor">
 					<with-param name="init" select="$init" />
@@ -380,9 +440,15 @@
 						<call-template name="sh.if">
 							<with-param name="condition" select="$isNotEmpty" />
 							<with-param name="then">
-								<text>local displayPart="$(echo </text>
-								<value-of select="$requiredVar" />
-								<text> | cut -f 2 -d":" )"</text>
+								<call-template name="sh.local">
+									<with-param name="name" select="'displayPart'" />
+									<with-param name="interpreter" select="$interpreter" />
+									<with-param name="value">
+										<text>$(echo </text>
+										<value-of select="$requiredVar" />
+										<text> | cut -f 2 -d":" )</text>
+									</with-param>
+								</call-template>
 								<call-template name="unixEndl" />
 								<call-template name="sh.arrayAppend">
 									<with-param name="name" select="$prg.sh.parser.vName_errors" />
@@ -421,11 +487,18 @@
 
 	<template name="prg.sh.parser.minmaxCheckFunction">
 		<param name="programNode" />
+		<param name="interpreter" />
 
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_checkminmax" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<text>local errorCount=0</text>
+				<call-template name="sh.local">
+					<with-param name="name" select="'errorCount'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value" select="0" />
+					<with-param name="quoted" select="false()" />
+				</call-template>
 				<call-template name="unixEndl" />
 
 				<call-template name="sh.comment">
@@ -489,12 +562,23 @@
 	</template>
 
 	<template name="prg.sh.parser.enumCheckFunction">
+		<param name="interpreter" />
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name">
 				<value-of select="$prg.sh.parser.fName_enumcheck" />
 			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<text>local ref="${1}"</text>
+				<call-template name="sh.local">
+					<with-param name="name" select="'ref'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.var">
+							<with-param name="name" select="1" />
+						</call-template>
+					</with-param>
+				</call-template>
 				<call-template name="unixEndl" />
 
 				<text>shift 1</text>
@@ -525,18 +609,30 @@
 	<!-- Check and add anonymous value -->
 	<template name="prg.sh.parser.addValueFunction">
 		<param name="programNode" />
+		<param name="interpreter" />
 
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_addvalue" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<text>local position=</text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$prg.sh.parser.vName_values" />
+				<call-template name="sh.local">
+					<with-param name="name" select="'position'" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.arrayLength">
+							<with-param name="name" select="$prg.sh.parser.vName_values" />
+						</call-template>
+					</with-param>
+					<with-param name="quoted" select="false()" />
 				</call-template>
 				<call-template name="unixEndl" />
 
-				<text>local value</text>
+				<call-template name="sh.local">
+					<with-param name="name" select="'value'" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
 				<call-template name="unixEndl" />
+
 				<text>if [ $# -gt 0 ] &amp;&amp; [ ! -z "${1}" ]; then value="${1}"; else return </text>
 				<value-of select="$prg.sh.parser.var_ERROR" />
 				<text>; fi</text>
@@ -638,6 +734,8 @@
 	<!-- Main function for subcommand -->
 	<template name="prg.sh.parser.subCommandOptionParseFunction">
 		<param name="programNode" select="." />
+		<param name="interpreter" />
+
 		<variable name="onError">
 			<text>return </text>
 			<call-template name="sh.var">
@@ -659,6 +757,7 @@
 
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_process_subcommand_option" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
 				<value-of select="$prg.sh.parser.vName_item" />
 				<text>=</text>
@@ -758,6 +857,7 @@
 													<with-param name="onError" select="$onError" />
 													<with-param name="onSuccess" select="$onSuccess" />
 													<with-param name="onUnknownOption" select="$onUnknownOption" />
+													<with-param name="interpreter" select="$interpreter" />
 													<with-param name="keyword">
 														<choose>
 															<when test="./prg:options//prg:names/prg:long">
@@ -791,6 +891,8 @@
 	<!-- Main option parser function -->
 	<template name="prg.sh.parser.optionParseFunction">
 		<param name="programNode" select="." />
+		<param name="interpreter" />
+
 		<variable name="onError">
 			<text>return </text>
 			<value-of select="$prg.sh.parser.var_ERROR" />
@@ -815,6 +917,7 @@
 
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_process_option" />
+			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
 				<call-template name="sh.if">
 					<with-param name="condition">
@@ -1017,6 +1120,7 @@
 						<with-param name="onError" select="$onError" />
 						<with-param name="onSuccess" select="$onSuccess" />
 						<with-param name="onUnknownOption" select="$onUnknownOption" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</if>
 
@@ -1109,8 +1213,12 @@
 
 	<template name="prg.sh.parser.parseFunction">
 		<param name="programNode" select="." />
+		<param name="interpreter" />
+
 		<call-template name="sh.functionDefinition">
 			<with-param name="name" select="$prg.sh.parser.fName_parse" />
+			<with-param name="interpreter" select="$interpreter" />
+
 			<with-param name="content">
 				<call-template name="sh.while">
 					<with-param name="condition">
@@ -1215,11 +1323,15 @@
 				</variable>
 				<call-template name="unixEndl" />
 
-				<text>local </text>
-				<value-of select="$errorCount" />
-				<text>=</text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$prg.sh.parser.vName_errors" />
+				<call-template name="sh.local">
+					<with-param name="name" select="$errorCount" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value">
+						<call-template name="sh.arrayLength">
+							<with-param name="name" select="$prg.sh.parser.vName_errors" />
+						</call-template>
+					</with-param>
+					<with-param name="quoted" select="false()" />
 				</call-template>
 				<call-template name="unixEndl" />
 
@@ -1254,35 +1366,47 @@
 	<!-- Main -->
 	<template name="prg.sh.parser.main">
 		<param name="programNode" select="." />
+		<param name="interpreter" />
+
 		<call-template name="prg.sh.parser.initialize">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.messageFunctions">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.pathAccessCheckFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.optionSetPresenceFunctions">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.minmaxCheckFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.enumCheckFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.addValueFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.subCommandOptionParseFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.optionParseFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.parseFunction">
 			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 	</template>
 
