@@ -56,6 +56,53 @@
 		</call-template>
 	</template>
 
+	<!-- UNIX shell local variable definition -->
+	<template name="sh.local">
+		<!-- Variable name -->
+		<param name="name" />
+		<!-- Interpreter type -->
+		<param name="interpreter" select="sh" />
+		<!-- Variable initial value -->
+		<param name="value" />
+		<!-- Indicates if the value value have to be quoted -->
+		<param name="quoted" select="'auto'" />
+
+		<variable name="isNumber" select="(string(number($value)) != 'NaN')" />
+		
+		<variable name="quoteRequested">
+			<choose>
+				<when test="$quoted = 'auto'">
+					<value-of select="not ($isNumber)" />
+				</when>
+				<otherwise>
+					<value-of select="$quoted" />
+				</otherwise>
+			</choose>
+		</variable>
+
+		<choose>
+			<when test="$interpreter = 'ksh'">
+				<text>typeset var </text>
+			</when>
+			<otherwise>
+				<text>local </text>
+			</otherwise>
+		</choose>
+
+		<value-of select="$name" />
+		
+		<if test="($isNumber or (string-length($value) &gt; 0))">
+			<text>=</text>
+			<if test="$quoteRequested != 'false'">
+				<text>"</text>
+			</if>
+			<value-of select="$value" />
+			<if test="$quoteRequested != 'false'">
+				<text>"</text>
+			</if>
+		</if>
+	</template>
+
 	<!-- UNIX shell variable call -->
 	<template name="sh.var">
 		<!-- Variable nmme -->
@@ -308,16 +355,16 @@
 		<param name="name" />
 		<!-- Function body -->
 		<param name="content" />
-		<!-- Indicates if the function body have to be indented-->
+		<!-- Indicates if the function body have to be indented -->
 		<param name="indent" select="true()" />
 		<!-- UNIX shell interpreter type -->
 		<param name="interpreter" select="'sh'" />
-		
+
 		<if test="$interpreter = 'ksh'">
 			<text>function </text>
 		</if>
 		<value-of select="normalize-space($name)" />
-		<if test="not(interpreter = 'ksh')">
+		<if test="not($interpreter = 'ksh')">
 			<text>()</text>
 		</if>
 		<value-of select="$sh.endl" />
@@ -336,7 +383,7 @@
 		<param name="condition" />
 		<!-- Loop code -->
 		<param name="do" />
-		<!--  -->
+		<!-- -->
 		<param name="indent" select="true()" />
 
 		<text>while </text>
@@ -354,9 +401,9 @@
 
 	<!-- For statement -->
 	<template name="sh.for">
-		<!--  -->
+		<!-- -->
 		<param name="condition" />
-		
+
 		<param name="do" />
 		<param name="indent" select="true()" />
 
@@ -471,7 +518,7 @@
 		<text>esac</text>
 	</template>
 
-	<!--  -->
+	<!-- -->
 	<template name="sh.caseblock">
 		<param name="case" />
 		<param name="content" />
