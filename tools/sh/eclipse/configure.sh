@@ -42,6 +42,8 @@ then
 	exit 1
 fi
 
+hgIgnoreFile="${projectPath}/resources/hg/ignores/eclipse"
+
 cat "${resourcePath}/references" | while read line
 do
 	echo Processing $line
@@ -69,14 +71,13 @@ do
 		
 		# Ignore file in vcs systems
 		ignore="${eclipseProjectRootPath}/${ref}"
-		for f in .bzrignore .hgignore .gitignore
-		do
-			vcsIignoreFile="${projectPath}/${f}"
-			if ! grep -E "${ignore}" "${vcsIignoreFile}" 1>/dev/null 2>&1
-			then
-				echo "${ignore}" >> "${vcsIignoreFile}"
-			fi
-		done
+		# Mercurial
+		
+		hgIgnoreRule="regexp:^${ignore}$"
+		if ! grep -E "${ignore}" "${hgIgnoreFile}" 1>/dev/null 2>&1
+		then
+			echo "${hgIgnoreRule}" >> "${hgIgnoreFile}"
+		fi
 	fi
 done
 

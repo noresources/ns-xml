@@ -1,0 +1,5 @@
+regexp:^scripts/eclipse/ns$
+regexp:^scripts/eclipse/tools$
+regexp:^scripts/eclipse/resources$
+regexp:^scripts/eclipse/doc$
+regexp:^scripts/eclipse/unittests$

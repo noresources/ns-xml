@@ -1,6 +1,5 @@
-ns;Sources
-tools;Tools
-resources;Resources
-doc;Documentation
-unittests;UnitTests
-tests;Tests
+ns;ns
+tools;tools
+resources;resources
+doc;doc
+unittests;unittests
