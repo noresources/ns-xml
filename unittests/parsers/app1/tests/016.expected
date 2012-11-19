@@ -1,0 +1,7 @@
+CLI: "\-a v", "The previous item (-a v) is a positional argument"
+Value count: 2
+Values: "-a v", "The previous item (-a v) is a positional argument"
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=

@@ -1,0 +1,7 @@
+CLI: "--argument-b", "\-this_is_not_an_option_but_an_escaped_value", "-a"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=-this_is_not_an_option_but_an_escaped_value

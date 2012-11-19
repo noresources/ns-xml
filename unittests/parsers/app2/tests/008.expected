@@ -1,0 +1,8 @@
+CLI: "-c", "abc", "def", "ghi", "-", "Use the '-' to stop argument parsing"
+Value count: 1
+Values: "Use the '-' to stop argument parsing"
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=
+multiargC=abc def ghi

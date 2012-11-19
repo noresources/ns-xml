@@ -1,0 +1,1 @@
+-c abc def ghi "\-" "The minus sign is escaped (quoted form)"

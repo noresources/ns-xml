@@ -24,15 +24,11 @@ fi
 
 
 projectPath="$(ns_realpath "${scriptPath}/../..")"
-testPathBase="${projectPath}/unittests"
-tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
-programVersion="2.0"
-xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
 logFile="${projectPath}/${scriptName}.log"
-pythonInterpreters=(python2.6 python2.7 python)
 rm -f "${logFile}"
 
 #http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+#(doesn't work with printf)
 #NORMAL_COLOR="$(tput sgr0)"
 #ERROR_COLOR="$(tput setaf 1)"
 #SUCCESS_COLOR="$(tput setaf 2)"
@@ -50,6 +46,15 @@ log()
 {
 	echo "${@}" >> "${logFile}"
 }
+
+#####################################################################"
+# Parsers tests
+
+parserTestsPathBase="${projectPath}/unittests/parsers"
+tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
+programVersion="2.0"
+xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
+pythonInterpreters=(python2.6 python2.7 python)
 
 check_zsh()
 {
@@ -116,12 +121,12 @@ then
 	do
 		selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
 	done << EOF
-	$(find "${testPathBase}" -mindepth 1 -maxdepth 1 -type d -name "app*" | sort)
+	$(find "${parserTestsPathBase}" -mindepth 1 -maxdepth 1 -type d -name "app*" | sort)
 EOF
 else
 	for ((a=0;${a}<${#apps[@]};a++))
 	do
-		d="${testPathBase}/app${apps[${a}]}"
+		d="${parserTestsPathBase}/app${apps[${a}]}"
 		if [ -d "${d}" ]
 		then
 			selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
@@ -229,7 +234,7 @@ echo "Parsers: ${parserNames[@]}"
 for ((ai=0;${ai}<${#selectedApps[@]};ai++))
 do
 	app="${selectedApps[${ai}]}"
-	d="${testPathBase}/${app}"
+	d="${parserTestsPathBase}/${app}"
 	
 	groupTestBasePath="${d}/tests"
 	
@@ -286,7 +291,7 @@ EOF
 </xsh:code>
 </xsh:program>
 EOF
-		xsltproc --xinclude -o "${xshBodyFile}" "${testPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${xshBodyFile}"  
+		xsltproc --xinclude -o "${xshBodyFile}" "${parserTestsPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${xshBodyFile}"  
 		
 		for s in ${available_shells[*]}
 		do
@@ -311,7 +316,7 @@ EOF
 	then
 		log "Generate python script"
 		pyScript="${tmpScriptBasename}.py"
-		xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${testPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
+		xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
 		chmod 755 "${pyScript}"
 		
 		# Create python module
@@ -322,7 +327,7 @@ EOF
 	then
 		cParserBase="${tmpScriptBasename}-parser"
 		cProgram="${tmpScriptBasename}-exe"
-		xsltproc --xinclude -o "${cProgram}.c" "${testPathBase}/lib/c-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${cProgram} source"
+		xsltproc --xinclude -o "${cProgram}.c" "${parserTestsPathBase}/lib/c-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${cProgram} source"
 		
 		log "Create C files"
 		"${projectPath}/ns/sh/build-c.sh" -eu \
@@ -378,7 +383,7 @@ EOFSH
 EOFSH
 			if ${testValgrind}
 			then
-				valgrindXmlFile="${base}-valgrind.xml"
+				valgrindXmlFile="${base}.result-valgrind.xml"
 				cat >> "${tmpShellScript}" << EOSH
 valgrind ${valgrindArgs[@]} --xml-file="${valgrindXmlFile}" "${cProgram}" ${cli} 1>/dev/null 2>&1
 EOSH
@@ -574,4 +579,4 @@ done
 
 ${testC} && ${testValgrind} && rm -f "${valgrindOutputXslFile}"
 
-exit $(find "${testPathBase}" -name "*.result-*" | wc -l)
+exit $(find "${parserTestsPathBase}" -name "*.result-*" | wc -l)

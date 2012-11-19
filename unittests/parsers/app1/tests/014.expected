@@ -1,0 +1,7 @@
+CLI: "-a", "v", "v is a positional argument"
+Value count: 2
+Values: "v", "v is a positional argument"
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=
