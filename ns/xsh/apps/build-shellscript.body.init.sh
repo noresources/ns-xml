@@ -34,14 +34,6 @@ fi
 
 chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 
-# Check required XSLT files
-xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-if [ ! -f "${xshXslTemplatePath}" ]
-then
-	echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
-	exit 2
-fi
-
 # Validate XML program description (if given)
 if [ -f "${xmlProgramDescriptionPath}" ]
 then

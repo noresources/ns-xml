@@ -9,9 +9,6 @@
 
 	<xsl:include href="shellscript.xsl" />
 
-	<xsl:param name="xsh.def.elementType" />
-	<xsl:param name="xsh.def.functionName" />
-
 	<!-- Interpreter type to use if none is set in the xsh:program node. Should be one of the name defined by the interpreterNameType in the xsh XML schema -->
 	<xsl:param name="xsh.defaultInterpreterType" />
 	
@@ -181,7 +178,6 @@
 				</xsl:if>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:value-of select="$str.unix.endl" />
 	</xsl:template>
 
 	<xsl:template match="xsh:body">
@@ -196,6 +192,9 @@
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
+		<xsl:if test="following-sibling::*[1][text()]">
+			<xsl:value-of select="$str.unix.endl" />
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="xsh:program/xsh:code/text()">
@@ -254,7 +253,7 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:if test="$functionSupported and ((not($xsh.def.elementType) or ($xsh.def.elementType = 'function')) and (not($xsh.def.functionName) or ($xsh.def.functionName = @name)))">
+		<xsl:if test="$functionSupported">
 			<xsl:if test="$interpreter = 'ksh'">
 				<xsl:text>function </xsl:text>
 			</xsl:if>
@@ -349,10 +348,10 @@
 		<xsl:value-of select="$interpreterCommand" />
 								
 		<xsl:apply-templates select="xsh:functions">
-			<xsl:with-param name="interpreter" select="$vInterpreter" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
 		</xsl:apply-templates>
 		<xsl:apply-templates select="xsh:code">
-			<xsl:with-param name="interpreter" select="$vInterpreter" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
 		</xsl:apply-templates>
 	</xsl:template>
 

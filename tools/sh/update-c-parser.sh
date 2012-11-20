@@ -429,7 +429,6 @@ ns_relativepath()
 		from="${1}"
 		shift
 	fi
-	
 	local base
 	if [ $# -gt 0 ]
 	then
@@ -516,12 +515,15 @@ ns_sed_inplace()
 	# 2: Mac OS X 10.5-10.8 - => sed -i ""
 	# TODO test Mac OS X < 10.5
 	local sedForm=1
+	
 	if [ "$(uname -s)" == "Darwin" ]
 	then
 	local macOSXVersion="$(sw_vers -productVersion)"
+	
 	if [ ! -z "${macOSXVersion}" ]
 		then
 	local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
+	
 	local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
 	if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then

@@ -1,3 +1,11 @@
+# Check required XSLT files
+xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+if [ ! -f "${xshXslTemplatePath}" ]
+then
+    echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
+    exit 2
+fi
+
 # Validate against bash or xsh schema
 if ! ${skipValidation}
 then

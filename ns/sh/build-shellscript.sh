@@ -980,7 +980,6 @@ xml_validate()
 		schema="${1}"
 		shift
 	fi
-	
 	local xml
 	if [ $# -gt 0 ]
 	then
@@ -1035,14 +1034,6 @@ fi
 
 chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 
-# Check required XSLT files
-xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
-if [ ! -f "${xshXslTemplatePath}" ]
-then
-	echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
-	exit 2
-fi
-
 # Validate XML program description (if given)
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
@@ -1061,6 +1052,14 @@ then
 		echo "program interface definition schema error - abort"
 		exit 4
 	fi
+fi
+
+# Check required XSLT files
+xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+if [ ! -f "${xshXslTemplatePath}" ]
+then
+    echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
+    exit 2
 fi
 
 # Validate against bash or xsh schema

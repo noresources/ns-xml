@@ -619,7 +619,6 @@ xml_validate()
 		schema="${1}"
 		shift
 	fi
-	
 	local xml
 	if [ $# -gt 0 ]
 	then

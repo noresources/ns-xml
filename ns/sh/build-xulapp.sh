@@ -1705,11 +1705,24 @@ error()
 build_xsh()
 {
 	local prefixSubcommandBoundVariableName="${xsh_prefixSubcommandBoundVariableName}"
+	
 	local xmlShellFileDescriptionPath="${xsh_xmlShellFileDescriptionPath}"
+	
 	local defaultInterpreterCommand="${xsh_defaultInterpreterCommand}"
+	
 	local defaultInterpreterType="${xsh_defaultInterpreterType}"
+	local xshXslTemplatePath
+	
 	local outputScriptFilePath="${commandLauncherFile}"
 	info " - Generate shell file"
+	# Check required XSLT files
+	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+	if [ ! -f "${xshXslTemplatePath}" ]
+	then
+	    echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
+	    exit 2
+	fi
+	
 	# Validate against bash or xsh schema
 	if ! ${skipValidation}
 	then
