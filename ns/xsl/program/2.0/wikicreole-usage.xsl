@@ -177,19 +177,19 @@
 				<call-template name="creole.italic">
 					<with-param name="content">
 						<apply-templates select="prg:copyright"/>
-						<call-template name="endl"/>
-						<call-template name="endl"/>
 					</with-param>
 				</call-template>
+				<call-template name="endl"/>
+				<call-template name="endl"/>
 			</if>
 			<if test="prg:license">
 				<call-template name="creole.italic">
 					<with-param name="content">
 						<apply-templates select="prg:license"/>
-						<call-template name="endl"/>
-						<call-template name="endl"/>
 					</with-param>
 				</call-template>
+				<call-template name="endl"/>
+				<call-template name="endl"/>
 			</if>
 		</if>
 	</template>
