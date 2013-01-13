@@ -720,7 +720,7 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-cSourcePath="${rootPath}/ns/c/program/${programVersion}"
+cSourcePath="${rootPath}/resources/c/program/${programVersion}"
 cSourceBaseFileName="nsxml_program_parser"
 cXslPath="${xslPath}/program/${programVersion}/c"
 cXslBaseFileName="parser.generic-"

@@ -578,7 +578,6 @@ void nsxml_parser_state_free(struct nsxml_parser_state *state);
 enum nsxml_result_type
 {
 	nsxml_result_type_program,
-	nsxml_result_type_subcommand,
 	nsxml_result_type_switch,
 	nsxml_result_type_argument,
 	nsxml_result_type_multiargument,

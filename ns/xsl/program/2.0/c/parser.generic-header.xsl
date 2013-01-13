@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform"
@@ -12,7 +12,7 @@
 /**************************************************************************************$
  * * ns-xml c parser
  ***************************************************************************************
- * Copyright © 2012 by Renaud Guillard (dev@niao.fr)
+ * Copyright © 2012 by Renaud Guillard (dev@nore.fr)
  * Distributed under the terms of the BSD License, see LICENSE
  ***************************************************************************************
  */
@@ -589,7 +589,6 @@ void nsxml_parser_state_free(struct nsxml_parser_state *state);
 enum nsxml_result_type
 {
 	nsxml_result_type_program,
-	nsxml_result_type_subcommand,
 	nsxml_result_type_switch,
 	nsxml_result_type_argument,
 	nsxml_result_type_multiargument,

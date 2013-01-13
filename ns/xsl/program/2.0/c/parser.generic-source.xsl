@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform"
@@ -12,7 +12,7 @@
 /***************************************************************************************
  * ns-xml c parser
  ***************************************************************************************
- * Copyright © 2012 by Renaud Guillard (dev@niao.fr)
+ * Copyright © 2012 by Renaud Guillard (dev@nore.fr)
  * Distributed under the terms of the BSD License, see LICENSE
  ***************************************************************************************
  */
@@ -1149,10 +1149,8 @@ enum nsxml_parser_state_flags
 	nsxml_parser_state_endofoptions = (1 << 0),
 	/** The option is recognized but is not expected in the current context */
 	nsxml_parser_state_option_unexpected = (1 << 1),
-	/** Do not move to the next command line argument on next iteration */
-	nsxml_parser_state_stayoncurrentitem = (1 << 2),
 	/** Processing was aborted by a fatal error */
-	nsxml_parser_state_abort = (1 << 3)
+	nsxml_parser_state_abort = (1 << 2)
 };
 
 struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char **argv, int start_index)
@@ -2404,8 +2402,7 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 			nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[, "Ignore option argument '%s' for switch %s\n", state->active_option_argv[0], state->active_option_cli_name);
 		}
 	}
-	
-	if (state->active_option->info_ref->option_type == nsxml_option_type_argument)
+	else if (state->active_option->info_ref->option_type == nsxml_option_type_argument)
 	{
 		void *res_ptr = state->active_option->result_ref;
 		struct nsxml_argument_option_result *res = (struct nsxml_argument_option_result *) res_ptr;
@@ -2755,7 +2752,6 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	
 	for (a = state->arg_index; a < state->argc; ++a)
 	{
-		state->state_flags &= ~nsxml_parser_state_stayoncurrentitem;
 #if NSXML_DEBUG
 		nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, "Processing '%s'\n", state->argv[a]);
 #endif /* NSXML_DEBUG */
@@ -2979,10 +2975,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 			break;
 		}
 		
-		if (!(state->state_flags & nsxml_parser_state_stayoncurrentitem))
-		{
-			++state->arg_index;
-		}
+		++state->arg_index;
 	}
 	
 	if (state->active_option)
