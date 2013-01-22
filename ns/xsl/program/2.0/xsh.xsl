@@ -321,11 +321,15 @@
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:if>
+					<xsl:value-of select="$sh.endl" />
+					
 					<xsl:call-template name="sh.comment">
 						<xsl:with-param name="content">
 							<xsl:text>Program help</xsl:text>
 						</xsl:with-param>
 					</xsl:call-template>
+					<xsl:value-of select="$sh.endl" />
+					
 					<xsl:call-template name="prg.sh.usage.programUsage">
 						<xsl:with-param name="programNode" select="$programNode" />
 						<xsl:with-param name="interpreter" select="$interpreter" />
@@ -336,6 +340,8 @@
 							<xsl:text>Program parameter parsing</xsl:text>
 						</xsl:with-param>
 					</xsl:call-template>
+					<xsl:value-of select="$sh.endl" />
+					
 					<xsl:call-template name="prg.sh.parser.main">
 						<xsl:with-param name="programNode" select="$programNode" />
 						<xsl:with-param name="interpreter" select="$interpreter" />

@@ -24,7 +24,7 @@
 
 		<if test="$beginMarker != $marker">
 			<value-of select="$beginMarker" />
-			<call-template name="endl" />
+			<value-of select="$str.endl" />
 		</if>
 		<value-of select="$marker" />
 		<call-template name="str.trim">
@@ -36,10 +36,9 @@
 				</call-template>
 			</with-param>
 		</call-template>
-		<call-template name="endl" />
 		<if test="$endMarker != $marker">
+			<value-of select="$str.endl" />
 			<value-of select="$endMarker" />
-			<call-template name="endl" />
 		</if>
 	</template>
 
@@ -49,7 +48,7 @@
 		<param name="content" />
 		<param name="indentChar" select="$code.indentChar" />
 		<param name="endl">
-			<call-template name="endl" />
+			<value-of select="$str.endl" />
 		</param>
 		<param name="addInitialEndl" select="true()" />
 		<param name="addFinalEndl" select="true()" />

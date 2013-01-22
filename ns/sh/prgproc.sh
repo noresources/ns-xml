@@ -65,14 +65,11 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_xslt:--xslt"
 # Switch options
-
 nsxmlPathRelative=false
 displayHelp=false
 # Single argument options
-
 xmlProgramDescriptionPath=
 xslName=
 output=
@@ -144,7 +141,6 @@ parse_setoptionpresence()
 parse_checkrequired()
 {
 	# First round: set default values
-	
 	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
 	do
 		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
@@ -475,7 +471,6 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -504,7 +499,6 @@ parse_process_option()
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""

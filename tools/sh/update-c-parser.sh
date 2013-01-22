@@ -47,12 +47,9 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-
 # Switch options
-
 displayHelp=false
 # Single argument options
-
 programVersion="2.0"
 
 parse_addwarning()
@@ -121,7 +118,6 @@ parse_setoptionpresence()
 parse_checkrequired()
 {
 	# First round: set default values
-	
 	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
 	do
 		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"

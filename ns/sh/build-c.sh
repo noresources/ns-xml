@@ -109,12 +109,10 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml-description:--xml-description"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --embed or --include"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output"
 # Switch options
-
 skipValidation=false
 generateBaseOnly=false
 generateEmbeded=false
@@ -122,7 +120,6 @@ outputOverwrite=false
 nsxmlPathRelative=false
 displayHelp=false
 # Single argument options
-
 xmlProgramDescriptionPath=
 generateInclude=
 prefix=
@@ -199,7 +196,6 @@ parse_setoptionpresence()
 parse_checkrequired()
 {
 	# First round: set default values
-	
 	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
 	do
 		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
@@ -325,7 +321,6 @@ parse_process_option()
 			;;
 		xml-description)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -366,7 +361,6 @@ parse_process_option()
 			;;
 		skip-validation | no-validation)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -378,7 +372,6 @@ parse_process_option()
 			;;
 		base)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBaseOnly" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -397,7 +390,6 @@ parse_process_option()
 			;;
 		embed)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -416,7 +408,6 @@ parse_process_option()
 			;;
 		include)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInclude" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -488,7 +479,6 @@ parse_process_option()
 			;;
 		prefix)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -517,7 +507,6 @@ parse_process_option()
 			;;
 		struct-style | struct)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -552,7 +541,6 @@ parse_process_option()
 			;;
 		function-style | function | func)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -587,7 +575,6 @@ parse_process_option()
 			;;
 		variable-style | variable | var)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -622,7 +609,6 @@ parse_process_option()
 			;;
 		output)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -663,7 +649,6 @@ parse_process_option()
 			;;
 		file-base | file)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -692,7 +677,6 @@ parse_process_option()
 			;;
 		overwrite | force)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -704,7 +688,6 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -733,7 +716,6 @@ parse_process_option()
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -762,7 +744,6 @@ parse_process_option()
 		case "${parser_option}" in
 		x)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -803,13 +784,11 @@ parse_process_option()
 			;;
 		S)
 			# Group checks
-			
 			skipValidation=true
 			parse_setoptionpresence G_1_g_2_skip-validation;parse_setoptionpresence G_1_g
 			;;
 		b)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBaseOnly" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -822,7 +801,6 @@ parse_process_option()
 			;;
 		e)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -835,7 +813,6 @@ parse_process_option()
 			;;
 		i)
 			# Group checks
-			
 			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInclude" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
@@ -907,7 +884,6 @@ parse_process_option()
 			;;
 		p)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -936,7 +912,6 @@ parse_process_option()
 			;;
 		o)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -977,7 +952,6 @@ parse_process_option()
 			;;
 		f)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1006,7 +980,6 @@ parse_process_option()
 			;;
 		u)
 			# Group checks
-			
 			outputOverwrite=true
 			parse_setoptionpresence G_3_g_3_overwrite;parse_setoptionpresence G_3_g
 			;;

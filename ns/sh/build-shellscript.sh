@@ -78,18 +78,15 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_shell:--shell"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_9_output:--output"
 # Switch options
-
 nsxmlPathRelative=false
 skipValidation=false
 prefixSubcommandBoundVariableName=false
 debugMode=false
 displayHelp=false
 # Single argument options
-
 nsxmlPath=
 xmlProgramDescriptionPath=
 xmlShellFileDescriptionPath=
@@ -163,7 +160,6 @@ parse_setoptionpresence()
 parse_checkrequired()
 {
 	# First round: set default values
-	
 	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
 	do
 		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
@@ -424,7 +420,6 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -453,7 +448,6 @@ parse_process_option()
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -465,7 +459,6 @@ parse_process_option()
 			;;
 		interpreter)
 			# Group checks
-			
 			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterType" ] || [ "${defaultInterpreter:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
@@ -525,7 +518,6 @@ parse_process_option()
 			;;
 		interpreter-cmd)
 			# Group checks
-			
 			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${defaultInterpreter:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
@@ -719,7 +711,6 @@ parse_process_option()
 			;;
 		i)
 			# Group checks
-			
 			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterType" ] || [ "${defaultInterpreter:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"
@@ -779,7 +770,6 @@ parse_process_option()
 			;;
 		I)
 			# Group checks
-			
 			if ! ([ -z "${defaultInterpreter}" ] || [ "${defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${defaultInterpreter:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${defaultInterpreter})"

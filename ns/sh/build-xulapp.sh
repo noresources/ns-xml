@@ -147,10 +147,8 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_output:--output"
 # Switch options
-
 xsh_prefixSubcommandBoundVariableName=false
 displayHelp=false
 update=false
@@ -159,7 +157,6 @@ debugMode=false
 nsxmlPathRelative=false
 addNsXml=false
 # Single argument options
-
 xsh_xmlShellFileDescriptionPath=
 xsh_defaultInterpreterType=
 xsh_defaultInterpreterCommand=
@@ -240,7 +237,6 @@ parse_setoptionpresence()
 parse_checkrequired()
 {
 	# First round: set default values
-	
 	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
 	do
 		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
@@ -382,7 +378,6 @@ parse_process_subcommand_option()
 				;;
 			interpreter)
 				# Group checks
-				
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
@@ -442,7 +437,6 @@ parse_process_subcommand_option()
 				;;
 			interpreter-cmd)
 				# Group checks
-				
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
@@ -561,7 +555,6 @@ parse_process_subcommand_option()
 				;;
 			i)
 				# Group checks
-				
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
@@ -621,7 +614,6 @@ parse_process_subcommand_option()
 				;;
 			I)
 				# Group checks
-				
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
@@ -1132,7 +1124,6 @@ parse_process_option()
 			;;
 		window-width)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1161,7 +1152,6 @@ parse_process_option()
 			;;
 		window-height)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1190,7 +1180,6 @@ parse_process_option()
 			;;
 		debug)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -1202,7 +1191,6 @@ parse_process_option()
 			;;
 		init-script)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1243,7 +1231,6 @@ parse_process_option()
 			;;
 		resources)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1311,7 +1298,6 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1340,7 +1326,6 @@ parse_process_option()
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -1352,7 +1337,6 @@ parse_process_option()
 			;;
 		ns | ns-xml-add)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
@@ -1500,7 +1484,6 @@ parse_process_option()
 			;;
 		W)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1529,7 +1512,6 @@ parse_process_option()
 			;;
 		H)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1558,13 +1540,11 @@ parse_process_option()
 			;;
 		d)
 			# Group checks
-			
 			debugMode=true
 			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
 			;;
 		j)
 			# Group checks
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -1605,7 +1585,6 @@ parse_process_option()
 			;;
 		n)
 			# Group checks
-			
 			addNsXml=true
 			parse_setoptionpresence G_9_g_3_ns;parse_setoptionpresence G_9_g
 			;;
