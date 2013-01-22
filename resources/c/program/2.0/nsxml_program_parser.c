@@ -7,11 +7,16 @@
  */
 
 #include "nsxml_program_parser.h"
+
+#define NSXML_DBG 0
+
 #if defined(__cplusplus)
 #	include <cstdio>
 #	include <cstdlib>
 #	include <cstring>
-#	include <cassert>
+#	if NSXML_DBG
+#		include <cassert>
+#	endif
 #	include <cctype>
 extern "C"
 {
@@ -19,7 +24,9 @@ extern "C"
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <string.h>
-#	include <assert.h>
+#	if NSXML_DBG
+#		include <assert.h>
+#	endif
 #	include <ctype.h>
 #endif
 
@@ -43,8 +50,6 @@ extern "C"
 #endif
 
 #include <sys/stat.h>
-
-#define NSXML_DBG 0
 
 /* Utility functions *****************************/
 
@@ -582,6 +587,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 		}
 	}
 	
+	if (nsxml_util_path_access_check(value, F_OK))
 	{
 		int types = (validator->flags & nsxml_value_validator_path_type_all);
 		struct stat statBuffer;
@@ -2231,40 +2237,44 @@ int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxm
 {
 	struct nsxml_value_validator *validator = state->active_option->info_ref->validators;
 	
+	int validates = 1;
+
 	while (validator)
 	{
 		if (validator->validation_callback)
 		{
 			if ((*validator->validation_callback)(validator, state, result, state->active_option, value) == 0)
 			{
-				return 0;
+				validates = 0;
 			}
 		}
 		
 		validator = validator->next_validator;
 	}
 	
-	return 1;
+	return validates;
 }
 
 int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, const char *value)
 {
 	struct nsxml_value_validator *validator = info->validators;
 	
+	int validates = 1;
+
 	while (validator)
 	{
 		if (validator->validation_callback)
 		{
 			if ((*validator->validation_callback)(validator, state, result, NULL, value) == 0)
 			{
-				return 0;
+				validates = 0;
 			}
 		}
 		
 		validator = validator->next_validator;
 	}
 	
-	return 1;
+	return validates;
 }
 
 int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option)
@@ -2306,27 +2316,9 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 	const struct nsxml_option_info *info = option->info_ref;
 	const struct nsxml_group_option_info *parent_info = info->parent;
 	struct nsxml_option_result *res = option->result_ref;
-	void *res_ptr = res;
 	struct nsxml_option_result *child_res;
 	
-	if (info->option_type == nsxml_option_type_group)
-	{
-		/**
-		 * @note This should not happens
-		 */
-		assert(0);
-		
-		res->is_set += (is_set) ? 1 : -1;
-		
-		if (is_set == 0)
-		{
-			((struct nsxml_group_option_result *) res_ptr)->selected_option = NULL;
-		}
-	}
-	else
-	{
-		res->is_set = (is_set) ? 1 : 0;
-	}
+	res->is_set = (is_set) ? 1 : 0;
 	
 #if NSXML_DEBUG
 	nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Mark option %s: %d (%d)\n", option->info_ref->names->name, is_set, res->is_set);
@@ -2341,25 +2333,29 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 		
 		if (parent_info->group_type == nsxml_group_option_exclusive)
 		{
-			parent_res->selected_option = (is_set) ? child_res : NULL;
-			parent_res->selected_option_name = info->var_name;
+			if (is_set)
+			{
+				parent_res->selected_option = child_res;
+				parent_res->selected_option_name = info->var_name;
+			}
+		}
+
+		if (parent_res->is_set == 0)
+		{
+			parent_res->selected_option = NULL;
+			parent_res->selected_option_name = NULL;
 		}
 		
 		info = &parent_info->option_info;
-		
 #if NSXML_DEBUG
 		{
 			const char *name = (info->var_name) ? info->var_name : ((info->names && info->names->name) ? info->names->name : info->item_info.abstract);
 			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Mark parent option %s: %d (%d)\n", ((name) ? name : "?"), is_set, parent_res->is_set);
 		}
 #endif /* NSXML_DEBUG */
-		
-		if (parent_res->is_set == 0)
-		{
-			parent_res->selected_option = NULL;
-		}
-		
+
 		parent_info = parent_info->option_info.parent;
+		child_res = (struct nsxml_option_result *)parent_res;
 	}
 }
 
@@ -2621,7 +2617,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct n
 				if ((res->is_set == 1) && ((mi->min_argument > 0) && (res->argument_count < mi->min_argument)))
 				{
 					nsxml_program_result_add_messagef(result, nsxml_message_type_error, "At least %d arguments are required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
-					res->is_set = 0;
+					nsxml_parse_mark_option(state, result, binding, 0);
 					++mark_change_count;
 				}
 				
@@ -2645,7 +2641,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 	const struct nsxml_rootitem_info *root = &state->program_info_ref->rootitem_info;
 	const struct nsxml_positional_argument_info *pai = NULL;
 	const nsxml_value *v = state->values;
-	size_t valid_positional_argument = 0;
+	size_t valid_positional_argument_count = 0;
 	size_t pa_index = 0;
 	size_t pai_index = 0;
 	size_t current_pai_value_count = 0;
@@ -2670,7 +2666,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 			nsxml_program_result_add_message(result, nsxml_message_type_error, "Program does not accept positional arguments\n");
 		}
 		
-		return valid_positional_argument;
+		return valid_positional_argument_count;
 	}
 	
 	while (v && (pai_index < root->positional_argument_info_count))
@@ -2692,8 +2688,14 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 			 */
 			nsxml_value_append(&result->values, v->type, v->string_value);
 			result->value_count++;
-			++valid_positional_argument;
+			++valid_positional_argument_count;
 			++current_pai_value_count;
+		}
+		else
+		{
+			/**
+			 * @todo continue or abort ?
+			 */
 		}
 		
 		if ((pai->max_argument > 0) && (current_pai_value_count >= pai->max_argument))
@@ -2727,7 +2729,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		}
 	}
 	
-	return valid_positional_argument;
+	return valid_positional_argument_count;
 }
 
 void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_result *result)
@@ -2790,7 +2792,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 				{
 					if (state->active_option_argc == 0)
 					{
-						nsxml_program_result_add_message(result, nsxml_message_type_warning, "Ignoring end-of-argument marker\n");
+						nsxml_program_result_add_message(result, nsxml_message_type_warning, "Ignore end-of-argument marker\n");
 						nsxml_parse_append_option_argument(state, result, state->argv[a]);
 					}
 					else
@@ -3005,6 +3007,11 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	/* Required option checks */
 	for (g = 0; g < state->option_name_binding_group_count; ++g)
 	{
+		if ((g > 0) && (g != state->subcommand_index))
+		{
+			continue;
+		}
+
 		for (o = 0; o < state->option_name_binding_counts[g]; ++o)
 		{
 			struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
