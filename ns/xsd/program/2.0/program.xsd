@@ -3,7 +3,9 @@
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified">
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd"/>
+
 	<complexType name="emptyType"/>
+	
 	<simpleType name="nonEmptyString">
 		<restriction base="string">
 			<pattern value=".+"/>
@@ -21,6 +23,7 @@
 			<enumeration value="false"/>
 		</restriction>
 	</simpleType>
+
 	<simpleType name="literalBooleanType">
 		<restriction base="string">
 			<enumeration value="true"/>
@@ -54,6 +57,7 @@
 			<element name="details" type="prg:richTextType" minOccurs="0"/>
 		</all>
 	</complexType>
+
 	<complexType name="pathRuleType">
 		<simpleContent>
 			<extension base="prg:nonEmptyString">
@@ -68,6 +72,7 @@
 			<element name="contains" type="prg:pathRuleType" maxOccurs="1"/>
 		</choice>
 	</group>
+
 	<complexType name="pathPatternRulesType">
 		<sequence>
 			<element name="rule" minOccurs="1" maxOccurs="unbounded">
@@ -79,6 +84,7 @@
 			</element>
 		</sequence>
 	</complexType>
+
 	<complexType name="pathPatternType">
 		<annotation>
 			<documentation xml:lang="en">A path pattern</documentation>
@@ -88,6 +94,7 @@
 			<element name="rules" type="prg:pathPatternRulesType" minOccurs="1"/>
 		</all>
 	</complexType>
+
 	<complexType name="pathPatternsType">
 		<sequence minOccurs="1">
 			<element name="pattern" type="prg:pathPatternType"/>
@@ -98,6 +105,7 @@
 			</annotation>
 		</attribute>
 	</complexType>
+
 	<complexType name="pathTypeSelectionType">
 		<sequence minOccurs="1">
 			<choice minOccurs="0" maxOccurs="unbounded">
@@ -108,6 +116,7 @@
 			</choice>
 		</sequence>
 	</complexType>
+	
 	<simpleType name="pathAccessType">
 		<restriction base="string">
 			<minLength value="1"/>
@@ -117,6 +126,7 @@
 			<pattern value="(r|w|x|rw|rx|wr|wx|xr|xw|rwx|rxw|wrx|wxr|xrw|xwr)"/>
 		</restriction>
 	</simpleType>
+
 	<complexType name="pathType">
 		<annotation>
 			<documentation xml:lang="en">Represent a file system path (file, folder...)</documentation>
@@ -181,12 +191,14 @@
 			</element>
 		</choice>
 	</group>
+
 	<complexType name="itemType">
 		<annotation>
 			<documentation xml:lang="en">Describes an argument option parameter or a value</documentation>
 		</annotation>
 		<group ref="prg:itemTypeGroup"/>
 	</complexType>
+
 	<complexType name="optionUISpecsType">
 		<all>
 			<element name="label" type="string" minOccurs="0">
@@ -197,6 +209,7 @@
 		</all>
 		<attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</complexType>
+
 	<complexType name="argumentOptionUISpecsType">
 		<all>
 			<element name="label" type="string" minOccurs="0">
@@ -212,6 +225,7 @@
 		</all>
 		<attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</complexType>
+
 	<complexType name="multiargumentOptionUISpecsType">
 		<all>
 			<element name="label" type="string" minOccurs="0">
@@ -236,12 +250,14 @@
 		</all>
 		<attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</complexType>
+
 	<simpleType name="switchOptionModeEnum">
 		<restriction base="string">
 			<enumeration value="boolean"/>
 			<enumeration value="integer"/>
 		</restriction>
 	</simpleType>
+	
 	<!-- Type of a switch option -->
 	<complexType name="switchOptionType">
 		<annotation>
@@ -259,6 +275,7 @@
 		<attribute name="id" type="ID" use="optional"/>
 		<attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean"/>
 	</complexType>
+
 	<complexType name="argumentOptionValueType">
 		<annotation>
 			<documentation xml:lang="en">
@@ -271,18 +288,7 @@
 			</extension>
 		</simpleContent>
 	</complexType>
-	<!-- TODO
-		<complexType name="argumentOptionValueType" mixed="true">
-		<annotation>
-		<documentation xml:lang="en">
-		An element of a possible list of value for an argument option
-		</documentation>
-		</annotation>
-		<sequence>
-		<element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-		</sequence>
-		</complexType>
-	-->
+
 	<complexType name="argumentProposedValueType">
 		<annotation>
 			<documentation xml:lang="en">Proposed values</documentation>
@@ -298,6 +304,7 @@
 			</annotation>
 		</attribute>
 	</complexType>
+
 	<complexType name="argumentOptionType">
 		<annotation>
 			<documentation xml:lang="en">Argument with a single value</documentation>
@@ -323,7 +330,8 @@
 			</extension>
 		</complexContent>
 	</complexType>
-	<!-- multiplearguement element type -->
+	
+	<!-- multiple arguement element type -->
 	<complexType name="multipleArgumentOptionType">
 		<annotation>
 			<documentation xml:lang="en">Argument with multiple values</documentation>
@@ -364,6 +372,7 @@
 			</extension>
 		</complexContent>
 	</complexType>
+
 	<simpleType name="actionGroupTypeEnum">
 		<restriction base="string">
 			<enumeration value="exclusive">
@@ -380,6 +389,7 @@
 			</enumeration>
 		</restriction>
 	</simpleType>
+
 	<!-- group element type -->
 	<complexType name="groupOptionType">
 		<complexContent>
@@ -411,6 +421,7 @@
 			</extension>
 		</complexContent>
 	</complexType>
+	
 	<complexType name="otherValueNodeType">
 		<annotation>
 			<documentation xml:lang="en"/>
@@ -425,6 +436,7 @@
 			</extension>
 		</complexContent>
 	</complexType>
+	
 	<complexType name="valueNodeType">
 		<annotation>
 			<documentation xml:lang="en"/>
@@ -435,6 +447,7 @@
 			</extension>
 		</complexContent>
 	</complexType>
+	
 	<complexType name="valuesNodeType">
 		<annotation>
 			<documentation xml:lang="en"/>
@@ -444,6 +457,7 @@
 			<element name="other" type="prg:otherValueNodeType" minOccurs="0" maxOccurs="1"/>
 		</sequence>
 	</complexType>
+
 	<simpleType name="subcommandNameType">
 		<annotation>
 			<documentation xml:lang="en">
@@ -454,11 +468,13 @@
 			<pattern value="[a-z]([a-z0-9A-Z_-]*)"/>
 		</restriction>
 	</simpleType>
+
 	<complexType name="subcommandNamesType">
 		<sequence minOccurs="1" maxOccurs="unbounded">
 			<element name="alias" type="prg:subcommandNameType"/>
 		</sequence>
 	</complexType>
+
 	<complexType name="subcommandOptionType">
 		<annotation>
 			<documentation xml:lang="en">
@@ -488,11 +504,13 @@
 		</all>
 		<attribute ref="xml:base"/>
 	</complexType>
+
 	<complexType name="databindingType">
 		<all>
 			<element name="variable" type="prg:variableNameType"/>
 		</all>
 	</complexType>
+
 	<simpleType name="variableNameType">
 		<annotation>
 			<documentation xml:lang="en">Programming language variable name</documentation>
@@ -502,6 +520,7 @@
 			<pattern value="[a-zA-Z][\w_]*"/>
 		</restriction>
 	</simpleType>
+
 	<simpleType name="shortOptionNameType">
 		<restriction base="string">
 			<length value="1"/>
@@ -509,6 +528,7 @@
 			<pattern value="[a-zA-Z0-9]"/>
 		</restriction>
 	</simpleType>
+
 	<simpleType name="longOptionNameType">
 		<annotation>
 			<documentation xml:lang="en">Long argument name</documentation>
@@ -530,6 +550,7 @@
 			<element name="block" minOccurs="0" maxOccurs="1"/>
 		</choice>
 	</group>
+
 	<complexType name="optionNamesType">
 		<annotation>
 			<documentation xml:lang="en">
@@ -572,6 +593,7 @@
 			</choice>
 		</sequence>
 	</group>
+
 	<complexType name="optionsType">
 		<sequence minOccurs="1" maxOccurs="unbounded">
 			<group ref="prg:optionGroup" minOccurs="0" maxOccurs="unbounded"/>
@@ -584,12 +606,14 @@
 			</annotation>
 		</attribute>
 	</complexType>
+
 	<complexType name="subcommandsType">
 		<sequence minOccurs="1" maxOccurs="unbounded">
 			<element name="subcommand" type="prg:subcommandOptionType"/>
 		</sequence>
 		<attribute ref="xml:base"/>
 	</complexType>
+
 	<complexType name="windowProgramUISpecsType">
 		<annotation>
 			<documentation xml:lang="en">Application window preferences
@@ -599,6 +623,7 @@
 		<attribute name="width" type="positiveInteger" use="optional"/>
 		<attribute name="height" type="positiveInteger" use="optional"/>
 	</complexType>
+
 	<complexType name="programUISpecsType">
 		<all minOccurs="1">
 			<element name="label" type="string" minOccurs="0">
@@ -609,11 +634,13 @@
 			<element name="window" type="prg:windowProgramUISpecsType" minOccurs="0"/>
 		</all>
 	</complexType>
+	
 	<simpleType name="subcommandUIModeEnum">
 		<restriction base="string">
 			<enumeration value="disabled"/>
 		</restriction>
 	</simpleType>
+
 	<complexType name="subcommandUISpecsType">
 		<all>
 			<element name="label" type="string" minOccurs="0" maxOccurs="1">
@@ -624,6 +651,7 @@
 		</all>
 		<attribute name="mode" type="prg:subcommandUIModeEnum" use="optional"/>
 	</complexType>
+
 	<simpleType name="optionUIModeEnum">
 		<restriction base="string">
 			<enumeration value="default">
