@@ -572,6 +572,8 @@ EOSH
 			rm -f "${cProgram}.c"
 			rm -f "${cParserBase}.h"
 			rm -f "${cParserBase}.c"
+			# Mac OS X
+			rm -f "${cProgram}.dSYM"
 		fi
 	fi
 done

@@ -147,7 +147,7 @@
 		</call-template>
 	</template>
 
-	<template match="prg:details/text() | prg:block/text()">
+	<template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
 		<call-template name="str.replaceAll">
 			<with-param name="text">
 				<call-template name="str.replaceAll">

@@ -880,8 +880,6 @@ xml_validate()
 	
 	return 0
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/..")"
@@ -951,4 +949,3 @@ xsltprocCommand[${#xsltprocCommand[*]}]="${xslFile}"
 xsltprocCommand[${#xsltprocCommand[*]}]="${xmlProgramDescriptionPath}"
  
 "${xsltprocCommand[@]}"
-

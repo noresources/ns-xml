@@ -70,7 +70,7 @@ info " - Generate command launcher"
 echo -ne "#!/bin/bash\n${command_existingCommandPath} \${@}" > "${commandLauncherFile}"
 			]]></xsh:body>
 		</xsh:function>
-		<xi:include href="functions.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function[@name = 'xml_validate'])" />
+		<xi:include href="functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'xml_validate'])" />
 	</xsh:functions>
 	<xsh:code>
 		<xi:include href="build-xulapp.body.sh" parse="text" />

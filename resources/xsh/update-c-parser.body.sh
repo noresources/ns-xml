@@ -81,7 +81,7 @@ EOF
 
 EOF
 	
-	# Replace hardoced names by transformable ones
+	# Replace hardcoded names by transformable ones
 	for t in "${transformableStructs[@]}"
 	do
 		#echo "Transform struct $t"

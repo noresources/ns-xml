@@ -628,16 +628,13 @@ ns_relativepath()
 		from="${1}"
 		shift
 	fi
-	
 	local base
 	if [ $# -gt 0 ]
 	then
 		base="${1}"
 		shift
 	else
-		base="
-		.
-		        "
+		base="."
 	fi
 	[ -r "${from}" ] || return 1
 	[ -r "${base}" ] || return 2
@@ -674,9 +671,7 @@ ns_mktemp()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -695,9 +690,7 @@ ns_mktempdir()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -1282,6 +1275,8 @@ EOSH
 			rm -f "${cProgram}.c"
 			rm -f "${cParserBase}.h"
 			rm -f "${cParserBase}.c"
+			# Mac OS X
+			rm -f "${cProgram}.dSYM"
 		fi
 	fi
 done

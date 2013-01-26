@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the BSD License, see LICENSE -->
-<sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<sh:info>
+<xsh:program interpreterType="bash" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<xsh:info>
 		<xi:include href="run-tests.xml"/>
-	</sh:info>
-	<sh:functions>
-		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xml" xpointer="xmlns(sh=http://xsd.nore.fr/bash)xpointer(//sh:function)"/>
-	</sh:functions>
-	<sh:code>
+	</xsh:info>
+	<xsh:functions>
+		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)"/>
+	</xsh:functions>
+	<xsh:code>
 		<!-- Include shell script code -->
 		<xi:include href="run-tests.body.sh" parse="text"/>
-	</sh:code>
-</sh:program>
+	</xsh:code>
+</xsh:program>

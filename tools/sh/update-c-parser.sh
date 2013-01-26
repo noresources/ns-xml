@@ -541,8 +541,6 @@ ns_sed_inplace()
 		shift
 	done
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -626,7 +624,7 @@ EOF
 
 EOF
 	
-	# Replace hardoced names by transformable ones
+	# Replace hardcoded names by transformable ones
 	for t in "${transformableStructs[@]}"
 	do
 		#echo "Transform struct $t"
@@ -728,4 +726,3 @@ create_identifier_variables "${cXslPath}/${cXslBaseFileName}names.xsl" "${cSourc
 # Header & sources 
 transform_c "${cSourcePath}/${cSourceBaseFileName}.h" "${cXslPath}/${cXslBaseFileName}header.xsl" "genericHeader"
 transform_c "${cSourcePath}/${cSourceBaseFileName}.c" "${cXslPath}/${cXslBaseFileName}source.xsl" "genericSource"
-

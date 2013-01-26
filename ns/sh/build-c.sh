@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard
-#  Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the BSD License, see LICENSE
 # Author: Renaud Guillard
 # Version: 1.0
 # 
@@ -1057,9 +1057,7 @@ ns_mktemp()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -1078,9 +1076,7 @@ ns_mktempdir()
 		key="${1}"
 		shift
 	else
-		key="
-		$(date +%s)
-		        "
+		key="$(date +%s)"
 	fi
 	if [ "$(uname -s)" == "Darwin" ]
 	then
@@ -1168,7 +1164,6 @@ xml_validate()
 		schema="${1}"
 		shift
 	fi
-	
 	local xml
 	if [ $# -gt 0 ]
 	then

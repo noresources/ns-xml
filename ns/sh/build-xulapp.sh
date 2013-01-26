@@ -1790,7 +1790,6 @@ xml_validate()
 		schema="${1}"
 		shift
 	fi
-	
 	local xml
 	if [ $# -gt 0 ]
 	then
@@ -1808,7 +1807,6 @@ xml_validate()
 	
 	return 0
 }
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
@@ -2328,4 +2326,3 @@ else
 fi
 EOF
 chmod 755 "${launcherPath}"
-

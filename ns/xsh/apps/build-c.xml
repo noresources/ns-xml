@@ -7,7 +7,7 @@
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:copyright>Copyright © 2012 by Renaud Guillard</prg:copyright>
-	<prg:license> Distributed under the terms of the BSD License, see LICENSE</prg:license>
+	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Create a customized Command line argument parser in C</prg:abstract>
 	</prg:documentation>
@@ -205,7 +205,7 @@
 			</prg:documentation>
 			<prg:options>
 				<!-- Output folder -->
-				<prg:argument id="outputfolder" required="true">
+				<prg:argument id="c.outputfolder" required="true">
 					<prg:databinding>
 						<prg:variable>outputPath</prg:variable>
 					</prg:databinding>
