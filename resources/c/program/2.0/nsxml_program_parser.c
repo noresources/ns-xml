@@ -499,6 +499,27 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 
 /* Validators *************************************/
 
+struct nsxml_validated_item
+{
+	/**
+	 * Should be @c nsxml_item_type_option
+	 * or @c nsxml_item_type_positional_argument
+	 */
+	int item_type;
+	union
+	{
+		/**
+		 * Option info
+		 */
+		struct nsxml_option_name_binding *binding;
+
+		/**
+		 * Positional argument number [1-n]
+		 */
+		int positional_argument_number;
+	} item;
+};
+
 void nsxml_value_validator_free(struct nsxml_value_validator *validator);
 
 void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags)
@@ -550,7 +571,7 @@ void nsxml_value_validator_free(struct nsxml_value_validator *validator)
 	}
 }
 
-int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value)
+int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
 {
 	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *)self;
 #if NSXML_DEBUG
@@ -638,7 +659,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 	return 1;
 }
 
-int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value)
+int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
 {
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	float f;
@@ -675,7 +696,7 @@ int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_
 	return 1;
 }
 
-int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value)
+int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
 {
 	const struct nsxml_value_validator_enum *evalidator = (const struct nsxml_value_validator_enum *) self;
 	struct nsxml_item_name *v;
@@ -702,13 +723,13 @@ int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_st
 		char *output = (char *) malloc(sizeof(char) * output_length);
 		nsxml_item_name_snprintf(evalidator->values, &output, &output_length, "Expect: ");
 		
-		if (option)
+		if (item->item_type == nsxml_item_type_option)
 		{
 			nsxml_program_result_add_messagef(result, nsxml_message_type_error, "Invalid value for option %s. %s\n", state->active_option_cli_name, output);
 		}
 		else
 		{
-			nsxml_program_result_add_messagef(result, nsxml_message_type_error, "Invalid value for positional argument %s\n", output);
+			nsxml_program_result_add_messagef(result, nsxml_message_type_error, "Invalid value for positional argument %d. %s\n", item->item.positional_argument_number, output);
 		}
 		
 		free(output);
@@ -1256,6 +1277,12 @@ void nsxml_parser_state_free(struct nsxml_parser_state *state)
 }
 
 /* Parser results *********************************/
+
+union nsxml_option_result_group_option_result
+{
+	struct nsxml_option_result *option;
+	struct nsxml_group_option_result *group;
+};
 
 void nsxml_program_result_init(void *result_ptr)
 {
@@ -2185,7 +2212,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 struct nsxml_option_name_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index);
 struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name);
 int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
-int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, const char *value);
+int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, int positional_argument_number, const char *value);
 int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option);
 void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, int is_set);
 void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct nsxml_program_result *result);
@@ -2236,14 +2263,17 @@ struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_st
 int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value)
 {
 	struct nsxml_value_validator *validator = state->active_option->info_ref->validators;
-	
+	struct nsxml_validated_item item;
 	int validates = 1;
+
+	item.item_type = nsxml_item_type_option;
+	item.item.binding = state->active_option;
 
 	while (validator)
 	{
 		if (validator->validation_callback)
 		{
-			if ((*validator->validation_callback)(validator, state, result, state->active_option, value) == 0)
+			if ((*validator->validation_callback)(validator, state, result, &item, value) == 0)
 			{
 				validates = 0;
 			}
@@ -2255,17 +2285,20 @@ int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxm
 	return validates;
 }
 
-int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, const char *value)
+int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, int positional_argument_number, const char *value)
 {
 	struct nsxml_value_validator *validator = info->validators;
-	
+	struct nsxml_validated_item item;
 	int validates = 1;
+	
+	item.item_type = nsxml_item_type_positional_argument;
+	item.item.positional_argument_number = positional_argument_number;
 
 	while (validator)
 	{
 		if (validator->validation_callback)
 		{
-			if ((*validator->validation_callback)(validator, state, result, NULL, value) == 0)
+			if ((*validator->validation_callback)(validator, state, result, &item, value) == 0)
 			{
 				validates = 0;
 			}
@@ -2316,7 +2349,8 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 	const struct nsxml_option_info *info = option->info_ref;
 	const struct nsxml_group_option_info *parent_info = info->parent;
 	struct nsxml_option_result *res = option->result_ref;
-	struct nsxml_option_result *child_res;
+	union nsxml_option_result_group_option_result child_res;
+	union nsxml_option_result_group_option_result parent_res;
 	
 	res->is_set = (is_set) ? 1 : 0;
 	
@@ -2324,38 +2358,38 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 	nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Mark option %s: %d (%d)\n", option->info_ref->names->name, is_set, res->is_set);
 #endif /* NSXML_DEBUG */
 	
-	child_res = res;
+	child_res.option = res;
 	
 	for (p = 0; p < option->level; ++p)
 	{
-		struct nsxml_group_option_result *parent_res = option->parent_tree_refs[p];
-		parent_res->is_set += (is_set) ? 1 : -1;
+		parent_res.group = option->parent_tree_refs[p];
+		parent_res.group->is_set += (is_set) ? 1 : -1;
 		
 		if (parent_info->group_type == nsxml_group_option_exclusive)
 		{
 			if (is_set)
 			{
-				parent_res->selected_option = child_res;
-				parent_res->selected_option_name = info->var_name;
+				parent_res.group->selected_option = child_res.option;
+				parent_res.group->selected_option_name = info->var_name;
 			}
 		}
 
-		if (parent_res->is_set == 0)
+		if (parent_res.group->is_set == 0)
 		{
-			parent_res->selected_option = NULL;
-			parent_res->selected_option_name = NULL;
+			parent_res.group->selected_option = NULL;
+			parent_res.group->selected_option_name = NULL;
 		}
 		
 		info = &parent_info->option_info;
 #if NSXML_DEBUG
 		{
 			const char *name = (info->var_name) ? info->var_name : ((info->names && info->names->name) ? info->names->name : info->item_info.abstract);
-			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Mark parent option %s: %d (%d)\n", ((name) ? name : "?"), is_set, parent_res->is_set);
+			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Mark parent option %s: %d (%d)\n", ((name) ? name : "?"), is_set, parent_res.group->is_set);
 		}
 #endif /* NSXML_DEBUG */
 
 		parent_info = parent_info->option_info.parent;
-		child_res = (struct nsxml_option_result *)parent_res;
+		child_res.option = (struct nsxml_option_result *)parent_res.option;
 	}
 }
 
@@ -2616,7 +2650,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct n
 				
 				if ((res->is_set == 1) && ((mi->min_argument > 0) && (res->argument_count < mi->min_argument)))
 				{
-					nsxml_program_result_add_messagef(result, nsxml_message_type_error, "At least %d arguments are required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
+					nsxml_program_result_add_messagef(result, nsxml_message_type_error, "At least %d arguments required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
 					nsxml_parse_mark_option(state, result, binding, 0);
 					++mark_change_count;
 				}
@@ -2642,7 +2676,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 	const struct nsxml_positional_argument_info *pai = NULL;
 	const nsxml_value *v = state->values;
 	size_t valid_positional_argument_count = 0;
-	size_t pa_index = 0;
+	int positional_argument_number = 1;
 	size_t pai_index = 0;
 	size_t current_pai_value_count = 0;
 	
@@ -2672,7 +2706,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 	while (v && (pai_index < root->positional_argument_info_count))
 	{
 #if NSXML_DEBUG
-		nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Process positional argument %d (%d of PAI %d)\n", pa_index, current_pai_value_count, pai_index);
+		nsxml_program_result_add_messagef(result, nsxml_message_type_debug, "Process positional argument %d (%d of PAI %d)\n", positional_argument_number, current_pai_value_count, pai_index);
 #endif /* NSXML_DEBUG */
 		
 		pai = &root->positional_argument_infos[pai_index];
@@ -2681,7 +2715,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		/**
 		 * @todo validates
 		 */
-		if (nsxml_parse_positional_argument_validates(state, result, pai, v->string_value))
+		if (nsxml_parse_positional_argument_validates(state, result, pai, positional_argument_number, v->string_value))
 		{
 			/*
 			 * @todo detach/move rather than new copy
@@ -2705,7 +2739,7 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		}
 		
 		v = v->next_value;
-		++pa_index;
+		++positional_argument_number;
 	}
 	
 	if (v)
@@ -3007,7 +3041,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	/* Required option checks */
 	for (g = 0; g < state->option_name_binding_group_count; ++g)
 	{
-		if ((g > 0) && (g != state->subcommand_index))
+		if ((g > 0) && ((int)g != state->subcommand_index))
 		{
 			continue;
 		}

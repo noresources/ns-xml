@@ -1181,6 +1181,8 @@ xml_validate()
 	
 	return 0
 }
+
+
 function buildcPopulateXsltprocParams()
 {
 	# Shared xsltproc options
@@ -1363,3 +1365,4 @@ else
 fi
 
 exit 0
+

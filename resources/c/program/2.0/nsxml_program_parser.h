@@ -212,7 +212,9 @@ struct nsxml_parser_state;
 struct nsxml_program_result;
 struct nsxml_option_name_binding;
 struct nsxml_option_info;
-typedef int nsxml_value_validator_validation_callback(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value);
+struct nsxml_validated_item;
+
+typedef int nsxml_value_validator_validation_callback(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 typedef void nsxml_value_validator_cleanup_callback(void *self);
 typedef int nsxml_value_validator_usage_callback(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length);
 
@@ -249,7 +251,7 @@ struct nsxml_value_validator
 void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags);
 void nsxml_value_validator_add(struct nsxml_value_validator **list, struct nsxml_value_validator *validator);
 
-int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value);
+int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length);
 
 struct nsxml_value_validator_number
@@ -258,7 +260,7 @@ struct nsxml_value_validator_number
 	float min_value;
 	float max_value;
 };
-int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value);
+int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 int nsxml_value_validator_usage_number(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length);
 
 struct nsxml_value_validator_enum
@@ -266,7 +268,7 @@ struct nsxml_value_validator_enum
 	struct nsxml_value_validator validator;
 	struct nsxml_item_name *values;
 };
-int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, const char *value);
+int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 void nsxml_value_validator_cleanup_enum(void *self);
 int nsxml_value_validator_usage_enum(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length);
 
@@ -725,9 +727,9 @@ NSXMLAPI size_t nsxml_program_result_message_count(const struct nsxml_program_re
  */
 NSXMLAPI enum nsxml_usage_format
 {
-	nsxml_usage_format_short = 1,   /**!< nsxml_usage_format_short */
-	nsxml_usage_format_abstract = 2,/**!< nsxml_usage_format_abstract */
-	nsxml_usage_format_details = 7  /**!< nsxml_usage_format_details */
+	nsxml_usage_format_short = 1,   /**!< Short form */
+	nsxml_usage_format_abstract = 2,/**!<  */
+	nsxml_usage_format_details = 7  /**!< Full description */
 };
 
 NSXMLAPI void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsxml_program_result *result, int format, const nsxml_util_text_wrap_options *wrap);
