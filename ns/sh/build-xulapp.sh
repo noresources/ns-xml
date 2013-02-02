@@ -13,6 +13,35 @@ usage()
 if [ ! -z "${1}" ]
 then
 case "${1}" in
+php)
+cat << EOFSCUSAGE
+php: Build a XUL application which will run an executable PHP script
+Usage: build-xulapp php (--script-path <path> | --copy-script <path> | --build-script <path> --parser-namespace <...> --program-namespace <...> -c <...>)
+With:
+  PHP script to call
+    --script-path, --path: Call PHP script in a given location
+      The application will call the PHP script located at the given path.
+      The PHP parser and Program info will not be generated. The tool assumes 
+      the given script is able to handle its command line arguments.
+    --copy-script, --copy: Copy script
+      The given PHP script will be copied in the application bundle and the 
+      application will run the PHP script from this location
+      The script is renamed <xulAppName<-program.php
+      The PHP parser and Program info will not be generated. The tool assumes 
+      the given script is able to handle its command line arguments.
+    Build script
+      Build the PHP parser and program info classes and merge them to the 
+      given PHP script
+      The resulting script will be generated inside application bundle as 
+      <xulAppName<-program.php
+      
+      --build-script, --build, --merge: Script to build
+      --parser-namespace, --parser-ns: PHP parser namespace
+        Namespace of all elements of the ns-xml PHP parser
+      --program-namespace, --program-ns, --prg-ns: PHP program namespace
+      -c, --classname: Program info class name
+EOFSCUSAGE
+;;
 xsh | sh | shell)
 cat << EOFSCUSAGE
 xsh: Build a XUL application which will run a Shell script defined through the bash XML schema
@@ -68,6 +97,8 @@ build-xulapp: Build (or update) a XUL application launcher
 Usage: 
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
+    php: Build a XUL application which will run an executable PHP script
+      options: (--script-path <path> | --copy-script <path> | --build-script <path> --parser-namespace <...> --program-namespace <...> -c <...>)
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
       options: [-p] -s <path> [(-i <...> | -I <...>)]
     python, py: Build a XUL application which will run a python script built with the program XML schema
@@ -157,6 +188,12 @@ debugMode=false
 nsxmlPathRelative=false
 addNsXml=false
 # Single argument options
+php_scriptPath=
+php_scriptCopy=
+php_scriptBuildPath=
+php_parserNamespace=
+php_programNamespace=
+php_programInfoClassname=
 xsh_xmlShellFileDescriptionPath=
 xsh_defaultInterpreterType=
 xsh_defaultInterpreterCommand=
@@ -287,6 +324,10 @@ parse_addvalue()
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
+		php)
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand php"
+			return ${PARSER_ERROR}
+			;;
 		xsh)
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand xsh"
 			return ${PARSER_ERROR}
@@ -316,6 +357,489 @@ parse_process_subcommand_option()
 	fi
 	
 	case "${parser_subcommand}" in
+	php)
+		if [ "${parser_item:0:2}" = "--" ] 
+		then
+			parser_option="${parser_item:2}"
+			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			then
+				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
+				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
+			fi
+			
+			case "${parser_option}" in
+			script-path | path)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptPath" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				php_scriptPath="${parser_item}"
+				php_scriptMode="scriptPath"
+				parse_setoptionpresence SC_1_php_1_g_1_script-path;parse_setoptionpresence SC_1_php_1_g
+				;;
+			copy-script | copy)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptCopy" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				php_scriptCopy="${parser_item}"
+				php_scriptMode="scriptCopy"
+				parse_setoptionpresence SC_1_php_1_g_2_copy-script;parse_setoptionpresence SC_1_php_1_g
+				;;
+			build-script | build | merge)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				php_scriptBuildPath="${parser_item}"
+				php_scriptMode="scriptBuild"
+				parse_setoptionpresence SC_1_php_1_g_3_g_1_build-script;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				;;
+			parser-namespace | parser-ns)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				php_parserNamespace="${parser_item}"
+				php_scriptMode="scriptBuild"
+				parse_setoptionpresence SC_1_php_1_g_3_g_2_parser-namespace;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				;;
+			program-namespace | program-ns | prg-ns)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				php_programNamespace="${parser_item}"
+				php_scriptMode="scriptBuild"
+				parse_setoptionpresence SC_1_php_1_g_3_g_3_program-namespace;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				;;
+			classname)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				php_programInfoClassname="${parser_item}"
+				php_scriptMode="scriptBuild"
+				parse_setoptionpresence SC_1_php_1_g_3_g_4_classname;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		elif [ "${parser_item:0:1}" = "-" ] && [ ${#parser_item} -gt 1 ]
+		then
+			parser_optiontail="${parser_item:$(expr ${parser_subindex} + 2)}"
+			parser_option="${parser_item:$(expr ${parser_subindex} + 1):1}"
+			if [ -z "${parser_option}" ]
+			then
+				parser_subindex=0
+				return ${PARSER_SC_OK}
+			fi
+			
+			case "${parser_option}" in
+			c)
+				# Group checks
+				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+				then
+					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
+					if [ ! -z "${parser_optiontail}" ]
+					then
+						parser_item="${parser_optiontail}"
+					else
+						parser_index=$(expr ${parser_index} + 1)
+						if [ ${parser_index} -ge ${parser_itemcount} ]
+						then
+							parse_adderror "End of input reached - Argument expected"
+							return ${PARSER_SC_ERROR}
+						fi
+						
+						parser_item="${parser_input[${parser_index}]}"
+						if [ "${parser_item}" = "--" ]
+						then
+							parse_adderror "End of option marker found - Argument expected"
+							parser_index=$(expr ${parser_index} - 1)
+							return ${PARSER_SC_ERROR}
+						fi
+					fi
+					
+					parser_subindex=0
+					parser_optiontail=""
+					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+					
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				php_programInfoClassname="${parser_item}"
+				php_scriptMode="scriptBuild"
+				parse_setoptionpresence SC_1_php_1_g_3_g_4_classname;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		fi
+		;;
 	xsh)
 		if [ "${parser_item:0:2}" = "--" ] 
 		then
@@ -364,7 +888,7 @@ parse_process_subcommand_option()
 				fi
 				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_1_shell
+				parse_setoptionpresence SC_2_xsh_1_shell
 				;;
 			prefix-sc-variables)
 				if [ ! -z "${parser_optiontail}" ]
@@ -374,7 +898,7 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_1_xsh_2_prefix-sc-variables
+				parse_setoptionpresence SC_2_xsh_2_prefix-sc-variables
 				;;
 			interpreter)
 				# Group checks
@@ -433,7 +957,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
+				parse_setoptionpresence SC_2_xsh_3_g_1_interpreter;parse_setoptionpresence SC_2_xsh_3_g
 				;;
 			interpreter-cmd)
 				# Group checks
@@ -492,7 +1016,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
+				parse_setoptionpresence SC_2_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_2_xsh_3_g
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -547,11 +1071,11 @@ parse_process_subcommand_option()
 				fi
 				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_1_shell
+				parse_setoptionpresence SC_2_xsh_1_shell
 				;;
 			p)
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_1_xsh_2_prefix-sc-variables
+				parse_setoptionpresence SC_2_xsh_2_prefix-sc-variables
 				;;
 			i)
 				# Group checks
@@ -610,7 +1134,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
+				parse_setoptionpresence SC_2_xsh_3_g_1_interpreter;parse_setoptionpresence SC_2_xsh_3_g
 				;;
 			I)
 				# Group checks
@@ -669,7 +1193,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
+				parse_setoptionpresence SC_2_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_2_xsh_3_g
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -726,7 +1250,7 @@ parse_process_subcommand_option()
 				fi
 				
 				python_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_2_python_1_python
+				parse_setoptionpresence SC_3_python_1_python
 				;;
 			module-name | module)
 				if [ ! -z "${parser_optiontail}" ]
@@ -753,7 +1277,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_moduleName="${parser_item}"
-				parse_setoptionpresence SC_2_python_2_module-name
+				parse_setoptionpresence SC_3_python_2_module-name
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -808,7 +1332,7 @@ parse_process_subcommand_option()
 				fi
 				
 				python_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_2_python_1_python
+				parse_setoptionpresence SC_3_python_1_python
 				;;
 			m)
 				if [ ! -z "${parser_optiontail}" ]
@@ -835,7 +1359,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_moduleName="${parser_item}"
-				parse_setoptionpresence SC_2_python_2_module-name
+				parse_setoptionpresence SC_3_python_2_module-name
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -880,7 +1404,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_3_command_1_command
+				parse_setoptionpresence SC_4_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -923,7 +1447,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_3_command_1_command
+				parse_setoptionpresence SC_4_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1597,17 +2121,21 @@ parse_process_option()
 	elif ${parser_subcommand_expected} && [ -z "${parser_subcommand}" ] && [ ${#parser_values[*]} -eq 0 ]
 	then
 		case "${parser_item}" in
+		php)
+			parser_subcommand="php"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_1_php_1_g:--script-path, --copy-script or (--build-script, --parser-namespace, --program-namespace, --classname)"
+			;;
 		xsh | sh | shell)
 			parser_subcommand="xsh"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_1_xsh_1_shell:--shell"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_2_xsh_1_shell:--shell"
 			;;
 		python | py)
 			parser_subcommand="python"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_2_python_1_python:--python"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_python_1_python:--python"
 			;;
 		command | cmd)
 			parser_subcommand="command"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_command_1_command:--command"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_command_1_command:--command"
 			;;
 		*)
 			parse_addvalue "${parser_item}"
@@ -1666,6 +2194,25 @@ ns_realpath()
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
 }
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="$(date +%s)"
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
 log()
 {
 	echo "${@}" >> "${logFile}"
@@ -1680,6 +2227,106 @@ error()
 	echo "${@}"
 	${isDebug} && log "${@}"
 	exit 1
+}
+build_php()
+{
+local xmlShellFileDescriptionPath="${php_xmlShellFileDescriptionPath}"
+
+local parserNamespace="${php_parserNamespace}"
+
+local programNamespace="${php_programNamespace}"
+
+local outputScriptFilePath="${commandLauncherFile}-parser.php"
+local generationMode
+
+local generateBase="false"
+
+local generateInfo="false"
+local generateMerge
+
+local php_scriptInclude="__FILE__ . \"-program.php\""
+if [ "${php_scriptMode}" = "scriptBuild" ]
+then
+	[ -r "${php_scriptBuildPath}" ] || error "Missing PHP script file to merge (--build-script option)"
+	outputScriptFilePath="${commandLauncherFile}"
+	generationMode="generateMerge"
+	generateMerge="${php_scriptBuildPath}"
+	info " - Generate PHP file"
+buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
+
+# Check required templates
+for x in parser programinfo embed
+do
+	tpl="${buildphpXsltPath}/${x}.xsl"
+	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+done
+
+if ${generateBase}
+then
+	buildphpXsltStylesheet="parser.xsl"
+elif ${generateInfo}
+then
+	buildphpXsltStylesheet="programinfo.xsl"
+else
+	# embed or merge
+	buildphpXsltStylesheet="embed.xsl"
+fi
+
+buildphpXsltprocOptions=(--xinclude)
+[ -z "${parserNamespace}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.parser.namespace "${parserNamespace}")   
+[ -z "${programNamespace}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.programinfo.namespace "${programNamespace}")
+[ -z "${programInfoClassname}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.programinfo.classname "${programInfoClassname}")
+
+buildphpTemporaryOutput="${outputScriptFilePath}"
+[ "${generationMode}" = "generateMerge" ] && buildphpTemporaryOutput="$(ns_mktemp build-php-lib)"
+
+buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
+	-o \
+	"${buildphpTemporaryOutput}" \
+	"${buildphpXsltPath}/${buildphpXsltStylesheet}" \
+	"${xmlProgramDescriptionPath}")  
+
+xsltproc "${buildphpXsltprocOptions[@]}" || error 2 "Failed to generate php classes file"
+
+if [ "${generationMode}" = "generateMerge" ]
+then
+	firstLine=$(head -n 1 "${generateMerge}")
+	if [ "${firstLine:0:2}" = "#!" ]
+	then
+		(echo "${firstLine}" > "${outputScriptFilePath}" \
+		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge PHP class file and PHP program file"
+	else
+		(echo "#!/usr/bin/env php" > "${outputScriptFilePath}" \
+		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge PHP class file and PHP program file"
+	fi
+	
+	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+fi
+elif [ "${php_scriptMode}" = "scriptCopy" ]
+then
+	info " - Copy PHP script"
+	cp -f "${php_scriptCopy}" "${commandLauncherFile}-program.php" || error "Failed to copy script \""${php_scriptCopy}"\""
+else
+	php_scriptInclude="\"${php_scriptPath}\""
+fi 
+
+if [ "${php_scriptMode}" != "scriptBuild" ]
+then
+	info " - Generate launcher"
+	cat > "${commandLauncherFile}" << EOF
+#!/usr/bin/env php
+<?php
+require_once ( __FILE__ . "-parser.php" );
+include_once ( ${php_scriptInclude} );
+?>
+EOF
+fi
+return 0
+
 }
 build_xsh()
 {

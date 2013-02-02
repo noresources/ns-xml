@@ -10,7 +10,7 @@
 		<xi:include href="functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)" />
 	</xsh:functions>
 	<xsh:code>
-		<xi:include href="build-shellscript.body.init.sh" parse="text"/>
+		<xi:include href="build-xxx.body.init.sh" parse="text"/>
 		<xi:include href="build-shellscript.body.process.sh" parse="text"/>
 	</xsh:code>
 </xsh:program>

@@ -286,6 +286,9 @@
 					<xsl:for-each select="xsh:body">
 						<xsl:choose>
 							<xsl:when test="@indent = 'no'">
+								<xsl:if test="position() = 1">
+									<xsl:value-of select="$str.unix.endl" />
+								</xsl:if>
 								<xsl:apply-templates select="." />
 							</xsl:when>
 							<xsl:otherwise>

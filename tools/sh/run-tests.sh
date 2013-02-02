@@ -16,7 +16,7 @@ Usage:
   With:
     -p, --parsers: Parser to test  
       The argument value have to be one of the following:  
-        c, python or sh
+        c, php, python or sh
     -a, --apps: Test groups to run
     -t, --tests: Test number(s) to run
     --help: Display program usage
@@ -244,7 +244,7 @@ parse_process_option()
 			local parser_ma_total_count=${#parsers[*]}
 			if [ -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -266,7 +266,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -409,7 +409,7 @@ parse_process_option()
 			local parser_ma_total_count=${#parsers[*]}
 			if [ -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -431,7 +431,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -733,13 +733,9 @@ logFile="${projectPath}/${scriptName}.log"
 rm -f "${logFile}"
 
 #http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
-#(doesn't work with printf)
-#NORMAL_COLOR="$(tput sgr0)"
-#ERROR_COLOR="$(tput setaf 1)"
-#SUCCESS_COLOR="$(tput setaf 2)"
-NORMAL_COLOR=""
-ERROR_COLOR=""
-SUCCESS_COLOR=""
+NORMAL_COLOR="$(tput sgr0)"
+ERROR_COLOR="$(tput setaf 1)"
+SUCCESS_COLOR="$(tput setaf 2)"
 
 error()
 {
@@ -798,7 +794,7 @@ do
 done
 
 # C compilers
-if [ -z "${CC}" ]
+if [ -z "${CC}" ] || ! which "${CC}" 1>/dev/null
 then
 	for c in gcc clang
 	do
@@ -843,6 +839,9 @@ fi
 testSh=false
 testPython=false
 testC=false
+testValgrind=false
+testPHP=false
+
 if [ ${#parsers[@]} -eq 0 ]
 then
 	# Autodetect available parsers
@@ -865,6 +864,18 @@ then
 		testC=true
 		parsers=("${parsers[@]}" c)
 		parserNames=("${parserNames[@]}" "C/${cc}")
+		if which valgrind 1>/dev/null 2>&1
+		then
+			testValgrind=true
+			parserNames=("${parserNames[@]}" "C/Valgrind")
+		fi
+	fi
+	
+	if which php 1>/dev/null 2>&1
+	then
+		testPHP=true
+		parsers=("${parsers[@]}" php)
+		parserNames=("${parserNames[@]}" "PHP")
 	fi
 else
 	for ((i=0;${i}<${#parsers[@]};i++))
@@ -877,10 +888,19 @@ else
 		then
 			parserNames=("${parserNames[@]}" "Python")
 			testPython=true
-		elif which ${cc} 1>/dev/null 2>&1
+		elif [ "${parsers[${i}]}" = "c" ] && which ${cc} 1>/dev/null 2>&1
 		then
 			parserNames=("${parserNames[@]}" "C/${cc}")
 			testC=true
+			if which valgrind 1>/dev/null 2>&1
+			then
+				testValgrind=true
+				parserNames=("${parserNames[@]}" "C/Valgrind")
+			fi
+		elif [ "${parsers[${i}]}" = "php" ] && which php 1>/dev/null 2>&1
+		then
+			testPHP=true
+			parserNames=("${parserNames[@]}" "PHP")
 		fi
 	done 
 fi
@@ -901,13 +921,12 @@ fi
 
 if ${testC}
 then
+	"${scriptPath}/update-c-parser.sh"
 	resultLineFormat="${resultLineFormat} %-7s |"
 	
 	# Valgrind
-	testValgrind=false
-	if which valgrind 1>/dev/null 2>&1
+	if ${testValgrind}
 	then
-		parserNames=("${parserNames[@]}" "C/Valgrind")
 		resultLineFormat="${resultLineFormat} %-10s |"
 	
 		testValgrind=true
@@ -929,6 +948,13 @@ EOF
 	fi
 fi
 
+if ${testPHP}
+then
+	"${scriptPath}/update-php-parser.sh"
+	resultLineFormat="${resultLineFormat} %-7s |"
+fi
+
+# Result column
 resultLineFormat="${resultLineFormat} %7s\n"
 
 echo "Apps: ${selectedApps[@]}"
@@ -1032,7 +1058,9 @@ EOF
 	then
 		cParserBase="${tmpScriptBasename}-parser"
 		cProgram="${tmpScriptBasename}-exe"
-		xsltproc --xinclude -o "${cProgram}.c" "${parserTestsPathBase}/lib/c-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${cProgram} source"
+		xsltproc --xinclude -o "${cProgram}.c" \
+			"${parserTestsPathBase}/lib/c-unittestprogram.xsl" \
+			"${xmlDescription}" || error "Failed to create ${cProgram} source"
 		
 		log "Create C files"
 		"${projectPath}/ns/sh/build-c.sh" -eu \
@@ -1047,6 +1075,23 @@ EOF
 		"${cProgram}.c" "${cParserBase}.c" || error "Failed to build C program"   
 	fi
 	
+	if ${testPHP}
+	then
+		phpLibrary="${tmpScriptBasename}-lib.php"
+		phpProgram="${tmpScriptBasename}-exe.php"
+		log "Create PHP program info"
+		"${projectPath}/ns/sh/build-php.sh" -e \
+			-x "${xmlDescription}" \
+			-c "TestProgramInfo" \
+			-o "${phpLibrary}" || error "Failed to generated PHP module"
+			
+		log "Create program"
+		xsltproc --xinclude -o "${phpProgram}" \
+			"${parserTestsPathBase}/lib/php-unittestprogram.xsl" \
+			"${xmlDescription}" || error "Failed to create ${phpProgram}"
+		chmod 755 "${phpProgram}"
+	fi
+		
 	log "Run test(s)"
 	for ((ti=0;${ti}<${#groupTests[@]};ti++))
 	do
@@ -1096,6 +1141,13 @@ EOSH
 			fi
 		fi
 		
+		if ${testPHP} && [ ! -f "${base}.no-php" ]
+		then
+			cat >> "${tmpShellScript}" << EOFSH
+"${phpProgram}" ${cli} > "${result}-php"  2>>"${logFile}"
+EOFSH
+		fi
+		
 		log " ---- ${app}/${testnumber} ---- "
 		
 		# Run parsers
@@ -1115,16 +1167,16 @@ EOSH
 			then
 				if [ -f "${base}.no-sh" ]
 				then
-					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+					resultLine[${#resultLine[@]}]="skipped"
 				else
 					for s in ${available_shells[*]}
 					do
 						if [ ! -f "${result}-${s}" ] || ! diff "${expected}" "${result}-${s}" >> "${logFile}"
 						then
 							passed=false
-							resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+							resultLine[${#resultLine[@]}]="FAILED"
 						else
-							resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+							resultLine[${#resultLine[@]}]="passed"
 							rm -f "${result}-${s}"
 						fi
 						i=$(expr ${i} + 1)
@@ -1136,14 +1188,14 @@ EOSH
 			then
 				if [ -f "${base}.no-py" ]
 				then
-					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
+					resultLine[${#resultLine[@]}]="skipped"
 				else
 					if [ ! -f "${result}-py" ] || ! diff "${expected}" "${result}-py" >> "${logFile}"
 					then
 						passed=false
-						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+						resultLine[${#resultLine[@]}]="FAILED"
 					else
-						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+						resultLine[${#resultLine[@]}]="passed"
 						rm -f "${result}-py"
 					fi
 				fi
@@ -1153,18 +1205,16 @@ EOSH
 			then
 				if [ -f "${base}.no-c" ]
 				then
-					resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
-					if ${testValgrind}
-					then
-						resultLine[${#resultLine[*]}]="${ERROR_COLOR}skipped${NORMAL_COLOR}"
-					fi	
+					resultLine[${#resultLine[@]}]="skipped"
+					${testValgrind} && resultLine[${#resultLine[@]}]="skipped"
 				else
 					if [ ! -f "${result}-c" ] || ! diff "${expected}" "${result}-c" >> "${logFile}"
 					then
 						passed=false
-						resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+						resultLine[${#resultLine[@]}]="FAILED"
+						${testValgrind} && resultLine[${#resultLine[@]}]="skipped"
 					else
-						resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+						resultLine[${#resultLine[@]}]="passed"
 						rm -f "${result}-c"
 					
 						# Valgrind
@@ -1175,18 +1225,35 @@ EOSH
 								res=$(xsltproc "${valgrindOutputXslFile}" "${valgrindXmlFile}")
 								if [ ! -z "${res}" ] && [ ${res} -eq 0 ]
 								then
-									resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+									resultLine[${#resultLine[@]}]="passed"
 									rm -f "${valgrindXmlFile}"
 									rm -f "${valgrindShellFile}"
 								else
 									passed=false
-									resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}LEAK${NORMAL_COLOR}"
+									resultLine[${#resultLine[@]}]="LEAK"
 								fi
 							else
 								passed=false
-								resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}CALLERROR${NORMAL_COLOR}"
+								resultLine[${#resultLine[@]}]="CALLERROR"
 							fi
 						fi
+					fi
+				fi
+			fi
+			
+			if ${testPHP}
+			then
+				if [ -f "${base}.no-php" ]
+				then
+					resultLine[${#resultLine[@]}]="skipped"
+				else
+					if [ ! -f "${result}-php" ] || ! diff "${expected}" "${result}-php" >> "${logFile}"
+					then
+						passed=false
+						resultLine[${#resultLine[@]}]="FAILED"
+					else
+						resultLine[${#resultLine[@]}]="passed"
+						rm -f "${result}-php"
 					fi
 				fi
 			fi
@@ -1198,19 +1265,14 @@ EOSH
 			then
 				for s in ${available_shells[*]}
 				do
-					resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
+					resultLine[${#resultLine[@]}]="IGNORED"
 				done
 			fi
 			
-			if ${testPython}
-			then
-				resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
-			fi
-			
-			if ${testC}
-			then
-				resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}IGNORED${NORMAL_COLOR}"
-			fi
+			${testPython} && resultLine[${#resultLine[@]}]="IGNORED"
+			${testC} && resultLine[${#resultLine[@]}]="IGNORED"
+			${testValgrind} && resultLine[${#resultLine[@]}]="IGNORED"
+			${testPHP} && resultLine[${#resultLine[@]}]="IGNORED"
 			
 			# Copy one of the result as the 'expected' file
 			if ${testC}
@@ -1222,18 +1284,24 @@ EOSH
 			elif ${testSb}
 			then
 				cp "${result}-bash" "${expected}"
+			elif ${testPHP}
+			then
+				cp "${result}-php" "${expected}"
 			fi
 		fi
 				
 		if ${passed}
 		then
-			resultLine[${#resultLine[*]}]="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+			resultLine[${#resultLine[@]}]="passed"
 			rm -f "${tmpShellScript}"
 		else
-			resultLine[${#resultLine[*]}]="${ERROR_COLOR}FAILED${NORMAL_COLOR}"
+			resultLine[${#resultLine[@]}]="FAILED"
 		fi
 		
-		printf "${resultLineFormat}" "${resultLine[@]}"
+		# NB: printf doesn't like tput. So we do a post transformation
+		printf "${resultLineFormat}" "${resultLine[@]}" \
+			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
+			| sed "s,FAILED,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
 		unset resultLine
 	done
 	
@@ -1279,6 +1347,15 @@ EOSH
 			rm -f "${cParserBase}.c"
 			# Mac OS X
 			rm -f "${cProgram}.dSYM"
+		fi
+	fi
+	
+	if ${testPHP}
+	then
+		if [ $(find "${d}/tests" -name "*.result-php" | wc -l) -eq 0 ]
+		then
+			rm -f "${phpProgram}"
+			rm -f "${phpLibrary}"
 		fi
 	fi
 done

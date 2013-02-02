@@ -23,6 +23,7 @@
 			</prg:names>
 			<prg:select restrict="true">
 				<prg:option>c</prg:option>
+				<prg:option>php</prg:option>
 				<prg:option>python</prg:option>
 				<prg:option>sh</prg:option>
 			</prg:select>

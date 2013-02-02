@@ -71,6 +71,96 @@ __build_xulapp_appendfsitems()
 	fi
 }
 
+__sc_php_bashcompletion()
+{
+	# Context
+	local current="${COMP_WORDS[COMP_CWORD]}"
+	local previous="${COMP_WORDS[COMP_CWORD-1]}"
+	# argument option
+	local option="$(__build_xulapp_getoptionname ${previous})"
+	if [ -z "${option}" ]
+	then
+		return 1
+	fi
+	
+	
+	case "${option}" in
+	"script-path" | "path")
+		__build_xulapp_appendfsitems "${current}"  -type f 
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"copy-script" | "copy")
+		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"build-script" | "build" | "merge")
+		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"parser-namespace" | "parser-ns")
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"program-namespace" | "program-ns" | "prg-ns")
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"classname" | "c")
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	
+	esac
+	return 1
+}
 __sc_xsh_bashcompletion()
 {
 	# Context
@@ -253,7 +343,7 @@ __build_xulapp_bashcompletion()
 	# Subcommand proposal
 	if [ ${COMP_CWORD} -eq 1 ]
 	then
-		local subcommands="xsh python command sh shell py cmd"
+		local subcommands="php xsh python command sh shell py cmd"
 		COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -278,6 +368,9 @@ __build_xulapp_bashcompletion()
 	
 	# Subcommand option completion
 	case "${first}" in
+	"php")
+		args=" ${globalargs}"
+		;;
 	"xsh" | "sh" | "shell")
 		args="--shell --prefix-sc-variables -s -p ${globalargs}"
 		;;

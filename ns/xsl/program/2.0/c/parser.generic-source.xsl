@@ -3063,6 +3063,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 			
 			if ((i->option_flags & nsxml_option_flag_required) && (binding->result_ref->is_set == 0))
 			{
+				/**
+				 * @todo special case for groups
+				 */
 				nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[, "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
 			}
 		}
