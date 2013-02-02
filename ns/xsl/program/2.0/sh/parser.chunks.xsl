@@ -325,7 +325,12 @@
 			<if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
 				<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 				<text>="</text>
-				<apply-templates select="$optionNode/prg:databinding/prg:variable" />
+				<!-- don't add subcommand prefix in this case -->
+				<call-template name="prg.sh.parser.boundVariableName">
+					<with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
+					<with-param name="usePrefix" select="false()" />
+				</call-template>
+				<!-- <apply-templates select="$optionNode/prg:databinding/prg:variable" /> -->
 				<text>"</text>
 				<value-of select="$sh.endl" />
 			</if>
@@ -429,7 +434,12 @@
 							<with-param name="quoted" select="true()" />
 						</call-template>
 						<text> = "</text>
-						<apply-templates select="$optionNode/prg:databinding/prg:variable" />
+						<!-- don't add subcommand prefix in this case -->
+						<call-template name="prg.sh.parser.boundVariableName">
+							<with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
+							<with-param name="usePrefix" select="false()" />
+						</call-template>
+						<!-- <apply-templates select="$optionNode/prg:databinding/prg:variable" /> -->
 						<text>" ] || [ </text>
 						<call-template name="sh.var">
 							<with-param name="name">
@@ -443,7 +453,12 @@
 					<with-param name="then">
 						<value-of select="$prg.sh.parser.fName_adderror" />
 						<text> "Another option of the group \"</text>
-						<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
+						<!-- don't add subcommand prefix in this case -->
+						<call-template name="prg.sh.parser.boundVariableName">
+							<with-param name="variableNode" select="$groupOptionNode/prg:databinding/prg:variable" />
+							<with-param name="usePrefix" select="false()" />
+						</call-template>
+						<!-- <apply-templates select="$groupOptionNode/prg:databinding/prg:variable" /> -->
 						<text>\" was previously set (</text>
 						<call-template name="sh.var">
 							<with-param name="name">

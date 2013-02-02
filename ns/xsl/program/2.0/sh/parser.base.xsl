@@ -10,15 +10,17 @@
 	<param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
 
 	<template name="prg.sh.parser.boundVariableName">
+		<!-- Variable name node -->
 		<param name="variableNode" />
+		<!-- Option/Positional argument node -->
 		<param name="node" select="$variableNode/../.." />
-
+		<param name="usePrefix" select="($prg.sh.parser.prefixSubcommandOptionVariable = 'yes')" />
 		<choose>
 			<when test="$node/self::prg:program">
 				<value-of select="normalize-space($variableNode)" />
 			</when>
 			<when test="$node/self::prg:subcommand">
-				<if test="$prg.sh.parser.prefixSubcommandOptionVariable = 'yes'">
+				<if test="$usePrefix">
 					<value-of select="normalize-space($node/prg:name)" />
 					<text>_</text>
 				</if>
@@ -28,6 +30,7 @@
 				<call-template name="prg.sh.parser.boundVariableName">
 					<with-param name="variableNode" select="$variableNode" />
 					<with-param name="node" select="$node/../.." />
+					<with-param name="usePrefix" select="$usePrefix" />
 				</call-template>
 			</when>
 			<otherwise>
