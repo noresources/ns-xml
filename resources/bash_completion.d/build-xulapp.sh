@@ -51,21 +51,24 @@ __build_xulapp_appendfsitems()
 		b="$(basename "${current}")"
 	fi
 	
-	local findCommand="find \"${d}\" -mindepth 1 -maxdepth 1 -name \"${b}*\" -a \\( ${@} \\)"
-	local files="$(eval ${findCommand} | while read file; do printf "%q\n" "${file#./}"; done)"
-	local IFS=$'\n'
-	local temporaryRepliesArray=(${files})
-	for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-	do
-		local p="${temporaryRepliesArray[$i]}"
-		[ "${d}" != "." ] && p="${d}/$(basename "${p}")"
-		[ -d "${p}" ] && p="${p%/}/"
-		temporaryRepliesArray[$i]="${p}"
-	done
-	for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
-	do
-		COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
-	done
+	if [ -d "${d}" ]
+	then
+		local findCommand="find \"${d}\" -mindepth 1 -maxdepth 1 -name \"${b}*\" -a \\( ${@} \\)"
+		local files="$(eval ${findCommand} | while read file; do printf "%q\n" "${file#./}"; done)"
+		local IFS=$'\n'
+		local temporaryRepliesArray=(${files})
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			local p="${temporaryRepliesArray[$i]}"
+			[ "${d}" != "." ] && p="${d}/$(basename "${p}")"
+			[ -d "${p}" ] && p="${p%/}/"
+			temporaryRepliesArray[$i]="${p}"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+	fi
 }
 
 __sc_xsh_bashcompletion()

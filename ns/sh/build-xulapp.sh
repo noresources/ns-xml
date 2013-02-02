@@ -378,9 +378,9 @@ parse_process_subcommand_option()
 				;;
 			interpreter)
 				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
-					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
 						parser_item="${parser_optiontail}"
@@ -432,14 +432,14 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
-				xsh_defaultInterpreter="xsh_defaultInterpreterType"
+				xsh_defaultInterpreter="defaultInterpreterType"
 				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
 				;;
 			interpreter-cmd)
 				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
-					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
 						parser_item="${parser_optiontail}"
@@ -491,7 +491,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
-				xsh_defaultInterpreter="xsh_defaultInterpreterCommand"
+				xsh_defaultInterpreter="defaultInterpreterCommand"
 				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
 				;;
 			*)
@@ -555,9 +555,9 @@ parse_process_subcommand_option()
 				;;
 			i)
 				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
-					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
 						parser_item="${parser_optiontail}"
@@ -609,14 +609,14 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
-				xsh_defaultInterpreter="xsh_defaultInterpreterType"
+				xsh_defaultInterpreter="defaultInterpreterType"
 				parse_setoptionpresence SC_1_xsh_3_g_1_interpreter;parse_setoptionpresence SC_1_xsh_3_g
 				;;
 			I)
 				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "xsh_defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
+				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
-					parse_adderror "Another option of the group \"xsh_defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
+					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
 						parser_item="${parser_optiontail}"
@@ -668,7 +668,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
-				xsh_defaultInterpreter="xsh_defaultInterpreterCommand"
+				xsh_defaultInterpreter="defaultInterpreterCommand"
 				parse_setoptionpresence SC_1_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_1_xsh_3_g
 				;;
 			*)
@@ -1807,6 +1807,7 @@ xml_validate()
 	
 	return 0
 }
+
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
@@ -2326,3 +2327,4 @@ else
 fi
 EOF
 chmod 755 "${launcherPath}"
+

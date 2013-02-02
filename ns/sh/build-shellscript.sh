@@ -987,6 +987,7 @@ xml_validate()
 	
 	return 0
 }
+
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -1099,3 +1100,4 @@ then
 fi
 
 chmod 755 "${outputScriptFilePath}"
+

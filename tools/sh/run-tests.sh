@@ -701,6 +701,8 @@ ns_mktempdir()
 		mktemp -d --suffix "${key}"
 	fi
 }
+
+
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
@@ -1285,3 +1287,4 @@ done
 ${testC} && ${testValgrind} && rm -f "${valgrindOutputXslFile}"
 
 exit $(find "${parserTestsPathBase}" -name "*.result-*" | wc -l)
+
