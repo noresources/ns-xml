@@ -28,8 +28,7 @@
 #		include <cassert>
 #	endif
 #	include <cctype>
-extern "C"
-{
+NSXML_EXTERNC_BEGIN
 #else
 #	include <stdio.h>
 #	include <stdlib.h>
@@ -522,7 +521,7 @@ struct nsxml_validated_item
 		 * Option info
 		 */
 		struct nsxml_option_name_binding *binding;
-
+		
 		/**
 		 * Positional argument number [1-n]
 		 */
@@ -2275,10 +2274,10 @@ int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxm
 	struct nsxml_value_validator *validator = state->active_option->info_ref->validators;
 	struct nsxml_validated_item item;
 	int validates = 1;
-
+	
 	item.item_type = nsxml_item_type_option;
 	item.item.binding = state->active_option;
-
+	
 	while (validator)
 	{
 		if (validator->validation_callback)
@@ -2303,7 +2302,7 @@ int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, 
 	
 	item.item_type = nsxml_item_type_positional_argument;
 	item.item.positional_argument_number = positional_argument_number;
-
+	
 	while (validator)
 	{
 		if (validator->validation_callback)
@@ -2383,7 +2382,7 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 				parent_res.group->selected_option_name = info->var_name;
 			}
 		}
-
+		
 		if (parent_res.group->is_set == 0)
 		{
 			parent_res.group->selected_option = NULL;
@@ -2397,7 +2396,7 @@ void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_prog
 			nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, "Mark parent option %s: %d (%d)\n", ((name) ? name : "?"), is_set, parent_res.group->is_set);
 		}
 #endif /* NSXML_DEBUG */
-
+		
 		parent_info = parent_info->option_info.parent;
 		child_res.option = (struct nsxml_option_result *)parent_res.option;
 	}
@@ -3055,7 +3054,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 		{
 			continue;
 		}
-
+		
 		for (o = 0; o < state->option_name_binding_counts[g]; ++o)
 		{
 			struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
@@ -3074,9 +3073,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	nsxml_parse_positional_argument_process(state, result);
 }
 
-#if defined(__cplusplus)
-} /* extern "C" */
-#endif
+NSXML_EXTERNC_END
 ]]></variable>
 
 	<template match="//prg:program">

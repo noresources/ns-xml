@@ -567,6 +567,11 @@ then
 	exit 0
 fi
 
+hasAstyle=false
+which astyle 1>/dev/null 2>&1 && hasAstyle=true 
+
+astyleOptionsFile="${rootPath}/resources/astyle/c.style"
+
 transformableFunctions=(\
 	"nsxml_util_strncpy" \
 	"nsxml_util_strcpy" \
@@ -612,8 +617,14 @@ transform_c()
 	
 	<variable name="prg.c.parser.${templateName}"><![CDATA[
 EOF
+	# Use Artistic Style to format code
+	if ${hasAstyle}
+	then
+		astyle --options="${astyleOptionsFile}" --suffix=none -q "${input}"
+	fi 
 	
 	cat "${input}" >> "${tmpFile}"
+		
 	cat >> "${tmpFile}" << EOF
 ]]></variable>
 

@@ -6,20 +6,26 @@
  ***************************************************************************************
  */
 
+#if !defined(__NSXML_PROGRAM_PARSER_H__)
+#define __NSXML_PROGRAM_PARSER_H__
+
+#if defined(__cplusplus)
+#	define NSXML_EXTERNC_BEGIN extern "C" {
+#	define NSXML_EXTERNC_END }
+#else
+#define NSXML_EXTERNC_END
+#endif
+
 #if defined(__cplusplus)
 #	include <cstdlib>
 #	include <cstdio>
 #	include <cstdarg>
-extern "C"
-{
+NSXML_EXTERNC_BEGIN
 #else
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #endif
-
-#if !defined(__NSXML_PROGRAM_PARSER_H__)
-#define __NSXML_PROGRAM_PARSER_H__
 
 /* Macros ****************************************/
 
@@ -738,8 +744,6 @@ NSXMLAPI void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, s
 
 void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_result *result);
 
-#if defined(__cplusplus)
-} /* extern "C" */
-#endif
+NSXML_EXTERNC_END
 
 #endif /* __NSXML_PROGRAM_PARSER_H__ */
