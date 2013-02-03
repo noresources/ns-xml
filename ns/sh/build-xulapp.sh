@@ -15,31 +15,14 @@ then
 case "${1}" in
 php)
 cat << EOFSCUSAGE
-php: Build a XUL application which will run an executable PHP script
-Usage: build-xulapp php (--script-path <path> | --copy-script <path> | --build-script <path> --parser-namespace <...> --program-namespace <...> -c <...>)
+php: Build a Command line interface PHP script and its XUL application
+Usage: build-xulapp php [-s <path>] [--parser-namespace <...>] [--program-namespace <...>] [-c <...>]
 With:
-  PHP script to call
-    --script-path, --path: Call PHP script in a given location
-      The application will call the PHP script located at the given path.
-      The PHP parser and Program info will not be generated. The tool assumes 
-      the given script is able to handle its command line arguments.
-    --copy-script, --copy: Copy script
-      The given PHP script will be copied in the application bundle and the 
-      application will run the PHP script from this location
-      The script is renamed <xulAppName<-program.php
-      The PHP parser and Program info will not be generated. The tool assumes 
-      the given script is able to handle its command line arguments.
-    Build script
-      Build the PHP parser and program info classes and merge them to the 
-      given PHP script
-      The resulting script will be generated inside application bundle as 
-      <xulAppName<-program.php
-      
-      --build-script, --build, --merge: Script to build
-      --parser-namespace, --parser-ns: PHP parser namespace
-        Namespace of all elements of the ns-xml PHP parser
-      --program-namespace, --program-ns, --prg-ns: PHP program namespace
-      -c, --classname: Program info class name
+  -s, --script: Script to build
+  --parser-namespace, --parser-ns: PHP parser namespace
+    Namespace of all elements of the ns-xml PHP parser
+  --program-namespace, --program-ns, --prg-ns: PHP program namespace
+  -c, --classname: Program info class name
 EOFSCUSAGE
 ;;
 xsh | sh | shell)
@@ -97,8 +80,8 @@ build-xulapp: Build (or update) a XUL application launcher
 Usage: 
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
-    php: Build a XUL application which will run an executable PHP script
-      options: (--script-path <path> | --copy-script <path> | --build-script <path> --parser-namespace <...> --program-namespace <...> -c <...>)
+    php: Build a Command line interface PHP script and its XUL application
+      options: [-s <path>] [--parser-namespace <...>] [--program-namespace <...>] [-c <...>]
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
       options: [-p] -s <path> [(-i <...> | -I <...>)]
     python, py: Build a XUL application which will run a python script built with the program XML schema
@@ -189,8 +172,6 @@ nsxmlPathRelative=false
 addNsXml=false
 # Single argument options
 php_scriptPath=
-php_scriptCopy=
-php_scriptBuildPath=
 php_parserNamespace=
 php_programNamespace=
 php_programInfoClassname=
@@ -368,38 +349,7 @@ parse_process_subcommand_option()
 			fi
 			
 			case "${parser_option}" in
-			script-path | path)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptPath" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
+			script)
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item="${parser_optiontail}"
@@ -423,196 +373,28 @@ parse_process_subcommand_option()
 				parser_subindex=0
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
 				php_scriptPath="${parser_item}"
-				php_scriptMode="scriptPath"
-				parse_setoptionpresence SC_1_php_1_g_1_script-path;parse_setoptionpresence SC_1_php_1_g
-				;;
-			copy-script | copy)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptCopy" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if [ ! -e "${parser_item}" ]
-				then
-					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if ! parse_pathaccesscheck "${parser_item}" "r"
-				then
-					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-				then
-					parse_adderror "Invalid patn type for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				php_scriptCopy="${parser_item}"
-				php_scriptMode="scriptCopy"
-				parse_setoptionpresence SC_1_php_1_g_2_copy-script;parse_setoptionpresence SC_1_php_1_g
-				;;
-			build-script | build | merge)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if [ ! -e "${parser_item}" ]
-				then
-					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if ! parse_pathaccesscheck "${parser_item}" "r"
-				then
-					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-				then
-					parse_adderror "Invalid patn type for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				php_scriptBuildPath="${parser_item}"
-				php_scriptMode="scriptBuild"
-				parse_setoptionpresence SC_1_php_1_g_3_g_1_build-script;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				parse_setoptionpresence SC_1_php_1_script
 				;;
 			parser-namespace | parser-ns)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item="${parser_optiontail}"
@@ -637,41 +419,9 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_parserNamespace="${parser_item}"
-				php_scriptMode="scriptBuild"
-				parse_setoptionpresence SC_1_php_1_g_3_g_2_parser-namespace;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				parse_setoptionpresence SC_1_php_2_parser-namespace
 				;;
 			program-namespace | program-ns | prg-ns)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item="${parser_optiontail}"
@@ -696,41 +446,9 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programNamespace="${parser_item}"
-				php_scriptMode="scriptBuild"
-				parse_setoptionpresence SC_1_php_1_g_3_g_3_program-namespace;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				parse_setoptionpresence SC_1_php_3_program-namespace
 				;;
 			classname)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item="${parser_optiontail}"
@@ -755,8 +473,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
-				php_scriptMode="scriptBuild"
-				parse_setoptionpresence SC_1_php_1_g_3_g_4_classname;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				parse_setoptionpresence SC_1_php_4_classname
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -774,38 +491,52 @@ parse_process_subcommand_option()
 			fi
 			
 			case "${parser_option}" in
-			c)
-				# Group checks
-				if ! ([ -z "${php_scriptMode}" ] || [ "${php_scriptMode}" = "scriptBuild" ] || [ "${php_scriptMode:0:1}" = "@" ])
+			s)
+				if [ ! -z "${parser_optiontail}" ]
 				then
-					parse_adderror "Another option of the group \"scriptMode\" was previously set (${php_scriptMode})"
-					if [ ! -z "${parser_optiontail}" ]
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
 					then
-						parser_item="${parser_optiontail}"
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
 					fi
 					
-					parser_subindex=0
-					parser_optiontail=""
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				php_scriptPath="${parser_item}"
+				parse_setoptionpresence SC_1_php_1_script
+				;;
+			c)
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item="${parser_optiontail}"
@@ -830,8 +561,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
-				php_scriptMode="scriptBuild"
-				parse_setoptionpresence SC_1_php_1_g_3_g_4_classname;parse_setoptionpresence SC_1_php_1_g_3_g;parse_setoptionpresence SC_1_php_1_g
+				parse_setoptionpresence SC_1_php_4_classname
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -2123,7 +1853,6 @@ parse_process_option()
 		case "${parser_item}" in
 		php)
 			parser_subcommand="php"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_1_php_1_g:--script-path, --copy-script or (--build-script, --parser-namespace, --program-namespace, --classname)"
 			;;
 		xsh | sh | shell)
 			parser_subcommand="xsh"
@@ -2236,22 +1965,16 @@ local parserNamespace="${php_parserNamespace}"
 
 local programNamespace="${php_programNamespace}"
 
-local outputScriptFilePath="${commandLauncherFile}-parser.php"
-local generationMode
+local outputScriptFilePath="${commandLauncherFile}"
+
+local generationMode="generateMerge"
 
 local generateBase="false"
 
 local generateInfo="false"
-local generateMerge
 
-local php_scriptInclude="__FILE__ . \"-program.php\""
-if [ "${php_scriptMode}" = "scriptBuild" ]
-then
-	[ -r "${php_scriptBuildPath}" ] || error "Missing PHP script file to merge (--build-script option)"
-	outputScriptFilePath="${commandLauncherFile}"
-	generationMode="generateMerge"
-	generateMerge="${php_scriptBuildPath}"
-	info " - Generate PHP file"
+local generateMerge="${php_scriptPath}"
+info " - Generate PHP file"
 buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
 
 # Check required templates
@@ -2305,25 +2028,6 @@ then
 	fi
 	
 	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
-fi
-elif [ "${php_scriptMode}" = "scriptCopy" ]
-then
-	info " - Copy PHP script"
-	cp -f "${php_scriptCopy}" "${commandLauncherFile}-program.php" || error "Failed to copy script \""${php_scriptCopy}"\""
-else
-	php_scriptInclude="\"${php_scriptPath}\""
-fi 
-
-if [ "${php_scriptMode}" != "scriptBuild" ]
-then
-	info " - Generate launcher"
-	cat > "${commandLauncherFile}" << EOF
-#!/usr/bin/env php
-<?php
-require_once ( __FILE__ . "-parser.php" );
-include_once ( ${php_scriptInclude} );
-?>
-EOF
 fi
 return 0
 

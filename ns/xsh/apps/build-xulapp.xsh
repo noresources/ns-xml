@@ -30,43 +30,15 @@ exit 1
 				<xsh:local name="xmlShellFileDescriptionPath">${php_xmlShellFileDescriptionPath}</xsh:local>
 				<xsh:local name="parserNamespace">${php_parserNamespace}</xsh:local>
 				<xsh:local name="programNamespace">${php_programNamespace}</xsh:local>
-				<!-- Forced parameters -->
-				<xsh:local name="outputScriptFilePath">${commandLauncherFile}-parser.php</xsh:local>
-				<xsh:local name="generationMode"></xsh:local>
+				<!-- build-php Forced parameters -->
+				<xsh:local name="outputScriptFilePath">${commandLauncherFile}</xsh:local>
+				<xsh:local name="generationMode">generateMerge</xsh:local>
 				<xsh:local name="generateBase">false</xsh:local>
 				<xsh:local name="generateInfo">false</xsh:local>
-				<xsh:local name="generateMerge" />
-				
-				<xsh:local name="php_scriptInclude">__FILE__ . \"-program.php\"</xsh:local>
-				
+				<xsh:local name="generateMerge">${php_scriptPath}</xsh:local>
 				<![CDATA[
-if [ "${php_scriptMode}" = "scriptBuild" ]
-then
-	[ -r "${php_scriptBuildPath}" ] || error "Missing PHP script file to merge (--build-script option)"
-	outputScriptFilePath="${commandLauncherFile}"
-	generationMode="generateMerge"
-	generateMerge="${php_scriptBuildPath}"
-	info " - Generate PHP file"
+info " - Generate PHP file"
 ]]>	<xi:include href="build-php.body.process.sh" parse="text" /><![CDATA[
-elif [ "${php_scriptMode}" = "scriptCopy" ]
-then
-	info " - Copy PHP script"
-	cp -f "${php_scriptCopy}" "${commandLauncherFile}-program.php" || error "Failed to copy script \""${php_scriptCopy}"\""
-else
-	php_scriptInclude="\"${php_scriptPath}\""
-fi 
-
-if [ "${php_scriptMode}" != "scriptBuild" ]
-then
-	info " - Generate launcher"
-	cat > "${commandLauncherFile}" << EOF
-#!/usr/bin/env php
-<?php
-require_once ( __FILE__ . "-parser.php" );
-include_once ( ${php_scriptInclude} );
-?>
-EOF
-fi
 return 0]]></xsh:body>
 		</xsh:function>
 		<xsh:function name="build_xsh">

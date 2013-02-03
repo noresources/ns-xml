@@ -17,152 +17,50 @@
 		<prg:subcommand>
 			<prg:name>php</prg:name>
 			<prg:documentation>
-				<prg:abstract>Build a XUL application which will run an executable PHP script</prg:abstract>
+				<prg:abstract>Build a Command line interface PHP script and its XUL application</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:group type="exclusive" required="true">
+				<prg:argument>
 					<prg:databinding>
-						<prg:variable>scriptMode</prg:variable>
+						<prg:variable>scriptPath</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>PHP script to call</prg:abstract>
+						<prg:abstract>Script to build</prg:abstract>
 					</prg:documentation>
-					<prg:options>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>scriptPath</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Call PHP script in a given location</prg:abstract>
-								<prg:details>
-									The application will call the PHP script located at the given path.
-									<prg:br />
-									The PHP parser and Program info will not be generated. The tool assumes
-									the given script is able to handle its command line arguments.
-								</prg:details>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>script-path</prg:long>
-								<prg:long>path</prg:long>
-							</prg:names>
-							<prg:type>
-								<prg:path>
-									<prg:kinds>
-										<prg:file />
-									</prg:kinds>
-									<prg:patterns>
-										<prg:pattern>
-											<prg:name>PHP script</prg:name>
-											<prg:rules>
-												<prg:rule>
-													<prg:endWith>.php</prg:endWith>
-												</prg:rule>
-											</prg:rules>
-										</prg:pattern>
-									</prg:patterns>
-								</prg:path>
-							</prg:type>
-						</prg:argument>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>scriptCopy</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Copy script</prg:abstract>
-								<prg:details>
-									The given PHP script will be copied in
-									the application bundle and the application will
-									run the PHP script from this location
-									<prg:br />
-									The script is renamed &lt;xulAppName&lt;-program.php
-									<prg:br />
-									The PHP parser and Program info will not be generated. The tool assumes
-									the given script is able to handle its command line arguments.
-								</prg:details>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>copy-script</prg:long>
-								<prg:long>copy</prg:long>
-							</prg:names>
-							<prg:type>
-								<prg:path exist="true" access="r">
-									<prg:kinds>
-										<prg:file />
-									</prg:kinds>
-									<prg:patterns>
-										<prg:pattern>
-											<prg:name>PHP script</prg:name>
-											<prg:rules>
-												<prg:rule>
-													<prg:endWith>.php</prg:endWith>
-												</prg:rule>
-											</prg:rules>
-										</prg:pattern>
-									</prg:patterns>
-								</prg:path>
-							</prg:type>
-						</prg:argument>
-						<prg:group>
-							<prg:databinding>
-								<prg:variable>scriptBuild</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Build script</prg:abstract>
-								<prg:details>
-									Build the PHP parser and program info classes and merge
-									them to the given PHP script
-									<prg:br />
-									The resulting script will be generated inside application bundle
-									as &lt;xulAppName&lt;-program.php
-								</prg:details>
-							</prg:documentation>
-							<prg:options>
-								<prg:argument>
-									<prg:databinding>
-										<prg:variable>scriptBuildPath</prg:variable>
-									</prg:databinding>
-									<prg:documentation>
-										<prg:abstract>Script to build</prg:abstract>
-									</prg:documentation>
-									<prg:names>
-										<prg:long>build-script</prg:long>
-										<prg:long>build</prg:long>
-										<prg:long>merge</prg:long>
-									</prg:names>
-									<prg:type>
-										<prg:path exist="true" access="r">
-											<prg:kinds>
-												<prg:file />
-											</prg:kinds>
-											<prg:patterns>
-												<prg:pattern>
-													<prg:name>PHP script</prg:name>
-													<prg:rules>
-														<prg:rule>
-															<prg:endWith>.php</prg:endWith>
-														</prg:rule>
-													</prg:rules>
-												</prg:pattern>
-											</prg:patterns>
-										</prg:path>
-									</prg:type>
-								</prg:argument>
-								<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.parsernamespace'])" />
-								<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programnamespace'])" />
-								<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programclassname'])" />
-								<!-- <prg:argument>
-									<prg:databinding>
-										<prg:variable>xulContextDefine</prg:variable>
-									</prg:databinding>
-									<prg:documentation>
-										<prg:abstract>Define constant name</prg:abstract>
-										<prg:details>Add a define directive to tell the PHP script it was called from the XUL application</prg:details>
-									</prg:documentation>
-								</prg:argument> -->
-							</prg:options>
-						</prg:group>
-					</prg:options>
-				</prg:group>
+					<prg:names>
+						<prg:long>script</prg:long>
+						<prg:short>s</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true" access="r">
+							<prg:kinds>
+								<prg:file />
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>PHP script</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.php</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.parsernamespace'])" />
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programnamespace'])" />
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programclassname'])" />
+				<!-- <prg:argument>
+					<prg:databinding>
+					<prg:variable>xulContextDefine</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+					<prg:abstract>Define constant name</prg:abstract>
+					<prg:details>Add a define directive to tell the PHP script it was called from the XUL application</prg:details>
+					</prg:documentation>
+					</prg:argument> -->
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>

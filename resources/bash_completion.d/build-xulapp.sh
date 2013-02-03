@@ -85,23 +85,7 @@ __sc_php_bashcompletion()
 	
 	
 	case "${option}" in
-	"script-path" | "path")
-		__build_xulapp_appendfsitems "${current}"  -type f 
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
-		
-		;;
-	"copy-script" | "copy")
-		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
-		
-		;;
-	"build-script" | "build" | "merge")
+	"script" | "s")
 		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
 		if [ ${#COMPREPLY[*]} -gt 0 ]
 		then
@@ -369,7 +353,7 @@ __build_xulapp_bashcompletion()
 	# Subcommand option completion
 	case "${first}" in
 	"php")
-		args=" ${globalargs}"
+		args="--script --parser-namespace --parser-ns --program-namespace --program-ns --prg-ns --classname -s -c ${globalargs}"
 		;;
 	"xsh" | "sh" | "shell")
 		args="--shell --prefix-sc-variables -s -p ${globalargs}"
