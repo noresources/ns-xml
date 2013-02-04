@@ -1596,6 +1596,16 @@ class ProgramResult extends RootItemResult implements Iterator
 	}
 
 	/**
+	 * Indicates if the command line processing was a success (no errors)
+	 * @return boolean
+	 */
+	public function __invoke()
+	{
+		$errors = $this->getMessages(ParserMessage::ERROR, ParserMessage::FATAL_ERROR);
+		return (count($errors) == 0);
+	}
+	
+	/**
 	 * @return integer Number of positional argument set
 	 */
 	public function valueCount()
@@ -2561,11 +2571,11 @@ class Parser
 		{
 			if ($s->activeSubcommandIndex > 0)
 			{
-				$result->appendMessage(ParserState::ERROR, "Subcommand does not accept positional arguments");
+				$result->appendMessage(ParserMessage::ERROR, "Subcommand does not accept positional arguments");
 			}
 			else
 			{
-				$result->appendMessage(ParserState::ERROR, "Program does not accept positional arguments");
+				$result->appendMessage(ParserMessage::ERROR, "Program does not accept positional arguments");
 			}
 
 			return $validPositionalArgumentCount;
@@ -2609,7 +2619,7 @@ class Parser
 
 		if (count($s->values) > $processedValueCount)
 		{
-			$result->appendMessage(ParserState::ERROR, "Too many positional arguments");
+			$result->appendMessage(ParserMessage::ERROR, "Too many positional arguments");
 		}
 		else if ($paInfoIndex < $paInfoCount)
 		{
@@ -2620,7 +2630,7 @@ class Parser
 			{
 				if ($root->getPositionalArgument($i)->positionalArgumentFlags & ItemInfo::REQUIRED)
 				{
-					$result->appendMessage(ParserState::ERROR, "Required positional argument %d is missing", $i);
+					$result->appendMessage(ParserMessage::ERROR, "Required positional argument %d is missing", $i);
 				}
 			}
 		}
