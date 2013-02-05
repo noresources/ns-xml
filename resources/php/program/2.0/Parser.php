@@ -1291,7 +1291,9 @@ class ArgumentOptionResult extends OptionResult
 /**
  * Multi argument option result
  */
-class MultiArgumentOptionResult extends OptionResult
+class MultiArgumentOptionResult
+	extends OptionResult
+	implements Countable
 {
 	/**
 	 * @var array Option arguments
@@ -1301,7 +1303,7 @@ class MultiArgumentOptionResult extends OptionResult
 	public function __construct()
 	{
 		parent::__construct();
-		$this->argument = array();
+		$this->arguments = array();
 	}
 
 	/**
@@ -1309,11 +1311,16 @@ class MultiArgumentOptionResult extends OptionResult
 	 * @return If no argument is given, return all option arguments.
 	 * If an array of index is given, return a subset of the option arguments array
 	 */
-	public function __invoke( /* null or array */ )
+	public function __invoke( /* ... */ )
 	{
 		return $this->multiArgumentValue(func_get_args());
 	}
-
+	
+	public function count()
+	{
+		return $this->isSet ? count($this->arguments) : 0;
+	}
+	
 	/**
 	 * @param mixed null or array
 	 * @return If no argument is given, return all option arguments.
@@ -1326,6 +1333,11 @@ class MultiArgumentOptionResult extends OptionResult
 
 	private function multiArgumentValue($args)
 	{
+		if (!$this->isSet)
+		{
+			return array();
+		}
+		
 		if (is_integer($args))
 		{
 			$args = array($args);
@@ -1333,7 +1345,7 @@ class MultiArgumentOptionResult extends OptionResult
 		
 		if (count($args) == 0)
 		{
-			return $this->isSet ? $this->arguments : array();
+			return $this->arguments;
 		}
 		else if ((count($args) == 1) && is_array($args[0]))
 		{
@@ -1562,6 +1574,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 	private $options;
 }
 
+
 class SubcommandResult extends RootItemResult
 {
 
@@ -1596,7 +1609,7 @@ class ProgramResult extends RootItemResult implements Iterator
 	}
 
 	/**
-	 * Indicates if the command line processing was a success (no errors)
+	 * Indicates if the command line argument parsing completes successfully (without any errors)
 	 * @return boolean
 	 */
 	public function __invoke()
@@ -1613,6 +1626,33 @@ class ProgramResult extends RootItemResult implements Iterator
 		return count($this->values);
 	}
 
+	/**
+	 * Get parser result messages
+	 *
+	 * @param integer $minLevel
+	 * @param integer $maxLevel
+	 */
+	public function getMessages($minLevel = ParserMessage::WARNING, $maxLevel = ParserMessage::FATAL_ERROR)
+	{
+		$messages = array();
+		foreach ($this->messages as $k => &$m)
+		{
+			if ($m->type < $minLevel)
+			{
+				continue;
+			}
+
+			if ($m->type > $maxLevel)
+			{
+				continue;
+			}
+
+			$messages[] = $m;
+		}
+
+		return $messages;
+	}
+	
 	/**
 	 * @param integer $item Positional argument index
 	 * @param mixed $result Positional argument value
@@ -1736,33 +1776,6 @@ class ProgramResult extends RootItemResult implements Iterator
 		$args = func_get_args();
 		$type = array_shift($args);
 		$this->messages[] = new ParserMessage($type, call_user_func_array("sprintf", $args));
-	}
-
-	/**
-	 * Get parser result messages
-	 *
-	 * @param integer $minLevel
-	 * @param integer $maxLevel
-	 */
-	public function getMessages($minLevel = ParserMessage::WARNING, $maxLevel = ParserMessage::FATAL_ERROR)
-	{
-		$messages = array();
-		foreach ($this->messages as $k => &$m)
-		{
-			if ($m->type < $minLevel)
-			{
-				continue;
-			}
-
-			if ($m->type > $maxLevel)
-			{
-				continue;
-			}
-
-			$messages[] = $m;
-		}
-
-		return $messages;
 	}
 
 	/**
