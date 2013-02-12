@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh"
 	xmlns:bash="http://xsd.nore.fr/bash">
 

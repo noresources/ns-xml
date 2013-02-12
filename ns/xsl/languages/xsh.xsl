@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Transform documents based on the xsh XML schema (http://xsd.nore.fr/xsh) to UNIX shell script code -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:bash="http://xsd.nore.fr/bash">

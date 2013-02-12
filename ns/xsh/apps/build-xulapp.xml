@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>build-xulapp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
 	<prg:copyright>Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
-	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
+	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Build (or update) a XUL application launcher</prg:abstract>
 	</prg:documentation>

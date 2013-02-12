@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
 # Version: 1.0
 #
@@ -578,7 +578,7 @@ transform_php()
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © $(date +%Y) by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- PHP Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">

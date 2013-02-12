@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Creole 1.0 basic syntax -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">

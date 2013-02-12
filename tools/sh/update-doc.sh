@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
 # Version: 2.0
 # 
@@ -1161,20 +1161,30 @@ then
 	
 	cd "${specComplianceTempPath}"
 	if unzip -o "${specComplianceSource}" "content.xml" 1>/dev/null 2>&1
-	then	
+	then
+		# General feature support
 		cat "${specComplianceOutput}.1" > "${specComplianceOutput}"
 		echo "" >> "${specComplianceOutput}"
 	
 		xsltproc --param odf.spreadsheet2wikicreole.tableIndex 2 "${specComplianceXslt}" content.xml >> "${specComplianceOutput}"
 		echo "" >> "${specComplianceOutput}"
 		
+		# Behaviors
 		cat "${specComplianceOutput}.2" >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+		
+		xsltproc --param odf.spreadsheet2wikicreole.tableIndex 3 "${specComplianceXslt}" content.xml >> "${specComplianceOutput}"
+		echo "" >> "${specComplianceOutput}"
+				
+		# Messages
+		cat "${specComplianceOutput}.3" >> "${specComplianceOutput}"
 		echo "" >> "${specComplianceOutput}"
 		
 		xsltproc --param odf.spreadsheet2wikicreole.tableIndex 1 "${specComplianceXslt}" content.xml >> "${specComplianceOutput}"
 		echo "" >> "${specComplianceOutput}"
 		
-		cat "${specComplianceOutput}.3" >> "${specComplianceOutput}"
+		# Footer
+		cat "${specComplianceOutput}.4" >> "${specComplianceOutput}"
 		echo "" >> "${specComplianceOutput}"
 		
 		rm -f content.xml

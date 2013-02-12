@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <sh:functions xmlns:sh="http://xsd.nore.fr/bash">
 	<!-- in place file text replacement using sed -->
 	<!-- Take care of sed version (at least on Mac OS X 10.5) -->

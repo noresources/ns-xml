@@ -644,7 +644,7 @@ class OptionInfo extends ItemInfo
 	{
 		return $this->optionNames;
 	}
-
+	
 	/**
 	 * @param mixed $nameListOrArray
 	 */
@@ -665,7 +665,6 @@ class OptionInfo extends ItemInfo
 	 */
 	private $optionNames;
 }
-
 
 /**
  * Switch option description
@@ -988,6 +987,24 @@ class GroupOptionInfo extends OptionContainerOptionInfo
 	{
 		$this->options[] = $option;
 		$option->parent = $this;
+	}
+
+	public function getOptionNameListString()
+	{
+		$names = array();
+		foreach ($this->options as &$option)
+		{
+			if ($option instanceof GroupOptionInfo)
+			{
+				$names[] = "(" . $option->getOptionNameListString() . ")";
+			}
+			else
+			{
+				$names[] = $option->getOptionNames()->getFirstOptionName(OptionName::LONG, false);
+			}
+		}
+		
+		return Text::implode($names, ", ", " or ");
 	}
 }
 
@@ -1362,7 +1379,6 @@ class MultiArgumentOptionResult
 	}
 }
 
-
 /**
  * @c isSet represents the number of sub options represented on
  * the command line
@@ -1573,7 +1589,6 @@ class RootItemResult implements ItemResult, ArrayAccess
 	 */
 	private $options;
 }
-
 
 class SubcommandResult extends RootItemResult
 {
@@ -2150,7 +2165,7 @@ class Parser
 				}
 				else
 				{
-					$result->appendMessage(ParserMessage::FATAL_ERROR, "Unkown option %s", $cliName);
+					$result->appendMessage(ParserMessage::FATAL_ERROR, "Unknown option %s", $cliName);
 					$s->stateFlags |= ParserState::ABORT;
 					break;
 				}
@@ -2191,7 +2206,7 @@ class Parser
 					}
 					else
 					{
-						$result->appendMessage(ParserMessage::FATAL_ERROR, "Unkown option %s", $cliName);
+						$result->appendMessage(ParserMessage::FATAL_ERROR, "Unknown option %s", $cliName);
 						$s->stateFlags |= ParserState::ABORT;
 						break;
 					}
@@ -2242,10 +2257,15 @@ class Parser
 				{
 					if ($binding->info instanceof GroupOptionInfo)
 					{
-						/**
-						 * @todo list sub-options names
-						 */
-						$result->appendMessage(ParserMessage::ERROR, "Missing required option %s", $binding->name->cliName());
+						$nameList = $binding->info->getOptionNameListString();
+						if ($binding->info->groupType == GroupOptionInfo::TYPE_EXCLUSIVE)
+						{
+							$result->appendMessage(ParserMessage::ERROR, "One of the following options have to be set: %s", $nameList);
+						}
+						else
+						{
+							$result->appendMessage(ParserMessage::ERROR, "At least one of the following options have to be set: %s", $nameList);
+						}
 					}
 					else
 					{
@@ -2305,10 +2325,7 @@ class Parser
 			$markSet = 1;
 			if (count($s->activeOptionArguments) > 0)
 			{
-				$result->appendMessage(ParserMessage::WARNING,
-					"Ignore option argument '%s' for switch %s",
-					$s->activeOptionArguments[0], $s->activeOption->name->cliName()
-				);
+				$result->appendMessage(ParserMessage::WARNING, "Ignore option argument '%s' for switch %s", $s->activeOptionArguments[0], $s->activeOption->name->cliName());
 			}
 		}
 		else if ($ao->info instanceof ArgumentOptionInfo)

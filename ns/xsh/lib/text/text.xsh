@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
 	<sh:function name="ns_text_boolean_to_text">
 		<sh:parameter name="v" />

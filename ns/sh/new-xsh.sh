@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2013 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
 # Version: 1.0
 # 

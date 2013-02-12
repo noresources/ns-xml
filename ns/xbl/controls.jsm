@@ -1,6 +1,6 @@
 /**
 * Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
-* Distributed under the terms of the BSD License, see LICENSE
+* Distributed under the terms of the MIT License, see LICENSE
 */
 
 var EXPORTED_SYMBOLS = ["FSItemSelectionDialog", "EventForwarder","NodeHelper", "AnonymousNodesHelper"];

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # ####################################
 # Regenerate build-shellscript 'by hand'
 # ####################################

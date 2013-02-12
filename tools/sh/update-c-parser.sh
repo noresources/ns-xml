@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
 # Version: 2.0
 # 
@@ -608,7 +608,7 @@ transform_c()
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
 	<import href="parser.generic-names.xsl" />
@@ -673,7 +673,7 @@ create_identifier_variables()
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- List of variable, structs and function names which can be modified by the user -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform"
 	xmlns:prg="http://xsd.nore.fr/program" version="1.0">

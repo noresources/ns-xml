@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Indicates if a XSLT stylesheet contains elements that can be processed using documentation-html.xsl. Return 'yes'
 if something can be processed. Otherwise 'no' -->

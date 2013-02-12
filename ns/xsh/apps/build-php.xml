@@ -5,10 +5,13 @@
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:copyright>Copyright © 2012 by Renaud Guillard</prg:copyright>
-	<prg:license>Distributed under the terms of the BSD License, see LICENSE</prg:license>
+	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>...</prg:abstract>
 	</prg:documentation>
+	<prg:ui>
+		<prg:label>PHP parser generator</prg:label>
+	</prg:ui>
 	<prg:options>
 		<prg:group>
 			<prg:documentation>
