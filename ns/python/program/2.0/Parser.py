@@ -209,7 +209,7 @@ class Parser:
                 if isinstance(context.option, ArgumentOptionInfo):
                     context.unset_current_option()
                     
-        elif (context.subcommand == None):
+        elif (context.subcommand == None and (len(programInfo.values) == 0)):
             context.debug(" Attempt to get subcommand")
             context.subcommand = self.get_subcommand(programInfo, context, arg)
             if context.subcommand == None:
