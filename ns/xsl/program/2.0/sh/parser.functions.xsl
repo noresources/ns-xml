@@ -845,6 +845,7 @@
 													<with-param name="onError" select="$onError" />
 													<with-param name="onSuccess" select="$onSuccess" />
 													<with-param name="onUnknownOption" select="$onUnknownOption" />
+													<with-param name="interpreter" select="$interpreter" />
 													<with-param name="keyword">
 														<text>if</text>
 													</with-param>
@@ -1111,6 +1112,7 @@
 						<with-param name="onError" select="$onError" />
 						<with-param name="onSuccess" select="$onSuccess" />
 						<with-param name="onUnknownOption" select="$onUnknownOption" />
+						<with-param name="interpreter" select="$interpreter" />
 					</call-template>
 				</if>
 

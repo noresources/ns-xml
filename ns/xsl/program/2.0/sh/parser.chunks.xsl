@@ -1322,6 +1322,7 @@
 		<param name="keyword">
 			<text>elif</text>
 		</param>
+		<param name="interpreter" />
 
 		<value-of select="$keyword" />
 		<text> [ </text>
@@ -1385,6 +1386,7 @@
 					<with-param name="optionsNode" select="$optionsNode" />
 					<with-param name="onError" select="$onError" />
 					<with-param name="onUnknownOption" select="$onUnknownOption" />
+					<with-param name="interpreter" select="$interpreter" />
 				</call-template>
 
 			</with-param>
