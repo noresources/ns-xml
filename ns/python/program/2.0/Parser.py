@@ -40,6 +40,8 @@ class ParserResultUtil:
                 value = bool(o.value)
             if isinstance(o, ArgumentOptionInfo):
                 value = o.value
+                if value == None and o.default != None:
+                    value = o.default
             if isinstance(o, MultiArgumentOptionInfo):
                 value = o.value
             if isinstance(o, GroupOptionInfo):
