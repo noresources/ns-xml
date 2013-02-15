@@ -543,11 +543,11 @@ class EnumerationValueValidator
 		$usage = new UsageFormat;
 		if (is_object($element) && ($element instanceof OptionNameBinding))
 		{
-			$result->appendMessage(ParserMessage::ERROR, "Invalid value for option %s. %s\n", $element->name->cliName(), $this->usage($usage));
+			$result->appendMessage(Message::ERROR, 1, Message::ERROR_INVALID_OPTION_VALUE, $element->name->cliName(), $this->usage($usage));
 		}
 		else
 		{
-			$result->appendMessage(ParserMessage::ERROR, "Invalid value for positional argument %d. %s\n", $element, $this->usage($usage));
+			$result->appendMessage(Message::ERROR, 2, Message::ERROR_INVALID_POSARG_VALUE, $element, $this->usage($usage));
 		}
 
 		return false;
@@ -1418,7 +1418,7 @@ class GroupOptionResult extends OptionResult
 /**
  * Parser message
  */
-class ParserMessage
+class Message
 {
 	/**
 	 * Debug message
@@ -1438,7 +1438,7 @@ class ParserMessage
 	 * A fatal error is raised when a command line argument error leads to an unresumable
 	 * state. Parsing stops immediately after a fatal error
 	 */
-	const FATAL_ERROR = 3;
+	const FATALERROR = 3;
 
 	/**
 	 * Message type
@@ -1446,13 +1446,20 @@ class ParserMessage
 	public $type;
 	
 	/**
+	 * Message code
+	 * @var integer
+	 */
+	public $code;
+		
+	/**
 	 * Message string
 	 */
 	public $message;
 
-	public function __construct($type, $message)
+	public function __construct($type, $code, $message)
 	{
 		$this->type = $type;
+		$this->code = $code;
 		$this->message = $message;
 	}
 
@@ -1460,6 +1467,24 @@ class ParserMessage
 	{
 		return $this->message;
 	}
+
+	const FATALERROR_UNKNOWN_OPTION = "Unknown option %s";
+	
+	/* 1  */ const ERROR_INVALID_OPTION_VALUE = "Invalid value for positional argument %d. %s";
+	/* 2  */ const ERROR_INVALID_POSARG_VALUE = "Invalid value for option %s. %s\n";
+	/* 3  */ const ERROR_MISSING_ARG = "Missing argument for option %s";
+	/* 4  */ const ERROR_REQUIRED_OPTION = "Missing required option %s";
+	/* 5  */ const ERROR_REQUIRED_GROUP = "At least one of the following options have to be set: %s";
+	/* 6  */ const ERROR_REQUIRED_XGROUP = "One of the following options have to be set: %s";
+	/* 7  */ const ERROR_REQUIRED_POSARG = "Required positional argument %d is missing";
+	/* 8  */ const ERROR_PROGRAM_POSARG = "Program does not accept positional arguments";
+	/* 9  */ const ERROR_SUBCMD_POSARG = "Subcommand %s does not accept positional arguments";
+	/* 10 */ const ERROR_TOOMANY_POSARG = "Too many positional arguments";
+	/* 11 */ const ERROR_MISSING_MARG = "At least %d argument(s) required for %s option, got %d";
+	/* 12 */ const ERROR_UNEXPECTED_OPTION = "Unexpected option %s";
+	/* 13 */ const ERROR_SWITCH_ARG = "Option %s does not allow an argument";
+	
+	const WARNING_IGNORE_EOA = "Ignore end-of-argument marker";
 }
 
 /**
@@ -1628,7 +1653,7 @@ class ProgramResult extends RootItemResult implements Iterator
 	 */
 	public function __invoke()
 	{
-		$errors = $this->getMessages(ParserMessage::ERROR, ParserMessage::FATAL_ERROR);
+		$errors = $this->getMessages(Message::ERROR, Message::FATALERROR);
 		return (count($errors) == 0);
 	}
 	
@@ -1646,7 +1671,7 @@ class ProgramResult extends RootItemResult implements Iterator
 	 * @param integer $minLevel
 	 * @param integer $maxLevel
 	 */
-	public function getMessages($minLevel = ParserMessage::WARNING, $maxLevel = ParserMessage::FATAL_ERROR)
+	public function getMessages($minLevel = Message::WARNING, $maxLevel = Message::FATALERROR)
 	{
 		$messages = array();
 		foreach ($this->messages as $k => &$m)
@@ -1785,11 +1810,13 @@ class ProgramResult extends RootItemResult implements Iterator
 	 * Add a parser pessage.
 	 * @note This method should anly be called by the Parser
 	 */
-	public function appendMessage( /** $type, $format , ... */ )
+	public function appendMessage( /** $type, $code, $format , ... */ )
 	{
 		$args = func_get_args();
 		$type = array_shift($args);
-		$this->messages[] = new ParserMessage($type, call_user_func_array("sprintf", $args));
+		$code = intval(array_shift($args));
+				
+		$this->messages[] = new Message($type, $code, call_user_func_array("sprintf", $args));
 	}
 
 	/**
@@ -2093,7 +2120,7 @@ class Parser
 					{
 						if (count($s->activeOptionArguments) == 0)
 						{
-							$result->appendMessage(ParserMessage::WARNING, "Ignore end-of-argument marker");
+							$result->appendMessage(Message::WARNING, 2, Message::WARNING_IGNORE_EOA);
 							$s->activeOptionArguments[] = $arg;
 						}
 						else
@@ -2164,7 +2191,7 @@ class Parser
 				}
 				else
 				{
-					$result->appendMessage(ParserMessage::FATAL_ERROR, "Unknown option %s", $cliName);
+					$result->appendMessage(Message::FATALERROR, 1, Message::FATALERROR_UNKNOWN_OPTION, $cliName);
 					$s->stateFlags |= ParserState::ABORT;
 					break;
 				}
@@ -2205,7 +2232,7 @@ class Parser
 					}
 					else
 					{
-						$result->appendMessage(ParserMessage::FATAL_ERROR, "Unknown option %s", $cliName);
+						$result->appendMessage(Message::FATALERROR, 1, Message::FATALERROR_UNKNOWN_OPTION, $cliName);
 						$s->stateFlags |= ParserState::ABORT;
 						break;
 					}
@@ -2259,16 +2286,16 @@ class Parser
 						$nameList = $binding->info->getOptionNameListString();
 						if ($binding->info->groupType == GroupOptionInfo::TYPE_EXCLUSIVE)
 						{
-							$result->appendMessage(ParserMessage::ERROR, "One of the following options have to be set: %s", $nameList);
+							$result->appendMessage(Message::ERROR, 6, Message::ERROR_REQUIRED_XGROUP, $nameList);
 						}
 						else
 						{
-							$result->appendMessage(ParserMessage::ERROR, "At least one of the following options have to be set: %s", $nameList);
+							$result->appendMessage(Message::ERROR, 5, Message::ERROR_REQUIRED_GROUP, $nameList);
 						}
 					}
 					else
 					{
-						$result->appendMessage(ParserMessage::ERROR, "Missing required option %s", $binding->name->cliName());
+						$result->appendMessage(Message::ERROR, 4, Message::ERROR_REQUIRED_OPTION, $binding->name->cliName());
 					}
 				}
 			}
@@ -2316,15 +2343,19 @@ class Parser
 
 		if ($s->stateFlags & ParserState::UNEXPECTEDOPTION)
 		{
-			$result->appendMessage(ParserMessage::ERROR, "Unexpected option %s", $s->activeOption->name->cliName());
+			$result->appendMessage(Message::ERROR, 12, Message::ERROR_UNEXPECTED_OPTION, $s->activeOption->name->cliName());
 		}
 
 		if ($ao->info instanceof SwitchOptionInfo)
 		{
-			$markSet = 1;
 			if (count($s->activeOptionArguments) > 0)
 			{
-				$result->appendMessage(ParserMessage::WARNING, "Ignore option argument '%s' for switch %s", $s->activeOptionArguments[0], $s->activeOption->name->cliName());
+				$markSet = false;
+				$result->appendMessage(Message::ERROR, 13, Message::ERROR_SWITCH_ARG, $s->activeOption->name->cliName());
+			}
+			else
+			{
+				$markSet = true;
 			}
 		}
 		else if ($ao->info instanceof ArgumentOptionInfo)
@@ -2344,7 +2375,7 @@ class Parser
 			}
 			else
 			{
-				$result->appendMessage(ParserMessage::ERROR, "Missing argument for option %s", $s->activeOption->name->cliName());
+				$result->appendMessage(Message::ERROR, 3, Message::ERROR_MISSING_ARG, $s->activeOption->name->cliName());
 			}
 		}
 		else if ($ao->info instanceof MultiArgumentOptionInfo)
@@ -2373,7 +2404,7 @@ class Parser
 			}
 			else
 			{
-				$result->appendMessage(ParserMessage::ERROR, "Missing argument for option %s", $s->activeOption->name->cliName());
+				$result->appendMessage(Message::ERROR, 3, Message::ERROR_MISSING_ARG, $s->activeOption->name->cliName());
 			}
 		}
 
@@ -2548,7 +2579,7 @@ class Parser
 					{
 						if (($current->info->defaultValue !== null) && $this->optionExpected($current))
 						{
-							$current->result = $current->info->defaultValue;
+							$current->result->argument = $current->info->defaultValue;
 							$this->markOption($s, $result, $current, true);
 							$changeCount++;
 						}
@@ -2566,7 +2597,7 @@ class Parser
 							&& ($current->info->minArgumentCount > 0)
 							&& ($c < $current->info->minArgumentCount))
 					{
-						$result->appendMessage(ParserMessage::ERROR, "At least %d argument(s) required for %s option, got %d\n",
+						$result->appendMessage(Message::ERROR, 11, Message::ERROR_MISSING_MARG,
 							$current->info->minArgumentCount, $current->name->cliName(), $c
 						);
 						$this->markOption($s, $result, $current, false);
@@ -2600,11 +2631,11 @@ class Parser
 		{
 			if ($s->activeSubcommandIndex > 0)
 			{
-				$result->appendMessage(ParserMessage::ERROR, "Subcommand does not accept positional arguments");
+				$result->appendMessage(Message::ERROR, 9, Message::ERROR_SUBCMD_POSARG, $root->name);
 			}
 			else
 			{
-				$result->appendMessage(ParserMessage::ERROR, "Program does not accept positional arguments");
+				$result->appendMessage(Message::ERROR, 8, Message::ERROR_PROGRAM_POSARG);
 			}
 
 			return $validPositionalArgumentCount;
@@ -2648,7 +2679,7 @@ class Parser
 
 		if (count($s->values) > $processedValueCount)
 		{
-			$result->appendMessage(ParserMessage::ERROR, "Too many positional arguments");
+			$result->appendMessage(Message::ERROR, 10, Message::ERROR_TOOMANY_POSARG);
 		}
 		else if ($paInfoIndex < $paInfoCount)
 		{
@@ -2659,7 +2690,7 @@ class Parser
 			{
 				if ($root->getPositionalArgument($i)->positionalArgumentFlags & ItemInfo::REQUIRED)
 				{
-					$result->appendMessage(ParserMessage::ERROR, "Required positional argument %d is missing", $i);
+					$result->appendMessage(Message::ERROR, 7, Message::ERROR_REQUIRED_POSARG, $i);
 				}
 			}
 		}
