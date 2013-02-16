@@ -2424,8 +2424,10 @@ class Parser
 		$binding->result->isSet = $value;
 
 		// Update option tree
-		$parentInfo = $binding->info->parent;
 		$childResult = $binding->result;
+		$childInfo = $binding->info;
+		$parentInfo = $childInfo->parent;
+		
 		foreach ($binding->parentResults as &$parentResult)
 		{
 			$parentResult->isSet += ($value) ? 1 : -1;
@@ -2435,7 +2437,7 @@ class Parser
 				if ($value)
 				{
 					$parentResult->selectedOption = $childResult;
-					$parentResult->selectedOptionName = $binding->info->variableName;
+					$parentResult->selectedOptionName = $childInfo->variableName;
 				}
 			}
 
@@ -2447,6 +2449,7 @@ class Parser
 				$parentResult->selectedOptionName = null;
 			}
 
+			$childInfo = $childInfo->parent;
 			$parentInfo = $parentInfo->parent;
 			$childResult = $parentResult;
 		}
