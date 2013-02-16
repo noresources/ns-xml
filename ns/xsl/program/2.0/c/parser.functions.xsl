@@ -191,7 +191,7 @@
 						<with-param name="programNode" select="$programNode"/>
 						<with-param name="stateVariableName" select="$stateVariableName"/>
 						<with-param name="parentOptionNode" select="$optionNode/../.."/>
-						<with-param name="level" select="$level - 1"/>
+						<with-param name="levelCount" select="$level"/>
 						<with-param name="bindingIndex" select="$bindingIndex"/>
 						<with-param name="variableBase">
 							<call-template name="endl"/>
@@ -214,7 +214,8 @@
 		<param name="programNode"/>
 		<param name="stateVariableName"/>
 		<param name="parentOptionNode"/>
-		<param name="level"/>
+		<param name="level" select="0" />
+		<param name="levelCount"  />
 		<param name="variableBase"/>
 		<param name="bindingIndex"/>
 		<call-template name="endl"/>
@@ -251,12 +252,13 @@
 		<text>[</text>
 		<value-of select="$level"/>
 		<text>] = (struct nsxml_group_option_result *)dummy_ptr;</text>
-		<if test="$level &gt; 0">
+		<if test="($level + 1) &lt; $levelCount">
 			<call-template name="prg.c.parser.stateOptionBindingParentTreeAssign">
 				<with-param name="programNode" select="$programNode"/>
 				<with-param name="stateVariableName" select="$stateVariableName"/>
 				<with-param name="parentOptionNode" select="$parentOptionNode/../.."/>
-				<with-param name="level" select="$level - 1"/>
+				<with-param name="level" select="$level + 1" />
+				<with-param name="levelCount" select="$levelCount" />
 				<with-param name="variableBase" select="$variableBase"/>
 				<with-param name="bindingIndex" select="$bindingIndex"/>
 			</call-template>

@@ -474,10 +474,25 @@ typedef struct _nsxml_value nsxml_value;
 
 struct nsxml_option_name_binding
 {
+	/**
+	 * Option name (short or long)
+	 */
 	const char *name_ref;
+	/**
+	 * Associated option result
+	 */
 	struct nsxml_option_result *result_ref;
+	/**
+	 * Associated option info
+	 */
 	const struct nsxml_option_info *info_ref;
+	/**
+	 * Number of parent groups
+	 */
 	int level;
+	/**
+	 * Parent group results. From the direct parent to the higher group
+	 */
 	struct nsxml_group_option_result **parent_tree_refs;
 };
 
