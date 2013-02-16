@@ -105,10 +105,10 @@
 			<choose>
 				<when test="$numberNode/@min">
 					<value-of select="$numberNode/@min"/>
-					<text>F</text>
+					<text>.F</text>
 				</when>
 				<otherwise>
-					<text>0</text>
+					<text>0.F</text>
 				</otherwise>
 			</choose>
 			<text>;</text>
@@ -117,10 +117,10 @@
 			<choose>
 				<when test="$numberNode/@max">
 					<value-of select="$numberNode/@max"/>
-					<text>F</text>
+					<text>.F</text>
 				</when>
 				<otherwise>
-					<text>0</text>
+					<text>0.F</text>
 				</otherwise>
 			</choose>
 			<text>;</text>

@@ -2423,11 +2423,13 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 	
 	if (state->active_option->info_ref->option_type == nsxml_option_type_switch)
 	{
-		mark_set = 1;
-		
 		if (state->active_option_argc > 0)
 		{
-			nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[, "Ignore option argument '%s' for switch %s\n", state->active_option_argv[0], state->active_option_cli_name);
+			nsxml_program_result_add_messagef(result, ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[, "Option %s does not allow an argument\n", state->active_option_cli_name);
+		}
+		else
+		{
+			mark_set = 1;
 		}
 	}
 	else if (state->active_option->info_ref->option_type == nsxml_option_type_argument)
