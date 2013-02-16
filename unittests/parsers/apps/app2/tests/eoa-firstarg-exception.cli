@@ -1,0 +1,1 @@
+-b "Argument" -c "-" "Ignore eoa if it's the first argument"

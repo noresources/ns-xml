@@ -1,0 +1,10 @@
+CLI: "-h", "abc", "def", "ghi", "klm"
+Value count: 1
+Values: "klm"
+Error count: 0
+Subcommand: 
+argumentF=
+argumentFdefault=Default value
+argumentG=
+multiArgumentH=abc def ghi
+multiArgumentI=

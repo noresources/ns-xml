@@ -1,1 +1,0 @@
-New parser behavior. Continue option processing even if 'unexpected' (deffered error handling while 'unsetting' option)

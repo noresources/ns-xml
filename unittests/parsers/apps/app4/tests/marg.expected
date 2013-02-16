@@ -1,0 +1,8 @@
+CLI: "-c", "abc", "Sub-command", "sub", "is interpreted as one of -c arguments"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=
+multiargC=abc Sub-command sub is interpreted as one of -c arguments

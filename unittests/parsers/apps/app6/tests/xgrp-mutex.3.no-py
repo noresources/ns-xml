@@ -1,0 +1,21 @@
+CLI: "-h", "these", "options", "-f", "breaks", "group L mutex"
+Value count: 1
+Values: "group L mutex"
+Error count: 1
+Subcommand: 
+groupJ=
+switchA=False
+argumentB=
+groupK=
+multiargC=
+argumentD=
+groupL=groupN
+groupM=
+switchE=False
+argumentF=
+groupN=multiArgumentH
+argumentG=
+multiArgumentH=these options
+groupO=
+argumentFdefault=Default value
+argumentP=

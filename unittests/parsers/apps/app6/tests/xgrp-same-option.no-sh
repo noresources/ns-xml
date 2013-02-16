@@ -1,0 +1,21 @@
+CLI: "-c", "First apparition of c", "-", "and", "--multi", "Second apparition", "will not break mutex rule (same option)"
+Value count: 1
+Values: "and"
+Error count: 0
+Subcommand: 
+groupJ=
+switchA=False
+argumentB=
+groupK=multiargC
+multiargC=First apparition of c Second apparition will not break mutex rule (same option)
+argumentD=
+groupL=
+groupM=
+switchE=False
+argumentF=
+groupN=
+argumentG=
+multiArgumentH=
+groupO=
+argumentFdefault=Default value
+argumentP=

@@ -1,0 +1,7 @@
+CLI: "positional", "argument", "sub", "the previous argument will not be interpreted as a subcommand name"
+Value count: 4
+Values: "positional", "argument", "sub", "the previous argument will not be interpreted as a subcommand name"
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=

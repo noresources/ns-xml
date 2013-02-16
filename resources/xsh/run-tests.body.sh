@@ -32,12 +32,6 @@ NORMAL_COLOR="$(tput sgr0)"
 ERROR_COLOR="$(tput setaf 1)"
 SUCCESS_COLOR="$(tput setaf 2)"
 
-error()
-{
-	echo "Error: ${@}"
-	exit 1
-}
-
 log()
 {
 	echo "${@}" >> "${logFile}"
@@ -117,12 +111,12 @@ then
 	do
 		selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
 	done << EOF
-	$(find "${parserTestsPathBase}" -mindepth 1 -maxdepth 1 -type d -name "app*" | sort)
+	$(find "${parserTestsPathBase}/apps" -mindepth 1 -maxdepth 1 -type d -name "app*" | sort)
 EOF
 else
 	for ((a=0;${a}<${#apps[@]};a++))
 	do
-		d="${parserTestsPathBase}/app${apps[${a}]}"
+		d="${parserTestsPathBase}/apps/app${apps[${a}]}"
 		if [ -d "${d}" ]
 		then
 			selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
@@ -142,67 +136,59 @@ then
 	# Autodetect available parsers
 	if [ ${#available_shells[@]} -gt 0 ]
 	then
-		testSh=true
 		parsers=("${parsers[@]}" sh)
-		parserNames=("${parserNames[@]}" "${available_shells[@]}")
+		testSh=true
 	fi
 	
 	if [ ! -z "${pythonInterpreter}" ]
 	then
-		testPython=true
 		parsers=("${parsers[@]}" python)
-		parserNames=("${parserNames[@]}" "Python")
+		testPython=true
 	fi
 	
 	if which ${cc} 1>/dev/null 2>&1
 	then
-		testC=true
 		parsers=("${parsers[@]}" c)
-		parserNames=("${parserNames[@]}" "C/${cc}")
+		testC=true
 		if which valgrind 1>/dev/null 2>&1
 		then
 			testValgrind=true
-			parserNames=("${parserNames[@]}" "C/Valgrind")
 		fi
 	fi
 	
 	if which php 1>/dev/null 2>&1
 	then
-		testPHP=true
 		parsers=("${parsers[@]}" php)
-		parserNames=("${parserNames[@]}" "PHP")
+		testPHP=true
 	fi
 else
 	for ((i=0;${i}<${#parsers[@]};i++))
 	do
 		if [ "${parsers[${i}]}" = "sh" ] && [ ${#available_shells[@]} -gt 0 ]
 		then
-			parserNames=("${parserNames[@]}" "${available_shells[@]}")
 			testSh=true
 		elif [ "${parsers[${i}]}" = "python" ] && [ ! -z "${pythonInterpreter}" ]
 		then
-			parserNames=("${parserNames[@]}" "Python")
 			testPython=true
 		elif [ "${parsers[${i}]}" = "c" ] && which ${cc} 1>/dev/null 2>&1
 		then
-			parserNames=("${parserNames[@]}" "C/${cc}")
 			testC=true
 			if which valgrind 1>/dev/null 2>&1
 			then
 				testValgrind=true
-				parserNames=("${parserNames[@]}" "C/Valgrind")
 			fi
 		elif [ "${parsers[${i}]}" = "php" ] && which php 1>/dev/null 2>&1
 		then
 			testPHP=true
-			parserNames=("${parserNames[@]}" "PHP")
 		fi
 	done 
 fi
 
-resultLineFormat="    %10s |"
+resultLineFormat="%20.20s |"
 if ${testSh}
 then
+	parserNames=("${parserNames[@]}" "${available_shells[@]}")
+	
 	for s in ${available_shells[*]}
 	do
 		resultLineFormat="${resultLineFormat} %-7s |"	
@@ -211,11 +197,18 @@ fi
 
 if ${testPython}
 then
+	parserNames=("${parserNames[@]}" "Python")	
 	resultLineFormat="${resultLineFormat} %-7s |"
 fi
 
 if ${testC}
 then
+	parserNames=("${parserNames[@]}" "C/${cc}")
+	if ${testValgrind}
+	then
+		parserNames=("${parserNames[@]}" "C/Valgrind")
+	fi
+		
 	"${scriptPath}/update-c-parser.sh"
 	resultLineFormat="${resultLineFormat} %-7s |"
 	
@@ -245,6 +238,8 @@ fi
 
 if ${testPHP}
 then
+	parserNames=("${parserNames[@]}" "PHP")
+		
 	"${scriptPath}/update-php-parser.sh"
 	resultLineFormat="${resultLineFormat} %-7s |"
 fi
@@ -260,10 +255,11 @@ echo "Parsers: ${parserNames[@]}"
 for ((ai=0;${ai}<${#selectedApps[@]};ai++))
 do
 	app="${selectedApps[${ai}]}"
-	d="${parserTestsPathBase}/${app}"
+	d="${parserTestsPathBase}/apps/${app}"
 	
 	groupTestBasePath="${d}/tests"
 	
+	echo "${groupTestBasePath}"
 	unset groupTests
 	
 	# Populate group tests
@@ -278,7 +274,8 @@ EOF
 	else
 		for ((t=0;${t}<${#tests[@]};t++))
 		do
-			tn="${groupTestBasePath}/$(printf "%03d.cli" ${tests[${t}]})"
+			#tn="${groupTestBasePath}/$(printf "%03d.cli" ${tests[${t}]})"
+			tn="${groupTestBasePath}/${tests[${t}]}.cli"
 			if [ -f "${tn}" ]
 			then 
 				groupTests[${#groupTests[@]}]="$(basename "${tn}")"
@@ -300,9 +297,9 @@ EOF
 	
 	if ${testSh}
 	then
-		log "Generate ${app} XSH file"
 		xshFile="${tmpScriptBasename}-xsh.xsh"
 		xshBodyFile="${tmpScriptBasename}-xsh.body.sh"
+		log "Generate ${app} XSH file (${xshBodyFile} => ${xshFile})"
 		cat > "${xshFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <xsh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -310,7 +307,7 @@ EOF
 	<xi:include href="xml/program.xml" />
 </xsh:info>
 <xsh:functions>
-	<xi:include href="../lib/functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)" />
+	<xi:include href="../../lib/functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)" />
 </xsh:functions>
 <xsh:code>
 <xi:include href="./$(basename "${xshBodyFile}")" parse="text" />
@@ -335,7 +332,7 @@ EOF
 			chmod 755 "${shScript}"
 		done
 		
-		rm -f "${xshBodyFile}"
+		${keepTemporaryFiles} || rm -f "${xshBodyFile}"
 	fi
 	
 	if ${testPython}
@@ -409,7 +406,7 @@ shi=0
 for s in ${available_shells[*]}
 do
 	shScript="${shScripts[${shi}]}"
-	echo "\"${shScript}\" ${cli} > \"${result}-${s}\" 2>>\"${logFile}\""
+	echo "\"${shScript}\" "${cli[@]}" > \"${result}-${s}\" 2>>\"${logFile}\""
 	shi=$(expr ${shi} + 1)
 done)
 EOFSH
@@ -462,7 +459,10 @@ EOFSH
 			then
 				if [ -f "${base}.no-sh" ]
 				then
-					resultLine[${#resultLine[@]}]="skipped"
+					for s in ${available_shells[*]}
+					do
+						resultLine[${#resultLine[@]}]="skipped"
+					done
 				else
 					for s in ${available_shells[*]}
 					do
@@ -472,7 +472,7 @@ EOFSH
 							resultLine[${#resultLine[@]}]="FAILED"
 						else
 							resultLine[${#resultLine[@]}]="passed"
-							rm -f "${result}-${s}"
+							${keepTemporaryFiles} || rm -f "${result}-${s}"
 						fi
 						i=$(expr ${i} + 1)
 					done
@@ -491,7 +491,7 @@ EOFSH
 						resultLine[${#resultLine[@]}]="FAILED"
 					else
 						resultLine[${#resultLine[@]}]="passed"
-						rm -f "${result}-py"
+						${keepTemporaryFiles} || rm -f "${result}-py"
 					fi
 				fi
 			fi
@@ -510,7 +510,7 @@ EOFSH
 						${testValgrind} && resultLine[${#resultLine[@]}]="skipped"
 					else
 						resultLine[${#resultLine[@]}]="passed"
-						rm -f "${result}-c"
+						${keepTemporaryFiles} || rm -f "${result}-c"
 					
 						# Valgrind
 						if ${testValgrind}
@@ -521,8 +521,8 @@ EOFSH
 								if [ ! -z "${res}" ] && [ ${res} -eq 0 ]
 								then
 									resultLine[${#resultLine[@]}]="passed"
-									rm -f "${valgrindXmlFile}"
-									rm -f "${valgrindShellFile}"
+									${keepTemporaryFiles} || rm -f "${valgrindXmlFile}"
+									${keepTemporaryFiles} || rm -f "${valgrindShellFile}"
 								else
 									passed=false
 									resultLine[${#resultLine[@]}]="LEAK"
@@ -548,7 +548,7 @@ EOFSH
 						resultLine[${#resultLine[@]}]="FAILED"
 					else
 						resultLine[${#resultLine[@]}]="passed"
-						rm -f "${result}-php"
+						${keepTemporaryFiles} || rm -f "${result}-php"
 					fi
 				fi
 			fi
@@ -576,19 +576,22 @@ EOFSH
 			elif ${testPython}
 			then
 				cp "${result}-python" "${expected}"
-			elif ${testSb}
-			then
-				cp "${result}-bash" "${expected}"
 			elif ${testPHP}
 			then
 				cp "${result}-php" "${expected}"
+			elif ${testSb}
+			then
+				for s in ${available_shells[*]}
+				do
+					[ -f "${result}-${s}" ] && cp "${result}-${s}" "${expected}" && break	
+				done
 			fi
 		fi
 				
 		if ${passed}
 		then
 			resultLine[${#resultLine[@]}]="passed"
-			rm -f "${tmpShellScript}"
+			${keepTemporaryFiles} || rm -f "${tmpShellScript}"
 		else
 			resultLine[${#resultLine[@]}]="FAILED"
 		fi
@@ -610,7 +613,7 @@ EOFSH
 		do
 			if [ $(find "${d}/tests" -name "*.result-${s}" | wc -l) -eq 0 ]
 			then
-				rm -f "${shScripts[${si}]}"
+				${keepTemporaryFiles} || rm -f "${shScripts[${si}]}"
 			else
 				hasErrors=true
 			fi
@@ -618,7 +621,7 @@ EOFSH
 		done
 		if ! ${hasErrors}
 		then
-			rm -f "${xshFile}"
+			${keepTemporaryFiles} || rm -f "${xshFile}"
 		fi
 		unset shScripts
 	fi
@@ -627,8 +630,8 @@ EOFSH
 	then
 		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
 		then
-			rm -f "${pyScript}"
-			rm -fr "${d}/Program"
+			${keepTemporaryFiles} || rm -f "${pyScript}"
+			${keepTemporaryFiles} || rm -fr "${d}/Program"
 		fi
 	fi
 	
@@ -636,12 +639,12 @@ EOFSH
 	then
 		if [ $(find "${d}/tests" -name "*.result-c" | wc -l) -eq 0 ]
 		then
-			rm -f "${cProgram}"
-			rm -f "${cProgram}.c"
-			rm -f "${cParserBase}.h"
-			rm -f "${cParserBase}.c"
+			${keepTemporaryFiles} || rm -f "${cProgram}"
+			${keepTemporaryFiles} || rm -f "${cProgram}.c"
+			${keepTemporaryFiles} || rm -f "${cParserBase}.h"
+			${keepTemporaryFiles} || rm -f "${cParserBase}.c"
 			# Mac OS X
-			rm -f "${cProgram}.dSYM"
+			${keepTemporaryFiles} || rm -f "${cProgram}.dSYM"
 		fi
 	fi
 	
@@ -649,13 +652,13 @@ EOFSH
 	then
 		if [ $(find "${d}/tests" -name "*.result-php" | wc -l) -eq 0 ]
 		then
-			rm -f "${phpProgram}"
-			rm -f "${phpLibrary}"
+			${keepTemporaryFiles} || rm -f "${phpProgram}"
+			${keepTemporaryFiles} || rm -f "${phpLibrary}"
 		fi
 	fi
 done
 
 
-${testC} && ${testValgrind} && rm -f "${valgrindOutputXslFile}"
+${testC} && ${testValgrind} && (${keepTemporaryFiles} || rm -f "${valgrindOutputXslFile}")
 
 exit $(find "${parserTestsPathBase}" -name "*.result-*" | wc -l)

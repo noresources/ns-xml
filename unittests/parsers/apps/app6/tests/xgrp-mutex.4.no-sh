@@ -1,0 +1,21 @@
+CLI: "-f", "this option", "and", "-e", "do not conflicts (grp)", "M and L are set twice (xgrp-set-cascade)", "but do not break L mutex (xgrp-same-option)"
+Value count: 4
+Values: "and", "do not conflicts (grp)", "M and L are set twice (xgrp-set-cascade)", "but do not break L mutex (xgrp-same-option)"
+Error count: 0
+Subcommand: 
+groupJ=
+switchA=False
+argumentB=
+groupK=
+multiargC=
+argumentD=
+groupL=groupM
+groupM=
+switchE=True
+argumentF=this option
+groupN=
+argumentG=
+multiArgumentH=
+groupO=
+argumentFdefault=Default value
+argumentP=

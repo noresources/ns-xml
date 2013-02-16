@@ -1,0 +1,1 @@
+-c abc "Sub-command" sub "is interpreted as one of -c arguments"

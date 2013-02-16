@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
-<!-- Distributed under the terms of the BSD License, see LICENSE -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>run-tests</prg:name>
 	<prg:author>renaud</prg:author>
@@ -48,16 +48,24 @@
 				<prg:variable>tests</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
-				<prg:abstract>Test number(s) to run</prg:abstract>
+				<prg:abstract>Test id(s) to run</prg:abstract>
 			</prg:documentation>
 			<prg:names>
 				<prg:long>tests</prg:long>
 				<prg:short>t</prg:short>
 			</prg:names>
-			<prg:type>
-				<prg:number/>
-			</prg:type>
 		</prg:multiargument>
+		<prg:switch>
+			<prg:databinding><prg:variable>keepTemporaryFiles</prg:variable></prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Keep temporary files</prg:abstract>
+				<prg:details>Don't remove temporary files even if test passed</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>temp</prg:long>
+				<prg:short>T</prg:short>
+			</prg:names>
+		</prg:switch>
 		<!-- Help -->
 		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 	</prg:options>

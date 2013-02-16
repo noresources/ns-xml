@@ -1,0 +1,10 @@
+CLI: "-f", "abc"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+argumentF=abc
+argumentFdefault=Default value
+argumentG=
+multiArgumentH=
+multiArgumentI=

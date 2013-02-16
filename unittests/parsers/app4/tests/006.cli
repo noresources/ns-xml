@@ -1,1 +1,0 @@
--c abc def ghi --invalid-switch sub "This should succeed (even invalid switch will break the multiarg value parsing)"

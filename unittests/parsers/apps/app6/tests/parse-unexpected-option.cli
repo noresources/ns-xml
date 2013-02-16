@@ -1,0 +1,1 @@
+-c "A xgrp will NOT" -d "accept more than one" "sub option" -a "but the option is parsed normally" 

@@ -1,0 +1,9 @@
+CLI: "-h", "abc", "--", "No enough argument error"
+Value count: 1
+Values: "No enough argument error"
+Error count: 1
+Subcommand: 
+argumentF=
+argumentG=
+multiArgumentH=abc
+multiArgumentI=

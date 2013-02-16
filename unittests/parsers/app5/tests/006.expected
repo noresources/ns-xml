@@ -1,9 +1,0 @@
-CLI: "-h", "--", "No argument error"
-Value count: 1
-Values: "No argument error"
-Error count: 1
-Subcommand: 
-argumentF=
-argumentG=
-multiArgumentH=
-multiArgumentI=

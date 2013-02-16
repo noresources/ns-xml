@@ -1,0 +1,10 @@
+CLI: "-h", "abc", "-f", "F value", "--multiargument-h", "Back to h", "--", "Append arguments of multiple apparitions of -h"
+Value count: 1
+Values: "Append arguments of multiple apparitions of -h"
+Error count: 0
+Subcommand: 
+argumentF=F value
+argumentFdefault=Default value
+argumentG=
+multiArgumentH=abc Back to h
+multiArgumentI=

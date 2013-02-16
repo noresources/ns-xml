@@ -1,0 +1,7 @@
+CLI: "-bSubcommand", "empty", "does", "not", "accepts", "positional", "arguments"
+Value count: 5
+Values: "does", "not", "accepts", "positional", "arguments"
+Error count: 0
+Subcommand: empty
+switchA=False
+argumentB=Subcommand

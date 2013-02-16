@@ -1,0 +1,21 @@
+CLI: "-c", "A xgrp will NOT", "-d", "accept more than one", "sub option", "-a", "but the option is parsed normally"
+Value count: 2
+Values: "sub option", "but the option is parsed normally"
+Error count: 1
+Subcommand: 
+groupJ=
+switchA=True
+argumentB=
+groupK=multiargC
+multiargC=A xgrp will NOT
+argumentD=
+groupL=
+groupM=
+switchE=False
+argumentF=
+groupN=
+argumentG=
+multiArgumentH=
+groupO=argumentFdefault
+argumentFdefault=Default value
+argumentP=

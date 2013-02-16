@@ -1,0 +1,1 @@
+-c abc def ghi -a sub "There is only global option names and option args before sc name"

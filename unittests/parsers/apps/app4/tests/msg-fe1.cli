@@ -1,0 +1,1 @@
+-c abc def ghi --invalid-switch sub "Stops after invalid option"

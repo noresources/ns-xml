@@ -1,0 +1,8 @@
+CLI: "-c", "abc", "def", "ghi", "--invalid-switch", "sub", "Stops after invalid option"
+Value count: 0
+Values: 
+Error count: 1
+Subcommand: 
+switchA=False
+argumentB=
+multiargC=abc def ghi

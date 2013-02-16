@@ -1,0 +1,1 @@
+sc "Escaping" "end-of-options" "\--" --argument-b="Again" -ae

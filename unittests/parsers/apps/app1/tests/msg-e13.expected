@@ -1,0 +1,7 @@
+CLI: "positional", "--argument-b=value", "--switch-a=ignored"
+Value count: 1
+Values: "positional"
+Error count: 1
+Subcommand: 
+switchA=False
+argumentB=value

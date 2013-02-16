@@ -1,0 +1,8 @@
+CLI: "Short option name combination", "-abc", "With", "a", "multiargument option", "at last"
+Value count: 5
+Values: "Short option name combination", "With", "a", "multiargument option", "at last"
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=c
+multiargC=

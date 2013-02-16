@@ -1,0 +1,7 @@
+CLI: "Escaping", "end-of-options", "\--", "-a"
+Value count: 3
+Values: "Escaping", "end-of-options", "--"
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=

@@ -1,0 +1,1 @@
+-b "Argument" --multi-argument=- "Ignore eoa if it's the first argument"
