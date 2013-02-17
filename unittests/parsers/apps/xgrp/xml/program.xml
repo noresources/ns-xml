@@ -37,9 +37,9 @@
 			</prg:documentation>
 			<prg:options>
 				<!-- Switch A -->
-				<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+				<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
 				<!-- Argument B -->
-				<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+				<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
 			</prg:options>
 		</prg:group>
 		
@@ -53,9 +53,9 @@
 			</prg:documentation>
 			<prg:options>
 				<!-- Multi argument C -->
-				<xi:include href="../../app2/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiargC'])" />
+				<xi:include href="../../marg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiargC'])" />
 				<!-- Argument D -->
-				<xi:include href="../../app3/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentD'])" />
+				<xi:include href="../../sc-base/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentD'])" />
 			</prg:options>
 		</prg:group>
 		
@@ -76,9 +76,9 @@
 					</prg:documentation>
 					<prg:options>
 						<!-- Switch E -->
-						<xi:include href="../../app3/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchE'])" />
+						<xi:include href="../../sc-base/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchE'])" />
 						<!-- Argument f -->
-						<xi:include href="../../app5/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentF'])" />
+						<xi:include href="../../arg-advanced/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentF'])" />
 					</prg:options>
 				</prg:group>
 				
@@ -91,9 +91,9 @@
 					</prg:documentation>
 					<prg:options>
 						<!-- Argument G -->
-						<xi:include href="../../app5/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentG'])" />
+						<xi:include href="../../arg-advanced/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentG'])" />
 						<!-- Multi Argument H -->
-						<xi:include href="../../app5/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiArgumentH'])" />
+						<xi:include href="../../arg-advanced/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiArgumentH'])" />
 					</prg:options>
 				</prg:group>
 			</prg:options>
@@ -103,7 +103,7 @@
 			<prg:databinding><prg:variable>groupO</prg:variable></prg:databinding>
 			<prg:options>
 				<!-- Argument F (default valuee) -->
-				<xi:include href="../../app5/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentFd'])" />
+				<xi:include href="../../arg-advanced/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentFd'])" />
 				<!-- Number argument -->
 				<prg:argument id="prg.unittest.option.argumentP">
 					<prg:databinding><prg:variable>argumentP</prg:variable></prg:databinding>

@@ -39,9 +39,6 @@
 				<prg:long>apps</prg:long>
 				<prg:short>a</prg:short>
 			</prg:names>
-			<prg:type>
-				<prg:number/>
-			</prg:type>
 		</prg:multiargument>
 		<prg:multiargument>
 			<prg:databinding>

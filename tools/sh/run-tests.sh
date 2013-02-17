@@ -12,7 +12,7 @@ usage()
 cat << EOFUSAGE
 run-tests: Run ns-xml unittests
 Usage: 
-  run-tests [-T] [-p <...  [ ... ]>] [-a <number [ ... ]>] [-t <...  [ ... ]>] [--help]
+  run-tests [-T] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>] [--help]
   With:
     -p, --parsers: Parser to test  
       The argument value have to be one of the following:  
@@ -852,12 +852,12 @@ then
 	do
 		selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
 	done << EOF
-	$(find "${parserTestsPathBase}/apps" -mindepth 1 -maxdepth 1 -type d -name "app*" | sort)
+	$(find "${parserTestsPathBase}/apps" -mindepth 1 -maxdepth 1 -type d | sort)
 EOF
 else
 	for ((a=0;${a}<${#apps[@]};a++))
 	do
-		d="${parserTestsPathBase}/apps/app${apps[${a}]}"
+		d="${parserTestsPathBase}/apps/${apps[${a}]}"
 		if [ -d "${d}" ]
 		then
 			selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
@@ -1000,7 +1000,6 @@ do
 	
 	groupTestBasePath="${d}/tests"
 	
-	echo "${groupTestBasePath}"
 	unset groupTests
 	
 	# Populate group tests

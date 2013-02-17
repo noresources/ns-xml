@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app4</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (subcommand and multiargument behavior)</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<!-- switch A -->
+		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+		<!-- argument B -->
+		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+		<!-- multi argument C -->
+		<xi:include href="../../marg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiargC'])" />
+	</prg:options>
+	<xi:include href="../../sc-base/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:subcommands)" />
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

@@ -9,9 +9,9 @@
 	</prg:documentation>
 	<prg:options>
 		<!-- switch-a -->
-		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
 		<!-- argument-b -->
-		<xi:include href="../../app1/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
 	</prg:options>
 	<prg:subcommands>
 		<prg:subcommand>

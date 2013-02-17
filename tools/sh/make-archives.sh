@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the BSD License, see LICENSE
+# Distributed under the terms of the MIT License, see LICENSE
 # ####################################
 # Create ns-xml distributions
 # ####################################
@@ -21,12 +21,14 @@ prg=(\
 	ns/python/program/2.0 \
 	ns/sh/build-c.sh \
 	ns/sh/build-pyscript.sh \
+	ns/sh/build-php.sh \
 	ns/sh/build-shellscript.sh \
 	ns/sh/build-xulapp.sh \
 	ns/sh/new-xsh.sh \
 	ns/sh/prgproc.sh \
 	resources/bash_completion.d/build-c.sh \
 	resources/bash_completion.d/build-pyscript.sh \
+	resources/bash_completion.d/build-php.sh \
 	resources/bash_completion.d/build-shellscript.sh \
 	resources/bash_completion.d/build-xulapp.sh \
 	resources/bash_completion.d/new-xsh.sh \
@@ -47,6 +49,7 @@ prg_linux=( \
 	--transform "s,xul/linux,ns/xul," \
 	xul/linux/build-c \
 	xul/linux/build-pyscript \
+	xul/linux/build-php \
 	xul/linux/build-shellscript \
 	xul/linux/build-xulapp \
 	xul/linux/new-xsh
@@ -58,6 +61,7 @@ prg_macosx=( \
 	"s,xul/macosx,ns/xul," \
 	"xul/macosx/C parser generator.app" \
 	"xul/macosx/Python script builder.app" \
+	"xul/macosx/PHP parser generator.app" \
 	"xul/macosx/Shellscript builder.app" \
 	"xul/macosx/XUL front-end builder.app" \
 	"xul/macosx/XML Shellscript generator.app"
