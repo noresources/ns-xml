@@ -151,4 +151,79 @@
 			<with-param name="name" select="'nsxml_usage_format_details'" />
 		</call-template>
 	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_warning_ignore_endofarguments">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_warning_ignore_endofarguments'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_invalid_option_argument">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_invalid_option_argument'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_invalid_pa_argument">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_invalid_pa_argument'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_missing_option_argument">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_missing_option_argument'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_missing_required_option">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_missing_required_option'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_missing_required_group_option">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_missing_required_group_option'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_missing_required_xgroup_option">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_missing_required_xgroup_option'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_missing_required_pa">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_missing_required_pa'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_program_pa_not_allowed">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_program_pa_not_allowed'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_subcommand_pa_not_allowed">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_subcommand_pa_not_allowed'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_too_many_pa">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_too_many_pa'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_not_enough_arguments">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_not_enough_arguments'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_unexpected_option">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_unexpected_option'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_error_option_argument_not_allowed'" />
+		</call-template>
+	</variable>
+	<variable name="prg.c.parser.variableName.nsxml_message_fatal_error_unknown_option">
+		<call-template name="prg.c.parser.variableName">
+			<with-param name="name" select="'nsxml_message_fatal_error_unknown_option'" />
+		</call-template>
+	</variable>
 </stylesheet>

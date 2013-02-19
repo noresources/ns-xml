@@ -181,12 +181,40 @@ NSXMLAPI enum nsxml_message_type
 	nsxml_message_type_count       /**!< nsxml_message_type_count */
 };
 
+NSXMLAPI enum nsxml_message_warning
+{
+	nsxml_message_warning_ignore_endofarguments = 1
+};
+
+NSXMLAPI enum nsxml_message_error
+{
+	nsxml_message_error_invalid_option_argument = 1,
+	nsxml_message_error_invalid_pa_argument = 2,
+	nsxml_message_error_missing_option_argument = 3,
+	nsxml_message_error_missing_required_option = 4,
+	nsxml_message_error_missing_required_group_option = 5,
+	nsxml_message_error_missing_required_xgroup_option = 6,
+	nsxml_message_error_missing_required_pa = 7,
+	nsxml_message_error_program_pa_not_allowed = 8,
+	nsxml_message_error_subcommand_pa_not_allowed = 9,
+	nsxml_message_error_too_many_pa = 10,
+	nsxml_message_error_not_enough_arguments = 11,
+	nsxml_message_error_unexpected_option = 12,
+	nsxml_message_error_option_argument_not_allowed = 13
+};
+
+NSXMLAPI enum nsxml_message_fatal_error
+{
+	nsxml_message_fatal_error_unknown_option = 1
+};
+
 /**
  * A message from the parser
  */
 NSXMLAPI struct _nsxml_message
 {
 	int type;
+	int code;
 	char *message;
 	struct _nsxml_message *next_message;
 };

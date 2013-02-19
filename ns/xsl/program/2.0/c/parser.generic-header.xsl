@@ -191,12 +191,40 @@ NSXMLAPI enum nsxml_message_type
 	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[       /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[ */
 };
 
+NSXMLAPI enum nsxml_message_warning
+{
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_warning_ignore_endofarguments"/><![CDATA[ = 1
+};
+
+NSXMLAPI enum nsxml_message_error
+{
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[ = 1,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_pa_argument"/><![CDATA[ = 2,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_option_argument"/><![CDATA[ = 3,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_option"/><![CDATA[ = 4,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_group_option"/><![CDATA[ = 5,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_xgroup_option"/><![CDATA[ = 6,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_pa"/><![CDATA[ = 7,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_program_pa_not_allowed"/><![CDATA[ = 8,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_subcommand_pa_not_allowed"/><![CDATA[ = 9,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_too_many_pa"/><![CDATA[ = 10,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_not_enough_arguments"/><![CDATA[ = 11,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_unexpected_option"/><![CDATA[ = 12,
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed"/><![CDATA[ = 13
+};
+
+NSXMLAPI enum nsxml_message_fatal_error
+{
+	]]><value-of select="$prg.c.parser.variableName.nsxml_message_fatal_error_unknown_option"/><![CDATA[ = 1
+};
+
 /**
  * A message from the parser
  */
 NSXMLAPI struct _nsxml_message
 {
 	int type;
+	int code;
 	char *message;
 	struct _nsxml_message *next_message;
 };

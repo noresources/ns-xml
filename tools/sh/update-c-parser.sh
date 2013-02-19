@@ -594,6 +594,9 @@ transformableEnumPrefixes=(\
 	"nsxml_message_type_" \
 	"nsxml_value_type_" \
 	"nsxml_usage_format_" \
+	"nsxml_message_warning_" \
+	"nsxml_message_error_" \
+	"nsxml_message_fatal_error_" \
 )
 															
 transform_c()

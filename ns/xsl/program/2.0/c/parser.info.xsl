@@ -105,7 +105,10 @@
 			<choose>
 				<when test="$numberNode/@min">
 					<value-of select="$numberNode/@min"/>
-					<text>.F</text>
+					<if test="not(contains($numberNode/@min, '.'))">
+						<text>.</text>
+					</if>
+					<text>F</text>
 				</when>
 				<otherwise>
 					<text>0.F</text>
@@ -117,7 +120,10 @@
 			<choose>
 				<when test="$numberNode/@max">
 					<value-of select="$numberNode/@max"/>
-					<text>.F</text>
+					<if test="not(contains($numberNode/@max, '.'))">
+						<text>.</text>
+					</if>
+					<text>F</text>
 				</when>
 				<otherwise>
 					<text>0.F</text>
