@@ -266,6 +266,7 @@ do
 	then
 		while read t
 		do
+			[ -z "${t}" ] && continue
 			groupTests[${#groupTests[@]}]="$(basename "${t}")"
 		done << EOF
 		$(find "${groupTestBasePath}" -mindepth 1 -maxdepth 1 -type f -name "*.cli" | sort)
