@@ -88,9 +88,9 @@ xsltDocOutputPath=
 xsltDocCssFile=
 indexUrl=
 indexFile=
-indexFileOutputName="index.php"
+indexFileOutputName=
 htmlOutputPath=
-nmeEasyLink="$.html"
+nmeEasyLink=
 
 parse_addwarning()
 {
@@ -174,6 +174,36 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_setdefaultarguments()
+{
+	local parser_set_default=false
+	# indexFileOutputName
+	if [ -z "${indexFileOutputName}" ]
+	then
+		parser_set_default=true
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
+		then
+			parser_set_default=false
+		fi
+		
+		if ${parser_set_default}
+		then
+			indexFileOutputName="index.php"
+			indexMode="indexModeFile"
+			parse_setoptionpresence G_1_g_5_g_3_g_2_index-name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+		fi
+	fi
+	# nmeEasyLink
+	if [ -z "${nmeEasyLink}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			nmeEasyLink="$.html"
+			parse_setoptionpresence G_2_g_2_nme-easylink;parse_setoptionpresence G_2_g
+		fi
+	fi
 }
 parse_checkminmax()
 {
@@ -747,6 +777,7 @@ parse()
 		fi
 	done
 	
+	parse_setdefaultarguments
 	parse_checkrequired
 	parse_checkminmax
 	

@@ -123,11 +123,11 @@ displayHelp=false
 xmlProgramDescriptionPath=
 generateInclude=
 prefix=
-structNameStyle="none"
-functionNameStyle="none"
-variableNameStyle="none"
+structNameStyle=
+functionNameStyle=
+variableNameStyle=
 outputPath=
-outputFileBase="<auto>"
+outputFileBase=
 nsxmlPath=
 
 parse_addwarning()
@@ -212,6 +212,50 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_setdefaultarguments()
+{
+	local parser_set_default=false
+	# structNameStyle
+	if [ -z "${structNameStyle}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			structNameStyle="none"
+			parse_setoptionpresence G_2_g_3_g_1_struct-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+		fi
+	fi
+	# functionNameStyle
+	if [ -z "${functionNameStyle}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			functionNameStyle="none"
+			parse_setoptionpresence G_2_g_3_g_2_function-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+		fi
+	fi
+	# variableNameStyle
+	if [ -z "${variableNameStyle}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			variableNameStyle="none"
+			parse_setoptionpresence G_2_g_3_g_3_variable-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+		fi
+	fi
+	# outputFileBase
+	if [ -z "${outputFileBase}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			outputFileBase="<auto>"
+			parse_setoptionpresence G_3_g_2_file-base;parse_setoptionpresence G_3_g
+		fi
+	fi
 }
 parse_checkminmax()
 {
@@ -1016,6 +1060,7 @@ parse()
 		fi
 	done
 	
+	parse_setdefaultarguments
 	parse_checkrequired
 	parse_checkminmax
 	

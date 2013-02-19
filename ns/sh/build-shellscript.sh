@@ -177,6 +177,10 @@ parse_checkrequired()
 	done
 	return ${c}
 }
+parse_setdefaultarguments()
+{
+	local parser_set_default=false
+}
 parse_checkminmax()
 {
 	local errorCount=0
@@ -860,6 +864,7 @@ parse()
 		fi
 	done
 	
+	parse_setdefaultarguments
 	parse_checkrequired
 	parse_checkminmax
 	

@@ -5,7 +5,8 @@
 <!-- Shell parser variables -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<import href="parser.base.xsl" />
-	
+
+	<!-- Name of the used shell interpreter -->
 	<variable name="prg.sh.parser.vName_shell">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -14,6 +15,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+
+	<!-- Command line items -->
 	<variable name="prg.sh.parser.vName_input">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -22,6 +25,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+
+	<!-- Command line item count -->
 	<variable name="prg.sh.parser.vName_itemcount">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -30,6 +35,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+
+	<!-- Value of the first index in a table -->
 	<variable name="prg.sh.parser.vName_startindex">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -43,6 +50,8 @@
 			<with-param name="name" select="$prg.sh.parser.vName_startindex" />
 		</call-template>
 	</variable>
+
+	<!-- Index of the processed command line item -->
 	<variable name="prg.sh.parser.vName_index">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -51,6 +60,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<!-- Character index in the processed command line item -->
 	<variable name="prg.sh.parser.vName_subindex">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -59,6 +70,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+
+	<!-- Current command line item -->
 	<variable name="prg.sh.parser.vName_item">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -67,6 +80,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_option">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -75,6 +89,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_optiontail">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -83,6 +98,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_ma_local_count">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -91,6 +107,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_ma_total_count">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -99,6 +116,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	<!-- Selected subcommand -->
 	<variable name="prg.sh.parser.vName_subcommand">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -107,6 +125,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.var_subcommand">
 		<call-template name="sh.var">
 			<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
@@ -121,6 +140,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_values">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -137,6 +157,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_warnings">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -153,6 +174,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_fatalerrors">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -161,6 +183,16 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<variable name="prg.sh.parser.vName_set_default">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>set_default</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
 	<variable name="prg.sh.parser.vName_OK">
 		<call-template name="str.toUpper">
 			<with-param name="text">
@@ -190,6 +222,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.var_ERROR">
 		<call-template name="sh.var">
 			<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
@@ -207,6 +240,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_SC_ERROR">
 		<call-template name="str.toUpper">
 			<with-param name="text">
@@ -231,6 +265,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.vName_SC_SKIP">
 		<call-template name="str.toUpper">
 			<with-param name="text">
@@ -243,6 +278,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<!-- The main command line parser function -->
 	<variable name="prg.sh.parser.fName_parse">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -250,6 +287,8 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<!-- Restricted values validator -->
 	<variable name="prg.sh.parser.fName_enumcheck">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -258,6 +297,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_addvalue">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -266,6 +306,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_displayerrors">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -274,6 +315,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_setoptionpresence">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -290,6 +332,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_checkminmax">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -298,6 +341,17 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
+	<!-- Set default values for single argument options -->
+	<variable name="prg.sh.parser.fName_setdefaultarguments">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.functionNamePrefix" />
+				<text>setdefaultarguments</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
 	<variable name="prg.sh.parser.fName_addmessage">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -306,6 +360,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_addwarning">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -314,6 +369,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_adderror">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -322,6 +378,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_addfatalerror">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -346,6 +403,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_process_option">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -354,6 +412,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_pathaccesscheck">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">

@@ -485,6 +485,61 @@
 		</call-template>
 	</template>
 
+	<template name="prg.sh.parser.setDefaultArgumentsFunction">
+		<param name="programNode" />
+		<param name="interpreter" />
+		
+		<call-template name="sh.functionDefinition">
+			<with-param name="name" select="$prg.sh.parser.fName_setdefaultarguments" />
+			<with-param name="interpreter" select="$interpreter" />
+			<with-param name="content">
+				<call-template name="sh.local">
+					<with-param name="name" select="$prg.sh.parser.vName_set_default" />
+					<with-param name="interpreter" select="$interpreter" />
+					<with-param name="value" select="'false'" />
+					<with-param name="quoted" select="false()" />
+				</call-template>
+				<value-of select="$sh.endl" />
+			
+				<!-- Global options -->
+				<call-template name="prg.sh.parser.setDefaultArguments">
+					<with-param name="rootNode" select="$programNode" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				
+				<!-- Subcommand options -->
+				<if test="$programNode/prg:subcommands">
+				<call-template name="sh.case">
+					<with-param name="case">
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+						</call-template>
+					</with-param>
+					<with-param name="in">
+						<for-each select="$programNode/prg:subcommands/*">
+							<call-template name="sh.caseblock">
+								<with-param name="case">
+									<value-of select="./prg:name" />
+									<for-each select="./prg:aliases/prg:alias">
+										<text> | </text>
+										<value-of select="." />
+									</for-each>
+								</with-param>
+								<with-param name="content">
+									<call-template name="prg.sh.parser.setDefaultArguments">
+										<with-param name="rootNode" select="." />
+										<with-param name="interpreter" select="$interpreter" />
+									</call-template>
+								</with-param>
+							</call-template>
+						</for-each>
+					</with-param>
+				</call-template>
+				</if>
+			</with-param>
+		</call-template>
+	</template>
+	
 	<template name="prg.sh.parser.minmaxCheckFunction">
 		<param name="programNode" />
 		<param name="interpreter" />
@@ -1307,6 +1362,10 @@
 					</if>
 				</for-each>
 
+				<!-- Set options with defaults value -->
+				<value-of select="$prg.sh.parser.fName_setdefaultarguments" />
+				<value-of select="$sh.endl" />
+				
 				<!-- Check required options -->
 				<value-of select="$prg.sh.parser.fName_checkrequired" />
 				<value-of select="$sh.endl" />
@@ -1314,7 +1373,7 @@
 				<!-- Check multiargument min attribute -->
 				<value-of select="$prg.sh.parser.fName_checkminmax" />
 				<value-of select="$sh.endl" />
-
+				
 				<!-- Return error count -->
 				<variable name="errorCount">
 					<call-template name="prg.prefixedName">
@@ -1384,6 +1443,10 @@
 			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.optionSetPresenceFunctions">
+			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
+		</call-template>
+		<call-template name="prg.sh.parser.setDefaultArgumentsFunction">
 			<with-param name="programNode" select="$programNode" />
 			<with-param name="interpreter" select="$interpreter" />
 		</call-template>

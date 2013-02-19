@@ -64,7 +64,7 @@ displayHelp=false
 nsxmlPathRelative=false
 # Single argument options
 xshName=
-outputPath="."
+outputPath=
 nsxmlPath=
 
 parse_addwarning()
@@ -149,6 +149,20 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_setdefaultarguments()
+{
+	local parser_set_default=false
+	# outputPath
+	if [ -z "${outputPath}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			outputPath="."
+			parse_setoptionpresence G_2_output
+		fi
+	fi
 }
 parse_checkminmax()
 {
@@ -503,6 +517,7 @@ parse()
 		fi
 	done
 	
+	parse_setdefaultarguments
 	parse_checkrequired
 	parse_checkminmax
 	

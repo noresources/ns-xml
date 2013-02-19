@@ -179,13 +179,13 @@ xsh_xmlShellFileDescriptionPath=
 xsh_defaultInterpreterType=
 xsh_defaultInterpreterCommand=
 python_pythonScriptPath=
-python_moduleName="Program"
+python_moduleName=
 command_existingCommandPath=
 outputPath=
 xmlProgramDescriptionPath=
-targetPlatform="host"
-windowWidth="1024"
-windowHeight="768"
+targetPlatform=
+windowWidth=
+windowHeight=
 userInitializationScript=
 nsxmlPath=
 
@@ -271,6 +271,72 @@ parse_checkrequired()
 		fi
 	done
 	return ${c}
+}
+parse_setdefaultarguments()
+{
+	local parser_set_default=false
+	# python_moduleName
+	if [ -z "${python_moduleName}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			python_moduleName="Program"
+			parse_setoptionpresence SC_3_python_2_module-name
+		fi
+	fi
+	# targetPlatform
+	if [ -z "${targetPlatform}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			targetPlatform="host"
+			parse_setoptionpresence G_4_target-platform
+		fi
+	fi
+	# windowWidth
+	if [ -z "${windowWidth}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			windowWidth="1024"
+			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+		fi
+	fi
+	# windowHeight
+	if [ -z "${windowHeight}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			windowHeight="768"
+			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+		fi
+	fi
+	case "${parser_subcommand}" in
+	php)
+		;;
+	xsh | sh | shell)
+		;;
+	python | py)
+		# python_moduleName
+		if [ -z "${python_moduleName}" ]
+		then
+			parser_set_default=true
+			if ${parser_set_default}
+			then
+				python_moduleName="Program"
+				parse_setoptionpresence SC_3_python_2_module-name
+			fi
+		fi
+		
+		;;
+	command | cmd)
+		;;
+	
+	esac
 }
 parse_checkminmax()
 {
@@ -1890,6 +1956,7 @@ parse()
 		fi
 	done
 	
+	parse_setdefaultarguments
 	parse_checkrequired
 	parse_checkminmax
 	

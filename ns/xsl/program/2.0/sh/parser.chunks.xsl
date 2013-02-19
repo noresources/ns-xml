@@ -102,6 +102,72 @@
 		</if>
 	</template>
 
+	<!-- Set default values for all single arguments in a root item info
+		(part of the setdefaultarguments function)
+	-->
+	<template name="prg.sh.parser.setDefaultArguments">
+		<param name="rootNode" />
+		<param name="interpreter" />
+
+		<for-each select="$rootNode//prg:argument[prg:default and prg:databinding/prg:variable]">
+			<call-template name="sh.comment">
+				<with-param name="content">
+					<apply-templates select="prg:databinding/prg:variable" />
+				</with-param>
+			</call-template>
+			<value-of select="$sh.endl" />
+
+			<call-template name="sh.if">
+				<with-param name="condition">
+					<text>[ -z "</text>
+					<call-template name="sh.var">
+						<with-param name="name">
+							<apply-templates select="prg:databinding/prg:variable" />
+						</with-param>
+					</call-template>
+					<text>" ]</text>
+				</with-param>
+				<with-param name="then">
+					<value-of select="$prg.sh.parser.vName_set_default" />
+					<text>=true</text>
+					<value-of select="$sh.endl" />
+					<if test="../../self::prg:group">
+						<call-template name="prg.sh.parser.groupCheck">
+							<with-param name="optionNode" select="." />
+							<with-param name="comments" select="false()" />
+							<with-param name="process" select="false()" />
+							<with-param name="onError">
+								<value-of select="$prg.sh.parser.vName_set_default" />
+								<text>=false</text>
+							</with-param>
+						</call-template>
+					</if>
+					<call-template name="sh.if">
+						<with-param name="condition">
+							<call-template name="sh.var">
+								<with-param name="name" select="$prg.sh.parser.vName_set_default" />
+							</call-template>
+						</with-param>
+						<with-param name="then">
+							<apply-templates select="prg:databinding/prg:variable" />
+							<text>="</text>
+							<apply-templates select="prg:default" />
+							<text>"</text>
+							<value-of select="$sh.endl" />
+							<call-template name="prg.sh.parser.groupSetVars">
+								<with-param name="optionNode" select="." />
+							</call-template>
+							<call-template name="prg.sh.parser.optionSetPresence">
+								<with-param name="optionNode" select="." />
+							</call-template>
+						</with-param>
+					</call-template>
+					<value-of select="$sh.endl" />
+				</with-param>
+			</call-template>
+		</for-each>
+	</template>
+
 	<!-- Remove \ protection if any -->
 	<template name="prg.sh.parser.unescapeValue">
 		<param name="variableName" select="$prg.sh.parser.vName_item" />
@@ -387,10 +453,17 @@
 
 	<!-- Chec if the option is part of a group and if it does not break mutual exclusion rule -->
 	<template name="prg.sh.parser.groupCheck">
+		<!-- Option to check -->
 		<param name="optionNode" select="." />
-		<param name="originalOptionNode" select="$optionNode" />
+		<!-- Additional things to do when checks fail -->
 		<param name="onError" />
+		<!-- Disable default processing -->
+		<param name="process" select="true()" />
+		<!-- Internal use -->
 		<param name="comments" select="true()" />
+		<!-- Internal use -->
+		<param name="originalOptionNode" select="$optionNode" />
+
 		<variable name="optionsNode" select="$optionNode/.." />
 
 		<if test="$optionsNode/parent::prg:group">
@@ -407,8 +480,9 @@
 			<!-- Recursive check -->
 			<call-template name="prg.sh.parser.groupCheck">
 				<with-param name="optionNode" select="$groupOptionNode" />
-				<with-param name="originalOptionNode" select="$optionNode" />
+				<with-param name="process" select="$process" />
 				<with-param name="onError" select="$onError" />
+				<with-param name="originalOptionNode" select="$optionNode" />
 				<with-param name="comments" select="false()" />
 			</call-template>
 
@@ -416,7 +490,6 @@
 			<if test="$groupOptionNode[@type = 'exclusive'] 
 						and $groupOptionNode/prg:databinding/prg:variable 
 						and $optionNode/prg:databinding/prg:variable">
-				<!-- if ! ([ -z "${configureOptionMode}" ] || [ "${configureOptionMode}" = "configureOptionString" ] || [ "${configureOptionMode:0:1}" = "@" ]) -->
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>! ([ -z </text>
@@ -451,42 +524,45 @@
 						<text> = "@" ])</text>
 					</with-param>
 					<with-param name="then">
-						<value-of select="$prg.sh.parser.fName_adderror" />
-						<text> "Another option of the group \"</text>
-						<!-- don't add subcommand prefix in this case -->
-						<call-template name="prg.sh.parser.boundVariableName">
-							<with-param name="variableNode" select="$groupOptionNode/prg:databinding/prg:variable" />
-							<with-param name="usePrefix" select="false()" />
-						</call-template>
-						<!-- <apply-templates select="$groupOptionNode/prg:databinding/prg:variable" /> -->
-						<text>\" was previously set (</text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
-							</with-param>
-						</call-template>
-						<text>)"</text>
 
-						<!-- Skip option arg if required -->
-						<choose>
-							<when test="$originalOptionNode/self::prg:argument">
-								<value-of select="$sh.endl" />
-								<call-template name="prg.sh.parser.argumentPreprocess">
-									<with-param name="onError" select="$onError" />
-									<with-param name="optionNode" select="$originalOptionNode" />
-								</call-template>
-								<value-of select="$sh.endl" />
-							</when>
-							<when test="$originalOptionNode/self::prg:multiargument">
-								<value-of select="$sh.endl" />
-								<!-- Here, the prg.sh.parser.argumentPreprocess suits better than prg.sh.parser.multiargumentPreprocess -->
-								<call-template name="prg.sh.parser.argumentPreprocess">
-									<with-param name="onError" select="$onError" />
-									<with-param name="optionNode" select="$originalOptionNode" />
-								</call-template>
-								<value-of select="$sh.endl" />
-							</when>
-						</choose>
+						<if test="$process">
+							<value-of select="$prg.sh.parser.fName_adderror" />
+							<text> "Another option of the group \"</text>
+							<!-- don't add subcommand prefix in this case -->
+							<call-template name="prg.sh.parser.boundVariableName">
+								<with-param name="variableNode" select="$groupOptionNode/prg:databinding/prg:variable" />
+								<with-param name="usePrefix" select="false()" />
+							</call-template>
+							<!-- <apply-templates select="$groupOptionNode/prg:databinding/prg:variable" /> -->
+							<text>\" was previously set (</text>
+							<call-template name="sh.var">
+								<with-param name="name">
+									<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
+								</with-param>
+							</call-template>
+							<text>)"</text>
+
+							<!-- Skip option arg if required -->
+							<choose>
+								<when test="$originalOptionNode/self::prg:argument">
+									<value-of select="$sh.endl" />
+									<call-template name="prg.sh.parser.argumentPreprocess">
+										<with-param name="onError" select="$onError" />
+										<with-param name="optionNode" select="$originalOptionNode" />
+									</call-template>
+									<value-of select="$sh.endl" />
+								</when>
+								<when test="$originalOptionNode/self::prg:multiargument">
+									<value-of select="$sh.endl" />
+									<!-- Here, the prg.sh.parser.argumentPreprocess suits better than prg.sh.parser.multiargumentPreprocess -->
+									<call-template name="prg.sh.parser.argumentPreprocess">
+										<with-param name="onError" select="$onError" />
+										<with-param name="optionNode" select="$originalOptionNode" />
+									</call-template>
+									<value-of select="$sh.endl" />
+								</when>
+							</choose>
+						</if>
 
 						<if test="$onError">
 							<value-of select="$sh.endl" />
@@ -948,16 +1024,16 @@
 							<with-param name="interpreter" select="$interpreter" />
 							<with-param name="value">
 								<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_input" />
-								<with-param name="quoted" select="false()" />
-								<with-param name="index">
-									<text>$(expr </text>
-									<call-template name="sh.var">
-										<with-param name="name" select="$prg.sh.parser.vName_index" />
-									</call-template>
-									<text> + 1)</text>
-								</with-param>
-							</call-template>
+									<with-param name="name" select="$prg.sh.parser.vName_input" />
+									<with-param name="quoted" select="false()" />
+									<with-param name="index">
+										<text>$(expr </text>
+										<call-template name="sh.var">
+											<with-param name="name" select="$prg.sh.parser.vName_index" />
+										</call-template>
+										<text> + 1)</text>
+									</with-param>
+								</call-template>
 							</with-param>
 						</call-template>
 						<value-of select="$sh.endl" />
@@ -1402,7 +1478,7 @@
 		<param name="keyword">
 			<text>elif</text>
 		</param>
-		<param name="interpreter"/>
+		<param name="interpreter" />
 
 		<value-of select="$keyword" />
 		<text> [ </text>
@@ -1628,11 +1704,12 @@
 			<for-each select="//prg:argument/prg:databinding/prg:variable">
 				<apply-templates select="." />
 				<text>=</text>
-				<if test="../../prg:default">
+				<!-- default arguments are set later -->
+				<!-- <if test="../../prg:default">
 					<text>"</text>
 					<value-of select="../../prg:default" />
 					<text>"</text>
-				</if>
+					</if> -->
 				<value-of select="$sh.endl" />
 			</for-each>
 		</if>
@@ -1655,9 +1732,7 @@
 				</if>
 			</for-each>
 		</if>
-
 		<value-of select="$sh.endl" />
-
 	</template>
 
 </stylesheet>
