@@ -33,13 +33,12 @@
 parse "${@}"
 echo -n "CLI: "
 cpt="${#}"
+displayErrors=false
 i=1
 for argv in "${@}"
 do
-	if [ ${i} -gt 1 ]
-	then
-		echo -n ", "
-	fi
+	[ "${argv}" = "__msg__" ] && displayErrors=true
+	[ ${i} -gt 1 ] && echo -n ", "
 	echo -n "\"${argv}\""
 	i=$(expr ${i} + 1)
 done
@@ -62,6 +61,7 @@ then
 fi
 echo ""
 echo "Error count: ${#parser_errors[*]}"
+${displayErrors} && parse_displayerrors
 echo "Subcommand: ${parser_subcommand}"
 ]]></text>
 		<!-- Global args -->

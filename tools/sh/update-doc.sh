@@ -112,9 +112,10 @@ parse_addfatalerror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_fatalerrors[*]}
+	local c=${#parser_errors[*]}
 	c=$(expr ${c} + ${parser_startindex})
-	parser_fatalerrors[${c}]="${m}"
+	parser_errors[${c}]="${m}"
+	parser_aborted=true
 }
 
 parse_displayerrors()
@@ -745,7 +746,7 @@ parse_process_option()
 			parse_setoptionpresence G_3_g_1_html-body-only;parse_setoptionpresence G_3_g
 			;;
 		*)
-			parse_adderror "Unknown option \"${parser_option}\""
+			parse_addfatalerror "Unknown option \"${parser_option}\""
 			return ${PARSER_ERROR}
 			;;
 		
@@ -765,7 +766,8 @@ parse_process_option()
 }
 parse()
 {
-	while [ ${parser_index} -lt ${parser_itemcount} ]
+	parser_aborted=false
+	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option "${0}"
 		if [ -z "${parser_optiontail}" ]
@@ -777,15 +779,16 @@ parse()
 		fi
 	done
 	
-	parse_setdefaultarguments
-	parse_checkrequired
-	parse_checkminmax
+	if ! ${parser_aborted}
+	then
+		parse_setdefaultarguments
+		parse_checkrequired
+		parse_checkminmax
+	fi
+	
+	
 	
 	local parser_errorcount=${#parser_errors[*]}
-	if [ ${parser_errorcount} -eq 1 ] && [ -z "${parser_errors}" ]
-	then
-		parser_errorcount=0
-	fi
 	return ${parser_errorcount}
 }
 

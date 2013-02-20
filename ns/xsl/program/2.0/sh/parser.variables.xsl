@@ -193,6 +193,15 @@
 		</call-template>
 	</variable>
 	
+	<variable name="prg.sh.parser.vName_aborted">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>aborted</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
 	<variable name="prg.sh.parser.vName_OK">
 		<call-template name="str.toUpper">
 			<with-param name="text">
@@ -387,6 +396,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_debug">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
@@ -395,6 +405,7 @@
 			</with-param>
 		</call-template>
 	</variable>
+	
 	<variable name="prg.sh.parser.fName_process_subcommand_option">
 		<call-template name="prg.prefixedName">
 			<with-param name="name">

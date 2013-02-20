@@ -5,6 +5,7 @@ syntax: regexp
 # Output folders
 ^archives$
 ^xul$
+^tmp$
 # Log files
 run-tests\.sh\.log
 # Mercurial files
@@ -13,3 +14,5 @@ run-tests\.sh\.log
 ^unittests/parsers/.*/Program
 ^unittests/parsers/.*/program.+
 ^unittests/parsers/.*/tests/...\.result.*
+# Others
+\.~
