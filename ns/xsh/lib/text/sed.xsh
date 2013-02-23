@@ -5,14 +5,19 @@
 	<!-- in place file text replacement using sed -->
 	<!-- Take care of sed version (at least on Mac OS X 10.5) -->
 	<xsh:function name="ns_sed_inplace">
-		<xsh:parameter name="regex" />
+		<xsh:parameter name="sedCommand" />
 		<xsh:body><![CDATA[
 # sedForm
-# 1: modern linux => sed --in-place
+# 1: modern linux => (g)sed --in-place
 # 2: Mac OS X 10.5-10.8 - => sed -i ""
 # TODO test Mac OS X < 10.5
-]]><xsh:local name="sedForm" type="numeric">1</xsh:local><![CDATA[
-if [ "$(uname -s)" == "Darwin" ]
+]]><xsh:local name="sedForm" type="numeric">1</xsh:local>
+# Use gsed if available
+<xsh:local name="sedBin">$(which "gsed")</xsh:local><![CDATA[
+[ -z "${sedBin}" ] && sedBin="$(which "sed")"
+[ -z "${sedBin}" ] && return 1
+
+if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
 then
 	]]><xsh:local name="macOSXVersion">$(sw_vers -productVersion)</xsh:local><![CDATA[
 	if [ ! -z "${macOSXVersion}" ]
@@ -30,10 +35,10 @@ while [ $# -gt 0 ]
 do	
 	if [ ${sedForm} -eq 1 ]
 	then
-		sed --in-place "${regex}" "${1}"
+		"${sedBin}" --in-place "${sedCommand}" "${1}"
 	elif [ ${sedForm} -eq 2 ]
 	then
-		sed -i "" "${regex}" "${1}"
+		"${sedBin}" -i "" "${sedCommand}" "${1}"
 	fi
 	
 	shift
