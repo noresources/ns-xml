@@ -518,19 +518,25 @@ ns_mktempdir()
 }
 ns_sed_inplace()
 {
-	local regex
+	local sedCommand
 	if [ $# -gt 0 ]
 	then
-		regex="${1}"
+		sedCommand="${1}"
 		shift
 	fi
 	# sedForm
-	# 1: modern linux => sed --in-place
+	# 1: modern linux => (g)sed --in-place
 	# 2: Mac OS X 10.5-10.8 - => sed -i ""
 	# TODO test Mac OS X < 10.5
 	local sedForm=1
 	
-	if [ "$(uname -s)" == "Darwin" ]
+	# Use gsed if available
+	local sedBin="$(which "gsed")"
+	
+	[ -z "${sedBin}" ] && sedBin="$(which "sed")"
+	[ -z "${sedBin}" ] && return 1
+	
+	if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
 	then
 	local macOSXVersion="$(sw_vers -productVersion)"
 	
@@ -550,10 +556,10 @@ ns_sed_inplace()
 	do	
 		if [ ${sedForm} -eq 1 ]
 		then
-			sed --in-place "${regex}" "${1}"
+			"${sedBin}" --in-place "${sedCommand}" "${1}"
 		elif [ ${sedForm} -eq 2 ]
 		then
-			sed -i "" "${regex}" "${1}"
+			"${sedBin}" -i "" "${sedCommand}" "${1}"
 		fi
 		
 		shift
@@ -678,7 +684,7 @@ EOF
 	done
 	
 	# Include (if source)
-	ns_sed_inplace "s,#include[ \t]\+\"nsxml_program_parser\.h\",#include \"]]><value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
+	ns_sed_inplace "s,#include[ \t][ \t]*\"nsxml_program_parser\.h\",#include \"]]><value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
 
 	# Finally 
 	mv "${tmpFile}" "${output}"

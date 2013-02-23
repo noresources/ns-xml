@@ -1393,7 +1393,7 @@ EOFSH
 			${keepTemporaryFiles} || rm -f "${cParserBase}.h"
 			${keepTemporaryFiles} || rm -f "${cParserBase}.c"
 			# Mac OS X
-			${keepTemporaryFiles} || rm -f "${cProgram}.dSYM"
+			${keepTemporaryFiles} || rm -fr "${cProgram}.dSYM"
 		fi
 	fi
 	

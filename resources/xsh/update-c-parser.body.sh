@@ -115,7 +115,7 @@ EOF
 	done
 	
 	# Include (if source)
-	ns_sed_inplace "s,#include[ \t]\+\"nsxml_program_parser\.h\",#include \"]]><value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
+	ns_sed_inplace "s,#include[ \t][ \t]*\"nsxml_program_parser\.h\",#include \"]]><value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
 
 	# Finally 
 	mv "${tmpFile}" "${output}"
