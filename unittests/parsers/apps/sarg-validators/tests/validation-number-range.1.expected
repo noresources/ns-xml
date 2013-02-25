@@ -1,0 +1,12 @@
+CLI: "msg", "Testing number validation", "--positive", "2048"
+Value count: 1
+Values: "Testing number validation"
+Error count: 0
+Subcommand: msg
+argumentNumber=
+argumentNumberPositive=2048
+argumentNumberNegative=
+argumentNumberRange=
+argumentNumberNegativeRange=
+argumentSelect=
+argumentNumberSelect=

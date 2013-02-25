@@ -68,7 +68,22 @@ echo "CLI: ";
 echolist ($args);
 echol ("Value count: " . $result->valueCount());
 echo ("Values: "); echolist ($result);
-echol ("Error count: " . count($result->getMessages(\Message::ERROR))); 
+$errors = $result->getMessages(\Message::ERROR);
+$errorCount = count($errors);
+echol ("Error count: " . $errorCount);
+if ($errorCount)
+{
+	foreach ($args as $arg)
+	{
+		if ($args == "__msg__")
+		{
+			foreach ($errors as $e)
+			{
+				echol ("- " . $e);
+			}
+		}
+	}
+} 
 echol ("Subcommand: " . ($result->subcommandName ? $result->subcommandName : ""));  
 ]]></text>
 		<!-- Global args -->

@@ -151,6 +151,7 @@ int main(int argc, const char **argv)
 {
 	/* Display command line arguments */
 	int first = 1;
+	int display_messages = 0;
 	int i;
 	app_info info;
 	app_result *result;
@@ -166,19 +167,30 @@ int main(int argc, const char **argv)
 		{
 			printf(", \"%s\"", argv[i]);
 		}
+		
+		if (strcmp(argv[i], "__msg__") == 0)
+		{
+			display_messages = 1;
+		}
 	}
 	printf("\n");
 	
 	app_info_init(&info);
 	result = app_parse(&info, argc, argv, 1);
 	
-	/* Values */
+	/* Positional arguments */
 	printf("Value count: %d\n", (int)result->value_count);
 	printf("Values: ");
 	value_list(result->values, "\"", "\"", ", ");
 	printf("\n");
 	
+	/* Errors */
 	printf("Error count: %d\n", (int)app_result_error_count(result));
+	if (display_messages && (int)app_result_error_count(result))
+	{
+		printf("Errors: ");
+		app_result_display_errors(stderr, result, "- ");
+	}
 	
 	printf("Subcommand: %s\n", ((result->subcommand_name) ? result->subcommand_name : ""));
 ]]></text>
