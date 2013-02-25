@@ -1,0 +1,47 @@
+{
+   MacOSX_CoreFoundationLeak
+   Memcheck:Addr8
+   obj:*
+   fun:_resolvedPath
+   fun:CFURLCopyAbsoluteURL
+   fun:_CFBundleCopyResolvedURLForExecutableURL
+   fun:_CFBundleCopyBundleURLForExecutableURL
+   fun:_CFBundleGetMainBundleAlreadyLocked
+   fun:CFBundleGetMainBundle
+   fun:cacheBundleInfo
+   fun:_CFAppVersionCheckLessThan
+   fun:__CFInitialize
+   fun:_ZN16ImageLoaderMachO11doImageInitERKN11ImageLoader11LinkContextE
+   fun:_ZN16ImageLoaderMachO16doInitializationERKN11ImageLoader11LinkContextE
+}
+{
+   coditional_jump_on_uninitialized_var
+   Memcheck:Cond
+   fun:pthread_rwlock_init
+   fun:_ZN4argo13ReadWriteLockC2Ev
+   fun:_ZN4argo13ReadWriteLockC1Ev
+   fun:_ZN4argo6ThreadC2EPFvPvES1_
+   fun:_ZN4argo6ThreadC1EPFvPvES1_
+   fun:_ZN4argo2io9IOManagerC2Ev
+   fun:_ZN4argo2io9IOManagerC1Ev
+   fun:_ZN4argo2io9IOManager14CreateInstanceEv
+   fun:_ZN6KVSApp10InitializeEv
+   fun:_Z12test_redisngiPPKcPv
+   fun:_ZNK8UnitTestclEiPPKc
+   fun:_ZNK11UnitTestMapclEiPPKc
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:pthread_rwlock_init
+   fun:_ZN4argo13ReadWriteLockC2Ev
+   fun:_ZN4argo13ReadWriteLockC1Ev
+   fun:_ZN4argo2io9IOManagerC2Ev
+   fun:_ZN4argo2io9IOManagerC1Ev
+   fun:_ZN4argo2io9IOManager14CreateInstanceEv
+   fun:_ZN6KVSApp10InitializeEv
+   fun:_Z15test_doccreatoriPPKcPv
+   fun:_ZNK8UnitTestclEiPPKc
+   fun:_ZNK11UnitTestMapclEiPPKc
+   fun:main
+}

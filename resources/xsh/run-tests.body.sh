@@ -221,7 +221,10 @@ then
 		valgrindArgs=("--tool=memcheck" "--leak-check=full" "--undef-value-errors=yes" "--xml=yes")
 		if [ "$(uname -s)" = "Darwin" ]
 		then
-			valgrindArgs=("${valgrindArgs[@]}" "--dsymutil=yes")
+			valgrindArgs=("${valgrindArgs[@]}" \
+				"--dsymutil=yes" \
+				"--suppressions=\"${rootPath}/resources/valgrind/Darwin.supp\""
+				)
 		fi
 		
 		valgrindOutputXslFile="$(ns_mktemp "valgrind-xsl")"

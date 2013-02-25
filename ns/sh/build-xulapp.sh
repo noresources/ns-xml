@@ -346,6 +346,27 @@ parse_checkminmax()
 	
 	return ${errorCount}
 }
+parse_numberlesserequalcheck()
+{
+	local hasBC=false
+	which bc 1>/dev/null 2>&1 && hasBC=true
+	if ${hasBC}
+	then
+		[ "$(echo "${1} <= ${2}" | bc)" = "0" ] && return 1
+	else
+		local a_int="$(echo "${1}" | cut -f 1 -d".")"
+		local a_dec="$(echo "${1}" | cut -f 2 -d".")"
+		[ "${a_dec}" = "${1}" ] && a_dec="0"
+		local b_int="$(echo "${2}" | cut -f 1 -d".")"
+		local b_dec="$(echo "${2}" | cut -f 2 -d".")"
+		[ "${b_dec}" = "${2}" ] && b_dec="0"
+		[ ${a_int} -lt ${b_int} ] && return 0
+		[ ${a_int} -gt ${b_int} ] && return 1
+		([ ${a_int} -ge 0 ] && [ ${a_dec} -gt ${b_dec} ]) && return 1
+		([ ${a_int} -lt 0 ] && [ ${b_dec} -gt ${a_dec} ]) && return 1
+	fi
+	return 0
+}
 parse_enumcheck()
 {
 	local ref="${1}"
@@ -398,6 +419,8 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
+	local parser_integer
+	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -1259,9 +1282,11 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
+	local parser_integer
+	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
-		if parse_process_subcommand_option "${@}"
+		if parse_process_subcommand_option
 		then
 			return ${PARSER_OK}
 		fi
@@ -1468,6 +1493,23 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
+			then
+				parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+				return ${PARSER_ERROR}
+			else
+				if ! parse_numberlesserequalcheck 50 ${parser_item}
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+				if ! parse_numberlesserequalcheck ${parser_item} 2048
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
 			windowWidth="${parser_item}"
 			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
@@ -1496,6 +1538,23 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
+			then
+				parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+				return ${PARSER_ERROR}
+			else
+				if ! parse_numberlesserequalcheck 50 ${parser_item}
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+				if ! parse_numberlesserequalcheck ${parser_item} 2048
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
 			windowHeight="${parser_item}"
 			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
@@ -1828,6 +1887,23 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
+			then
+				parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+				return ${PARSER_ERROR}
+			else
+				if ! parse_numberlesserequalcheck 50 ${parser_item}
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+				if ! parse_numberlesserequalcheck ${parser_item} 2048
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
 			windowWidth="${parser_item}"
 			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
 			;;
@@ -1856,6 +1932,23 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
+			then
+				parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+				return ${PARSER_ERROR}
+			else
+				if ! parse_numberlesserequalcheck 50 ${parser_item}
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+				if ! parse_numberlesserequalcheck ${parser_item} 2048
+				then
+					parse_adderror "Invalid value \"${parser_item}\" for option \"${parser_option}\". Number expected"
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
 			windowHeight="${parser_item}"
 			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
 			;;
@@ -1948,7 +2041,7 @@ parse()
 	parser_aborted=false
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
-		parse_process_option "${0}"
+		parse_process_option
 		if [ -z "${parser_optiontail}" ]
 		then
 			parser_index=$(expr ${parser_index} + 1)
