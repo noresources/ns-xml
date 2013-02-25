@@ -370,16 +370,25 @@ class PathValueValidator
 		{
 			if (($this->flags & self::ACCESS_READ) && !is_readable($value))
 			{
+				/**
+				 * @todo error message
+				 */
 				return false;
 			}
 
 			if (($this->flags & self::ACCESS_WRITE) && !is_writable($value))
 			{
+				/**
+				 * @todo error message
+				 */
 				return false;
 			}
 
 			if (($this->flags & self::ACCESS_EXECUTE) && !is_executable($value))
 			{
+				/**
+				 * @todo error message
+				 */
 				return false;
 			}
 		}
@@ -468,22 +477,29 @@ class NumberValueValidator
 
 	public function validate(ParserState &$state, ProgramResult &$result, &$element, $value)
 	{
+		$passed = true;
 		if (!is_numeric($value))
 		{
-			return false;
+			$passed = false;
 		}
 
-		if (($this->minValue !== null) && ($value < $this->minValue))
+		if ($passed && ($this->minValue !== null) && ($value < $this->minValue))
 		{
-			return false;
+			$passed = false;
 		}
 
-		if (($this->maxValue !== null) && ($value > $this->maxValue))
+		if ($passed && ($this->maxValue !== null) && ($value > $this->maxValue))
 		{
-			return false;
+			$passed = false;
 		}
 
-		return true;
+		if (!$passed)
+		{
+			$usage = new UsageFormat;
+			$result->appendMessage(Message::ERROR, 1, Message::ERROR_INVALID_OPTION_VALUE, $element->name->cliName(), $this->usage($usage));
+		}
+		
+		return $passed;
 	}
 
 	public function usage(UsageFormat &$usage)
@@ -1470,8 +1486,8 @@ class Message
 
 	const FATALERROR_UNKNOWN_OPTION = "Unknown option %s";
 	
-	/* 1  */ const ERROR_INVALID_OPTION_VALUE = "Invalid value for positional argument %d. %s";
-	/* 2  */ const ERROR_INVALID_POSARG_VALUE = "Invalid value for option %s. %s\n";
+	/* 1  */ const ERROR_INVALID_OPTION_VALUE = "Invalid value for option %s. %s";
+	/* 2  */ const ERROR_INVALID_POSARG_VALUE = "Invalid value for positional argument %d. %s";
 	/* 3  */ const ERROR_MISSING_ARG = "Missing argument for option %s";
 	/* 4  */ const ERROR_REQUIRED_OPTION = "Missing required option %s";
 	/* 5  */ const ERROR_REQUIRED_GROUP = "At least one of the following options have to be set: %s";
