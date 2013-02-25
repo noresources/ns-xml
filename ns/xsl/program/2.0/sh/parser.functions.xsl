@@ -622,6 +622,93 @@
 		</call-template>
 	</template>
 
+	<template name="prg.sh.parser.numberLesserEqualCheckFunction">
+		<param name="interpreter" />
+		
+		<call-template name="sh.functionDefinition">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
+			</with-param>
+			<with-param name="interpreter" select="$interpreter" />
+			<with-param name="content">
+				<call-template name="sh.local">
+					<with-param name="name" select="'hasBC'" />
+					<with-param name="quoted" select="false()" />
+					<with-param name="value">
+						<text>false</text>
+					</with-param>
+				</call-template>
+				<text></text>
+				<value-of select="$sh.endl" />
+				<text>which bc </text>
+				<call-template name="sh.chunk.nullRedirection" />
+				<text> &amp;&amp; hasBC=true</text>
+				<value-of select="$sh.endl" />
+				
+				<call-template name="sh.if">
+					<with-param name="condition">
+						<call-template name="sh.var">
+							<with-param name="name" select="'hasBC'" />
+						</call-template>
+					</with-param>
+					<with-param name="then">
+						<text>[ "$(echo "${1} &lt;= ${2}" | bc)" = "0" ] &amp;&amp; return 1</text>
+					</with-param>
+					<with-param name="else">
+						<!-- Split into integral & decimal part -->
+						<call-template name="sh.local">
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="name" select="'a_int'" />
+							<with-param name="value">
+								<text>$(echo "${1}" | cut -f 1 -d".")</text>
+							</with-param>
+						</call-template>
+						<value-of select="$sh.endl" />
+						<call-template name="sh.local">
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="name" select="'a_dec'" />
+							<with-param name="value">
+								<text>$(echo "${1}" | cut -f 2 -d".")</text>
+							</with-param>
+						</call-template>
+						<value-of select="$sh.endl" />
+						<text>[ "${a_dec}" = "${1}" ] &amp;&amp; a_dec="0"</text>
+						
+						<value-of select="$sh.endl" />
+						<call-template name="sh.local">
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="name" select="'b_int'" />
+							<with-param name="value">
+								<text>$(echo "${2}" | cut -f 1 -d".")</text>
+							</with-param>
+						</call-template>
+						<value-of select="$sh.endl" />
+						<call-template name="sh.local">
+							<with-param name="interpreter" select="$interpreter" />
+							<with-param name="name" select="'b_dec'" />
+							<with-param name="value">
+								<text>$(echo "${2}" | cut -f 2 -d".")</text>
+							</with-param>
+						</call-template>
+						<value-of select="$sh.endl" />
+						<text>[ "${b_dec}" = "${2}" ] &amp;&amp; b_dec="0"</text>
+						<value-of select="$sh.endl" />
+						
+						<text>[ ${a_int} -lt ${b_int} ] &amp;&amp; return 0</text>
+						<value-of select="$sh.endl" />
+						<text>[ ${a_int} -gt ${b_int} ] &amp;&amp; return 1</text>
+						<value-of select="$sh.endl" />
+						<text>([ ${a_int} -ge 0 ] &amp;&amp; [ ${a_dec} -gt ${b_dec} ]) &amp;&amp; return 1</text>
+						<value-of select="$sh.endl" />
+						<text>([ ${a_int} -lt 0 ] &amp;&amp; [ ${b_dec} -gt ${a_dec} ]) &amp;&amp; return 1</text>
+					</with-param>
+				</call-template>
+			
+				<text>return 0</text>
+			</with-param>
+		</call-template>
+	</template>
+
 	<template name="prg.sh.parser.enumCheckFunction">
 		<param name="interpreter" />
 
@@ -714,6 +801,7 @@
 							<when test="count($programNode/prg:values/*)">
 								<call-template name="prg.sh.parser.checkValue">
 									<with-param name="valuesNode" select="$programNode/prg:values" />
+									<with-param name="interpreter" select="$interpreter" />
 								</call-template>
 							</when>
 							<otherwise>
@@ -820,6 +908,16 @@
 			<with-param name="name" select="$prg.sh.parser.fName_process_subcommand_option" />
 			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
+				<call-template name="sh.local">
+					<with-param name="name" select="$prg.sh.parser.vName_integer" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				<value-of select="$sh.endl" />
+				<call-template name="sh.local">
+					<with-param name="name" select="$prg.sh.parser.vName_decimal" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				<value-of select="$sh.endl" />
 				<value-of select="$prg.sh.parser.vName_item" />
 				<text>=</text>
 				<call-template name="sh.var">
@@ -884,68 +982,76 @@
 				</call-template>
 				<value-of select="$sh.endl" />
 
-				<if test="$programNode/prg:subcommands/prg:subcommand">
-					<call-template name="sh.case">
-						<with-param name="case">
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-							</call-template>
-						</with-param>
-						<with-param name="in">
-							<for-each select="$programNode/prg:subcommands/prg:subcommand">
-								<if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
-									<call-template name="sh.caseblock">
-										<with-param name="case">
-											<value-of select="./prg:name" />
-										</with-param>
-										<with-param name="content">
-											<if test="./prg:options//prg:names/prg:long">
-												<call-template name="prg.sh.parser.longOptionNameElif">
-													<with-param name="optionsNode" select="./prg:options" />
-													<with-param name="onError" select="$onError" />
-													<with-param name="onSuccess" select="$onSuccess" />
-													<with-param name="onUnknownOption" select="$onUnknownOption" />
-													<with-param name="interpreter" select="$interpreter" />
-													<with-param name="keyword">
-														<text>if</text>
-													</with-param>
-												</call-template>
-											</if>
+				<choose>
+					<!-- There is at least one option in one subcommand -->
+					<when test="$programNode/prg:subcommands/prg:subcommand[prg:options]">
+						<call-template name="sh.case">
+							<with-param name="case">
+								<call-template name="sh.var">
+									<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+								</call-template>
+							</with-param>
+							<with-param name="in">
+								<for-each select="$programNode/prg:subcommands/prg:subcommand">
+									<if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
+										<call-template name="sh.caseblock">
+											<with-param name="case">
+												<value-of select="./prg:name" />
+											</with-param>
+											<with-param name="content">
+												<if test="./prg:options//prg:names/prg:long">
+													<call-template name="prg.sh.parser.longOptionNameElif">
+														<with-param name="optionsNode" select="./prg:options" />
+														<with-param name="onError" select="$onError" />
+														<with-param name="onSuccess" select="$onSuccess" />
+														<with-param name="onUnknownOption" select="$onUnknownOption" />
+														<with-param name="interpreter" select="$interpreter" />
+														<with-param name="keyword">
+															<text>if</text>
+														</with-param>
+													</call-template>
+												</if>
 
 											<!-- short option -->
-											<if test="./prg:options//prg:names/prg:short">
-												<call-template name="prg.sh.parser.shortOptionNameElif">
-													<with-param name="optionsNode" select="./prg:options" />
-													<with-param name="onError" select="$onError" />
-													<with-param name="onSuccess" select="$onSuccess" />
-													<with-param name="onUnknownOption" select="$onUnknownOption" />
-													<with-param name="interpreter" select="$interpreter" />
-													<with-param name="keyword">
-														<choose>
-															<when test="./prg:options//prg:names/prg:long">
-																<text>elif</text>
-															</when>
-															<otherwise>
-																<text>if</text>
-															</otherwise>
-														</choose>
-													</with-param>
-												</call-template>
-											</if>
-											<text>fi</text>
-										</with-param>
-									</call-template>
-								</if>
-							</for-each>
-						</with-param>
-					</call-template>
-					<value-of select="$sh.endl" />
-				</if>
-
-				<text>return </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
-				</call-template>
+												<if test="./prg:options//prg:names/prg:short">
+													<call-template name="prg.sh.parser.shortOptionNameElif">
+														<with-param name="optionsNode" select="./prg:options" />
+														<with-param name="onError" select="$onError" />
+														<with-param name="onSuccess" select="$onSuccess" />
+														<with-param name="onUnknownOption" select="$onUnknownOption" />
+														<with-param name="interpreter" select="$interpreter" />
+														<with-param name="keyword">
+															<choose>
+																<when test="./prg:options//prg:names/prg:long">
+																	<text>elif</text>
+																</when>
+																<otherwise>
+																	<text>if</text>
+																</otherwise>
+															</choose>
+														</with-param>
+													</call-template>
+												</if>
+												<text>fi</text>
+											</with-param>
+										</call-template>
+									</if>
+								</for-each>
+							</with-param>
+						</call-template>
+						<value-of select="$sh.endl" />
+						<text>return </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
+						</call-template>
+					</when>
+					<otherwise>
+						<text>return </text>
+						<call-template name="sh.var">
+							<with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
+						</call-template>
+					</otherwise>
+				</choose>
 			</with-param>
 		</call-template>
 	</template>
@@ -981,6 +1087,17 @@
 			<with-param name="name" select="$prg.sh.parser.fName_process_option" />
 			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
+				<call-template name="sh.local">
+					<with-param name="name" select="$prg.sh.parser.vName_integer" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				<value-of select="$sh.endl" />
+				<call-template name="sh.local">
+					<with-param name="name" select="$prg.sh.parser.vName_decimal" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				<value-of select="$sh.endl" />
+
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>[ ! -z </text>
@@ -1005,7 +1122,6 @@
 						<call-template name="sh.if">
 							<with-param name="condition">
 								<value-of select="$prg.sh.parser.fName_process_subcommand_option" />
-								<text> "${@}"</text>
 							</with-param>
 							<with-param name="then">
 								<if test="$prg.debug">
@@ -1304,11 +1420,6 @@
 					</with-param>
 					<with-param name="do">
 						<value-of select="$prg.sh.parser.fName_process_option" />
-						<value-of select="' '" />
-						<call-template name="sh.var">
-							<with-param name="name" select="0" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
 						<value-of select="$sh.endl" />
 
 						<call-template name="sh.if">
@@ -1336,7 +1447,7 @@
 				</call-template>
 				<value-of select="$sh.endl" />
 				<value-of select="$sh.endl" />
-				
+
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>! </text>
@@ -1476,6 +1587,10 @@
 			<with-param name="interpreter" select="$interpreter" />
 		</call-template>
 		<call-template name="prg.sh.parser.minmaxCheckFunction">
+			<with-param name="programNode" select="$programNode" />
+			<with-param name="interpreter" select="$interpreter" />
+		</call-template>
+		<call-template name="prg.sh.parser.numberLesserEqualCheckFunction">
 			<with-param name="programNode" select="$programNode" />
 			<with-param name="interpreter" select="$interpreter" />
 		</call-template>

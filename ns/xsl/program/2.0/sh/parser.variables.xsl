@@ -202,6 +202,24 @@
 		</call-template>
 	</variable>
 	
+	<variable name="prg.sh.parser.vName_integer">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>integer</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
+	<variable name="prg.sh.parser.vName_decimal">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.variableNamePrefix" />
+				<text>decimal</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
 	<variable name="prg.sh.parser.vName_OK">
 		<call-template name="str.toUpper">
 			<with-param name="text">
@@ -293,6 +311,16 @@
 		<call-template name="prg.prefixedName">
 			<with-param name="name">
 				<text>parse</text>
+			</with-param>
+		</call-template>
+	</variable>
+	
+	<!-- Check number interval -->
+	<variable name="prg.sh.parser.fName_numberLesserEqualcheck">
+		<call-template name="prg.prefixedName">
+			<with-param name="name">
+				<value-of select="$prg.sh.parser.functionNamePrefix" />
+				<text>numberlesserequalcheck</text>
 			</with-param>
 		</call-template>
 	</variable>

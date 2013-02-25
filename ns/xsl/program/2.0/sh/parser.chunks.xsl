@@ -388,7 +388,8 @@
 
 			<!-- Set option variable -->
 			<!-- except if group is not exclusive (meaningless in this case) -->
-			<if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
+			<if
+				test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
 				<apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 				<text>="</text>
 				<!-- don't add subcommand prefix in this case -->
@@ -487,7 +488,8 @@
 			</call-template>
 
 			<!-- Exclusive clause -->
-			<if test="$groupOptionNode[@type = 'exclusive'] 
+			<if
+				test="$groupOptionNode[@type = 'exclusive'] 
 						and $groupOptionNode/prg:databinding/prg:variable 
 						and $optionNode/prg:databinding/prg:variable">
 				<call-template name="sh.if">
@@ -573,6 +575,78 @@
 				<value-of select="$sh.endl" />
 			</if>
 		</if>
+	</template>
+
+	<template name="prg.sh.parser.numberCheck">
+		<param name="numberNode" />
+		<param name="value">
+			<call-template name="sh.var">
+				<with-param name="name" select="$prg.sh.parser.vName_item" />
+				<with-param name="quoted" select="true()" />
+			</call-template>
+		</param>
+		<param name="onError" />
+		<param name="currentItem" />
+		<param name="interpreter" />
+
+		<variable name="errorCode">
+			<value-of select="$prg.sh.parser.fName_adderror" />
+			<text> "Invalid value \"</text>
+			<value-of select="$value" />
+			<text>\"</text>
+			<text> for </text>
+			<value-of select="$currentItem" />
+			<text>. Number expected"</text>
+			<if test="$onError">
+				<value-of select="$sh.endl" />
+				<value-of select="$onError" />
+			</if>
+		</variable>
+
+		<call-template name="sh.if">
+			<with-param name="condition">
+				<text>! echo -n "</text>
+				<value-of select="$value" />
+				<text>" | grep -E "\-?[0-9]+(\.[0-9]+)*" </text>
+				<call-template name="sh.chunk.nullRedirection" />
+			</with-param>
+			<with-param name="then">
+				<value-of select="$errorCode" />
+			</with-param>
+			<with-param name="else">
+				<if test="$numberNode[@min]">
+					<call-template name="sh.if">
+						<with-param name="condition">
+							<text>! </text>
+							<value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
+							<text> </text>
+							<value-of select="$numberNode/@min" />
+							<text> </text>
+							<value-of select="$value" />
+						</with-param>
+						<with-param name="then">
+							<value-of select="$errorCode" />
+						</with-param>
+					</call-template>
+				</if>
+				<if test="$numberNode[@max]">
+					<call-template name="sh.if">
+						<with-param name="condition">
+							<text>! </text>
+							<value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
+							<text> </text>
+							<value-of select="$value" />
+							<text> </text>
+							<value-of select="$numberNode/@max" />
+						</with-param>
+						<with-param name="then">
+							<value-of select="$errorCode" />
+						</with-param>
+					</call-template>
+				</if>
+			</with-param>
+		</call-template>
+		
 	</template>
 
 	<template name="prg.sh.parser.existingCommandCheck">
@@ -744,6 +818,7 @@
 			</call-template>
 		</param>
 		<param name="onError" />
+		<param name="interpreter" />
 		<param name="currentItem">
 			<text>option \"</text>
 			<call-template name="sh.var">
@@ -752,7 +827,24 @@
 			<text>\"</text>
 		</param>
 
+		<!-- <call-template name="sh.comment">
+			<with-param name="content">
+				<text>Value type check</text>
+			</with-param>
+		</call-template>
+		<value-of select="$sh.endl" /> -->
+
 		<choose>
+			<when test="$node/prg:type/prg:number">
+				<call-template name="prg.sh.parser.numberCheck">
+					<with-param name="numberNode" select="$node/prg:type/prg:number" />
+					<with-param name="value" select="$value" />
+					<with-param name="onError" select="$onError" />
+					<with-param name="currentItem" select="$currentItem" />
+					<with-param name="interpreter" select="$interpreter" />
+				</call-template>
+				<value-of select="$sh.endl" />
+			</when>
 			<when test="$node/prg:type/prg:path">
 				<variable name="pathNode" select="$node/prg:type/prg:path" />
 
@@ -792,6 +884,7 @@
 				<value-of select="$sh.endl" />
 			</when>
 		</choose>
+
 	</template>
 
 	<!-- long option case -->
@@ -931,6 +1024,7 @@
 						<call-template name="prg.sh.parser.optionValueTypeCheck">
 							<with-param name="node" select="$optionNode" />
 							<with-param name="onError" select="$onError" />
+							<with-param name="interpreter" select="$interpreter" />
 						</call-template>
 						<call-template name="prg.sh.parser.valueRestrictionCheck">
 							<with-param name="optionNode" select="$optionNode" />
@@ -982,6 +1076,7 @@
 								<call-template name="prg.sh.parser.optionValueTypeCheck">
 									<with-param name="node" select="$optionNode" />
 									<with-param name="onError" select="$onError" />
+									<with-param name="interpreter" select="$interpreter" />
 								</call-template>
 								<call-template name="prg.sh.parser.valueRestrictionCheck">
 									<with-param name="optionNode" select="$optionNode" />
@@ -1104,6 +1199,7 @@
 								<call-template name="prg.sh.parser.optionValueTypeCheck">
 									<with-param name="node" select="$optionNode" />
 									<with-param name="onError" select="$onError" />
+									<with-param name="interpreter" select="$interpreter" />
 								</call-template>
 								<call-template name="prg.sh.parser.valueRestrictionCheck">
 									<with-param name="optionNode" select="$optionNode" />
@@ -1317,11 +1413,10 @@
 
 	<template name="prg.sh.parser.checkValue">
 		<param name="valuesNode" />
+		<param name="interpreter" />
 		<param name="positionVar">
 			<call-template name="sh.var">
-				<with-param name="name">
-					position
-				</with-param>
+				<with-param name="name" select="'position'" />
 			</call-template>
 		</param>
 		<param name="onError" />
@@ -1354,6 +1449,7 @@
 								<with-param name="node" select="." />
 								<with-param name="value" select="$value" />
 								<with-param name="onError" select="$onError" />
+								<with-param name="interpreter" select="$interpreter" />
 								<with-param name="currentItem" select="$currentItem" />
 							</call-template>
 							<call-template name="prg.sh.parser.valueRestrictionCheck">
@@ -1375,6 +1471,7 @@
 								<with-param name="node" select="$valuesNode/prg:other" />
 								<with-param name="value" select="$value" />
 								<with-param name="onError" select="$onError" />
+								<with-param name="interpreter" select="$interpreter" />
 								<with-param name="currentItem" select="$currentItem" />
 							</call-template>
 							<call-template name="prg.sh.parser.valueRestrictionCheck">
