@@ -112,7 +112,7 @@
 				<value-of select="$prg.c.parser.structName.nsxml_message"/>
 				<text> *first_message;</text>
 				<call-template name="endl"/>
-				<!-- Values (positional arguments) -->
+				<!-- Positional arguments (Values) -->
 				<call-template name="endl"/>
 				<call-template name="c.inlineComment">
 					<with-param name="content" select="'Subcommand'"/>
@@ -126,7 +126,7 @@
 				</call-template>
 				<call-template name="endl"/>
 				<call-template name="c.inlineComment">
-					<with-param name="content" select="'Values'"/>
+					<with-param name="content" select="'Positional arguments'"/>
 				</call-template>
 				<call-template name="endl"/>
 				<call-template name="c.variableDeclaration">
@@ -158,7 +158,7 @@
 					</with-param>
 				</call-template>
 				<!-- Subcommands (if any) -->
-				<if test="$programNode/prg:subcommands">
+				<if test="$programNode/prg:subcommands[prg:subcommand/prg:options]">
 					<call-template name="endl"/>
 					<call-template name="c.inlineComment">
 						<with-param name="content" select="'Subcommands'"/>

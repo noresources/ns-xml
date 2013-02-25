@@ -520,6 +520,50 @@ struct nsxml_validated_item
 	} item;
 };
 
+int nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
+int nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
+{
+	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *)self;
+	size_t output_length = 64;
+	char *output = (char *) malloc(sizeof(char) * output_length);
+	int usage_text_length = 0;
+	
+	output[0] = '\0';
+	
+	if (validator->usage_callback)
+	{
+		usage_text_length = (*validator->usage_callback)(validator, item, &output, &output_length);
+	}
+	else
+	{
+		output[0] = '\0';
+	}
+	
+	if (item->item_type == nsxml_item_type_option)
+	{
+		nsxml_program_result_add_messagef(result,
+										  nsxml_message_type_error,
+										  nsxml_message_error_invalid_option_argument,
+										  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
+										  state->active_option_cli_name,
+										  output);
+	}
+	else
+	{
+	
+		nsxml_program_result_add_messagef(result,
+										  nsxml_message_type_error,
+										  nsxml_message_error_invalid_option_argument,
+										  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
+										  item->item.positional_argument_number, output);
+										  
+	}
+	
+	free(output);
+	
+	return usage_text_length;
+}
+
 void nsxml_value_validator_free(struct nsxml_value_validator *validator);
 
 void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags)
@@ -664,6 +708,7 @@ int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	float f;
 	int res;
+	int passed = 1;
 	char *tmp = (char *) malloc(sizeof(char) * strlen(value) + 1);
 	tmp[0] = '\0';
 	
@@ -672,6 +717,7 @@ int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_
 #endif /* NSXML_DEBUG */
 	
 	res = sscanf(value, "%f%s", &f, tmp);
+	
 #if NSXML_DEBUG
 	nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, " - res = %d (%f %s)\n", res, (double)f, tmp);
 #endif /* NSXML_DEBUG */
@@ -680,20 +726,26 @@ int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_
 	
 	if (res != 1)
 	{
-		return 0;
+		passed = 0;
 	}
 	
-	if ((nvalidator->validator.flags & nsxml_value_validator_checkmin) && (f < nvalidator->min_value))
+	if (passed && (nvalidator->validator.flags & nsxml_value_validator_checkmin) && (f < nvalidator->min_value))
 	{
-		return 0;
+		passed = 0;
 	}
 	
-	if ((nvalidator->validator.flags & nsxml_value_validator_checkmax) && (f > nvalidator->max_value))
+	if (passed && (nvalidator->validator.flags & nsxml_value_validator_checkmax) && (f > nvalidator->max_value))
 	{
-		return 0;
+		passed = 0;
 	}
 	
-	return 1;
+	if (!passed)
+	{
+		nsmxl_value_validator_add_standard_error(self, state, result, item, value);
+	}
+	
+	
+	return passed;
 }
 
 int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
@@ -728,13 +780,14 @@ int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_st
 			nsxml_program_result_add_messagef(result,
 											  nsxml_message_type_error,
 											  nsxml_message_error_invalid_option_argument,
-											  "Invalid value for option %s. %s\n", state->active_option_cli_name, output);
+											  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
+											  state->active_option_cli_name, output);
 		}
 		else
 		{
 			nsxml_program_result_add_messagef(result, nsxml_message_type_error,
 											  nsxml_message_error_invalid_pa_argument,
-											  "Invalid value for positional argument %d. %s\n",
+											  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
 											  item->item.positional_argument_number, output);
 		}
 		
@@ -1555,7 +1608,7 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 
 /* Validator usage definitions */
 
-int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+int nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *)self;
 	int f;
@@ -1650,7 +1703,7 @@ int nsxml_value_validator_usage_path(const void *self, const struct nsxml_option
 	return 0;
 }
 
-int nsxml_value_validator_usage_number(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
@@ -1672,7 +1725,7 @@ int nsxml_value_validator_usage_number(const void *self, const struct nsxml_opti
 	return printed;
 }
 
-int nsxml_value_validator_usage_enum(const void *self, const struct nsxml_option_info *info, char **output, size_t *output_length)
+int nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator_enum *evalidator = (const struct nsxml_value_validator_enum *) self;
 	static const char *kPrefixedText[2] =
@@ -1990,6 +2043,13 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 	const struct nsxml_item_name *n = info->names;
 	struct nsxml_value_validator *v;
 	char *text_ptr;
+	struct nsxml_validated_item validated_item;
+	struct nsxml_option_name_binding validated_option_binding;
+	
+	validated_item.item_type = nsxml_item_type_option;
+	validated_item.item.binding = &validated_option_binding;
+	validated_option_binding.name_ref = NULL;
+	validated_option_binding.result_ref = NULL;
 	
 	while (n)
 	{
@@ -2108,7 +2168,9 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 	{
 		if (v->usage_callback)
 		{
-			if ((*v->usage_callback)(v, info, text_buffer_ptr, text_buffer_length_ptr) > 0)
+			validated_option_binding.info_ref = info;
+			
+			if ((*v->usage_callback)(v, &validated_item, text_buffer_ptr, text_buffer_length_ptr) > 0)
 			{
 				nsxml_util_text_wrap_fprintf(stream, *text_buffer_ptr, wrap, level + 1);
 			}
@@ -2144,6 +2206,10 @@ void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_
 			nsxml_usage_option_detailed(stream, o, format, wrap, 1, &text_buffer, &text_buffer_length);
 		}
 	}
+	
+	/**
+	 * @todo positional argument usage
+	 */
 	
 	free(text_buffer);
 }
@@ -2958,7 +3024,7 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 				nsxml_program_result_add_messagef(result,
 												  nsxml_message_type_fatal_error,
 												  nsxml_message_fatal_error_unknown_option,
-												  "Unknown option %s\n", state->active_option_cli_name);
+												  NSXML_FATALERROR_UNKNOWN_OPTION_MSGF "\n", state->active_option_cli_name);
 				state->state_flags |= nsxml_parser_state_abort;
 				state->active_option_cli_name[0] = '\0';
 				state->active_option_name = NULL;
