@@ -61,11 +61,12 @@ class OptionInfo:
             self.owner.set_present(self)
 
     def validate(self, context, value):
+        validates = True
         for v in self.validators:
             if not v.validate(self, context, value):
-                return False
+                validates = False 
             
-        return True
+        return validates
       
     @property              
     def names(self):

@@ -505,24 +505,24 @@ class NumberValueValidator
 
 	public function usage(UsageFormat &$usage)
 	{
-		$text = "Argument value must be ";
+		$text = "Argument value must be a number";
 		if ($this->minValue !== null)
 		{
 			if ($this->maxValue !== null)
 			{
-				$text .= "between " . $this->minValue . " and " . $this->maxValue;
+				$text .= " between " . $this->minValue . " and " . $this->maxValue;
 			}
 			else
 			{
-				$text .= "greater or equal than " . $this->minValue;
+				$text .= " greater or equal than " . $this->minValue;
 			}
 		}
 		else
 		{
-			$text .= "lesser or equal than " . $this->maxValue;
+			$text .= " lesser or equal than " . $this->maxValue;
 		}
 
-		return "";
+		return $text;
 	}
 
 	private $minValue;
@@ -573,7 +573,7 @@ class EnumerationValueValidator
 	public function usage(UsageFormat &$usage)
 	{
 		return "Argument value "
-			. ($this->flags & self::RESTRICT) ? "must" : "can"
+			. (($this->flags & self::RESTRICT) ? "must" : "can")
 			. " be " . Text::implode($this->values, ", ", " or ");
 	}
 
@@ -2477,7 +2477,9 @@ class Parser
 		$validates = true;
 		foreach ($binding->info->validators as &$validator)
 		{
-			$validates = ($validates && $validator->validate($this->state, $result, $binding, $value));
+			$v = $validator->validate($this->state, $result, $binding, $value);
+			
+			$validates = ($validates && $v);
 		}
 
 		return $validates;
