@@ -71,12 +71,13 @@ echo ("Values: "); echolist ($result);
 $errors = $result->getMessages(\Message::ERROR);
 $errorCount = count($errors);
 echol ("Error count: " . $errorCount);
-if ($errorCount)
+if ($errorCount > 0)
 {
 	foreach ($args as $arg)
 	{
-		if ($args == "__msg__")
+		if ($arg == "__msg__")
 		{
+			echol ("Errors");
 			foreach ($errors as $e)
 			{
 				echol ("- " . $e);

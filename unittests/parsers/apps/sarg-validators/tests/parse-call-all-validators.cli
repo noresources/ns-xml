@@ -1,0 +1,1 @@
+msg "This should raise 2 errors: one for invalid enum value, one for NaN" --even Four

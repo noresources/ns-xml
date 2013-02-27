@@ -1,0 +1,12 @@
+CLI: "msg", "Testing enum validation", "--even", "4"
+Value count: 1
+Values: "Testing enum validation"
+Error count: 0
+Subcommand: msg
+argumentNumber=
+argumentNumberPositive=
+argumentNumberNegative=
+argumentNumberRange=
+argumentNumberNegativeRange=
+argumentSelect=
+argumentNumberSelect=4

@@ -1,0 +1,12 @@
+CLI: "msg", "This should raise 2 errors: one for invalid enum value, one for NaN", "--even", "Four"
+Value count: 1
+Values: "This should raise 2 errors: one for invalid enum value, one for NaN"
+Error count: 1
+Subcommand: msg
+argumentNumber=
+argumentNumberPositive=
+argumentNumberNegative=
+argumentNumberRange=
+argumentNumberNegativeRange=
+argumentSelect=
+argumentNumberSelect=

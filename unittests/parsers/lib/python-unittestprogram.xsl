@@ -43,7 +43,14 @@ r = p.parse(sys.argv[1:len(sys.argv)])
 print "CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)], "\"", "\"", ", ")
 print "Value count: " + str(len(r.values))
 print "Values: " + u.array_to_string(r.values, "\"", "\"", ", ")
-print "Error count: " + str(len(r.issues["errors"]))
+errorCount = len(r.issues["errors"])
+print "Error count: " + str(errorCount)
+if errorCount > 0:
+	for index in range(len(sys.argv)):
+		arg = sys.argv[index]
+		if arg == "__msg__":
+			print u.array_to_string(r.issues["errors"], " - ", "", "\n")
+            
 if r.subcommand:
 	print "Subcommand: " + r.subcommand.name
 else:
