@@ -777,9 +777,9 @@ class MultiArgumentOptionInfo extends OptionInfo
  */
 class OptionContainerOptionInfo extends OptionInfo
 {
-	public function __construct($variableName = null, $names = null, $flags = 0)
+	public function __construct($variableName = null, $flags = 0)
 	{
-		parent::__construct($variableName, $names, $flags);
+		parent::__construct($variableName, null, $flags);
 		$this->options = array();
 	}
 
@@ -800,6 +800,24 @@ class OptionContainerOptionInfo extends OptionInfo
 		$option->parent = $this;
 	}
 
+	public function getOptionNameListString()
+	{
+		$names = array();
+		foreach ($this->options as &$option)
+		{
+			if ($option instanceof GroupOptionInfo)
+			{
+				$names[] = "(" . $option->getOptionNameListString() . ")";
+			}
+			else
+			{
+				$names[] = $option->getOptionNames()->getFirstOptionName(OptionName::LONG, false)->cliName();
+			}
+		}
+		
+		return Text::implode($names, ", ", " or ");
+	}
+	
 	public static function sortSwitchFirst($a, $b)
 	{
 		if ($a instanceof SwitchOptionInfo)
@@ -829,7 +847,7 @@ class OptionContainerOptionInfo extends OptionInfo
 
 		return 1;
 	}
-
+	
 	protected function optionShortUsage($usage)
 	{
 		$result = "";
@@ -993,35 +1011,12 @@ class GroupOptionInfo extends OptionContainerOptionInfo
 
 	public function __construct($variableName = null, $groupType = self::TYPE_NORMAL, $flags = 0)
 	{
-		parent::__construct($variableName, null, $flags);
+		parent::__construct($variableName, $flags);
 		$this->options = array();
 		$this->groupType = $groupType;
 	}
-
-	public function appendOption(OptionInfo &$option)
-	{
-		$this->options[] = $option;
-		$option->parent = $this;
-	}
-
-	public function getOptionNameListString()
-	{
-		$names = array();
-		foreach ($this->options as &$option)
-		{
-			if ($option instanceof GroupOptionInfo)
-			{
-				$names[] = "(" . $option->getOptionNameListString() . ")";
-			}
-			else
-			{
-				$names[] = $option->getOptionNames()->getFirstOptionName(OptionName::LONG, false);
-			}
-		}
-		
-		return Text::implode($names, ", ", " or ");
-	}
 }
+
 
 /**
  * Non option argument value
@@ -1068,7 +1063,6 @@ class RootItemInfo extends OptionContainerOptionInfo
 	public function __construct()
 	{
 		parent::__construct();
-		$this->options = array();
 		$this->positionalArguments = array();
 	}
 
@@ -2012,6 +2006,8 @@ class ParserState
 			{
 				$this->initializeStateData($scr, $o, $scIndex);
 			}
+			
+			$scIndex++;
 		}
 
 		return $result;
