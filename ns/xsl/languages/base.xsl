@@ -10,6 +10,21 @@
 	<param name="code.indentChar">
 		<text>&#9;</text>
 	</param>
+	
+	<!-- Attempt to transform a name to fit common identifier name restriction (no 
+		spaces, etc) -->
+	<template name="cede.validIdentifierName">
+		<!-- Identifier name to transform -->
+		<param name="name"/>
+		
+		<!-- replace some characters into _ -->
+		<variable name="tname" select="translate(normalize-space($name),'- ','_')"/>
+		
+		<!-- add _ if the variable start with a digit -->
+		<value-of select="translate(substring($tname, 1, 1), '1234567890', '_')"/>
+		<value-of select="substring($tname, 2)"/>
+	</template>
+	
 
 	<!-- Prepend all lines with a comment marker -->
 	<template name="code.comment">

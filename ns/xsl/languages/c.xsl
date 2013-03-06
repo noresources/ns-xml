@@ -9,6 +9,7 @@
 	<param name="c.indentifierNamingStyle" select="'none'"/>
 	<!-- Naming convention for structs -->
 	<param name="c.structNamingStyle" select="'none'"/>
+	
 	<!-- C-style comment -->
 	<template name="c.comment">
 		<!-- Comment content -->
@@ -156,15 +157,16 @@
 	</template>
 
 	<!-- Attempt to transform a name to fit C identifier name restriction (no 
-		spaces, et) -->
+		spaces, etc) -->
 	<template name="c.validIdentifierName">
 		<param name="name"/>
-		<!-- replace some characters into _ -->
-		<variable name="tname" select="translate(normalize-space($name),'- ','_')"/>
+		
 		<variable name="tname2">
-			<value-of select="translate(substring($tname, 1, 1), '1234567890', '_')"/>
-			<value-of select="substring($tname, 2)"/>
+			<call-template name="cede.validIdentifierName">
+				<with-param name="name" select="$name" />
+			</call-template>
 		</variable>
+		
 		<choose>
 			<!-- @todo other C keywords -->
 			<when test="($tname2 = 'extern') or ($tname2 = 'static') or ($tname2 = 'switch')">

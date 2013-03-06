@@ -68,7 +68,7 @@
 		<param name="quoted" select="'auto'" />
 
 		<variable name="isNumber" select="(string(number($value)) != 'NaN')" />
-		
+
 		<variable name="quoteRequested">
 			<choose>
 				<when test="$quoted = 'auto'">
@@ -90,7 +90,7 @@
 		</choose>
 
 		<value-of select="$name" />
-		
+
 		<if test="($isNumber or (string-length($value) &gt; 0))">
 			<text>=</text>
 			<if test="$quoteRequested != 'false'">
@@ -101,6 +101,14 @@
 				<text>"</text>
 			</if>
 		</if>
+	</template>
+
+	<!-- Attempt to transform a string into a valid identifier name (variable, function) -->
+	<template name="sh.validIdentifierName">
+		<param name="name" />
+		<call-template name="cede.validIdentifierName">
+			<with-param name="name" select="$name" />
+		</call-template>
 	</template>
 
 	<!-- UNIX shell variable call -->
