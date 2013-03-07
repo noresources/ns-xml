@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app5</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application - (argument validation)</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+	<prg:argument id="prg.unittest.option.argumentNumber">
+			<prg:databinding>
+				<prg:variable>argumentNumber</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument expecting any number</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>number</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number />
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument id="prg.unittest.option.argumentNumberPositive">
+			<prg:databinding>
+				<prg:variable>argumentNumberPositive</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument expecting a positive number [0.05 +∞]</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>positive</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number min="0.05" />
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument id="prg.unittest.option.argumentNumberNegative">
+			<prg:databinding>
+				<prg:variable>argumentNumberNegative</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument expecting a negative number [-∞ -0.4]</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>negative</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number min="-0.4" />
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument id="prg.unittest.option.argumentNumberRange">
+			<prg:databinding>
+				<prg:variable>argumentNumberRange</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument expecting a number range</prg:abstract>
+				<prg:details>
+					Expect a number between 2 and 10 (inclusive)
+				</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>range</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number min="2.0" max="10" />
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument id="prg.unittest.option.argumentNumberNegativeRange">
+			<prg:databinding>
+				<prg:variable>argumentNumberNegativeRange</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument expecting a (negative) number range [-12.7 -4]</prg:abstract>
+				
+			</prg:documentation>
+			<prg:names>
+				<prg:long>negative-range</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number min="-12.7" max="-4" />
+			</prg:type>
+		</prg:argument>
+		
+		<prg:argument id="prg.unittest.option.argumentSelect">
+			<prg:databinding>
+				<prg:variable>argumentSelect</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument with a restricted set of accepted values</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>enum</prg:long>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>value1</prg:option>
+				<prg:option>Second value</prg:option>
+				<prg:option>Another valid value</prg:option>
+			</prg:select>
+		</prg:argument>
+		<prg:argument id="prg.unittest.option.argumentNumberSelect">
+			<prg:databinding>
+				<prg:variable>argumentNumberSelect</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Accepts a restricted set of number</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>even</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:number min="0" max="8" />
+			</prg:type>
+			<prg:select restrict="true">
+				<prg:option>0</prg:option>
+				<prg:option>2</prg:option>
+				<prg:option>4</prg:option>
+				<prg:option>6</prg:option>
+				<prg:option>8</prg:option>
+			</prg:select>
+		</prg:argument>
+	</prg:options>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>msg</prg:name>
+			<prg:documentation>
+				<prg:abstract>Just to add comments to command line</prg:abstract>
+			</prg:documentation>
+			<prg:values>
+				<prg:other />
+			</prg:values>
+		</prg:subcommand>
+	</prg:subcommands>
+</prg:program>
