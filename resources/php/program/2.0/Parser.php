@@ -2295,8 +2295,17 @@ class Parser
 				continue;
 			}
 
-			foreach ($bindings as $n => &$binding)
+			$binding = null;
+			
+			foreach ($bindings as $n => &$b)
 			{
+				if ($binding && ($b->info == $binding->info))
+				{
+					continue;
+				}
+				
+				$binding = $b;
+				
 				if (($binding->info->optionFlags & ItemInfo::REQUIRED)
 						&& !($binding->result->isSet))
 				{

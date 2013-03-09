@@ -1056,7 +1056,12 @@ class Parser(object):
             if (g > 0) and (g != self._state.activeSubcommandIndex):
                 continue
             
-            for n, binding in bindings.items():
+            binding = None
+            
+            for n, b in bindings.items():
+                if (binding != None) and (binding.info == b.info):
+                    continue
+                binding = b
                 if (binding.info.optionFlags & ItemInfo.REQUIRED) and (not binding.result.isSet):
                     if isinstance(binding.info, GroupOptionInfo):
                         nameList = binding.info.getOptionNameListString()

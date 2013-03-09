@@ -3158,27 +3158,38 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	}
 	
 	/* Required option checks */
-	for (g = 0; g < state->option_name_binding_group_count; ++g)
 	{
-		if ((g > 0) && ((int)g != state->subcommand_index))
-		{
-			continue;
-		}
+		const struct nsxml_option_info *last_info = NULL;
 		
-		for (o = 0; o < state->option_name_binding_counts[g]; ++o)
+		for (g = 0; g < state->option_name_binding_group_count; ++g)
 		{
-			struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
-			const struct nsxml_option_info *i = binding->info_ref;
-			
-			if ((i->option_flags & nsxml_option_flag_required) && (binding->result_ref->is_set == 0))
+			if ((g > 0) && ((int)g != state->subcommand_index))
 			{
-				/**
-				 * @todo special case for groups
-				 */
-				nsxml_program_result_add_messagef(result,
-												  nsxml_message_type_error,
-												  nsxml_message_error_missing_required_option,
-												  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
+				continue;
+			}
+			
+			for (o = 0; o < state->option_name_binding_counts[g]; ++o)
+			{
+				struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
+				const struct nsxml_option_info *i = binding->info_ref;
+				
+				if (last_info && (last_info == i))
+				{
+					continue;
+				}
+				
+				last_info = i;
+				
+				if ((i->option_flags & nsxml_option_flag_required) && (binding->result_ref->is_set == 0))
+				{
+					/**
+					 * @todo special case for groups
+					 */
+					nsxml_program_result_add_messagef(result,
+													  nsxml_message_type_error,
+													  nsxml_message_error_missing_required_option,
+													  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
+				}
 			}
 		}
 	}
