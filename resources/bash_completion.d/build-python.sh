@@ -1,4 +1,4 @@
-__build_pyscript_getoptionname()
+__build_python_getoptionname()
 {
 	local arg="${1}"
 	if [ "${arg}" = "--" ]
@@ -21,7 +21,7 @@ __build_pyscript_getoptionname()
 	fi
 }
 
-__build_pyscript_getfindpermoptions()
+__build_python_getfindpermoptions()
 {
 	local access="${1}"
 	local res=""
@@ -33,7 +33,7 @@ __build_pyscript_getfindpermoptions()
 	echo "${res}"
 }
 
-__build_pyscript_appendfsitems()
+__build_python_appendfsitems()
 {
 	local current="${1}"
 	shift
@@ -72,14 +72,14 @@ __build_pyscript_appendfsitems()
 }
 
 
-__build_pyscript_bashcompletion()
+__build_python_bashcompletion()
 {
 	#Context
 	COMPREPLY=()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--python --module-name --module --update --xml-description --skip-validation --no-validation --debug --help -p -m -u -x -S -d"
+	local globalargs="--xml-description --skip-validation --no-validation --base --info --embed --merge --classname --output --ns-xml-path --ns-xml-path-relative --help"
 	local args="${globalargs}"
 	
 	
@@ -92,19 +92,19 @@ __build_pyscript_bashcompletion()
 	fi
 	
 	# Option argument proposal
-	local option="$(__build_pyscript_getoptionname ${previous})"
+	local option="$(__build_python_getoptionname ${previous})"
 	if [ ! -z "${option}" ]
 	then
 		case "${option}" in
-		"python" | "p")
-			__build_pyscript_appendfsitems "${current}"  -type f 
+		"xml-description" | "x")
+			__build_python_appendfsitems "${current}"  -type f 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
 			fi
 			
 			;;
-		"module-name" | "module" | "m")
+		"info" | "i")
 			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
 			do
@@ -120,8 +120,48 @@ __build_pyscript_bashcompletion()
 			fi
 			
 			;;
-		"xml-description" | "x")
-			__build_pyscript_appendfsitems "${current}"  -type f 
+		"merge" | "m")
+			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+			done
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+			done
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"classname" | "c")
+			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+			done
+			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+			do
+				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+			done
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"output" | "o")
+			__build_python_appendfsitems "${current}"  -type f 
+			if [ ${#COMPREPLY[*]} -gt 0 ]
+			then
+				return 0
+			fi
+			
+			;;
+		"ns-xml-path")
+			__build_python_appendfsitems "${current}"  -type d 
 			if [ ${#COMPREPLY[*]} -gt 0 ]
 			then
 				return 0
@@ -140,4 +180,4 @@ __build_pyscript_bashcompletion()
 	done
 	return 0
 }
-complete -o nospace -F __build_pyscript_bashcompletion build-pyscript.sh
+complete -o nospace -F __build_python_bashcompletion build-python.sh

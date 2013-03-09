@@ -53,7 +53,7 @@
 						</prg:switch>
 						<prg:switch>
 							<prg:databinding>
-								<prg:variable>generateEmbeded</prg:variable>
+								<prg:variable>generateEmbedded</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
 								<prg:abstract>Generate program parser and embed generic utility and parser core</prg:abstract>

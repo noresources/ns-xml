@@ -13,6 +13,15 @@ usage()
 if [ ! -z "${1}" ]
 then
 case "${1}" in
+python)
+cat << EOFSCUSAGE
+python: Build a Command line interface Python script and its XUL application
+Usage: build-xulapp python [-s <path>] [-c <...>]
+With:
+  -s, --script: Script to build
+  -c, --classname: Program info class name
+EOFSCUSAGE
+;;
 php)
 cat << EOFSCUSAGE
 php: Build a Command line interface PHP script and its XUL application
@@ -50,10 +59,10 @@ With:
         /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
 EOFSCUSAGE
 ;;
-python | py)
+python-legacy | py-legacy)
 cat << EOFSCUSAGE
-python: Build a XUL application which will run a python script built with the program XML schema
-Usage: build-xulapp python -p <path> [-m <...>]
+python-legacy: Build a XUL application which will run a python script built with the program XML schema
+Usage: build-xulapp python-legacy -p <path> [-m <...>]
 With:
   -p, --python: Python script path
     Location of the Python script body. The parser module will be created at 
@@ -61,6 +70,7 @@ With:
   -m, --module-name, --module: Python module name
     Set the name of the command line parser python module  
     Default value: Program
+    Deprecated. Use build-xulapp python instead
 EOFSCUSAGE
 ;;
 command | cmd)
@@ -80,11 +90,13 @@ build-xulapp: Build (or update) a XUL application launcher
 Usage: 
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
   With subcommand:
+    python: Build a Command line interface Python script and its XUL application
+      options: [-s <path>] [-c <...>]
     php: Build a Command line interface PHP script and its XUL application
       options: [-s <path>] [--parser-namespace <...>] [--program-namespace <...>] [-c <...>]
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
       options: [-p] -s <path> [(-i <...> | -I <...>)]
-    python, py: Build a XUL application which will run a python script built with the program XML schema
+    python-legacy, py-legacy: Build a XUL application which will run a python script built with the program XML schema
       options: -p <path> [-m <...>]
     command, cmd: Build a XUL application which will run an existing command
       options: -c <...>
@@ -171,6 +183,8 @@ debugMode=false
 nsxmlPathRelative=false
 addNsXml=false
 # Single argument options
+python_scriptPath=
+python_programInfoClassname=
 php_scriptPath=
 php_parserNamespace=
 php_programNamespace=
@@ -178,8 +192,8 @@ php_programInfoClassname=
 xsh_xmlShellFileDescriptionPath=
 xsh_defaultInterpreterType=
 xsh_defaultInterpreterCommand=
-python_pythonScriptPath=
-python_moduleName=
+python_legacy_pythonScriptPath=
+python_legacy_moduleName=
 command_existingCommandPath=
 outputPath=
 xmlProgramDescriptionPath=
@@ -276,14 +290,14 @@ parse_checkrequired()
 parse_setdefaultarguments()
 {
 	local parser_set_default=false
-	# python_moduleName
-	if [ -z "${python_moduleName}" ]
+	# python_legacy_moduleName
+	if [ -z "${python_legacy_moduleName}" ]
 	then
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			python_moduleName="Program"
-			parse_setoptionpresence SC_3_python_2_module-name
+			python_legacy_moduleName="Program"
+			parse_setoptionpresence SC_4_python_legacy_2_module_name
 		fi
 	fi
 	# targetPlatform
@@ -293,7 +307,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			targetPlatform="host"
-			parse_setoptionpresence G_4_target-platform
+			parse_setoptionpresence G_4_target_platform
 		fi
 	fi
 	# windowWidth
@@ -303,7 +317,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			windowWidth="1024"
-			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
 		fi
 	fi
 	# windowHeight
@@ -313,23 +327,25 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			windowHeight="768"
-			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
 		fi
 	fi
 	case "${parser_subcommand}" in
+	python)
+		;;
 	php)
 		;;
 	xsh | sh | shell)
 		;;
-	python | py)
-		# python_moduleName
-		if [ -z "${python_moduleName}" ]
+	python-legacy | py-legacy)
+		# python_legacy_moduleName
+		if [ -z "${python_legacy_moduleName}" ]
 		then
 			parser_set_default=true
 			if ${parser_set_default}
 			then
-				python_moduleName="Program"
-				parse_setoptionpresence SC_3_python_2_module-name
+				python_legacy_moduleName="Program"
+				parse_setoptionpresence SC_4_python_legacy_2_module_name
 			fi
 		fi
 		
@@ -393,6 +409,10 @@ parse_addvalue()
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
+		python)
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python"
+			return ${PARSER_ERROR}
+			;;
 		php)
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand php"
 			return ${PARSER_ERROR}
@@ -401,8 +421,8 @@ parse_addvalue()
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand xsh"
 			return ${PARSER_ERROR}
 			;;
-		python)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python"
+		python-legacy)
+			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python-legacy"
 			return ${PARSER_ERROR}
 			;;
 		command)
@@ -419,8 +439,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -428,6 +446,184 @@ parse_process_subcommand_option()
 	fi
 	
 	case "${parser_subcommand}" in
+	python)
+		if [ "${parser_item:0:2}" = "--" ] 
+		then
+			parser_option="${parser_item:2}"
+			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			then
+				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
+				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
+			fi
+			
+			case "${parser_option}" in
+			script)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				python_scriptPath="${parser_item}"
+				parse_setoptionpresence SC_1_python_1_script
+				;;
+			classname)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				python_programInfoClassname="${parser_item}"
+				parse_setoptionpresence SC_1_python_2_classname
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		elif [ "${parser_item:0:1}" = "-" ] && [ ${#parser_item} -gt 1 ]
+		then
+			parser_optiontail="${parser_item:$(expr ${parser_subindex} + 2)}"
+			parser_option="${parser_item:$(expr ${parser_subindex} + 1):1}"
+			if [ -z "${parser_option}" ]
+			then
+				parser_subindex=0
+				return ${PARSER_SC_OK}
+			fi
+			
+			case "${parser_option}" in
+			s)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				if [ ! -e "${parser_item}" ]
+				then
+					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if ! parse_pathaccesscheck "${parser_item}" "r"
+				then
+					parse_adderror "Invalid path permissions for \"${parser_item}\", r privilege(s) expected for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+				then
+					parse_adderror "Invalid patn type for option \"${parser_option}\""
+					return ${PARSER_SC_ERROR}
+				fi
+				
+				python_scriptPath="${parser_item}"
+				parse_setoptionpresence SC_1_python_1_script
+				;;
+			c)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				python_programInfoClassname="${parser_item}"
+				parse_setoptionpresence SC_1_python_2_classname
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		fi
+		;;
 	php)
 		if [ "${parser_item:0:2}" = "--" ] 
 		then
@@ -482,7 +678,7 @@ parse_process_subcommand_option()
 				fi
 				
 				php_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_1_php_1_script
+				parse_setoptionpresence SC_2_php_1_script
 				;;
 			parser-namespace | parser-ns)
 				if [ ! -z "${parser_optiontail}" ]
@@ -509,7 +705,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_parserNamespace="${parser_item}"
-				parse_setoptionpresence SC_1_php_2_parser-namespace
+				parse_setoptionpresence SC_2_php_2_parser_namespace
 				;;
 			program-namespace | program-ns | prg-ns)
 				if [ ! -z "${parser_optiontail}" ]
@@ -536,7 +732,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programNamespace="${parser_item}"
-				parse_setoptionpresence SC_1_php_3_program-namespace
+				parse_setoptionpresence SC_2_php_3_program_namespace
 				;;
 			classname)
 				if [ ! -z "${parser_optiontail}" ]
@@ -563,7 +759,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_1_php_4_classname
+				parse_setoptionpresence SC_2_php_4_classname
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -624,7 +820,7 @@ parse_process_subcommand_option()
 				fi
 				
 				php_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_1_php_1_script
+				parse_setoptionpresence SC_2_php_1_script
 				;;
 			c)
 				if [ ! -z "${parser_optiontail}" ]
@@ -651,7 +847,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_1_php_4_classname
+				parse_setoptionpresence SC_2_php_4_classname
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -708,7 +904,7 @@ parse_process_subcommand_option()
 				fi
 				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_2_xsh_1_shell
+				parse_setoptionpresence SC_3_xsh_1_shell
 				;;
 			prefix-sc-variables)
 				if [ ! -z "${parser_optiontail}" ]
@@ -718,7 +914,7 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_2_xsh_2_prefix-sc-variables
+				parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables
 				;;
 			interpreter)
 				# Group checks
@@ -777,7 +973,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_2_xsh_3_g_1_interpreter;parse_setoptionpresence SC_2_xsh_3_g
+				parse_setoptionpresence SC_3_xsh_3_g_1_interpreter;parse_setoptionpresence SC_3_xsh_3_g
 				;;
 			interpreter-cmd)
 				# Group checks
@@ -836,7 +1032,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_2_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_2_xsh_3_g
+				parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd;parse_setoptionpresence SC_3_xsh_3_g
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -891,11 +1087,11 @@ parse_process_subcommand_option()
 				fi
 				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_2_xsh_1_shell
+				parse_setoptionpresence SC_3_xsh_1_shell
 				;;
 			p)
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_2_xsh_2_prefix-sc-variables
+				parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables
 				;;
 			i)
 				# Group checks
@@ -954,7 +1150,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_2_xsh_3_g_1_interpreter;parse_setoptionpresence SC_2_xsh_3_g
+				parse_setoptionpresence SC_3_xsh_3_g_1_interpreter;parse_setoptionpresence SC_3_xsh_3_g
 				;;
 			I)
 				# Group checks
@@ -1013,7 +1209,7 @@ parse_process_subcommand_option()
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_2_xsh_3_g_2_interpreter-cmd;parse_setoptionpresence SC_2_xsh_3_g
+				parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd;parse_setoptionpresence SC_3_xsh_3_g
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1022,7 +1218,7 @@ parse_process_subcommand_option()
 			esac
 		fi
 		;;
-	python)
+	python-legacy)
 		if [ "${parser_item:0:2}" = "--" ] 
 		then
 			parser_option="${parser_item:2}"
@@ -1069,8 +1265,8 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
-				python_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_3_python_1_python
+				python_legacy_pythonScriptPath="${parser_item}"
+				parse_setoptionpresence SC_4_python_legacy_1_python
 				;;
 			module-name | module)
 				if [ ! -z "${parser_optiontail}" ]
@@ -1096,8 +1292,8 @@ parse_process_subcommand_option()
 				parser_subindex=0
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				python_moduleName="${parser_item}"
-				parse_setoptionpresence SC_3_python_2_module-name
+				python_legacy_moduleName="${parser_item}"
+				parse_setoptionpresence SC_4_python_legacy_2_module_name
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1151,8 +1347,8 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
-				python_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_3_python_1_python
+				python_legacy_pythonScriptPath="${parser_item}"
+				parse_setoptionpresence SC_4_python_legacy_1_python
 				;;
 			m)
 				if [ ! -z "${parser_optiontail}" ]
@@ -1178,8 +1374,8 @@ parse_process_subcommand_option()
 				parser_subindex=0
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				python_moduleName="${parser_item}"
-				parse_setoptionpresence SC_3_python_2_module-name
+				python_legacy_moduleName="${parser_item}"
+				parse_setoptionpresence SC_4_python_legacy_2_module_name
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1224,7 +1420,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_4_command_1_command
+				parse_setoptionpresence SC_5_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1267,7 +1463,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_4_command_1_command
+				parse_setoptionpresence SC_5_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1282,8 +1478,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -1413,7 +1607,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_xml-description
+			parse_setoptionpresence G_3_xml_description
 			;;
 		target-platform | target)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1446,7 +1640,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			targetPlatform="${parser_item}"
-			parse_setoptionpresence G_4_target-platform
+			parse_setoptionpresence G_4_target_platform
 			;;
 		update)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1466,7 +1660,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_6_skip-validation
+			parse_setoptionpresence G_6_skip_validation
 			;;
 		window-width)
 			# Group checks
@@ -1511,7 +1705,7 @@ parse_process_option()
 			fi
 			
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
 			;;
 		window-height)
 			# Group checks
@@ -1556,7 +1750,7 @@ parse_process_option()
 			fi
 			
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
 			;;
 		debug)
 			# Group checks
@@ -1607,7 +1801,7 @@ parse_process_option()
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_8_g_1_init_script;parse_setoptionpresence G_8_g
 			;;
 		resources)
 			# Group checks
@@ -1702,7 +1896,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_9_g_1_ns-xml-path;parse_setoptionpresence G_9_g
+			parse_setoptionpresence G_9_g_1_ns_xml_path;parse_setoptionpresence G_9_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -1713,7 +1907,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_9_g_2_ns-xml-path-relative;parse_setoptionpresence G_9_g
+			parse_setoptionpresence G_9_g_2_ns_xml_path_relative;parse_setoptionpresence G_9_g
 			;;
 		ns | ns-xml-add)
 			# Group checks
@@ -1819,7 +2013,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_xml-description
+			parse_setoptionpresence G_3_xml_description
 			;;
 		t)
 			if [ ! -z "${parser_optiontail}" ]
@@ -1852,7 +2046,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			targetPlatform="${parser_item}"
-			parse_setoptionpresence G_4_target-platform
+			parse_setoptionpresence G_4_target_platform
 			;;
 		u)
 			update=true
@@ -1860,7 +2054,7 @@ parse_process_option()
 			;;
 		S)
 			skipValidation=true
-			parse_setoptionpresence G_6_skip-validation
+			parse_setoptionpresence G_6_skip_validation
 			;;
 		W)
 			# Group checks
@@ -1905,7 +2099,7 @@ parse_process_option()
 			fi
 			
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window-width;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
 			;;
 		H)
 			# Group checks
@@ -1950,7 +2144,7 @@ parse_process_option()
 			fi
 			
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window-height;parse_setoptionpresence G_7_g
+			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
 			;;
 		d)
 			# Group checks
@@ -1995,7 +2189,7 @@ parse_process_option()
 			fi
 			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init-script;parse_setoptionpresence G_8_g
+			parse_setoptionpresence G_8_g_1_init_script;parse_setoptionpresence G_8_g
 			;;
 		n)
 			# Group checks
@@ -2011,20 +2205,23 @@ parse_process_option()
 	elif ${parser_subcommand_expected} && [ -z "${parser_subcommand}" ] && [ ${#parser_values[*]} -eq 0 ]
 	then
 		case "${parser_item}" in
+		python)
+			parser_subcommand="python"
+			;;
 		php)
 			parser_subcommand="php"
 			;;
 		xsh | sh | shell)
 			parser_subcommand="xsh"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_2_xsh_1_shell:--shell"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_xsh_1_shell:--shell"
 			;;
-		python | py)
-			parser_subcommand="python"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_python_1_python:--python"
+		python-legacy | py-legacy)
+			parser_subcommand="python-legacy"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_python_legacy_1_python:--python"
 			;;
 		command | cmd)
 			parser_subcommand="command"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_command_1_command:--command"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_5_command_1_command:--command"
 			;;
 		*)
 			parse_addvalue "${parser_item}"
@@ -2123,6 +2320,8 @@ error()
 build_php()
 {
 local xmlShellFileDescriptionPath="${php_xmlShellFileDescriptionPath}"
+
+local programInfoClassname="${php_programInfoClassname}"
 
 local parserNamespace="${php_parserNamespace}"
 
@@ -2268,11 +2467,91 @@ build_xsh()
 }
 build_python()
 {
+local xmlShellFileDescriptionPath="${python_xmlShellFileDescriptionPath}"
+
+local programInfoClassname="${python_programInfoClassname}"
+
+local outputScriptFilePath="${commandLauncherFile}"
+
+local generationMode="generateMerge"
+
+local generateBase="false"
+local generateInfo
+
+local generateMerge="${python_scriptPath}"
+info " - Generate Python file"
+buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
+
+# Check required templates
+for x in parser programinfo embed
+do
+	tpl="${buildpythonXsltPath}/${x}.xsl"
+	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+done
+
+buildpythonXsltprocOptions=(--xinclude \
+	--stringparam \
+	"prg.python.generationMode" \
+	"${generationMode}" \
+)
+
+if [ "${generationMode}" = "generateBase" ]
+then
+	buildpythonXsltStylesheet="parser.xsl"
+elif [ "${generationMode}" = "generateInfo" ]
+then
+	buildpythonXsltStylesheet="programinfo.xsl"
+	buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
+		--stringparam \
+		prg.python.parser.modulename \
+		"${generateInfo}"
+	)
+else
+	# embed or merge
+	buildpythonXsltStylesheet="embed.xsl"
+fi
+
+[ -z "${programInfoClassname}" ] || buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" --stringparam prg.python.programinfo.classname "${programInfoClassname}")
+
+buildpythonTemporaryOutput="${outputScriptFilePath}"
+[ "${generationMode}" = "generateMerge" ] && buildpythonTemporaryOutput="$(ns_mktemp build-python-module)"
+
+buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
+	--output \
+	"${buildpythonTemporaryOutput}" \
+	"${buildpythonXsltPath}/${buildpythonXsltStylesheet}" \
+	"${xmlProgramDescriptionPath}")  
+
+xsltproc "${buildpythonXsltprocOptions[@]}" || error 2 "Failed to generate python module file"
+
+if [ "${generationMode}" = "generateMerge" ]
+then
+	firstLine=$(head -n 1 "${generateMerge}")
+	if [ "${firstLine:0:2}" = "#!" ]
+	then
+		(echo "${firstLine}" > "${outputScriptFilePath}" \
+		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge Python module file and Python program file"
+	else
+		(echo "#!/usr/bin/env python" > "${outputScriptFilePath}" \
+		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge Python module file and Python script file"
+	fi
+	
+	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+fi
+return 0
+
+}
+build_python_legacy()
+{
 	baseModules=(__init__ Base Info Parser Validators)
-	pythonModulePath="${xulScriptBasePath}/${python_moduleName}"
+	pythonModulePath="${xulScriptBasePath}/${python_legacy_moduleName}"
 	nsPythonPath="${nsPath}/python/program/${programVersion}"
 	
-	cp -p "${python_pythonScriptPath}" "${commandLauncherFile}"
+	cp -p "${python_legacy_pythonScriptPath}" "${commandLauncherFile}"
 	[ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 	mkdir -p "${pythonModulePath}" || error "Failed to create Python module path ${pythonModulePath}"
 	for m in ${baseModules[*]}
@@ -2379,7 +2658,7 @@ then
 	exit 0
 fi
 
-builderFunction="build_${parser_subcommand}"
+builderFunction="$(echo -n "build_${parser_subcommand}" | sed "s,-,_,g")"
 if [ "$(type -t ${builderFunction})" != "function" ]
 then
 	error "Missing subcommand name"

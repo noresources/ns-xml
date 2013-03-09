@@ -13,7 +13,48 @@
 	<prg:ui>
 		<prg:label>XUL front-end builder</prg:label>
 	</prg:ui>
+	
 	<prg:subcommands>
+	
+		<prg:subcommand>
+			<prg:name>python</prg:name>
+			<prg:documentation>
+				<prg:abstract>Build a Command line interface Python script and its XUL application</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>scriptPath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Script to build</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>script</prg:long>
+						<prg:short>s</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true" access="r">
+							<prg:kinds>
+								<prg:file />
+							</prg:kinds>
+							<prg:patterns>
+								<prg:pattern>
+									<prg:name>Python script</prg:name>
+									<prg:rules>
+										<prg:rule>
+											<prg:endWith>.py</prg:endWith>
+										</prg:rule>
+									</prg:rules>
+								</prg:pattern>
+							</prg:patterns>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+				<xi:include href="./build-python.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'python.programclassname'])" />
+			</prg:options>
+		</prg:subcommand>
+	
 		<prg:subcommand>
 			<prg:name>php</prg:name>
 			<prg:documentation>
@@ -63,6 +104,7 @@
 					</prg:argument> -->
 			</prg:options>
 		</prg:subcommand>
+		
 		<prg:subcommand>
 			<prg:name>xsh</prg:name>
 			<prg:aliases>
@@ -78,17 +120,20 @@
 				<xi:include href="./build-shellscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:group[@id = 'defaultInterpreter'])" />
 			</prg:options>
 		</prg:subcommand>
+		
+		<!-- Legacy python parser -->
 		<prg:subcommand>
-			<prg:name>python</prg:name>
+			<prg:name>python-legacy</prg:name>
 			<prg:aliases>
-				<prg:alias>py</prg:alias>
+				<prg:alias>py-legacy</prg:alias>
 			</prg:aliases>
 			<prg:documentation>
 				<prg:abstract>Build a XUL application which will run a python script built with the program XML schema</prg:abstract>
+				<prg:details>Deprecated. Use build-xulapp python instead</prg:details>
 			</prg:documentation>
 			<prg:options>
-				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])" />
-				<xi:include href="./build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])" />
+				<xi:include href="./legacy/build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])" />
+				<xi:include href="./legacy/build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])" />
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>

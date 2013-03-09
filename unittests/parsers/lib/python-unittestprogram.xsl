@@ -15,13 +15,16 @@
 		<value-of select="$interpreter" />
 		<text><![CDATA[
 import sys
-import Program
+import Parser
+import ProgramInfo
 
 class UnittestUtil:
 	def array_to_string(self, v, begin_str = "", end_str = "", separator_str = " "):
 		first = True
 		res = ""
-		for i in v:	
+		for i in v:
+			if isinstance(i, tuple):
+				i = i[1]
 			if not first:
 				res = res + separator_str
 			else:
@@ -37,22 +40,24 @@ class UnittestUtil:
 
 u = UnittestUtil()
 
-p = Program.Program()
-r = p.parse(sys.argv[1:len(sys.argv)])
+info = ProgramInfo.TestProgramInfo()
+parser = Parser.Parser(info)
+result = parser.parse(sys.argv, 1)
 
 print "CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)], "\"", "\"", ", ")
-print "Value count: " + str(len(r.values))
-print "Values: " + u.array_to_string(r.values, "\"", "\"", ", ")
-errorCount = len(r.issues["errors"])
+print "Value count: " + str(result.valueCount())
+print "Values: " + u.array_to_string(result, "\"", "\"", ", ")
+messages = result.getMessages(Parser.Message.ERROR)
+errorCount = len(messages)
 print "Error count: " + str(errorCount)
 if errorCount > 0:
 	for index in range(len(sys.argv)):
 		arg = sys.argv[index]
 		if arg == "__msg__":
-			print u.array_to_string(r.issues["errors"], " - ", "", "\n")
+			print u.array_to_string(messages, " - ", "", "\n")
             
-if r.subcommand:
-	print "Subcommand: " + r.subcommand.name
+if result.subcommand:
+	print "Subcommand: " + result.subcommandName
 else:
 	print "Subcommand: "
 ]]></text>
@@ -63,7 +68,7 @@ else:
 		</if>
 		<for-each select="/prg:program/prg:subcommands/*">
 			<if test="./prg:options">
-				<text>if r.subcommand and r.subcommand.name == "</text>
+				<text>if result.subcommand and result.subcommandName == "</text>
 				<apply-templates select="prg:name" />
 				<text>":</text>
 				<call-template name="code.block">
@@ -75,7 +80,7 @@ else:
 		</for-each>
 	</template>
 
-	<template name="prg.unittest.py.variablePrefix">
+	<template name="prg.unittest.python.variablePrefix">
 		<param name="node" select="." />
 		<choose>
 			<when test="$node/self::prg:subcommand">
@@ -83,44 +88,45 @@ else:
 				<text>_</text>
 			</when>
 			<when test="$node/..">
-				<call-template name="prg.unittest.py.variablePrefix">
+				<call-template name="prg.unittest.python.variablePrefix">
 					<with-param name="node" select="$node/.." />
 				</call-template>
 			</when>
 		</choose>
 	</template>
 
-	<template name="prg.py.unittest.variableNameTree">
+	<template name="prg.python.unittest.variableNameTree">
 		<param name="node" />
 		<param name="leaf" select="true()" />
+
 		<choose>
 			<when test="$node/self::prg:subcommand">
-				<text>r.subcommand.options.</text>
+				<text>result.subcommand.</text>
 			</when>
 			<when test="$node/self::prg:program">
-				<text>r.options.</text>
+				<text>result.</text>
 			</when>
 			<when test="$node/../..">
-				<call-template name="prg.py.unittest.variableNameTree">
+				<call-template name="prg.python.unittest.variableNameTree">
 					<with-param name="node" select="$node/../.." />
 					<with-param name="leaf" select="false()" />
 				</call-template>
 			</when>
 		</choose>
-		<apply-templates select="$node/prg:databinding/prg:variable" />
-		<if test="$node/self::prg:group and not($leaf)">
-			<text>.options.</text>
+		<if test="$leaf">
+			<apply-templates select="$node/prg:databinding/prg:variable" />
+			<text>()</text>
 		</if>
 	</template>
 
 	<template match="//prg:switch">
 		<if test="./prg:databinding/prg:variable">
 			<text>print "</text>
-			<call-template name="prg.unittest.py.variablePrefix" />
+			<call-template name="prg.unittest.python.variablePrefix" />
 			<apply-templates select="./prg:databinding/prg:variable" />
 			<text>="</text>
 			<text> + str(</text>
-			<call-template name="prg.py.unittest.variableNameTree">
+			<call-template name="prg.python.unittest.variableNameTree">
 				<with-param name="node" select="." />
 			</call-template>
 			<text>)</text>
@@ -131,11 +137,11 @@ else:
 	<template match="//prg:argument">
 		<if test="./prg:databinding/prg:variable">
 			<text>print "</text>
-			<call-template name="prg.unittest.py.variablePrefix" />
+			<call-template name="prg.unittest.python.variablePrefix" />
 			<apply-templates select="./prg:databinding/prg:variable" />
 			<text>="</text>
 			<text> + u.argument_to_string(</text>
-			<call-template name="prg.py.unittest.variableNameTree">
+			<call-template name="prg.python.unittest.variableNameTree">
 				<with-param name="node" select="." />
 			</call-template>
 			<text>)</text>
@@ -146,11 +152,11 @@ else:
 	<template match="//prg:multiargument">
 		<if test="./prg:databinding/prg:variable">
 			<text>print "</text>
-			<call-template name="prg.unittest.py.variablePrefix" />
+			<call-template name="prg.unittest.python.variablePrefix" />
 			<apply-templates select="./prg:databinding/prg:variable" />
 			<text>="</text>
 			<text> + u.array_to_string(</text>
-			<call-template name="prg.py.unittest.variableNameTree">
+			<call-template name="prg.python.unittest.variableNameTree">
 				<with-param name="node" select="." />
 			</call-template>
 			<text>)</text>
@@ -161,15 +167,15 @@ else:
 	<template match="//prg:group">
 		<if test="./prg:databinding/prg:variable">
 			<text>print "</text>
-			<call-template name="prg.unittest.py.variablePrefix" />
+			<call-template name="prg.unittest.python.variablePrefix" />
 			<apply-templates select="./prg:databinding/prg:variable" />
 			<text>="</text>
 			<if test="./@type = 'exclusive'">
 				<text> + u.argument_to_string(</text>
-				<call-template name="prg.py.unittest.variableNameTree">
+				<call-template name="prg.python.unittest.variableNameTree">
 					<with-param name="node" select="." />
 				</call-template>
-				<text>.selected_option_name)</text>
+				<text>)</text>
 			</if>
 			<value-of select="'&#10;'" />
 		</if>

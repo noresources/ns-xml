@@ -65,7 +65,7 @@ Usage:
       Single-options groups will be flattened in UI
       
       --switch-alone-in-group: Another switch
-        This swith is in a group with only one option. So, the group is hidden 
+        This switch is in a group with only one option. So, the group is hidden 
         and the option appears at the same level
     
     Exclusive option group

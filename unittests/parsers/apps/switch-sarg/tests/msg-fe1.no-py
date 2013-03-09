@@ -1,7 +1,0 @@
-CLI: "-av", "v is an invalid option"
-Value count: 1
-Values: "v is an invalid option"
-Error count: 1
-Subcommand: 
-switchA=True
-argumentB=

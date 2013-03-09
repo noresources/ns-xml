@@ -1,8 +1,0 @@
-CLI: "-b", "-", "This is not a end-of-arguments marker"
-Value count: 1
-Values: "This is not a end-of-arguments marker"
-Error count: 0
-Subcommand: 
-switchA=False
-argumentB=
-multiargC=

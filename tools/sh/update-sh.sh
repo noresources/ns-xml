@@ -58,25 +58,32 @@ done
 
 completionCommands=
 
-for f in "${projectPath}/ns/xsh/apps/"*.xsh
+appsBasePath="${projectPath}/ns/xsh/apps"
+outBasePath="${projectPath}/ns/sh"
+while read f
 do
 	fn="${f%.xsh}"
 	b="$(basename "${f}")"
+	d="$(dirname "${f}")"
 	bn="${b%.xsh}"
 	
-	if [ "${bn}" = "functions" ]
+	if [ ! -f "${fn}.xml" ]
 	then
 		continue
 	fi
 	
-	shOut="${projectPath}/ns/sh/${bn}.sh"
+	subPath="${d#${appsBasePath}}"
+	
+	shOut="${outBasePath}${subPath}/${bn}.sh"
+	mkdir -p "$(dirname "${shOut}")"
+	
 	if [ "${bn}" != "build-shellscript" ]
 	then
 		if [ ! -z "${singleBuild}" ] && [ "${bn}" != "${singleBuild}" ]
 		then
-			#echo "Skip ${bn}"
 			continue
 		fi
+		
 		echo "Update ${b}"
 		if ! ${buildshellscript} -p -x ${fn}.xml -s ${f} -o ${shOut}
 		then
@@ -128,7 +135,9 @@ do
 			fi
 		done
 	fi
-done
+done << EOF
+$(find "${appsBasePath}" -mindepth 1 -maxdepth 2 -name "*.xsh")
+EOF
 
 echo "Update tools"
 for f in "${projectPath}/resources/xsh/"*.xsh

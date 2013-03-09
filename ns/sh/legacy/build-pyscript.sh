@@ -13,7 +13,7 @@ usage()
 cat << EOFUSAGE
 build-pyscript: Python script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
-  build-pyscript [-uSd] -p <path> [-m <...>] -x <path> [--help] [--ns-xml-path <path> --ns-xml-path-relative]
+  build-pyscript [-uSd] -p <path> [-m <...>] -x <path> [--help]
   With:
     -p, --python: Python script path
       Location of the Python script body. The parser module will be created at 
@@ -31,10 +31,6 @@ Usage:
       This option will disable schema validations
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
-    ns-xml source path options
-      --ns-xml-path: ns-xml source path
-        Location of the ns folder of ns-xml package
-      --ns-xml-path-relative: ns source path is relative this program path
 EOFUSAGE
 }
 
@@ -65,18 +61,16 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_python:--python"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_4_xml-description:--xml-description"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_4_xml_description:--xml-description"
 # Switch options
 update=false
 skipValidation=false
 debugMode=false
 displayHelp=false
-nsxmlPathRelative=false
 # Single argument options
 pythonScriptPath=
 moduleName=
 xmlProgramDescriptionPath=
-nsxmlPath=
 
 parse_addwarning()
 {
@@ -172,7 +166,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			moduleName="Program"
-			parse_setoptionpresence G_2_module-name
+			parse_setoptionpresence G_2_module_name
 		fi
 	fi
 }
@@ -240,8 +234,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -252,8 +244,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -361,7 +351,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			moduleName="${parser_item}"
-			parse_setoptionpresence G_2_module-name
+			parse_setoptionpresence G_2_module_name
 			;;
 		update)
 			if [ ! -z "${parser_optiontail}" ]
@@ -410,7 +400,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_4_xml-description
+			parse_setoptionpresence G_4_xml_description
 			;;
 		skip-validation | no-validation)
 			if [ ! -z "${parser_optiontail}" ]
@@ -420,7 +410,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_5_skip-validation
+			parse_setoptionpresence G_5_skip_validation
 			;;
 		debug)
 			if [ ! -z "${parser_optiontail}" ]
@@ -441,45 +431,6 @@ parse_process_option()
 			fi
 			displayHelp=true
 			parse_setoptionpresence G_7_help
-			;;
-		ns-xml-path)
-			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_8_g_1_ns-xml-path;parse_setoptionpresence G_8_g
-			;;
-		ns-xml-path-relative)
-			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
-				return ${PARSER_ERROR}
-			fi
-			nsxmlPathRelative=true
-			parse_setoptionpresence G_8_g_2_ns-xml-path-relative;parse_setoptionpresence G_8_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -562,7 +513,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			moduleName="${parser_item}"
-			parse_setoptionpresence G_2_module-name
+			parse_setoptionpresence G_2_module_name
 			;;
 		u)
 			update=true
@@ -605,11 +556,11 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_4_xml-description
+			parse_setoptionpresence G_4_xml_description
 			;;
 		S)
 			skipValidation=true
-			parse_setoptionpresence G_5_skip-validation
+			parse_setoptionpresence G_5_skip_validation
 			;;
 		d)
 			debugMode=true
@@ -782,7 +733,8 @@ xml_validate()
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+resourcesPath="$(ns_realpath "${scriptPath}/../../..")/resources"
+nsPath="$(ns_realpath "${scriptPath}/../../..")/ns"
 programVersion="2.0"
 baseModules=(__init__ Base Info Parser Validators)
  
@@ -822,7 +774,7 @@ pythonModulePath="${pythonScriptPathBase}/${moduleName}"
 
 [ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 
-nsPythonPath="${nsPath}/python/program/${programVersion}"
+nsPythonPath="${resourcesPath}/legacy/python/program/${programVersion}"
 for m in ${baseModules[*]}
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"	
@@ -830,14 +782,14 @@ do
 done
 
 mkdir -p "${pythonModulePath}" || error 3 "Unable to create Module folder ${pythonModulePath}"
-for m in ${baseModules[*]}
+for m in "${baseModules[@]}"
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"
 	cp -fp "${nsPythonFile}" "${pythonModulePath}"  
 done
 
 # Create the Program module
-xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
+xslStyleSheetPath="${nsPath}/xsl/legacy/program/${programVersion}"
 if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
 then
 	error 4 "Failed to create Program module"

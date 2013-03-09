@@ -55,7 +55,7 @@ then
 	exit 0
 fi
 
-builderFunction="build_${parser_subcommand}"
+builderFunction="$(echo -n "build_${parser_subcommand}" | sed "s,-,_,g")"
 if [ "$(type -t ${builderFunction})" != "function" ]
 then
 	error "Missing subcommand name"

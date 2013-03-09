@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<!-- Create the Python module to manage the program options -->
+
+<!-- Lagacy parser - Create the Python module to manage the program options -->
 <stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
-	<import href="../../../languages/base.xsl" />
-	<import href="../base.xsl" />
-	<import href="../usage.chunks.xsl" />
+	<import href="../../../../languages/base.xsl" />
+	<import href="../../../../program/2.0/base.xsl" />
+	<import href="../../../../program/2.0/usage.chunks.xsl" />
 	
 	<output method="text" encoding="utf-8" />
 	

@@ -6,15 +6,16 @@
 		<xi:include href="build-pyscript.xml"/>
 	</xsh:info>
 	<xsh:functions>
-		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function[@name = 'ns_realpath'])"/>
-		<xi:include href="functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)"/>
+		<xi:include href="../../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function[@name = 'ns_realpath'])"/>
+		<xi:include href="../functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)"/>
 	</xsh:functions>
 	<xsh:code><![CDATA[
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+resourcesPath="$(ns_realpath "${scriptPath}/../../..")/resources"
+nsPath="$(ns_realpath "${scriptPath}/../../..")/ns"
 programVersion="2.0"
 baseModules=(__init__ Base Info Parser Validators)
  
@@ -54,7 +55,7 @@ pythonModulePath="${pythonScriptPathBase}/${moduleName}"
 
 [ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 
-nsPythonPath="${nsPath}/python/program/${programVersion}"
+nsPythonPath="${resourcesPath}/legacy/python/program/${programVersion}"
 for m in ${baseModules[*]}
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"	
@@ -62,14 +63,14 @@ do
 done
 
 mkdir -p "${pythonModulePath}" || error 3 "Unable to create Module folder ${pythonModulePath}"
-for m in ${baseModules[*]}
+for m in "${baseModules[@]}"
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"
 	cp -fp "${nsPythonFile}" "${pythonModulePath}"  
 done
 
 # Create the Program module
-xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
+xslStyleSheetPath="${nsPath}/xsl/legacy/program/${programVersion}"
 if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
 then
 	error 4 "Failed to create Program module"

@@ -659,6 +659,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 		
 		if ((types != 0) && (types != nsxml_value_validator_path_type_all))
 		{
+			int typeFound = 0;
 #if NSXML_DEBUG
 			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "path type checks %d\n", types);
 #endif /* NSXML_DEBUG */
@@ -671,7 +672,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 				nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Is directory\n");
 #endif /* NSXML_DEBUG */
 				
-				return 1;
+				typeFound++;
 			}
 			
 			else if ((types & nsxml_value_validator_path_type_symlink) && S_ISLNK(statBuffer.st_mode))
@@ -680,7 +681,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 				nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Is symlink\n");
 #endif /* NSXML_DEBUG */
 				
-				return 1;
+				typeFound++;
 			}
 			
 			else if ((types & nsxml_value_validator_path_type_file) && S_ISREG(statBuffer.st_mode))
@@ -689,14 +690,21 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 				nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Is regular file\n");
 #endif /* NSXML_DEBUG */
 				
-				return 1;
+				typeFound++;
 			}
 			
+			if (typeFound == 0)
+			{
+				/**
+				 * @todo error
+				 */
 #if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "None of specified types\n");
+				nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "None of specified types\n");
 #endif /* NSXML_DEBUG */
-			
-			return 0;
+				
+				
+				return 0;
+			}
 		}
 	}
 	

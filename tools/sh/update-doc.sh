@@ -192,7 +192,7 @@ parse_setdefaultarguments()
 		then
 			indexFileOutputName="index.php"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_2_index-name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_2_index_name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 		fi
 	fi
 	# nmeEasyLink
@@ -202,7 +202,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			nmeEasyLink="$.html"
-			parse_setoptionpresence G_2_g_2_nme-easylink;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
 		fi
 	fi
 }
@@ -273,8 +273,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -285,8 +283,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -349,7 +345,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			xsltHgOnly=true
-			parse_setoptionpresence G_1_g_1_hg-only;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_hg_only;parse_setoptionpresence G_1_g
 			;;
 		xsl-output)
 			# Group checks
@@ -389,7 +385,7 @@ parse_process_option()
 			fi
 			
 			xsltDocOutputPath="${parser_item}"
-			parse_setoptionpresence G_1_g_2_xsl-output;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_xsl_output;parse_setoptionpresence G_1_g
 			;;
 		xsl-css)
 			# Group checks
@@ -429,7 +425,7 @@ parse_process_option()
 			fi
 			
 			xsltDocCssFile="${parser_item}"
-			parse_setoptionpresence G_1_g_3_xsl-css;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_xsl_css;parse_setoptionpresence G_1_g
 			;;
 		stylesheet-abstract | abstract)
 			# Group checks
@@ -440,7 +436,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			xsltAbstract=true
-			parse_setoptionpresence G_1_g_4_stylesheet-abstract;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_4_stylesheet_abstract;parse_setoptionpresence G_1_g
 			;;
 		no-index)
 			# Group checks
@@ -458,7 +454,7 @@ parse_process_option()
 			fi
 			indexModeNone=true
 			indexMode="indexModeNone"
-			parse_setoptionpresence G_1_g_5_g_1_no-index;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_1_no_index;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		index-url)
 			# Group checks
@@ -517,7 +513,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexUrl="${parser_item}"
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_5_g_2_g_1_index-url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_2_g_1_index_url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		relative-index-url)
 			# Group checks
@@ -535,7 +531,7 @@ parse_process_option()
 			fi
 			indexUrlRelativeToRoot=true
 			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_5_g_2_g_2_relative-index-url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_2_g_2_relative_index_url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		index)
 			# Group checks
@@ -671,7 +667,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexFileOutputName="${parser_item}"
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_2_index-name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_2_index_name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		copy-anywhere)
 			# Group checks
@@ -689,7 +685,7 @@ parse_process_option()
 			fi
 			indexCopyInFolders=true
 			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_3_copy-anywhere;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_5_g_3_g_3_copy_anywhere;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 			;;
 		html-output)
 			# Group checks
@@ -729,7 +725,7 @@ parse_process_option()
 			fi
 			
 			htmlOutputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_html-output;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_html_output;parse_setoptionpresence G_2_g
 			;;
 		nme-easylink | easylink)
 			# Group checks
@@ -757,7 +753,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nmeEasyLink="${parser_item}"
-			parse_setoptionpresence G_2_g_2_nme-easylink;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
 			;;
 		html-body-only)
 			# Group checks
@@ -768,7 +764,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			htmlBodyOnly=true
-			parse_setoptionpresence G_3_g_1_html-body-only;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_html_body_only;parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""

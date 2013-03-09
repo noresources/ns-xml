@@ -229,8 +229,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -241,8 +239,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -404,7 +400,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_5_g_1_ns-xml-path;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_5_g_1_ns_xml_path;parse_setoptionpresence G_5_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -415,7 +411,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_5_g_2_ns-xml-path-relative;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_5_g_2_ns_xml_path_relative;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""

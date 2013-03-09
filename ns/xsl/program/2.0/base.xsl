@@ -5,8 +5,11 @@
 <!-- Basic templates and variable used in many program interface definition schema processing -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<import href="../../strings.xsl"/>
-	<param name="prg.prefix"/>
-	<param name="prg.debug" select="false()"/>
+	<import href="../../languages/base.xsl"/>
+	
+	<param name="prg.prefix" />
+	<param name="prg.debug" select="false()" />
+	
 	<!-- Strip spaces -->
 	<template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:copyright|prg:version">
 		<value-of select="normalize-space(.)"/>
@@ -57,9 +60,11 @@
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
 	<template name="prg.optionId">
 		<param name="optionNode" select="."/>
+		
 		<variable name="grandParent" select="$optionNode/../.."/>
 		<variable name="isFinal" select="($optionNode/self::prg:program or $optionNode/self::prg:subcommand)"/>
 		<variable name="index" select="count($optionNode/preceding-sibling::*)+1"/>
+		
 		<!-- Recursive call -->
 		<choose>
 			<when test="$isFinal">
@@ -69,7 +74,9 @@
 						<text>_</text>
 						<value-of select="$index"/>
 						<text>_</text>
-						<value-of select="normalize-space($optionNode/prg:name)"/>
+						<call-template name="cede.validIdentifierName">
+							<with-param name="name" select="$optionNode/prg:name" />
+						</call-template>
 					</when>
 					<when test="$optionNode/self::prg:program">
 						<text>G</text>
@@ -88,10 +95,18 @@
 						<text>g</text>
 					</when>
 					<when test="$optionNode/prg:names/prg:long">
-						<apply-templates select="$optionNode/prg:names/prg:long[1]"/>
+						<call-template name="cede.validIdentifierName">
+							<with-param name="name">
+								<apply-templates select="$optionNode/prg:names/prg:long[1]"/>
+							</with-param>
+						</call-template>
 					</when>
 					<otherwise>
-						<apply-templates select="$optionNode/prg:names/prg:short[1]"/>
+						<call-template name="cede.validIdentifierName">
+							<with-param name="name">
+								<apply-templates select="$optionNode/prg:names/prg:short[1]"/>
+							</with-param>
+						</call-template>
 					</otherwise>
 				</choose>
 			</otherwise>

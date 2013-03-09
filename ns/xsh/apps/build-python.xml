@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- {} -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
-	<prg:name>build-php</prg:name>
+	<prg:name>build-python</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:copyright>Copyright © 2012 by Renaud Guillard</prg:copyright>
@@ -10,7 +10,7 @@
 		<prg:abstract>...</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
-		<prg:label>PHP parser generator</prg:label>
+		<prg:label>Python parser generator</prg:label>
 	</prg:ui>
 	<prg:options>
 		<prg:group>
@@ -25,12 +25,12 @@
 			</prg:options>
 		</prg:group>
 
-		<prg:group id="php.generationoptions">
+		<prg:group id="python.generationoptions">
 			<prg:documentation>
 				<prg:abstract>Generation options</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:group type="exclusive" required="true" id="php.generationmode">
+				<prg:group type="exclusive" required="true" id="python.generationmode">
 					<prg:databinding>
 						<prg:variable>generationMode</prg:variable>
 					</prg:databinding>
@@ -44,31 +44,33 @@
 								<prg:variable>generateBase</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Generate ns-xml parser base classes only</prg:abstract>
+								<prg:abstract>Generate ns-xml parser base module only</prg:abstract>
 							</prg:documentation>
 							<prg:names>
 								<prg:long>base</prg:long>
 								<prg:short>b</prg:short>
 							</prg:names>
 						</prg:switch>
-						<prg:switch>
+						<prg:argument>
 							<prg:databinding>
 								<prg:variable>generateInfo</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Generate program info class</prg:abstract>
+								<prg:abstract>Generate program info module</prg:abstract>
+								<prg:details>The given argument must be the name of the 
+								the Parser base module (ex: 'Parser')</prg:details>
 							</prg:documentation>
 							<prg:names>
 								<prg:long>info</prg:long>
 								<prg:short>i</prg:short>
 							</prg:names>
-						</prg:switch>
+						</prg:argument>
 						<prg:switch>
 							<prg:databinding>
 								<prg:variable>generateEmbedded</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Generate parser base class and program info in a single file</prg:abstract>
+								<prg:abstract>Generate parser base and program info modules in a single file</prg:abstract>
 							</prg:documentation>
 							<prg:names>
 								<prg:long>embed</prg:long>
@@ -82,8 +84,8 @@
 							<prg:documentation>
 								<prg:abstract>Generate and merge with program script</prg:abstract>
 								<prg:details>
-									Generate parser base and program info and merge the result with
-									the given php script
+									Generate parser base and program info modules and merge the result with
+									the given python script
 								</prg:details>
 							</prg:documentation>
 							<prg:names>
@@ -93,33 +95,7 @@
 						</prg:argument>
 					</prg:options>
 				</prg:group>
-				<prg:argument id="php.parsernamespace">
-					<prg:databinding>
-						<prg:variable>parserNamespace</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>PHP parser namespace</prg:abstract>
-						<prg:details>Namespace of all elements of the ns-xml PHP parser</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>parser-namespace</prg:long>
-						<prg:long>parser-ns</prg:long>
-					</prg:names>
-				</prg:argument>
-				<prg:argument id="php.programnamespace">
-					<prg:databinding>
-						<prg:variable>programNamespace</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>PHP program namespace</prg:abstract>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>program-namespace</prg:long>
-						<prg:long>program-ns</prg:long>
-						<prg:long>prg-ns</prg:long>
-					</prg:names>
-				</prg:argument>
-				<prg:argument id="php.programclassname">
+				<prg:argument id="python.programclassname">
 					<prg:databinding>
 						<prg:variable>programInfoClassname</prg:variable>
 					</prg:databinding>
@@ -140,7 +116,7 @@
 			</prg:documentation>
 			<prg:options>
 				<!-- Output folder -->
-				<prg:argument id="php.outputScriptFilePath" required="true">
+				<prg:argument id="python.outputScriptFilePath" required="true">
 					<prg:databinding>
 						<prg:variable>outputScriptFilePath</prg:variable>
 					</prg:databinding>
@@ -158,10 +134,10 @@
 							</prg:kinds>
 							<prg:patterns>
 								<prg:pattern>
-									<prg:name>PHP file</prg:name>
+									<prg:name>Python file</prg:name>
 									<prg:rules>
 										<prg:rule>
-											<prg:endWith>.php</prg:endWith>
+											<prg:endWith>.py</prg:endWith>
 										</prg:rule>
 									</prg:rules>
 								</prg:pattern>

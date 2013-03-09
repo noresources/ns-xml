@@ -246,8 +246,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -258,8 +256,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -340,7 +336,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_2_xml-description
+			parse_setoptionpresence G_2_xml_description
 			;;
 		shell)
 			if [ ! -z "${parser_optiontail}" ]
@@ -389,7 +385,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_4_skip-validation
+			parse_setoptionpresence G_4_skip_validation
 			;;
 		prefix-sc-variables)
 			if [ ! -z "${parser_optiontail}" ]
@@ -399,7 +395,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_6_prefix-sc-variables
+			parse_setoptionpresence G_6_prefix_sc_variables
 			;;
 		debug)
 			if [ ! -z "${parser_optiontail}" ]
@@ -474,7 +470,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_ns-xml-path;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_ns_xml_path;parse_setoptionpresence G_1_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -485,7 +481,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_1_g_2_ns-xml-path-relative;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_ns_xml_path_relative;parse_setoptionpresence G_1_g
 			;;
 		interpreter)
 			# Group checks
@@ -603,7 +599,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"
-			parse_setoptionpresence G_5_g_2_interpreter-cmd;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_5_g_2_interpreter_cmd;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -659,7 +655,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_2_xml-description
+			parse_setoptionpresence G_2_xml_description
 			;;
 		s)
 			if [ ! -z "${parser_optiontail}" ]
@@ -702,11 +698,11 @@ parse_process_option()
 			;;
 		S)
 			skipValidation=true
-			parse_setoptionpresence G_4_skip-validation
+			parse_setoptionpresence G_4_skip_validation
 			;;
 		p)
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_6_prefix-sc-variables
+			parse_setoptionpresence G_6_prefix_sc_variables
 			;;
 		d)
 			debugMode=true
@@ -855,7 +851,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"
-			parse_setoptionpresence G_5_g_2_interpreter-cmd;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_5_g_2_interpreter_cmd;parse_setoptionpresence G_5_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""

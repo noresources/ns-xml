@@ -24,10 +24,12 @@ ${isDebug} && log "${@}"
 exit 1
 		]]></xsh:body>
 		</xsh:function>
+		
 		<xsh:function name="build_php">
 			<xsh:body indent="no">
 				<!-- Transfer prefixed global variables -->
 				<xsh:local name="xmlShellFileDescriptionPath">${php_xmlShellFileDescriptionPath}</xsh:local>
+				<xsh:local name="programInfoClassname">${php_programInfoClassname}</xsh:local>
 				<xsh:local name="parserNamespace">${php_parserNamespace}</xsh:local>
 				<xsh:local name="programNamespace">${php_programNamespace}</xsh:local>
 				<!-- build-php Forced parameters -->
@@ -56,13 +58,33 @@ return 0]]></xsh:body>
 				<xi:include href="build-shellscript.body.process.sh" parse="text" />
 				<![CDATA[return 0]]></xsh:body>
 		</xsh:function>
+		
+		<!-- New python parser -->
 		<xsh:function name="build_python">
+			<xsh:body indent="no">
+				<!-- Transfer prefixed global variables -->
+				<xsh:local name="xmlShellFileDescriptionPath">${python_xmlShellFileDescriptionPath}</xsh:local>
+				<xsh:local name="programInfoClassname">${python_programInfoClassname}</xsh:local>
+				<!-- build-python Forced parameters -->
+				<xsh:local name="outputScriptFilePath">${commandLauncherFile}</xsh:local>
+				<xsh:local name="generationMode">generateMerge</xsh:local>
+				<xsh:local name="generateBase">false</xsh:local>
+				<xsh:local name="generateInfo"></xsh:local>
+				<xsh:local name="generateMerge">${python_scriptPath}</xsh:local>
+				<![CDATA[
+info " - Generate Python file"
+]]>	<xi:include href="build-python.body.process.sh" parse="text" /><![CDATA[
+return 0]]></xsh:body>
+		</xsh:function>		
+		
+		<!-- Legacy python parser -->
+		<xsh:function name="build_python_legacy">
 			<xsh:body><![CDATA[
 baseModules=(__init__ Base Info Parser Validators)
-pythonModulePath="${xulScriptBasePath}/${python_moduleName}"
+pythonModulePath="${xulScriptBasePath}/${python_legacy_moduleName}"
 nsPythonPath="${nsPath}/python/program/${programVersion}"
 
-cp -p "${python_pythonScriptPath}" "${commandLauncherFile}"
+cp -p "${python_legacy_pythonScriptPath}" "${commandLauncherFile}"
 [ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 mkdir -p "${pythonModulePath}" || error "Failed to create Python module path ${pythonModulePath}"
 for m in ${baseModules[*]}
@@ -79,9 +101,9 @@ then
 	error 4 "Failed to create Program module"
 fi
 
-return 0
-			]]></xsh:body>
+return 0]]></xsh:body>
 		</xsh:function>
+		
 		<xsh:function name="build_command">
 			<xsh:body><![CDATA[
 info " - Generate command launcher"

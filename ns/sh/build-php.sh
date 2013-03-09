@@ -79,14 +79,14 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml-description:--xml-description"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --info, --embed or --merge"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output"
 # Switch options
 skipValidation=false
 generateBase=false
 generateInfo=false
-generateEmbeded=false
+generateEmbedded=false
 nsxmlPathRelative=false
 displayHelp=false
 # Single argument options
@@ -250,8 +250,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -262,8 +260,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -355,7 +351,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml-description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		skip-validation | no-validation)
 			# Group checks
@@ -366,7 +362,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip-validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		base)
 			# Group checks
@@ -406,7 +402,7 @@ parse_process_option()
 			;;
 		embed)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				return ${PARSER_ERROR}
@@ -418,8 +414,8 @@ parse_process_option()
 				parser_optiontail=""
 				return ${PARSER_ERROR}
 			fi
-			generateEmbeded=true
-			generationMode="generateEmbeded"
+			generateEmbedded=true
+			generationMode="generateEmbedded"
 			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		merge)
@@ -507,7 +503,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			parserNamespace="${parser_item}"
-			parse_setoptionpresence G_2_g_2_parser-namespace;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_parser_namespace;parse_setoptionpresence G_2_g
 			;;
 		program-namespace | program-ns | prg-ns)
 			# Group checks
@@ -535,7 +531,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programNamespace="${parser_item}"
-			parse_setoptionpresence G_2_g_3_program-namespace;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_program_namespace;parse_setoptionpresence G_2_g
 			;;
 		classname)
 			# Group checks
@@ -619,7 +615,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_4_g_1_ns-xml-path;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_4_g_1_ns_xml_path;parse_setoptionpresence G_4_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -630,7 +626,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_4_g_2_ns-xml-path-relative;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_4_g_2_ns_xml_path_relative;parse_setoptionpresence G_4_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -687,12 +683,12 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml-description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip-validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		b)
 			# Group checks
@@ -720,14 +716,14 @@ parse_process_option()
 			;;
 		e)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				return ${PARSER_ERROR}
 			fi
 			
-			generateEmbeded=true
-			generationMode="generateEmbeded"
+			generateEmbedded=true
+			generationMode="generateEmbedded"
 			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		m)

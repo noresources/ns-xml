@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- {} -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>update-python-parser</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
+	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
+	<prg:options>
+	    <!-- Help -->
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+		<prg:argument>
+			<prg:databinding>
+				<prg:variable>programVersion</prg:variable>
+			</prg:databinding>
+			<prg:default>2.0</prg:default>
+			<prg:documentation>
+				<prg:abstract>Program schema version</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>version</prg:long>
+				<prg:short>v</prg:short>
+			</prg:names>
+			<!-- <prg:select>
+		        <prg:option>2.0</prg:option>
+		    </prg:select> -->
+		</prg:argument>
+	</prg:options>
+</prg:program>

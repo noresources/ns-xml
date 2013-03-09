@@ -74,14 +74,12 @@
 			</prg:names>
 		</prg:switch>
 		<!-- program interface XML definition file -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])"/>
+		<xi:include href="../options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])"/>
 		<!-- Skip validation -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
+		<xi:include href="../options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])"/>
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
+		<xi:include href="../options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/>
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
-		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
+		<xi:include href="../../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 	</prg:options>
 </prg:program>

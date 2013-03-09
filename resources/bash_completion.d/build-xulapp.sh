@@ -71,6 +71,48 @@ __build_xulapp_appendfsitems()
 	fi
 }
 
+__sc_python_bashcompletion()
+{
+	# Context
+	local current="${COMP_WORDS[COMP_CWORD]}"
+	local previous="${COMP_WORDS[COMP_CWORD-1]}"
+	# argument option
+	local option="$(__build_xulapp_getoptionname ${previous})"
+	if [ -z "${option}" ]
+	then
+		return 1
+	fi
+	
+	
+	case "${option}" in
+	"script" | "s")
+		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	"classname" | "c")
+		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			[ -d "${temporaryRepliesArray[$i]}" ] && temporaryRepliesArray[$i]="${temporaryRepliesArray[$i]%/}/"
+		done
+		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
+		do
+			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
+		done
+		if [ ${#COMPREPLY[*]} -gt 0 ]
+		then
+			return 0
+		fi
+		
+		;;
+	
+	esac
+	return 1
+}
 __sc_php_bashcompletion()
 {
 	# Context
@@ -221,7 +263,7 @@ __sc_xsh_bashcompletion()
 	esac
 	return 1
 }
-__sc_python_bashcompletion()
+__sc_python_legacy_bashcompletion()
 {
 	# Context
 	local current="${COMP_WORDS[COMP_CWORD]}"
@@ -305,9 +347,9 @@ __sc_shell_bashcompletion()
 {
 	__sc_xsh_bashcompletion
 }
-__sc_py_bashcompletion()
+__sc_py_legacy_bashcompletion()
 {
-	__sc_python_bashcompletion
+	__sc_python_legacy_bashcompletion
 }
 __sc_cmd_bashcompletion()
 {
@@ -327,7 +369,7 @@ __build_xulapp_bashcompletion()
 	# Subcommand proposal
 	if [ ${COMP_CWORD} -eq 1 ]
 	then
-		local subcommands="php xsh python command sh shell py cmd"
+		local subcommands="python php xsh python-legacy command sh shell py-legacy cmd"
 		COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -352,13 +394,16 @@ __build_xulapp_bashcompletion()
 	
 	# Subcommand option completion
 	case "${first}" in
+	"python")
+		args="--script --classname -s -c ${globalargs}"
+		;;
 	"php")
 		args="--script --parser-namespace --parser-ns --program-namespace --program-ns --prg-ns --classname -s -c ${globalargs}"
 		;;
 	"xsh" | "sh" | "shell")
 		args="--shell --prefix-sc-variables -s -p ${globalargs}"
 		;;
-	"python" | "py")
+	"python-legacy" | "py-legacy")
 		args="--python --module-name --module -p -m ${globalargs}"
 		;;
 	"command" | "cmd")

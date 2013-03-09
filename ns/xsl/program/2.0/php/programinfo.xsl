@@ -226,7 +226,7 @@
 				<apply-templates select="$optionNode/prg:databinding/prg:variable" />
 				<text>"</text>
 			</when>
-			<otherwise><text>NULL</text></otherwise>
+			<otherwise><text>null</text></otherwise>
 		</choose>
 		<text>, </text>
 		<call-template name="prg.php.base.classname">

@@ -9,9 +9,9 @@
 usage()
 {
 cat << EOFUSAGE
-update-php-parser: 
+update-python-parser: 
 Usage: 
-  update-php-parser [--help] [-v <...>]
+  update-python-parser [--help] [-v <...>]
   With:
     --help: Display program usage
     -v, --version: Program schema version  
@@ -610,7 +610,7 @@ then
 	exit 0
 fi
 
-transform_php()
+transform_python()
 {
 	local input="${1}"
 	local output="${2}"
@@ -625,19 +625,19 @@ transform_php()
 <!-- Copyright © $(date +%Y) by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
-<!-- PHP Source code in customizable XSLT form -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
+<!-- Python Source code in customizable XSLT form -->
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	
 	<xsl:import href="../../../strings.xsl" />
-	<xsl:import href="../../../languages/php.xsl" />
 	<xsl:import href="base.xsl" />
 	
 	<xsl:output method="text" encoding="utf-8" />
 	
-	<!-- Base classes of the PHP parser -->
-	<xsl:variable name="prg.php.base.code"><![CDATA[
+	<!-- Base classes of the Python parser -->
 EOF
-	
+	echo -ne "<xsl:variable name=\"prg.python.base.code\"><![CDATA[" >> "${tmpFile}"
+	# TODO file customization
+	# cat "${input}" >> "${tmpFile}"
 	sed -n "/XSLT-begin/,/XSLT-end/p" "${input}" \
 	| sed "/XSLT-begin/d" \
 	| sed "/XSLT-end/d" >> "${tmpFile}"
@@ -646,25 +646,15 @@ EOF
 ]]></xsl:variable>
 
 	<!-- Output base code according to output rules -->
-	<xsl:template name="prg.php.base.output">
-		<xsl:call-template name="php.namespace">
-			<xsl:with-param name="name" select="\$prg.php.parser.namespace" />
-			<xsl:with-param name="content" select="\$prg.php.base.code" />
-		</xsl:call-template>
+	<xsl:template name="prg.python.base.output">
+		<xsl:value-of select="\$prg.python.base.code" />
 	</xsl:template>
 	
 	<xsl:template match="/">
-		<if test="\$prg.php.phpmarkers">
-			<text>&lt;?php</text>
-			<value-of select="\$str.endl" />
-		</if>
+		<xsl:value-of select="\$prg.python.codingHint" />
+		<xsl:value-of select="\$prg.python.copyright" />
 		
-		<xsl:call-template name="prg.php.base.output" />
-		
-		<if test="\$prg.php.phpmarkers">
-			<text>?&gt;</text>
-			<value-of select="\$str.endl" />
-		</if>
+		<xsl:call-template name="prg.python.base.output" />
 	</xsl:template>
 	
 </xsl:stylesheet>
@@ -674,8 +664,8 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-phpSourceFilePath="${rootPath}/resources/php/program/${programVersion}/Parser.php"
-phpXslFilePath="${xslPath}/program/${programVersion}/php/parser.xsl"
+pythonSourceFilePath="${rootPath}/resources/python/program/${programVersion}/Parser.py"
+pythonXslFilePath="${xslPath}/program/${programVersion}/python/parser.xsl"
 
-transform_php "${phpSourceFilePath}" "${phpXslFilePath}"
+transform_python "${pythonSourceFilePath}" "${pythonXslFilePath}"
 

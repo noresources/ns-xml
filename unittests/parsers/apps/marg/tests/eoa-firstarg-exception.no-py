@@ -1,8 +1,0 @@
-CLI: "-b", "Argument", "-c", "-", "Ignore eoa if it's the first argument"
-Value count: 1
-Values: "Ignore eoa if it's the first argument"
-Error count: 0
-Subcommand: 
-switchA=False
-argumentB=Argument
-multiargC=

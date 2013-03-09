@@ -207,8 +207,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -219,8 +217,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -973,6 +969,9 @@ if ${testPython}
 then
 	parserNames=("${parserNames[@]}" "Python")	
 	resultLineFormat="${resultLineFormat} %-7s |"
+	
+	log "Update Python parser XSLT " 
+	"${scriptPath}/update-python-parser.sh"
 fi
 
 if ${testC}
@@ -983,6 +982,7 @@ then
 		parserNames=("${parserNames[@]}" "C/Valgrind")
 	fi
 		
+	log "Update C parser XSLT "
 	"${scriptPath}/update-c-parser.sh"
 	resultLineFormat="${resultLineFormat} %-7s |"
 	
@@ -1017,6 +1017,7 @@ if ${testPHP}
 then
 	parserNames=("${parserNames[@]}" "PHP")
 		
+	log "Update PHP parser XSLT"
 	"${scriptPath}/update-php-parser.sh"
 	resultLineFormat="${resultLineFormat} %-7s |"
 fi
@@ -1114,13 +1115,27 @@ EOF
 	
 	if ${testPython}
 	then
-		log "Generate python script"
-		pyScript="${tmpScriptBasename}.py"
-		xsltproc --xinclude -o "${pyScript}" --stringparam interpreter ${pythonInterpreter} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyScript}"
-		chmod 755 "${pyScript}"
-		
 		# Create python module
-		"${projectPath}/ns/sh/build-pyscript.sh" -p "${pyScript}" -u -x "${xmlDescription}"
+		pyParser="${d}/Parser.py"
+		pyInfo="${d}/ProgramInfo.py"
+		pyProgram="${tmpScriptBasename}-exe.py"
+		
+		log "Create Python parser module"
+		"${projectPath}/ns/sh/build-python.sh" -b \
+			-x "${xmlDescription}" \
+			-c "TestProgramInfo" \
+			-o "${pyParser}" || error "Failed to generated python module"
+			
+		log "Create Python program info module"
+		"${projectPath}/ns/sh/build-python.sh" \
+			-i "Parser" \
+			-x "${xmlDescription}" \
+			-c "TestProgramInfo" \
+			-o "${pyInfo}" || error "Failed to generated Python program info module"
+			
+		log "Generate python script"
+		xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${pythonInterpreter} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
+		chmod 755 "${pyProgram}"
 	fi
 	
 	if ${testC}
@@ -1191,7 +1206,7 @@ EOFSH
 		if ${testPython} && [ ! -f "${base}.no-py" ]
 		then
 			cat >> "${tmpShellScript}" << EOFSH
-"${pyScript}" ${cli} > "${result}-py"  2>>"${logFile}"
+"${pyProgram}" ${cli} > "${result}-py"  2>>"${logFile}"
 EOFSH
 		fi
 		
@@ -1407,8 +1422,12 @@ EOFSH
 	then
 		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
 		then
-			${keepTemporaryFiles} || rm -f "${pyScript}"
-			${keepTemporaryFiles} || rm -fr "${d}/Program"
+			${keepTemporaryFiles} || rm -f "${pyProgram}"
+			${keepTemporaryFiles} || rm -f "${pyInfo}"
+			${keepTemporaryFiles} || rm -f "${pyParser}"
+			rm -f "${pyProgram}c"
+			rm -f "${pyInfo}c"
+			rm -f "${pyParser}c"
 		fi
 	fi
 	

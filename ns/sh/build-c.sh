@@ -109,13 +109,13 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml-description:--xml-description"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --embed or --include"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output"
 # Switch options
 skipValidation=false
 generateBaseOnly=false
-generateEmbeded=false
+generateEmbedded=false
 outputOverwrite=false
 nsxmlPathRelative=false
 displayHelp=false
@@ -224,7 +224,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			structNameStyle="none"
-			parse_setoptionpresence G_2_g_3_g_1_struct-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
 	# functionNameStyle
@@ -234,7 +234,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			functionNameStyle="none"
-			parse_setoptionpresence G_2_g_3_g_2_function-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
 	# variableNameStyle
@@ -244,7 +244,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			variableNameStyle="none"
-			parse_setoptionpresence G_2_g_3_g_3_variable-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
 	# outputFileBase
@@ -254,7 +254,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputFileBase="<auto>"
-			parse_setoptionpresence G_3_g_2_file-base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
 		fi
 	fi
 }
@@ -322,8 +322,6 @@ parse_addvalue()
 }
 parse_process_subcommand_option()
 {
-	local parser_integer
-	local parser_decimal
 	parser_item="${parser_input[${parser_index}]}"
 	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
 	then
@@ -334,8 +332,6 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	local parser_integer
-	local parser_decimal
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
 		if parse_process_subcommand_option
@@ -427,7 +423,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml-description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		skip-validation | no-validation)
 			# Group checks
@@ -438,7 +434,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip-validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		base)
 			# Group checks
@@ -460,7 +456,7 @@ parse_process_option()
 			;;
 		embed)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				return ${PARSER_ERROR}
@@ -472,8 +468,8 @@ parse_process_option()
 				parser_optiontail=""
 				return ${PARSER_ERROR}
 			fi
-			generateEmbeded=true
-			generationMode="generateEmbeded"
+			generateEmbedded=true
+			generationMode="generateEmbedded"
 			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		include)
@@ -607,7 +603,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			structNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_1_struct-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
 		function-style | function | func)
 			# Group checks
@@ -641,7 +637,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			functionNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_2_function-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
 		variable-style | variable | var)
 			# Group checks
@@ -675,7 +671,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			variableNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_3_variable-style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 			;;
 		output)
 			# Group checks
@@ -743,7 +739,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file-base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
 			;;
 		overwrite | force)
 			# Group checks
@@ -782,7 +778,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_4_g_1_ns-xml-path;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_4_g_1_ns_xml_path;parse_setoptionpresence G_4_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -793,7 +789,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_4_g_2_ns-xml-path-relative;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_4_g_2_ns_xml_path_relative;parse_setoptionpresence G_4_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -850,12 +846,12 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml-description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip-validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		b)
 			# Group checks
@@ -871,14 +867,14 @@ parse_process_option()
 			;;
 		e)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbeded" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				return ${PARSER_ERROR}
 			fi
 			
-			generateEmbeded=true
-			generationMode="generateEmbeded"
+			generateEmbedded=true
+			generationMode="generateEmbedded"
 			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		i)
@@ -1046,7 +1042,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file-base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
 			;;
 		u)
 			# Group checks
@@ -1358,7 +1354,7 @@ function buildcGenerate()
 	fi
 	
 	buildcPopulateXsltprocParams
-	if ! ${generateEmbeded}
+	if ! ${generateEmbedded}
 	then
 		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
 		"--stringparam"	"prg.c.parser.nsxmlHeaderPath" "${generateInclude}")

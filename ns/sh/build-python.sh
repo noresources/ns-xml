@@ -1,41 +1,54 @@
 #!/usr/bin/env bash
 # ####################################
-# Copyright © 2012 by Renaud GUillard (dev@nore.fr)
+# Copyright © 2012 by Renaud Guillard
 # Distributed under the terms of the MIT License, see LICENSE
-# Author: renaud
+# Author: Renaud Guillard
 # Version: 1.0
 # 
-# Process a program interface XML definition with one of the available XSLT stylesheets
+# ...
 #
 # Program help
 usage()
 {
 cat << EOFUSAGE
-prgproc: Process a program interface XML definition with one of the available XSLT stylesheets
+build-python: ...
 Usage: 
-  prgproc [-x <path>] -t <...> [-o <path>] [-p <...  [ ... ]>] [-s <...  [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
+  build-python [[-S] -x <path>] [([-be] -i <...> | -m <...>) -c <...>] [-o <path>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
   With:
-    -x, --xml-description: Program description file
-      If the program description file is provided, the xml file will be 
-      validated before any XSLT processing
-    -t, --xslt, --xsl: XSL transformation to apply  
-      The argument value have to be one of the following:  
-        bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
-    -o, --output: Output file
-      If no output file is provided, the transformation result will be sent to 
-      the standard output.
-    -p, --param, --params: pass a (parameter,value) pair  
-      Minimal argument count: 2
-    -s, --stringparam, --stringparams: pass a (parameter, UTF8 string value) pair  
-      Minimal argument count: 2
+    Input
+      -x, --xml-description: Program description file
+        If the program description file is provided, the xml file will be 
+        validated before any XSLT processing
+      -S, --skip-validation, --no-validation: Skip XML Schema validations
+        The default behavior of the program is to validate the given xml-based 
+        file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
+        This option will disable schema validations
+    
+    Generation options
+      Generation mode
+        Select what to generate
+        
+        -b, --base: Generate ns-xml parser base module only
+        -i, --info: Generate program info module
+          The given argument must be the name of the the Parser base module 
+          (ex: 'Parser')
+        -e, --embed: Generate parser base and program info modules in a single 
+        file
+        -m, --merge: Generate and merge with program script
+          Generate parser base and program info modules and merge the result 
+          with the given python script
+      
+      -c, --classname: Program info class name
+    
+    Output
+      -o, --output: Generated file path
+    
     ns-xml source path options
       --ns-xml-path: ns-xml source path
         Location of the ns folder of ns-xml package
       --ns-xml-path-relative: ns source path is relative this program path
     
     --help: Display program usage
-  This tool automatically select the good version of the XSLT stylesheet 
-  according to the @version attribute of the given XML file.
 EOFUSAGE
 }
 
@@ -65,14 +78,21 @@ parser_index=${parser_startindex}
 # Required global options
 # (Subcommand required options will be added later)
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_xslt:--xslt"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --info, --embed or --merge"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output"
 # Switch options
+skipValidation=false
+generateBase=false
+generateEmbedded=false
 nsxmlPathRelative=false
 displayHelp=false
 # Single argument options
 xmlProgramDescriptionPath=
-xslName=
-output=
+generateInfo=
+generateMerge=
+programInfoClassname=
+outputScriptFilePath=
 nsxmlPath=
 
 parse_addwarning()
@@ -167,16 +187,6 @@ parse_checkminmax()
 {
 	local errorCount=0
 	# Check min argument for multiargument
-	if [ ${#parameters[*]} -gt 0 ] && [ ${#parameters[*]} -lt 2 ]
-	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--param\". At least 2 expected, ${#parameters[*]} given"
-		errorCount=$(expr ${errorCount} + 1)
-	fi
-	if [ ${#stringParameters[*]} -gt 0 ] && [ ${#stringParameters[*]} -lt 2 ]
-	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--stringparam\". At least 2 expected, ${#stringParameters[*]} given"
-		errorCount=$(expr ${errorCount} + 1)
-	fi
 	
 	return ${errorCount}
 }
@@ -290,7 +300,18 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		help)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			displayHelp=true
+			parse_setoptionpresence G_5_help
+			;;
 		xml-description)
+			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -327,173 +348,228 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_xml_description
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
-		xslt | xsl)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "bashcompletion" ] || [ "${parser_item}" = "c-gengetopt" ] || [ "${parser_item}" = "docbook-usage" ] || [ "${parser_item}" = "wikicreole-usage" ])
-			then
-				parse_adderror "Invalid value for option \"${parser_option}\""
-				
-				return ${PARSER_ERROR}
-			fi
-			xslName="${parser_item}"
-			parse_setoptionpresence G_2_xslt
-			;;
-		output)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! parse_pathaccesscheck "${parser_item}" "w"
-			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", w privilege(s) expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-			then
-				parse_adderror "Invalid patn type for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			output="${parser_item}"
-			parse_setoptionpresence G_3_output
-			;;
-		param | params)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			local parser_ma_local_count=0
-			local parser_ma_total_count=${#parameters[*]}
-			if [ -z "${parser_item}" ]
-			then
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-			fi
-			
-			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
-			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
-				then
-					break
-				fi
-				
-				parser_index=$(expr ${parser_index} + 1)
-				parser_item="${parser_input[${parser_index}]}"
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			done
-			if [ ${parser_ma_local_count} -eq 0 ]
-			then
-				parse_adderror "At least one argument expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			parse_setoptionpresence G_4_param
-			;;
-		stringparam | stringparams)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			local parser_ma_local_count=0
-			local parser_ma_total_count=${#stringParameters[*]}
-			if [ -z "${parser_item}" ]
-			then
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-			fi
-			
-			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
-			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
-				then
-					break
-				fi
-				
-				parser_index=$(expr ${parser_index} + 1)
-				parser_item="${parser_input[${parser_index}]}"
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			done
-			if [ ${parser_ma_local_count} -eq 0 ]
-			then
-				parse_adderror "At least one argument expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			parse_setoptionpresence G_5_stringparam
-			;;
-		help)
+		skip-validation | no-validation)
+			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
 				parser_optiontail=""
 				return ${PARSER_ERROR}
 			fi
-			displayHelp=true
-			parse_setoptionpresence G_7_help
+			skipValidation=true
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
+			;;
+		base)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBase" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			generateBase=true
+			generationMode="generateBase"
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		info)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInfo" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			generateInfo="${parser_item}"
+			generationMode="generateInfo"
+			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		embed)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			generateEmbedded=true
+			generationMode="generateEmbedded"
+			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		merge)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateMerge" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			generateMerge="${parser_item}"
+			generationMode="generateMerge"
+			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		classname)
+			# Group checks
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			programInfoClassname="${parser_item}"
+			parse_setoptionpresence G_2_g_2_classname;parse_setoptionpresence G_2_g
+			;;
+		output)
+			# Group checks
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			outputScriptFilePath="${parser_item}"
+			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -521,7 +597,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_6_g_1_ns_xml_path;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_4_g_1_ns_xml_path;parse_setoptionpresence G_4_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -532,7 +608,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_6_g_2_ns_xml_path_relative;parse_setoptionpresence G_6_g
+			parse_setoptionpresence G_4_g_2_ns_xml_path_relative;parse_setoptionpresence G_4_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -552,6 +628,7 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		x)
+			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -588,9 +665,57 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_xml_description
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
-		t)
+		S)
+			# Group checks
+			skipValidation=true
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
+			;;
+		b)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBase" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			generateBase=true
+			generationMode="generateBase"
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		i)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInfo" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -614,16 +739,111 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "bashcompletion" ] || [ "${parser_item}" = "c-gengetopt" ] || [ "${parser_item}" = "docbook-usage" ] || [ "${parser_item}" = "wikicreole-usage" ])
+			generateInfo="${parser_item}"
+			generationMode="generateInfo"
+			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		e)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
 			then
-				parse_adderror "Invalid value for option \"${parser_option}\""
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			generateEmbedded=true
+			generationMode="generateEmbedded"
+			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		m)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateMerge" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item="${parser_optiontail}"
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = "--" ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=""
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
 			fi
-			xslName="${parser_item}"
-			parse_setoptionpresence G_2_xslt
+			
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			generateMerge="${parser_item}"
+			generationMode="generateMerge"
+			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			;;
+		c)
+			# Group checks
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			programInfoClassname="${parser_item}"
+			parse_setoptionpresence G_2_g_2_classname;parse_setoptionpresence G_2_g
 			;;
 		o)
+			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item="${parser_optiontail}"
@@ -647,104 +867,8 @@ parse_process_option()
 			parser_subindex=0
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! parse_pathaccesscheck "${parser_item}" "w"
-			then
-				parse_adderror "Invalid path permissions for \"${parser_item}\", w privilege(s) expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-			then
-				parse_adderror "Invalid patn type for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			output="${parser_item}"
-			parse_setoptionpresence G_3_output
-			;;
-		p)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			local parser_ma_local_count=0
-			local parser_ma_total_count=${#parameters[*]}
-			if [ -z "${parser_item}" ]
-			then
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-			fi
-			
-			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
-			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
-				then
-					break
-				fi
-				
-				parser_index=$(expr ${parser_index} + 1)
-				parser_item="${parser_input[${parser_index}]}"
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			done
-			if [ ${parser_ma_local_count} -eq 0 ]
-			then
-				parse_adderror "At least one argument expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			parse_setoptionpresence G_4_param
-			;;
-		s)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item="${parser_optiontail}"
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=""
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			local parser_ma_local_count=0
-			local parser_ma_total_count=${#stringParameters[*]}
-			if [ -z "${parser_item}" ]
-			then
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-			fi
-			
-			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
-			do
-				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
-				then
-					break
-				fi
-				
-				parser_index=$(expr ${parser_index} + 1)
-				parser_item="${parser_input[${parser_index}]}"
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
-				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
-				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
-				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			done
-			if [ ${parser_ma_local_count} -eq 0 ]
-			then
-				parse_adderror "At least one argument expected for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			parse_setoptionpresence G_5_stringparam
+			outputScriptFilePath="${parser_item}"
+			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -814,6 +938,44 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${path}"
+}
+ns_mktemp()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="$(date +%s)"
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp --suffix "${key}"
+	fi
+}
+ns_mktempdir()
+{
+	local key
+	if [ $# -gt 0 ]
+	then
+		key="${1}"
+		shift
+	else
+		key="$(date +%s)"
+	fi
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		#Use key as a prefix
+		mktemp -d -t "${key}"
+	else
+		#Use key as a suffix
+		mktemp -d --suffix "${key}"
+	fi
 }
 error()
 {
@@ -911,11 +1073,22 @@ xml_validate()
 }
 
 
+# Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/..")"
+nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+rootPath="$(ns_realpath "${scriptPath}/../..")"
 programVersion="2.0"
-
+ 
+# Check required programs
+for x in xmllint xsltproc egrep cut expr head tail
+do
+	if ! which $x 1>/dev/null 2>&1
+	then
+		echo "${x} program not found"
+		exit 1
+	fi
+done
 
 if ! parse "${@}"
 then
@@ -928,56 +1101,94 @@ then
 	parse_displayerrors
 	exit 1
 fi
-
 if ${displayHelp}
 then
 	usage
 	exit 0
 fi
 
-chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
-programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 
-xslFile="${nsPath}/xsl/program/${programVersion}/${xslName}.xsl"
-
-[ -f "${xslFile}" ] || error 2 "Unable to find \"${xslFile}\""
-
-xsltprocCommand[${parser_startindex}]="xsltproc"
-xsltprocCommand[${#xsltprocCommand[*]}]="--xinclude"
-if [ ! -z "${output}" ]
+# Validate XML program description (if given)
+if [ -f "${xmlProgramDescriptionPath}" ]
 then
-	xsltprocCommand[${#xsltprocCommand[*]}]="--output"
-	xsltprocCommand[${#xsltprocCommand[*]}]="${output}"
+	# Finding schema version
+	programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+	#echo "Program schema version ${programVersion}"
+	
+	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
+	then
+		echo "Invalid program interface definition schema version"
+		exit 3
+	fi
+
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+	then
+		echo "program interface definition schema error - abort"
+		exit 4
+	fi
 fi
 
-count=${#stringParameters[*]}
-mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
-limit=$(expr ${parser_startindex} + ${count})
-for ((i=${parser_startindex};${i}<${limit};i+=2))
+buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
+
+# Check required templates
+for x in parser programinfo embed
 do
-	p="${stringParameters[${i}]}"
-	v="${stringParameters[$(expr ${i} + 1)]}"
-	xsltprocCommand[${#xsltprocCommand[*]}]="--stringparam"
-	xsltprocCommand[${#xsltprocCommand[*]}]="${p}"
-	xsltprocCommand[${#xsltprocCommand[*]}]="${v}"
+	tpl="${buildpythonXsltPath}/${x}.xsl"
+	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
-count=${#parameters[*]}
-mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
-limit=$(expr ${parser_startindex} + ${count})
-for ((i=${parser_startindex};${i}<${limit};i+=2))
-do
-	p="${parameters[${i}]}"
-	v="${parameters[$(expr ${i} + 1)]}"
-	xsltprocCommand[${#xsltprocCommand[*]}]="--param"
-	xsltprocCommand[${#xsltprocCommand[*]}]="${p}"
-	xsltprocCommand[${#xsltprocCommand[*]}]="${v}"
-done
+buildpythonXsltprocOptions=(--xinclude \
+	--stringparam \
+	"prg.python.generationMode" \
+	"${generationMode}" \
+)
 
-xsltprocCommand[${#xsltprocCommand[*]}]="${xslFile}"
-xsltprocCommand[${#xsltprocCommand[*]}]="${xmlProgramDescriptionPath}"
- 
-"${xsltprocCommand[@]}"
+if [ "${generationMode}" = "generateBase" ]
+then
+	buildpythonXsltStylesheet="parser.xsl"
+elif [ "${generationMode}" = "generateInfo" ]
+then
+	buildpythonXsltStylesheet="programinfo.xsl"
+	buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
+		--stringparam \
+		prg.python.parser.modulename \
+		"${generateInfo}"
+	)
+else
+	# embed or merge
+	buildpythonXsltStylesheet="embed.xsl"
+fi
+
+[ -z "${programInfoClassname}" ] || buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" --stringparam prg.python.programinfo.classname "${programInfoClassname}")
+
+buildpythonTemporaryOutput="${outputScriptFilePath}"
+[ "${generationMode}" = "generateMerge" ] && buildpythonTemporaryOutput="$(ns_mktemp build-python-module)"
+
+buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
+	--output \
+	"${buildpythonTemporaryOutput}" \
+	"${buildpythonXsltPath}/${buildpythonXsltStylesheet}" \
+	"${xmlProgramDescriptionPath}")  
+
+xsltproc "${buildpythonXsltprocOptions[@]}" || error 2 "Failed to generate python module file"
+
+if [ "${generationMode}" = "generateMerge" ]
+then
+	firstLine=$(head -n 1 "${generateMerge}")
+	if [ "${firstLine:0:2}" = "#!" ]
+	then
+		(echo "${firstLine}" > "${outputScriptFilePath}" \
+		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge Python module file and Python program file"
+	else
+		(echo "#!/usr/bin/env python" > "${outputScriptFilePath}" \
+		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
+		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
+		|| error 3 "Failed to merge Python module file and Python script file"
+	fi
+	
+	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+fi
 

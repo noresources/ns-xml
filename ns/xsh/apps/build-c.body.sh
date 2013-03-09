@@ -100,7 +100,7 @@ function buildcGenerate()
 	fi
 	
 	buildcPopulateXsltprocParams
-	if ! ${generateEmbeded}
+	if ! ${generateEmbedded}
 	then
 		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
 		"--stringparam"	"prg.c.parser.nsxmlHeaderPath" "${generateInclude}")
