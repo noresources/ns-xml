@@ -908,16 +908,6 @@
 			<with-param name="name" select="$prg.sh.parser.fName_process_subcommand_option" />
 			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="$prg.sh.parser.vName_integer" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
-				<value-of select="$sh.endl" />
-				<call-template name="sh.local">
-					<with-param name="name" select="$prg.sh.parser.vName_decimal" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
-				<value-of select="$sh.endl" />
 				<value-of select="$prg.sh.parser.vName_item" />
 				<text>=</text>
 				<call-template name="sh.var">
@@ -1087,17 +1077,6 @@
 			<with-param name="name" select="$prg.sh.parser.fName_process_option" />
 			<with-param name="interpreter" select="$interpreter" />
 			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="$prg.sh.parser.vName_integer" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
-				<value-of select="$sh.endl" />
-				<call-template name="sh.local">
-					<with-param name="name" select="$prg.sh.parser.vName_decimal" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
-				<value-of select="$sh.endl" />
-
 				<call-template name="sh.if">
 					<with-param name="condition">
 						<text>[ ! -z </text>
