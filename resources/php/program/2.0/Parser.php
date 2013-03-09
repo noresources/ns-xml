@@ -1309,6 +1309,11 @@ class ArgumentOptionResult extends OptionResult
 		$this->argument = null;
 	}
 
+	public function __toString()
+	{
+		return $this->value();
+	}
+	
 	/**
 	 * @return mixed Option argument if set, otherwise null
 	 */
