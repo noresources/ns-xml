@@ -1309,9 +1309,14 @@ class ArgumentOptionResult extends OptionResult
 		$this->argument = null;
 	}
 
+	/**
+	 * Return argument value
+	 * @return string Argument vaiue if option is set. Otherwise, an empty string
+	 * @note __toString() is not equivalent to value() which will return @c null if the option is not set.
+	 */
 	public function __toString()
 	{
-		return $this->value();
+		return $this->isSet ? $this->argument : "";
 	}
 	
 	/**
@@ -1424,6 +1429,16 @@ class GroupOptionResult extends OptionResult
 		$this->selectedOptionName = null;
 	}
 
+	/**
+	 * @return string variable name of the selected option if set, otherwise an empty string.
+	 * If the option is not an exclusive option group, this value has no meaning
+	 * @note __toString() is not equivalent to value() which will return @c null if the option is not set.
+	 */
+	public function __toString()
+	{
+		return ($this->isSet) ? $this->selectedOptionName : "";
+	}
+	
 	/**
 	 * @return string variable name of the selected option if set, otherwise null.
 	 * If the option is not an exclusive option group, this value has no meaning
