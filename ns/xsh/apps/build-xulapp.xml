@@ -121,21 +121,6 @@
 			</prg:options>
 		</prg:subcommand>
 		
-		<!-- Legacy python parser -->
-		<prg:subcommand>
-			<prg:name>python-legacy</prg:name>
-			<prg:aliases>
-				<prg:alias>py-legacy</prg:alias>
-			</prg:aliases>
-			<prg:documentation>
-				<prg:abstract>Build a XUL application which will run a python script built with the program XML schema</prg:abstract>
-				<prg:details>Deprecated. Use build-xulapp python instead</prg:details>
-			</prg:documentation>
-			<prg:options>
-				<xi:include href="./legacy/build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'pythonScriptPath'])" />
-				<xi:include href="./legacy/build-pyscript.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'moduleName'])" />
-			</prg:options>
-		</prg:subcommand>
 		<prg:subcommand>
 			<prg:name>command</prg:name>
 			<prg:aliases>
@@ -364,7 +349,7 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Add ns-xml sources into application resources</prg:abstract>
-						<prg:details>Include the ns-xml library files (python, sh, xsl and xsd folders) in the XUL application bundle.</prg:details>
+						<prg:details>Include the ns-xml library files (sh and xsl) in the XUL application bundle.</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:short>n</prg:short>

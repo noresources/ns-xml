@@ -210,7 +210,7 @@ done
 if ${addNsXml}
 then
 	info " - Copy ns-xml optional files"
-	for d in python sh xsh xsl 
+	for d in sh xsl 
 	do
 		rsync -Lprt "${nsPath}/${d}" "${appRootPath}/chrome/ns/"
 	done

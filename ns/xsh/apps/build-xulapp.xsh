@@ -77,33 +77,6 @@ info " - Generate Python file"
 return 0]]></xsh:body>
 		</xsh:function>		
 		
-		<!-- Legacy python parser -->
-		<xsh:function name="build_python_legacy">
-			<xsh:body><![CDATA[
-baseModules=(__init__ Base Info Parser Validators)
-pythonModulePath="${xulScriptBasePath}/${python_legacy_moduleName}"
-nsPythonPath="${nsPath}/python/program/${programVersion}"
-
-cp -p "${python_legacy_pythonScriptPath}" "${commandLauncherFile}"
-[ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
-mkdir -p "${pythonModulePath}" || error "Failed to create Python module path ${pythonModulePath}"
-for m in ${baseModules[*]}
-do
-	nsPythonFile="${nsPythonPath}/${m}.py"	
-	[ -f "${nsPythonFile}" ] || error "Base python module not found (${nsPythonFile})"
-	cp -fp "${nsPythonFile}" "${pythonModulePath}"
-done 
-
-# Create the Program module
-xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
-if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
-then
-	error 4 "Failed to create Program module"
-fi
-
-return 0]]></xsh:body>
-		</xsh:function>
-		
 		<xsh:function name="build_command">
 			<xsh:body><![CDATA[
 info " - Generate command launcher"

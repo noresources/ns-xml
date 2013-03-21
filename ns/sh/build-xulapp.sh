@@ -59,20 +59,6 @@ With:
         /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
 EOFSCUSAGE
 ;;
-python-legacy | py-legacy)
-cat << EOFSCUSAGE
-python-legacy: Build a XUL application which will run a python script built with the program XML schema
-Usage: build-xulapp python-legacy -p <path> [-m <...>]
-With:
-  -p, --python: Python script path
-    Location of the Python script body. The parser module will be created at 
-    the same place
-  -m, --module-name, --module: Python module name
-    Set the name of the command line parser python module  
-    Default value: Program
-    Deprecated. Use build-xulapp python instead
-EOFSCUSAGE
-;;
 command | cmd)
 cat << EOFSCUSAGE
 command: Build a XUL application which will run an existing command
@@ -96,8 +82,6 @@ Usage:
       options: [-s <path>] [--parser-namespace <...>] [--program-namespace <...>] [-c <...>]
     xsh, sh, shell: Build a XUL application which will run a Shell script defined through the bash XML schema
       options: [-p] -s <path> [(-i <...> | -I <...>)]
-    python-legacy, py-legacy: Build a XUL application which will run a python script built with the program XML schema
-      options: -p <path> [-m <...>]
     command, cmd: Build a XUL application which will run an existing command
       options: -c <...>
   With global options:
@@ -142,8 +126,8 @@ Usage:
         Location of the ns folder of ns-xml package
       --ns-xml-path-relative: ns source path is relative this program path
       -n, --ns, --ns-xml-add: Add ns-xml sources into application resources
-        Include the ns-xml library files (python, sh, xsl and xsd folders) in 
-        the XUL application bundle.
+        Include the ns-xml library files (sh and xsl) in the XUL application 
+        bundle.
 EOFUSAGE
 }
 
@@ -192,8 +176,6 @@ php_programInfoClassname=
 xsh_xmlShellFileDescriptionPath=
 xsh_defaultInterpreterType=
 xsh_defaultInterpreterCommand=
-python_legacy_pythonScriptPath=
-python_legacy_moduleName=
 command_existingCommandPath=
 outputPath=
 xmlProgramDescriptionPath=
@@ -290,16 +272,6 @@ parse_checkrequired()
 parse_setdefaultarguments()
 {
 	local parser_set_default=false
-	# python_legacy_moduleName
-	if [ -z "${python_legacy_moduleName}" ]
-	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			python_legacy_moduleName="Program"
-			parse_setoptionpresence SC_4_python_legacy_2_module_name
-		fi
-	fi
 	# targetPlatform
 	if [ -z "${targetPlatform}" ]
 	then
@@ -336,19 +308,6 @@ parse_setdefaultarguments()
 	php)
 		;;
 	xsh | sh | shell)
-		;;
-	python-legacy | py-legacy)
-		# python_legacy_moduleName
-		if [ -z "${python_legacy_moduleName}" ]
-		then
-			parser_set_default=true
-			if ${parser_set_default}
-			then
-				python_legacy_moduleName="Program"
-				parse_setoptionpresence SC_4_python_legacy_2_module_name
-			fi
-		fi
-		
 		;;
 	command | cmd)
 		;;
@@ -419,10 +378,6 @@ parse_addvalue()
 			;;
 		xsh)
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand xsh"
-			return ${PARSER_ERROR}
-			;;
-		python-legacy)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python-legacy"
 			return ${PARSER_ERROR}
 			;;
 		command)
@@ -1218,172 +1173,6 @@ parse_process_subcommand_option()
 			esac
 		fi
 		;;
-	python-legacy)
-		if [ "${parser_item:0:2}" = "--" ] 
-		then
-			parser_option="${parser_item:2}"
-			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
-			then
-				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
-				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
-			fi
-			
-			case "${parser_option}" in
-			python)
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if [ ! -e "${parser_item}" ]
-				then
-					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-				then
-					parse_adderror "Invalid patn type for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				python_legacy_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_4_python_legacy_1_python
-				;;
-			module-name | module)
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				python_legacy_moduleName="${parser_item}"
-				parse_setoptionpresence SC_4_python_legacy_2_module_name
-				;;
-			*)
-				return ${PARSER_SC_SKIP}
-				;;
-			
-			esac
-		elif [ "${parser_item:0:1}" = "-" ] && [ ${#parser_item} -gt 1 ]
-		then
-			parser_optiontail="${parser_item:$(expr ${parser_subindex} + 2)}"
-			parser_option="${parser_item:$(expr ${parser_subindex} + 1):1}"
-			if [ -z "${parser_option}" ]
-			then
-				parser_subindex=0
-				return ${PARSER_SC_OK}
-			fi
-			
-			case "${parser_option}" in
-			p)
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if [ ! -e "${parser_item}" ]
-				then
-					parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-				then
-					parse_adderror "Invalid patn type for option \"${parser_option}\""
-					return ${PARSER_SC_ERROR}
-				fi
-				
-				python_legacy_pythonScriptPath="${parser_item}"
-				parse_setoptionpresence SC_4_python_legacy_1_python
-				;;
-			m)
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item="${parser_optiontail}"
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_SC_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_SC_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=""
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				python_legacy_moduleName="${parser_item}"
-				parse_setoptionpresence SC_4_python_legacy_2_module_name
-				;;
-			*)
-				return ${PARSER_SC_SKIP}
-				;;
-			
-			esac
-		fi
-		;;
 	command)
 		if [ "${parser_item:0:2}" = "--" ] 
 		then
@@ -1420,7 +1209,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_5_command_1_command
+				parse_setoptionpresence SC_4_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1463,7 +1252,7 @@ parse_process_subcommand_option()
 				parser_optiontail=""
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_5_command_1_command
+				parse_setoptionpresence SC_4_command_1_command
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -2215,13 +2004,9 @@ parse_process_option()
 			parser_subcommand="xsh"
 			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_xsh_1_shell:--shell"
 			;;
-		python-legacy | py-legacy)
-			parser_subcommand="python-legacy"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_python_legacy_1_python:--python"
-			;;
 		command | cmd)
 			parser_subcommand="command"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_5_command_1_command:--command"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_command_1_command:--command"
 			;;
 		*)
 			parse_addvalue "${parser_item}"
@@ -2545,31 +2330,6 @@ fi
 return 0
 
 }
-build_python_legacy()
-{
-	baseModules=(__init__ Base Info Parser Validators)
-	pythonModulePath="${xulScriptBasePath}/${python_legacy_moduleName}"
-	nsPythonPath="${nsPath}/python/program/${programVersion}"
-	
-	cp -p "${python_legacy_pythonScriptPath}" "${commandLauncherFile}"
-	[ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
-	mkdir -p "${pythonModulePath}" || error "Failed to create Python module path ${pythonModulePath}"
-	for m in ${baseModules[*]}
-	do
-		nsPythonFile="${nsPythonPath}/${m}.py"	
-		[ -f "${nsPythonFile}" ] || error "Base python module not found (${nsPythonFile})"
-		cp -fp "${nsPythonFile}" "${pythonModulePath}"
-	done 
-	
-	# Create the Program module
-	xslStyleSheetPath="${nsPath}/xsl/program/${programVersion}"
-	if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
-	then
-		error 4 "Failed to create Program module"
-	fi
-	
-	return 0
-}
 build_command()
 {
 	info " - Generate command launcher"
@@ -2813,7 +2573,7 @@ done
 if ${addNsXml}
 then
 	info " - Copy ns-xml optional files"
-	for d in python sh xsh xsl 
+	for d in sh xsl 
 	do
 		rsync -Lprt "${nsPath}/${d}" "${appRootPath}/chrome/ns/"
 	done
