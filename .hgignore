@@ -1,6 +1,7 @@
 syntax: regexp
 # Auto-generated documentation
 ^doc/html/xsl
+^doc/wiki/github
 ^doc/html/articles
 # Output folders
 ^archives$

@@ -3,6 +3,7 @@ scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 creolePath="${projectPath}/doc/wiki/creole"
+githubPath="${projectPath}/doc/wiki/github"
 xslPath="${projectPath}/ns/xsl"
 resourceXslPath="${projectPath}/resources/xsl"
 cwd="$(pwd)"
@@ -251,4 +252,16 @@ EOF
 		$(find "${xslPath}" -name "*.xsl")
 EOF
 	fi
+fi
+
+if update_item github
+then
+	while read f
+	do
+		(echo "${f}" | egrep "/\..*" 1>/dev/null 2>&1) && continue 
+		g="$(echo "${githubPath}${f#${creolePath}}" | sed "s,\.wiki\$,.creole,")"
+		mkdir -p "$(dirname "${g}")" && rsync -lprt "${f}" "${g}"
+	done << EOF
+$(find "${creolePath}" -type f) 
+EOF
 fi
