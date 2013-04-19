@@ -68,8 +68,7 @@ cat << INNEREOF
 	<!-- An equivalent of realpath -->
 	<sh:function name="ns_realpath" >
 		<sh:parameter name="path" />
-		<sh:body><![CDATA[
-local cwd="$(pwd)"
+		<sh:body><sh:local name="cwd">\$(pwd)</sh:local><![CDATA[
 [ -d "\${path}" ] && cd "\${path}" && path="."
 while [ -h "\${path}" ] ; do path="\$(readlink "\${path}")"; done
 
@@ -121,7 +120,7 @@ cat > "${tmpFile}" << EOF
 	<prg:version>1.0</prg:version>
 	<prg:copyright>Copyright © $(date +%Y) by ${author}</prg:copyright>
 	<prg:documentation>
-		<prg:abstract></prg:abstract>
+		<prg:abstract>${xshName} short description</prg:abstract>
 	</prg:documentation>
 $(if ${addSamples}
 then
