@@ -89,7 +89,7 @@ do
 done
 
 # Set defaults if nothing selected by user
-[ ${#parser_values[*]} -eq 0 ] && parser_values=(creole html xsl)
+[ ${#parser_values[*]} -eq 0 ] && parser_values=(creole html xsl github)
 
 if update_item creole
 then
@@ -256,12 +256,5 @@ fi
 
 if update_item github
 then
-	while read f
-	do
-		(echo "${f}" | egrep "/\..*" 1>/dev/null 2>&1) && continue 
-		g="$(echo "${githubPath}${f#${creolePath}}" | sed "s,\.wiki\$,.creole,")"
-		mkdir -p "$(dirname "${g}")" && rsync -lprt "${f}" "${g}"
-	done << EOF
-$(find "${creolePath}" -type f) 
-EOF
+	"${projectPath}/tools/php/wiki-bitbucket2github.php"
 fi

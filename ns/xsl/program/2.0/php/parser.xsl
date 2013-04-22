@@ -342,6 +342,13 @@ abstract class ValueValidator
 	*/
 	abstract function usage(UsageFormat &$usage);
 	
+	/**
+	 * Add 'Invalid argument' error message
+	 * @param ParserState $state
+	 * @param ProgramResult $result
+	 * @param unknown_type $element
+	 * @param UsageFormat $usage
+	 */
 	protected function appendDefaultError(ParserState &$state, ProgramResult &$result, &$element, UsageFormat &$usage)
 	{
 		if (is_object($element) && ($element instanceof OptionNameBinding))
@@ -429,7 +436,7 @@ class PathValueValidator extends ValueValidator
 		if (!$passed)
 		{
 			$usage = new UsageFormat;
-			$this->appendDefaultError($state, $result, $element);
+			$this->appendDefaultError($state, $result, $element, $usage);
 		}
 
 		return $passed;
