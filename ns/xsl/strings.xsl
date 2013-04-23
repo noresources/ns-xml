@@ -57,12 +57,12 @@
 		<choose>
 			<when test="string-length($c) = 1">
 				<variable name="cv">
-					<call-template name="srt.isBlankChar">
+					<call-template name="str.isBlankChar">
 						<with-param name="char" select="$c"/>
 					</call-template>
 				</variable>
 				<variable name="others">
-					<call-template name="srt.isBlank">
+					<call-template name="str.isBlank">
 						<with-param name="text" select="substring($text, 2)"/>
 					</call-template>
 				</variable>
