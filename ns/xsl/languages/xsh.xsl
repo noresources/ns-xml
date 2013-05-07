@@ -234,7 +234,7 @@
 	<xsl:template match="xsh:function">
 		<xsl:param name="interpreter" />
 
-		<xsl:variable name="interpreter">
+		<xsl:variable name="vInterpreter">
 			<xsl:choose>
 				<xsl:when test="$interpreter">
 					<xsl:value-of select="$interpreter" />
@@ -249,16 +249,16 @@
 
 		<xsl:variable name="functionSupported">
 			<xsl:call-template name="xsh.defaultInterpreterTypeFunctionSupport">
-				<xsl:with-param name="interpreter" select="$interpreter" />
+				<xsl:with-param name="interpreter" select="$vInterpreter" />
 			</xsl:call-template>
 		</xsl:variable>
 
 		<xsl:if test="$functionSupported">
-			<xsl:if test="$interpreter = 'ksh'">
+			<xsl:if test="$vInterpreter = 'ksh'">
 				<xsl:text>function </xsl:text>
 			</xsl:if>
 			<xsl:apply-templates select="./@name" />
-			<xsl:if test="$interpreter != 'ksh'">
+			<xsl:if test="$vInterpreter != 'ksh'">
 				<text>()</text>
 			</xsl:if>
 			<xsl:value-of select="$str.unix.endl" />
@@ -273,7 +273,7 @@
 					<xsl:with-param name="content">
 						<xsl:for-each select="xsh:parameter">
 							<xsl:call-template name="xsh.functionParameterDefinition">
-								<xsl:with-param name="interpreter" select="$interpreter" />
+								<xsl:with-param name="interpreter" select="$vInterpreter" />
 							</xsl:call-template>
 						</xsl:for-each>
 					</xsl:with-param>
