@@ -168,10 +168,7 @@ parse_displayerrors()
 parse_pathaccesscheck()
 {
 	local file="${1}"
-	if [ ! -a "${file}" ]
-	then
-		return 0
-	fi
+	[ ! -a "${file}" ] && return 0
 	
 	local accessString="${2}"
 	while [ ! -z "${accessString}" ]
@@ -292,10 +289,7 @@ parse_enumcheck()
 	shift 1
 	while [ $# -gt 0 ]
 	do
-		if [ "${ref}" = "${1}" ]
-		then
-			return 0
-		fi
+		[ "${ref}" = "${1}" ] && return 0
 		shift
 	done
 	return 1
@@ -334,22 +328,13 @@ parse_process_option()
 {
 	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
 	then
-		if parse_process_subcommand_option
-		then
-			return ${PARSER_OK}
-		fi
-		if [ ${parser_index} -ge ${parser_itemcount} ]
-		then
-			return ${PARSER_OK}
-		fi
+		parse_process_subcommand_option && return ${PARSER_OK}
+		[ ${parser_index} -ge ${parser_itemcount} ] && return ${PARSER_OK}
 	fi
 	
 	parser_item="${parser_input[${parser_index}]}"
 	
-	if [ -z "${parser_item}" ]
-	then
-		return ${PARSER_OK}
-	fi
+	[ -z "${parser_item}" ] && return ${PARSER_OK}
 	
 	if [ "${parser_item}" = "--" ]
 	then

@@ -103,7 +103,8 @@
 		</if>
 	</template>
 
-	<!-- Attempt to transform a string into a valid identifier name (variable, function) -->
+	<!-- Attempt to transform a string into a valid identifier name (variable, 
+		function) -->
 	<template name="sh.validIdentifierName">
 		<param name="name" />
 		<call-template name="cede.validIdentifierName">
@@ -115,11 +116,14 @@
 	<template name="sh.var">
 		<!-- Variable nmme -->
 		<param name="name" />
-		<!-- Treat the variable as an array and retrieve the $index element (not compatible with all shells) -->
+		<!-- Treat the variable as an array and retrieve the $index element (not 
+			compatible with all shells) -->
 		<param name="index" />
-		<!-- Retrieve a substring of the variable content starting at offset $start (not compatible with all shells) -->
+		<!-- Retrieve a substring of the variable content starting at offset $start 
+			(not compatible with all shells) -->
 		<param name="start" />
-		<!-- Retrieve a substring of $lenght character of the variable content (not compatible with all shells) -->
+		<!-- Retrieve a substring of $lenght character of the variable content 
+			(not compatible with all shells) -->
 		<param name="length" />
 		<!-- Add quotes around -->
 		<param name="quoted" select="false()" />
@@ -205,7 +209,8 @@
 		</call-template>
 	</template>
 
-	<!-- Create the expression to retrieve an array element count (not compatible with all shells) -->
+	<!-- Create the expression to retrieve an array element count (not compatible 
+		with all shells) -->
 	<template name="sh.arrayLength">
 		<!-- Variable name -->
 		<param name="name" />
@@ -241,7 +246,8 @@
 
 		<variable name="index">
 			<choose>
-				<when test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
+				<when
+					test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
 					<text>$(expr </text>
 					<call-template name="sh.arrayLength">
 						<with-param name="name" select="$name" />
@@ -484,27 +490,42 @@
 		<param name="then" />
 		<!-- Code to execute if the condition is false -->
 		<param name="else" />
+		<!-- Indent 'then' and 'else' blocks -->
 		<param name="indent" select="true()" />
+		<!-- When possible, use the short form [ {condition} ] && {then} -->
+		<param name="shortForm" select="true()" />
 
 		<variable name="ncond" select="normalize-space($condition)" />
 
 		<if test="(string-length($ncond) + string-length($then)) &gt; 0">
-			<text>if </text>
-			<value-of select="$ncond" />
-			<value-of select="$sh.endl" />
-			<text>then</text>
-			<call-template name="sh.block">
-				<with-param name="indent" select="$indent" />
-				<with-param name="content" select="$then" />
-			</call-template>
-			<if test="$else and (string-length($else) &gt; 0)">
-				<text>else</text>
-				<call-template name="sh.block">
-					<with-param name="indent" select="$indent" />
-					<with-param name="content" select="$else" />
-				</call-template>
-			</if>
-			<text>fi</text>
+			<variable name="hasElse" select="$else and (string-length($else) &gt; 0)" />
+			<variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
+			<variable name="simpleCondition" select="not (contains($ncond, $sh.endl) or contains($ncond, '&amp;&amp;') or contains($ncond, '||'))" />
+			<choose>
+				<when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
+					<value-of select="$ncond" />
+					<text> &amp;&amp; </text>
+					<value-of select="$then" />
+				</when>
+				<otherwise>
+					<text>if </text>
+					<value-of select="$ncond" />
+					<value-of select="$sh.endl" />
+					<text>then</text>
+					<call-template name="sh.block">
+						<with-param name="indent" select="$indent" />
+						<with-param name="content" select="$then" />
+					</call-template>
+					<if test="$hasElse">
+						<text>else</text>
+						<call-template name="sh.block">
+							<with-param name="indent" select="$indent" />
+							<with-param name="content" select="$else" />
+						</call-template>
+					</if>
+					<text>fi</text>
+				</otherwise>
+			</choose>
 		</if>
 		<value-of select="$sh.endl" />
 	</template>

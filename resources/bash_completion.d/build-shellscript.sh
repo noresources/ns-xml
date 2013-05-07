@@ -98,26 +98,17 @@ __build_shellscript_bashcompletion()
 		case "${option}" in
 		"ns-xml-path")
 			__build_shellscript_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"xml-description" | "x")
 			__build_shellscript_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"shell" | "s")
 			__build_shellscript_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"interpreter" | "i")
@@ -125,10 +116,7 @@ __build_shellscript_bashcompletion()
 			for e in "bash" "zsh" "ksh"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
 			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -139,10 +127,7 @@ __build_shellscript_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"interpreter-cmd" | "I")
@@ -150,10 +135,7 @@ __build_shellscript_bashcompletion()
 			for e in "/usr/bin/env bash" "/bin/bash" "/usr/bin/env zsh" "/bin/zsh"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
 			local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 			for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -164,18 +146,12 @@ __build_shellscript_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"output" | "o")
 			__build_shellscript_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

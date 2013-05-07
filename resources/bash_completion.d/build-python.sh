@@ -98,10 +98,7 @@ __build_python_bashcompletion()
 		case "${option}" in
 		"xml-description" | "x")
 			__build_python_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"info" | "i")
@@ -114,10 +111,7 @@ __build_python_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"merge" | "m")
@@ -130,10 +124,7 @@ __build_python_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"classname" | "c")
@@ -146,26 +137,17 @@ __build_python_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"output" | "o")
 			__build_python_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"ns-xml-path")
 			__build_python_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

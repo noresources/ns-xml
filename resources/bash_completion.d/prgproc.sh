@@ -98,10 +98,7 @@ __prgproc_bashcompletion()
 		case "${option}" in
 		"xml-description" | "x")
 			__prgproc_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"xslt" | "xsl" | "t")
@@ -109,31 +106,19 @@ __prgproc_bashcompletion()
 			for e in "bashcompletion" "c-gengetopt" "docbook-usage" "wikicreole-usage"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"output" | "o")
 			__prgproc_appendfsitems "${current}" $(__prgproc_getfindpermoptions w)  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"ns-xml-path")
 			__prgproc_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

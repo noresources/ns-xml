@@ -98,10 +98,7 @@ __build_pyscript_bashcompletion()
 		case "${option}" in
 		"python" | "p")
 			__build_pyscript_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"module-name" | "module" | "m")
@@ -114,18 +111,12 @@ __build_pyscript_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"xml-description" | "x")
 			__build_pyscript_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

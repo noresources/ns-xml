@@ -99,26 +99,17 @@ __new_xsh_bashcompletion()
 		"name" | "n")
 			[ ${#COMPREPLY[*]} -eq 0 ] && COMPREPLY[0]="\"${current#\"}"
 			return 0
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"output" | "path" | "o")
 			__new_xsh_appendfsitems "${current}" $(__new_xsh_getfindpermoptions rw)  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"ns-xml-path")
 			__new_xsh_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

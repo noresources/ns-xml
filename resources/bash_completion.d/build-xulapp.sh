@@ -78,19 +78,13 @@ __sc_python_bashcompletion()
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	# argument option
 	local option="$(__build_xulapp_getoptionname ${previous})"
-	if [ -z "${option}" ]
-	then
-		return 1
-	fi
+	[ -z "${option}" ] && return 1
 	
 	
 	case "${option}" in
 	"script" | "s")
 		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"classname" | "c")
@@ -103,10 +97,7 @@ __sc_python_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	
@@ -120,19 +111,13 @@ __sc_php_bashcompletion()
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	# argument option
 	local option="$(__build_xulapp_getoptionname ${previous})"
-	if [ -z "${option}" ]
-	then
-		return 1
-	fi
+	[ -z "${option}" ] && return 1
 	
 	
 	case "${option}" in
 	"script" | "s")
 		__build_xulapp_appendfsitems "${current}" $(__build_xulapp_getfindpermoptions r)  -type f 
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"parser-namespace" | "parser-ns")
@@ -145,10 +130,7 @@ __sc_php_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"program-namespace" | "program-ns" | "prg-ns")
@@ -161,10 +143,7 @@ __sc_php_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"classname" | "c")
@@ -177,10 +156,7 @@ __sc_php_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	
@@ -194,19 +170,13 @@ __sc_xsh_bashcompletion()
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	# argument option
 	local option="$(__build_xulapp_getoptionname ${previous})"
-	if [ -z "${option}" ]
-	then
-		return 1
-	fi
+	[ -z "${option}" ] && return 1
 	
 	
 	case "${option}" in
 	"shell" | "s")
 		__build_xulapp_appendfsitems "${current}"  -type f 
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"interpreter" | "i")
@@ -214,10 +184,7 @@ __sc_xsh_bashcompletion()
 		for e in "bash" "zsh" "ksh"
 		do
 			local res="$(compgen -W "${e}" -- "${current}")"
-			if [ ! -z "${res}" ]
-			then
-				COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-			fi
+			[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 		done
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -228,10 +195,7 @@ __sc_xsh_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	"interpreter-cmd" | "I")
@@ -239,10 +203,7 @@ __sc_xsh_bashcompletion()
 		for e in "/usr/bin/env bash" "/bin/bash" "/usr/bin/env zsh" "/bin/zsh"
 		do
 			local res="$(compgen -W "${e}" -- "${current}")"
-			if [ ! -z "${res}" ]
-			then
-				COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-			fi
+			[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 		done
 		local temporaryRepliesArray=( $(compgen -fd -- "${current}") )
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
@@ -253,10 +214,7 @@ __sc_xsh_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	
@@ -270,10 +228,7 @@ __sc_command_bashcompletion()
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	# argument option
 	local option="$(__build_xulapp_getoptionname ${previous})"
-	if [ -z "${option}" ]
-	then
-		return 1
-	fi
+	[ -z "${option}" ] && return 1
 	
 	
 	case "${option}" in
@@ -287,10 +242,7 @@ __sc_command_bashcompletion()
 		do
 			COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 		done
-		if [ ${#COMPREPLY[*]} -gt 0 ]
-		then
-			return 0
-		fi
+		[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 		
 		;;
 	
@@ -378,18 +330,12 @@ __build_xulapp_bashcompletion()
 		case "${option}" in
 		"output" | "o")
 			__build_xulapp_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"xml-description" | "x")
 			__build_xulapp_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"target-platform" | "target" | "t")
@@ -397,15 +343,9 @@ __build_xulapp_bashcompletion()
 			for e in "host" "linux" "macosx"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"window-width" | "W")
@@ -418,10 +358,7 @@ __build_xulapp_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"window-height" | "H")
@@ -434,26 +371,17 @@ __build_xulapp_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"init-script" | "j")
 			__build_xulapp_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"ns-xml-path")
 			__build_xulapp_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		

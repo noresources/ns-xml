@@ -98,18 +98,12 @@ __build_c_bashcompletion()
 		case "${option}" in
 		"xml-description" | "x")
 			__build_c_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"include" | "i")
 			__build_c_appendfsitems "${current}"  -type f 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"prefix" | "p")
@@ -122,10 +116,7 @@ __build_c_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"struct-style" | "struct")
@@ -133,15 +124,9 @@ __build_c_bashcompletion()
 			for e in "underscore" "camelCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"function-style" | "function" | "func")
@@ -149,15 +134,9 @@ __build_c_bashcompletion()
 			for e in "underscore" "camelCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"variable-style" | "variable" | "var")
@@ -165,23 +144,14 @@ __build_c_bashcompletion()
 			for e in "underscore" "camelCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
-				if [ ! -z "${res}" ]
-				then
-					COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
-				fi
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"output" | "o")
 			__build_c_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"file-base" | "file" | "f")
@@ -194,18 +164,12 @@ __build_c_bashcompletion()
 			do
 				COMPREPLY[${#COMPREPLY[*]}]="${temporaryRepliesArray[${i}]}"
 			done
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"ns-xml-path")
 			__build_c_appendfsitems "${current}"  -type d 
-			if [ ${#COMPREPLY[*]} -gt 0 ]
-			then
-				return 0
-			fi
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		
