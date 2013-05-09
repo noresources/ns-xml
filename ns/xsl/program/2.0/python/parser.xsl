@@ -136,7 +136,7 @@ class OptionNameList(object):
                     self.names[n.name] = n
                             
     def __iter__(self):
-        return self.names.iteritems()
+        return iter(self.names.items())
     
     def getShortOptionNames(self):
         res = OptionNameList

@@ -12,9 +12,9 @@ run-tests\.sh\.log
 # Mercurial files
 ^\.hgsub$
 # Other (D)VCS
-^\.bzr*
-^\.git*
-^\.svn*
+\.bzr*
+\.git*
+\.svn*
 # Unit test temporary files
 ^unittests/parsers/.*/Program
 ^unittests/parsers/.*/program.+
