@@ -781,7 +781,6 @@ parserTestsPathBase="${projectPath}/unittests/parsers"
 tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 programVersion="2.0"
 xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
-pythonInterpreters=(python2.6 python2.7 python)
 
 check_zsh()
 {
@@ -796,25 +795,52 @@ check_zsh()
 	return 0
 }
 
-# Supported Python interpreter
-for i in ${pythonInterpreters[*]}
-do
-	if which ${i} 1>/dev/null 2>&1
-	then
-		pythonInterpreter=${i}
-	fi
-done
+# Supported Python interpreters
+# Assumes all are installed in the same directory
+pythonPath=""
+if which python 1>/dev/null 2>&1
+then
+	pythonPath="$(dirname "$(which python)")"
+else
+	for major in 2 3
+	do
+		for minor in 0 1 2 3 4 5 6 7 8 9
+		do
+			if which python${major}.${minor} 1>/dev/null 2>&1
+			then
+				pythonPath="$(dirname "$(which python${major}.${minor})")"
+				break
+			fi
+		done
+		[ ! -z "${pythonPath}" ] && break
+	done
+fi
+
+echo ${pythonPath}
+if [ ! -z "${pythonPath}" ]
+then
+	pythonInterpreterRegex="^python[0-9]+(\.[0-9]+)$"
+	while read f
+	do
+		if [ -x "${f}" ] && echo "$(basename "${f}")" | egrep "${pythonInterpreterRegex}" 1>/dev/null 2>&1
+		then
+			pythonInterpreters[${#pythonInterpreters[@]}]="$(basename "${f}")"
+		fi
+	done << EOF
+$(find "${pythonPath}" -name "python*")
+EOF
+fi
 
 # Supported shells
 shells=(bash zsh ksh)
-for s in ${shells[*]}
+for s in ${shells[@]}
 do
 	if which ${s} 1>/dev/null 2>&1
 	then
 		check_func="check_${s}"
 		if [ "$(type -t "${check_func}")" != "function" ] || ${check_func}
 		then
-			available_shells[${#available_shells[*]}]=${s}
+			available_shells[${#available_shells[@]}]=${s}
 		fi
 	fi
 done
@@ -877,7 +903,7 @@ then
 		testSh=true
 	fi
 	
-	if [ ! -z "${pythonInterpreter}" ]
+	if [ "${#pythonInterpreters[@]}" -gt 0 ]
 	then
 		parsers=("${parsers[@]}" python)
 		testPython=true
@@ -904,7 +930,7 @@ else
 		if [ "${parsers[${i}]}" = "sh" ] && [ ${#available_shells[@]} -gt 0 ]
 		then
 			testSh=true
-		elif [ "${parsers[${i}]}" = "python" ] && [ ! -z "${pythonInterpreter}" ]
+		elif [ "${parsers[${i}]}" = "python" ] && [ ${#pythonInterpreters[@]} -gt 0 ]
 		then
 			testPython=true
 		elif [ "${parsers[${i}]}" = "c" ] && which ${cc} 1>/dev/null 2>&1
@@ -926,7 +952,7 @@ if ${testSh}
 then
 	parserNames=("${parserNames[@]}" "${available_shells[@]}")
 	
-	for s in ${available_shells[*]}
+	for s in ${available_shells[@]}
 	do
 		resultLineFormat="${resultLineFormat} %-7s |"	
 	done
@@ -934,10 +960,17 @@ fi
 
 if ${testPython}
 then
-	parserNames=("${parserNames[@]}" "Python")	
-	resultLineFormat="${resultLineFormat} %-7s |"
+	#parserNames=("${parserNames[@]}" "Python")	
+	#resultLineFormat="${resultLineFormat} %-7s |"
 	
-	log "Update Python parser XSLT " 
+	for p in "${pythonInterpreters[@]}"
+	do
+		pyVersion="$(echo "${p}" | sed -E "s,python(.*),\\1,g")"
+		parserNames=("${parserNames[@]}" "py ${pyVersion}")
+		resultLineFormat="${resultLineFormat} %-7s |"
+	done
+	
+	log "Update Python parser XSLT" 
 	"${scriptPath}/update-python-parser.sh"
 fi
 
@@ -1061,10 +1094,10 @@ EOF
 EOF
 		xsltproc --xinclude -o "${xshBodyFile}" "${parserTestsPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${xshBodyFile}"  
 		
-		for s in ${available_shells[*]}
+		for s in ${available_shells[@]}
 		do
 			shScript="${tmpScriptBasename}.${s}"
-			shScripts[${#shScripts[*]}]="${shScript}"
+			shScripts[${#shScripts[@]}]="${shScript}"
 			buildShScriptArgs=(\
 				-i ${s} \
 				-p \
@@ -1085,7 +1118,7 @@ EOF
 		# Create python module
 		pyParser="${d}/Parser.py"
 		pyInfo="${d}/ProgramInfo.py"
-		pyProgram="${tmpScriptBasename}-exe.py"
+		pyProgramBase="${tmpScriptBasename}-exe-"
 		
 		log "Create Python parser module"
 		"${projectPath}/ns/sh/build-python.sh" -b \
@@ -1100,9 +1133,15 @@ EOF
 			-c "TestProgramInfo" \
 			-o "${pyInfo}" || error "Failed to generated Python program info module"
 			
-		log "Generate python script"
-		xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${pythonInterpreter} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
-		chmod 755 "${pyProgram}"
+		log "Generate python scripts"
+		unset pyPrograms
+		for p in "${pythonInterpreters[@]}"
+		do
+			pyProgram="${pyProgramBase}${p}.py"
+			pyPrograms=("${pyProgram[@]}" "${pyProgram}")
+			xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
+			chmod 755 "${pyProgram}"
+		done
 	fi
 	
 	if ${testC}
@@ -1162,7 +1201,7 @@ EOFSH
 			cat >> "${tmpShellScript}" << EOFSH
 $(
 shi=0
-for s in ${available_shells[*]}
+for s in ${available_shells[@]}
 do
 	shScript="${shScripts[${shi}]}"
 	echo "\"${shScript}\" "${cli[@]}" > \"${result}-${s}\" 2>>\"${logFile}\""
@@ -1172,9 +1211,15 @@ EOFSH
 		fi
 		if ${testPython} && [ ! -f "${base}.no-py" ]
 		then
-			cat >> "${tmpShellScript}" << EOFSH
-"${pyProgram}" ${cli} > "${result}-py"  2>>"${logFile}"
+			pi=0
+			for p in "${pythonInterpreters[@]}"
+			do
+				pyProgram="${pyPrograms[${pi}]}"
+				cat >> "${tmpShellScript}" << EOFSH
+"${pyProgram}" ${cli} > "${result}-${p}"  2>>"${logFile}"
 EOFSH
+				pi=$(expr "${pi}" + 1)
+			done
 		fi
 		
 		if ${testC} && [ ! -f "${base}.no-c" ]
@@ -1218,12 +1263,12 @@ EOFSH
 			then
 				if [ -f "${base}.no-sh" ]
 				then
-					for s in ${available_shells[*]}
+					for s in ${available_shells[@]}
 					do
 						resultLine[${#resultLine[@]}]="skipped"
 					done
 				else
-					for s in ${available_shells[*]}
+					for s in ${available_shells[@]}
 					do
 						if [ ! -f "${result}-${s}" ] || ! diff "${expected}" "${result}-${s}" >> "${logFile}"
 						then
@@ -1242,16 +1287,22 @@ EOFSH
 			then
 				if [ -f "${base}.no-py" ]
 				then
-					resultLine[${#resultLine[@]}]="skipped"
+					for p in "${pythonInterpreters[@]}"
+					do
+						resultLine[${#resultLine[@]}]="skipped"
+					done
 				else
-					if [ ! -f "${result}-py" ] || ! diff "${expected}" "${result}-py" >> "${logFile}"
-					then
-						passed=false
-						resultLine[${#resultLine[@]}]="FAILED"
-					else
-						resultLine[${#resultLine[@]}]="passed"
-						${keepTemporaryFiles} || rm -f "${result}-py"
-					fi
+					for p in "${pythonInterpreters[@]}"
+					do
+						if [ ! -f "${result}-${p}" ] || ! diff "${expected}" "${result}-${p}" >> "${logFile}"
+						then
+							passed=false
+							resultLine[${#resultLine[@]}]="FAILED"
+						else
+							resultLine[${#resultLine[@]}]="passed"
+							${keepTemporaryFiles} || rm -f "${result}-${p}"
+						fi
+					done
 				fi
 			fi
 			
@@ -1317,7 +1368,7 @@ EOFSH
 			
 			if ${testSh}
 			then
-				for s in ${available_shells[*]}
+				for s in ${available_shells[@]}
 				do
 					resultLine[${#resultLine[@]}]="IGNORED"
 				done
@@ -1334,13 +1385,16 @@ EOFSH
 				cp "${result}-c" "${expected}"
 			elif ${testPython}
 			then
-				cp "${result}-python" "${expected}"
+				for p in "${pythonInterpreters[@]}"
+				do
+					[ -f "${result}-${p}" ] && cp "${result}-${p}" "${expected}" && break
+				done
 			elif ${testPHP}
 			then
 				cp "${result}-php" "${expected}"
 			elif ${testSb}
 			then
-				for s in ${available_shells[*]}
+				for s in ${available_shells[@]}
 				do
 					[ -f "${result}-${s}" ] && cp "${result}-${s}" "${expected}" && break	
 				done
@@ -1368,7 +1422,7 @@ EOFSH
 	then
 		si=0
 		hasErrors=false
-		for s in ${available_shells[*]}
+		for s in ${available_shells[@]}
 		do
 			if [ $(find "${d}/tests" -name "*.result-${s}" | wc -l) -eq 0 ]
 			then
@@ -1387,15 +1441,30 @@ EOFSH
 	
 	if ${testPython}
 	then
-		if [ $(find "${d}/tests" -name "*.result-py" | wc -l) -eq 0 ]
+		pi=0
+		hasErrors=false
+		for p in ${pythonInterpreters[@]}
+		do
+			if [ $(find "${d}/tests" -name "*.result-${p}" | wc -l) -eq 0 ]
+			then
+				${keepTemporaryFiles} || rm -f "${pyPrograms[${pi}]}"
+				rm -f "${pyPrograms[${pi}]}c"
+			else
+				hasErrors=true
+			fi
+			pi=$(expr ${pi} + 1)
+		done
+		
+		if ! ${hasErrors}
 		then
-			${keepTemporaryFiles} || rm -f "${pyProgram}"
 			${keepTemporaryFiles} || rm -f "${pyInfo}"
 			${keepTemporaryFiles} || rm -f "${pyParser}"
-			rm -f "${pyProgram}c"
-			rm -f "${pyInfo}c"
-			rm -f "${pyParser}c"
 		fi
+		
+		rm -f "${pyInfo}c"
+		rm -f "${pyParser}c"
+				
+		unset pyPrograms
 	fi
 	
 	if ${testC}
@@ -1420,7 +1489,6 @@ EOFSH
 		fi
 	fi
 done
-
 
 ${testC} && ${testValgrind} && (${keepTemporaryFiles} || rm -f "${valgrindOutputXslFile}")
 
