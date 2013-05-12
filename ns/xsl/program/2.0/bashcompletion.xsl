@@ -16,976 +16,976 @@
 <!-- -A hostname -> hostnames -->
 
 <!-- Create a bash completion script for the program -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="../../languages/shellscript.xsl" />
-	<output method="text" indent="no" encoding="utf-8" />
-	<param name="prg.bash.completion.programFileExtension" />
-	<variable name="prg.bash.completion.completionFunctionName">
-		<text>__</text>
-		<call-template name="prg.bash.completion.shellFunctionName">
-			<with-param name="name" select="/prg:program/prg:name" />
-		</call-template>
-		<text>_bashcompletion</text>
-	</variable>
-	<variable name="prg.bash.completion.getArgOptionFunctionName">
-		<text>__</text>
-		<call-template name="prg.bash.completion.shellFunctionName">
-			<with-param name="name" select="/prg:program/prg:name" />
-		</call-template>
-		<text>_getoptionname</text>
-	</variable>
-	<variable name="prg.bash.completion.appendFileSystemItemsFunctionName">
-		<text>__</text>
-		<call-template name="prg.bash.completion.shellFunctionName">
-			<with-param name="name" select="/prg:program/prg:name" />
-		</call-template>
-		<text>_appendfsitems</text>
-	</variable>
-	<variable name="programGetFindPermissionOptionsFunctionName">
-		<text>__</text>
-		<call-template name="prg.bash.completion.shellFunctionName">
-			<with-param name="name" select="/prg:program/prg:name" />
-		</call-template>
-		<text>_getfindpermoptions</text>
-	</variable>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="../../languages/shellscript.xsl" />
+	<xsl:output method="text" indent="no" encoding="utf-8" />
+	<xsl:param name="prg.bash.completion.programFileExtension" />
+	<xsl:variable name="prg.bash.completion.completionFunctionName">
+		<xsl:text>__</xsl:text>
+		<xsl:call-template name="prg.bash.completion.shellFunctionName">
+			<xsl:with-param name="name" select="/prg:program/prg:name" />
+		</xsl:call-template>
+		<xsl:text>_bashcompletion</xsl:text>
+	</xsl:variable>
+	<xsl:variable name="prg.bash.completion.getArgOptionFunctionName">
+		<xsl:text>__</xsl:text>
+		<xsl:call-template name="prg.bash.completion.shellFunctionName">
+			<xsl:with-param name="name" select="/prg:program/prg:name" />
+		</xsl:call-template>
+		<xsl:text>_getoptionname</xsl:text>
+	</xsl:variable>
+	<xsl:variable name="prg.bash.completion.appendFileSystemItemsFunctionName">
+		<xsl:text>__</xsl:text>
+		<xsl:call-template name="prg.bash.completion.shellFunctionName">
+			<xsl:with-param name="name" select="/prg:program/prg:name" />
+		</xsl:call-template>
+		<xsl:text>_appendfsitems</xsl:text>
+	</xsl:variable>
+	<xsl:variable name="programGetFindPermissionOptionsFunctionName">
+		<xsl:text>__</xsl:text>
+		<xsl:call-template name="prg.bash.completion.shellFunctionName">
+			<xsl:with-param name="name" select="/prg:program/prg:name" />
+		</xsl:call-template>
+		<xsl:text>_getfindpermoptions</xsl:text>
+	</xsl:variable>
 	<!-- Chunks -->
-	<template name="prg.bash.completion.itemList">
-		<param name="path" />
-		<param name="prepend" />
-		<param name="separator">
-			<text> </text>
-		</param>
-		<param name="quoted" select="false()" />
-		<for-each select="$path">
-			<value-of select="$prepend" />
-			<if test="$quoted">
-				<text>"</text>
-			</if>
-			<value-of select="." />
-			<if test="$quoted">
-				<text>"</text>
-			</if>
-			<if test="position() != last()">
-				<value-of select="$separator" />
-			</if>
-		</for-each>
-	</template>
+	<xsl:template name="prg.bash.completion.itemList">
+		<xsl:param name="path" />
+		<xsl:param name="prepend" />
+		<xsl:param name="separator">
+			<xsl:text> </xsl:text>
+		</xsl:param>
+		<xsl:param name="quoted" select="false()" />
+		<xsl:for-each select="$path">
+			<xsl:value-of select="$prepend" />
+			<xsl:if test="$quoted">
+				<xsl:text>"</xsl:text>
+			</xsl:if>
+			<xsl:value-of select="." />
+			<xsl:if test="$quoted">
+				<xsl:text>"</xsl:text>
+			</xsl:if>
+			<xsl:if test="position() != last()">
+				<xsl:value-of select="$separator" />
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Add trailing folder / to all folder results -->
-	<template name="prg.bash.completion.compreplyAddFoldersSlashes">
-		<param name="variableName">
-			<text>COMPREPLY</text>
-		</param>
-		<call-template name="sh.for">
-			<with-param name="condition">
-				<text>((i=0;${i}&lt;${#</text>
-				<value-of select="$variableName" />
-				<text>[*]};i++))</text>
-			</with-param>
-			<with-param name="do">
-				<text>[ -d "${</text>
-				<value-of select="$variableName" />
-				<text>[$i]}" ] &amp;&amp; </text>
-				<value-of select="$variableName" />
-				<text>[$i]="${</text>
-				<value-of select="$variableName" />
-				<text>[$i]%/}/"</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.compreplyAddFoldersSlashes">
+		<xsl:param name="variableName">
+			<xsl:text>COMPREPLY</xsl:text>
+		</xsl:param>
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="condition">
+				<xsl:text>((i=0;${i}&lt;${#</xsl:text>
+				<xsl:value-of select="$variableName" />
+				<xsl:text>[*]};i++))</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="do">
+				<xsl:text>[ -d "${</xsl:text>
+				<xsl:value-of select="$variableName" />
+				<xsl:text>[$i]}" ] &amp;&amp; </xsl:text>
+				<xsl:value-of select="$variableName" />
+				<xsl:text>[$i]="${</xsl:text>
+				<xsl:value-of select="$variableName" />
+				<xsl:text>[$i]%/}/"</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.compreplyAddSpaces">
-		<text>for ((i=0;$i&lt;${#COMPREPLY[*]};i++)); do COMPREPLY[${i}]="${COMPREPLY[${i}]} ";done</text>
-		<value-of select="$str.unix.endl"/>
-	</template>
+	<xsl:template name="prg.bash.completion.compreplyAddSpaces">
+		<xsl:text>for ((i=0;$i&lt;${#COMPREPLY[*]};i++)); do COMPREPLY[${i}]="${COMPREPLY[${i}]} ";done</xsl:text>
+		<xsl:value-of select="$str.unix.endl" />
+	</xsl:template>
 
-	<template name="prg.bash.completion.shellFunctionName">
-		<param name="name" />
-		<variable name="tname">
-			<call-template name="str.trim">
-				<with-param name="text" select="$name" />
-			</call-template>
-		</variable>
-		<value-of select="translate($tname,'- ./', '_')" />
-	</template>
+	<xsl:template name="prg.bash.completion.shellFunctionName">
+		<xsl:param name="name" />
+		<xsl:variable name="tname">
+			<xsl:call-template name="str.trim">
+				<xsl:with-param name="text" select="$name" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:value-of select="translate($tname,'- ./', '_')" />
+	</xsl:template>
 
-	<template name="prg.bash.completion.subCommandCompletionFunctionName">
-		<param name="subcommand" select="." />
-		<param name="name" />
-		<text>__sc_</text>
-		<call-template name="prg.bash.completion.shellFunctionName">
-			<with-param name="name">
-				<choose>
-					<when test="$name">
-						<value-of select="$name" />
-					</when>
-					<otherwise>
-						<value-of select="normalize-space($subcommand/prg:name)" />
-					</otherwise>
-				</choose>
-			</with-param>
-		</call-template>
-		<text>_bashcompletion</text>
-	</template>
+	<xsl:template name="prg.bash.completion.subCommandCompletionFunctionName">
+		<xsl:param name="subcommand" select="." />
+		<xsl:param name="name" />
+		<xsl:text>__sc_</xsl:text>
+		<xsl:call-template name="prg.bash.completion.shellFunctionName">
+			<xsl:with-param name="name">
+				<xsl:choose>
+					<xsl:when test="$name">
+						<xsl:value-of select="$name" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="normalize-space($subcommand/prg:name)" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:text>_bashcompletion</xsl:text>
+	</xsl:template>
 
-	<template name="prg.bash.completion.appendFileSystemItemFunction">
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
-			<with-param name="content">
+	<xsl:template name="prg.bash.completion.appendFileSystemItemFunction">
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
+			<xsl:with-param name="content">
 				<!-- Call find command -->
-				<text>local current="${1}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>shift</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local currentLength="${#current}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local d</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local b</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local isHomeShortcut=false</text>
-				<value-of select="$str.unix.endl"/>
-				<text>[ "${current:0:1}" == "~" ] &amp;&amp; current="${HOME}${current:1}" &amp;&amp; isHomeShortcut=true</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ "${current:$(expr ${currentLength} - 1)}" == "/" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>d="${current%/}"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>b=""</text>
-					</with-param>
-					<with-param name="else">
-						<text>d="$(dirname "${current}")"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>b="$(basename "${current}")"</text>
-					</with-param>
-				</call-template>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ -d "${d}" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>local findCommand="find \"${d}\" -mindepth 1 -maxdepth 1 -name \"${b}*\" -a \\( ${@} \\)"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>local files="$(eval ${findCommand} | while read file; do printf "%q\n" "${file#./}"; done)"</text>
-						<value-of select="$str.unix.endl"/>
+				<xsl:text>local current="${1}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>shift</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local currentLength="${#current}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local d</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local b</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local isHomeShortcut=false</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>[ "${current:0:1}" == "~" ] &amp;&amp; current="${HOME}${current:1}" &amp;&amp; isHomeShortcut=true</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ "${current:$(expr ${currentLength} - 1)}" == "/" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>d="${current%/}"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>b=""</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="else">
+						<xsl:text>d="$(dirname "${current}")"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>b="$(basename "${current}")"</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ -d "${d}" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>local findCommand="find \"${d}\" -mindepth 1 -maxdepth 1 -name \"${b}*\" -a \\( ${@} \\)"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>local files="$(eval ${findCommand} | while read file; do printf "%q\n" "${file#./}"; done)"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
 						<!-- Transform to array -->
-						<text>local IFS=$'\n'</text>
-						<value-of select="$str.unix.endl"/>
-						<text>local temporaryRepliesArray=(${files})</text>
-						<value-of select="$str.unix.endl"/>
-						<call-template name="sh.arrayForEach">
-							<with-param name="name">
-								<text>temporaryRepliesArray</text>
-							</with-param>
-							<with-param name="do">
-								<text>local p="${temporaryRepliesArray[$i]}"</text>
-								<value-of select="$str.unix.endl"/>
-								<text>[ "${d}" != "." ] &amp;&amp; p="${d}/$(basename "${p}")"</text>
-								<value-of select="$str.unix.endl"/>
-								<text>[ -d "${p}" ] &amp;&amp; p="${p%/}/"</text>
-								<value-of select="$str.unix.endl"/>
-								<text>temporaryRepliesArray[$i]="${p}"</text>
-								<value-of select="$str.unix.endl"/>
-							</with-param>
-						</call-template>
-						<value-of select="$str.unix.endl"/>
+						<xsl:text>local IFS=$'\n'</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>local temporaryRepliesArray=(${files})</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:call-template name="sh.arrayForEach">
+							<xsl:with-param name="name">
+								<xsl:text>temporaryRepliesArray</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="do">
+								<xsl:text>local p="${temporaryRepliesArray[$i]}"</xsl:text>
+								<xsl:value-of select="$str.unix.endl" />
+								<xsl:text>[ "${d}" != "." ] &amp;&amp; p="${d}/$(basename "${p}")"</xsl:text>
+								<xsl:value-of select="$str.unix.endl" />
+								<xsl:text>[ -d "${p}" ] &amp;&amp; p="${p%/}/"</xsl:text>
+								<xsl:value-of select="$str.unix.endl" />
+								<xsl:text>temporaryRepliesArray[$i]="${p}"</xsl:text>
+								<xsl:value-of select="$str.unix.endl" />
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$str.unix.endl" />
 						<!-- Copy results to COMPREPLY -->
-						<call-template name="sh.arrayCopy">
-							<with-param name="from">
-								<text>temporaryRepliesArray</text>
-							</with-param>
-							<with-param name="to">
-								<text>COMPREPLY</text>
-							</with-param>
-							<with-param name="append" select="true()" />
-						</call-template>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+						<xsl:call-template name="sh.arrayCopy">
+							<xsl:with-param name="from">
+								<xsl:text>temporaryRepliesArray</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="to">
+								<xsl:text>COMPREPLY</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="append" select="true()" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- "" <=> not an argument -->
-	<template name="prg.bash.completion.getArgOptionNameFunction">
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.bash.completion.getArgOptionFunctionName" />
-			<with-param name="content">
-				<text>local arg="${1}"</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ "${arg}"  = "--" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text># End of options marker</text>
-						<value-of select="$str.unix.endl"/>
-						<text>return 0</text>
-					</with-param>
-				</call-template>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ "${arg:0:2}"  = "--" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text># It's a long option</text>
-						<value-of select="$str.unix.endl"/>
-						<text>echo "${arg:2}"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>return 0</text>
-					</with-param>
-				</call-template>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ "${arg:0:1}"  = "-" ] &amp;&amp; [ ${#arg} -gt 1 ]</text>
-					</with-param>
-					<with-param name="then">
-						<text># It's a short option (or a combination of)</text>
-						<value-of select="$str.unix.endl"/>
-						<text>local index="$(expr ${#arg} - 1)"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>echo "${arg:${index}}"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>return 0</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.getArgOptionNameFunction">
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.bash.completion.getArgOptionFunctionName" />
+			<xsl:with-param name="content">
+				<xsl:text>local arg="${1}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ "${arg}"  = "--" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text># End of options marker</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>return 0</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ "${arg:0:2}"  = "--" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text># It's a long option</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>echo "${arg:2}"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>return 0</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ "${arg:0:1}"  = "-" ] &amp;&amp; [ ${#arg} -gt 1 ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text># It's a short option (or a combination of)</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>local index="$(expr ${#arg} - 1)"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>echo "${arg:${index}}"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>return 0</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.getFindPermissionsOptionsFunction">
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$programGetFindPermissionOptionsFunctionName" />
-			<with-param name="content">
-				<text>local access="${1}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local res=""</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.while">
-					<with-param name="condition">
-						<text>[ ! -z "${access}" ]</text>
-					</with-param>
-					<with-param name="do">
-						<text>res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"</text>
-						<value-of select="$str.unix.endl"/>
-						<text>access="${access:1}"</text>
-					</with-param>
-				</call-template>
-				<value-of select="$str.unix.endl"/>
-				<text>echo "${res}"</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.getFindPermissionsOptionsFunction">
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$programGetFindPermissionOptionsFunctionName" />
+			<xsl:with-param name="content">
+				<xsl:text>local access="${1}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local res=""</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.while">
+					<xsl:with-param name="condition">
+						<xsl:text>[ ! -z "${access}" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:text>res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:text>access="${access:1}"</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>echo "${res}"</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletion">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="path" />
-		<param name="todo" />
-		<if test="$path">
-			<call-template name="sh.case">
-				<with-param name="case">
-					<call-template name="sh.var">
-						<with-param name="name">
-							<value-of select="$optionName" />
-						</with-param>
-					</call-template>
-				</with-param>
-				<with-param name="in">
-					<call-template name="sh.caseblock">
-						<with-param name="case">
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="$path/prg:names/prg:long" />
-								<with-param name="quoted" select="true()" />
-								<with-param name="separator">
-									<text> | </text>
-								</with-param>
-							</call-template>
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="$path/prg:names/prg:short" />
-								<with-param name="quoted" select="true()" />
-								<with-param name="prepend">
-									<text> | </text>
-								</with-param>
-								<with-param name="separator" />
-							</call-template>
-						</with-param>
-						<with-param name="content">
-							<value-of select="$todo" />
-						</with-param>
-					</call-template>
-				</with-param>
-			</call-template>
-			<value-of select="$str.unix.endl"/>
-		</if>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletion">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="path" />
+		<xsl:param name="todo" />
+		<xsl:if test="$path">
+			<xsl:call-template name="sh.case">
+				<xsl:with-param name="case">
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name">
+							<xsl:value-of select="$optionName" />
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="in">
+					<xsl:call-template name="sh.caseblock">
+						<xsl:with-param name="case">
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="$path/prg:names/prg:long" />
+								<xsl:with-param name="quoted" select="true()" />
+								<xsl:with-param name="separator">
+									<xsl:text> | </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="$path/prg:names/prg:short" />
+								<xsl:with-param name="quoted" select="true()" />
+								<xsl:with-param name="prepend">
+									<xsl:text> | </xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="separator" />
+							</xsl:call-template>
+						</xsl:with-param>
+						<xsl:with-param name="content">
+							<xsl:value-of select="$todo" />
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+			</xsl:call-template>
+			<xsl:value-of select="$str.unix.endl" />
+		</xsl:if>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionByTypeBlock">
-		<param name="path" />
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<call-template name="sh.case">
-			<with-param name="case">
-				<call-template name="sh.var">
-					<with-param name="name">
-						<value-of select="$optionName" />
-					</with-param>
-				</call-template>
-			</with-param>
-			<with-param name="in">
-				<for-each select="$path">
-					<call-template name="sh.caseblock">
-						<with-param name="case">
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="./prg:names/prg:long" />
-								<with-param name="quoted" select="true()" />
-								<with-param name="separator">
-									<text> | </text>
-								</with-param>
-							</call-template>
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="./prg:names/prg:short" />
-								<with-param name="quoted" select="true()" />
-								<with-param name="prepend">
-									<text> | </text>
-								</with-param>
-								<with-param name="separator" />
-							</call-template>
-						</with-param>
-						<with-param name="content">
-							<choose>
+	<xsl:template name="prg.bash.completion.argumentCompletionByTypeBlock">
+		<xsl:param name="path" />
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:call-template name="sh.case">
+			<xsl:with-param name="case">
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$optionName" />
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="in">
+				<xsl:for-each select="$path">
+					<xsl:call-template name="sh.caseblock">
+						<xsl:with-param name="case">
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="./prg:names/prg:long" />
+								<xsl:with-param name="quoted" select="true()" />
+								<xsl:with-param name="separator">
+									<xsl:text> | </xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="./prg:names/prg:short" />
+								<xsl:with-param name="quoted" select="true()" />
+								<xsl:with-param name="prepend">
+									<xsl:text> | </xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="separator" />
+							</xsl:call-template>
+						</xsl:with-param>
+						<xsl:with-param name="content">
+							<xsl:choose>
 								<!-- Display only enum values -->
-								<when test="./prg:select[@restrict]">
-									<call-template name="prg.bash.completion.argumentCompletionEnum">
-										<with-param name="optionName" select="$optionName" />
-										<with-param name="currentVarName" select="$currentVarName" />
-										<with-param name="root" select="." />
-									</call-template>
-								</when>
-								<otherwise>
+								<xsl:when test="./prg:select[@restrict]">
+									<xsl:call-template name="prg.bash.completion.argumentCompletionEnum">
+										<xsl:with-param name="optionName" select="$optionName" />
+										<xsl:with-param name="currentVarName" select="$currentVarName" />
+										<xsl:with-param name="root" select="." />
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
 									<!-- Display enum values (if any) and other depending on type -->
-									<if test="./prg:select">
-										<call-template name="prg.bash.completion.argumentCompletionEnum">
-											<with-param name="optionName" select="$optionName" />
-											<with-param name="currentVarName" select="$currentVarName" />
-											<with-param name="root" select="." />
-										</call-template>
-									</if>
-									<value-of select="$str.unix.endl"/>
-									<choose>
-										<when test="./prg:type/prg:string">
-											<call-template name="prg.bash.completion.argumentCompletionString">
-												<with-param name="optionName" select="$optionName" />
-												<with-param name="currentVarName" select="$currentVarName" />
-												<with-param name="root" select="." />
-											</call-template>
-										</when>
+									<xsl:if test="./prg:select">
+										<xsl:call-template name="prg.bash.completion.argumentCompletionEnum">
+											<xsl:with-param name="optionName" select="$optionName" />
+											<xsl:with-param name="currentVarName" select="$currentVarName" />
+											<xsl:with-param name="root" select="." />
+										</xsl:call-template>
+									</xsl:if>
+									<xsl:value-of select="$str.unix.endl" />
+									<xsl:choose>
+										<xsl:when test="./prg:type/prg:string">
+											<xsl:call-template name="prg.bash.completion.argumentCompletionString">
+												<xsl:with-param name="optionName" select="$optionName" />
+												<xsl:with-param name="currentVarName" select="$currentVarName" />
+												<xsl:with-param name="root" select="." />
+											</xsl:call-template>
+										</xsl:when>
 										<!-- <when test="./prg:type/prg:number"> </when> <when test="./prg:type/prg:integer"> </when> <when test="./prg:type/prg:existingcommand"> </when> -->
-										<when test="./prg:type/prg:existingcommand">
-											<call-template name="prg.bash.completion.argumentCompletionCommand">
-												<with-param name="optionName" select="$optionName" />
-												<with-param name="currentVarName" select="$currentVarName" />
-												<with-param name="root" select="." />
-											</call-template>
-										</when>
-										<when test="./prg:type/prg:path">
-											<call-template name="prg.bash.completion.argumentCompletionPath">
-												<with-param name="optionName" select="$optionName" />
-												<with-param name="currentVarName" select="$currentVarName" />
-												<with-param name="root" select="." />
-											</call-template>
-										</when>
-										<when test="./prg:type/prg:hostname">
-											<call-template name="prg.bash.completion.argumentCompletionHostname">
-												<with-param name="optionName" select="$optionName" />
-												<with-param name="currentVarName" select="$currentVarName" />
-												<with-param name="root" select="." />
-											</call-template>
-										</when>
-										<otherwise>
-											<call-template name="prg.bash.completion.argumentCompletionOther">
-												<with-param name="optionName" select="$optionName" />
-												<with-param name="currentVarName" select="$currentVarName" />
-												<with-param name="root" select="." />
-											</call-template>
-										</otherwise>
-									</choose>
-								</otherwise>
-							</choose>
-							<value-of select="$str.unix.endl"/>
-							<call-template name="sh.if">
-								<with-param name="condition">
-									<text>[ ${#COMPREPLY[*]} -gt 0 ]</text>
-								</with-param>
-								<with-param name="then">
-									<text>return 0</text>
-								</with-param>
-							</call-template>
-						</with-param>
-					</call-template>
-				</for-each>
-			</with-param>
-		</call-template>
-		<value-of select="$str.unix.endl"/>
-	</template>
+										<xsl:when test="./prg:type/prg:existingcommand">
+											<xsl:call-template name="prg.bash.completion.argumentCompletionCommand">
+												<xsl:with-param name="optionName" select="$optionName" />
+												<xsl:with-param name="currentVarName" select="$currentVarName" />
+												<xsl:with-param name="root" select="." />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:when test="./prg:type/prg:path">
+											<xsl:call-template name="prg.bash.completion.argumentCompletionPath">
+												<xsl:with-param name="optionName" select="$optionName" />
+												<xsl:with-param name="currentVarName" select="$currentVarName" />
+												<xsl:with-param name="root" select="." />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:when test="./prg:type/prg:hostname">
+											<xsl:call-template name="prg.bash.completion.argumentCompletionHostname">
+												<xsl:with-param name="optionName" select="$optionName" />
+												<xsl:with-param name="currentVarName" select="$currentVarName" />
+												<xsl:with-param name="root" select="." />
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:call-template name="prg.bash.completion.argumentCompletionOther">
+												<xsl:with-param name="optionName" select="$optionName" />
+												<xsl:with-param name="currentVarName" select="$currentVarName" />
+												<xsl:with-param name="root" select="." />
+											</xsl:call-template>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:otherwise>
+							</xsl:choose>
+							<xsl:value-of select="$str.unix.endl" />
+							<xsl:call-template name="sh.if">
+								<xsl:with-param name="condition">
+									<xsl:text>[ ${#COMPREPLY[*]} -gt 0 ]</xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="then">
+									<xsl:text>return 0</xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:value-of select="$str.unix.endl" />
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionString">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<text>[ ${#COMPREPLY[*]} -eq 0 ] &amp;&amp; COMPREPLY[0]="\"${</text>
-		<value-of select="$currentVarName" />
-		<text>#\"}"</text>
-		<value-of select="$str.unix.endl"/>
-		<text>return 0</text>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletionString">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:text>[ ${#COMPREPLY[*]} -eq 0 ] &amp;&amp; COMPREPLY[0]="\"${</xsl:text>
+		<xsl:value-of select="$currentVarName" />
+		<xsl:text>#\"}"</xsl:text>
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:text>return 0</xsl:text>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionEnum">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<param name="root" select="." />
-		<text>COMPREPLY=()</text>
-		<value-of select="$str.unix.endl"/>
-		<call-template name="sh.for">
-			<with-param name="condition">
-				<text>e in </text>
-				<call-template name="prg.bash.completion.itemList">
-					<with-param name="path" select="$root/prg:select/prg:option" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-			</with-param>
-			<with-param name="do">
-				<text>local res="$(compgen -W "${e}" -- </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$currentVarName" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text>)"</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ ! -z "${res}" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletionEnum">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:param name="root" select="." />
+		<xsl:text>COMPREPLY=()</xsl:text>
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="condition">
+				<xsl:text>e in </xsl:text>
+				<xsl:call-template name="prg.bash.completion.itemList">
+					<xsl:with-param name="path" select="$root/prg:select/prg:option" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="do">
+				<xsl:text>local res="$(compgen -W "${e}" -- </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$currentVarName" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text>)"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ ! -z "${res}" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionCompgenBased">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<param name="compgenOptions" />
-		<param name="postProcess" />
+	<xsl:template name="prg.bash.completion.argumentCompletionCompgenBased">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:param name="compgenOptions" />
+		<xsl:param name="postProcess" />
 		<!-- compgen -->
-		<text>local temporaryRepliesArray=( $(compgen </text>
-		<value-of select="$compgenOptions" />
-		<text> -- </text>
-		<call-template name="sh.var">
-			<with-param name="name" select="$currentVarName" />
-			<with-param name="quoted" select="true()" />
-		</call-template>
-		<text>) )</text>
-		<value-of select="$str.unix.endl"/>
+		<xsl:text>local temporaryRepliesArray=( $(compgen </xsl:text>
+		<xsl:value-of select="$compgenOptions" />
+		<xsl:text> -- </xsl:text>
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$currentVarName" />
+			<xsl:with-param name="quoted" select="true()" />
+		</xsl:call-template>
+		<xsl:text>) )</xsl:text>
+		<xsl:value-of select="$str.unix.endl" />
 		<!-- post processing compgen results -->
-		<if test="$postProcess">
-			<value-of select="$postProcess" />
-			<value-of select="$str.unix.endl"/>
-		</if>
+		<xsl:if test="$postProcess">
+			<xsl:value-of select="$postProcess" />
+			<xsl:value-of select="$str.unix.endl" />
+		</xsl:if>
 		<!-- Copy compgen result to COMPREPLY -->
-		<call-template name="sh.arrayCopy">
-			<with-param name="from">
-				<text>temporaryRepliesArray</text>
-			</with-param>
-			<with-param name="to">
-				<text>COMPREPLY</text>
-			</with-param>
-			<with-param name="append" select="true()" />
-		</call-template>
-	</template>
+		<xsl:call-template name="sh.arrayCopy">
+			<xsl:with-param name="from">
+				<xsl:text>temporaryRepliesArray</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="to">
+				<xsl:text>COMPREPLY</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="append" select="true()" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionCommand">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<param name="root" />
-		<call-template name="prg.bash.completion.argumentCompletionCompgenBased">
-			<with-param name="optionName" select="$optionName" />
-			<with-param name="currentVarName" select="$currentVarName" />
-			<with-param name="compgenOptions">
-				<text>-A command</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletionCommand">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:param name="root" />
+		<xsl:call-template name="prg.bash.completion.argumentCompletionCompgenBased">
+			<xsl:with-param name="optionName" select="$optionName" />
+			<xsl:with-param name="currentVarName" select="$currentVarName" />
+			<xsl:with-param name="compgenOptions">
+				<xsl:text>-A command</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionHostname">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<param name="root" />
-		<call-template name="prg.bash.completion.argumentCompletionCompgenBased">
-			<with-param name="optionName" select="$optionName" />
-			<with-param name="currentVarName" select="$currentVarName" />
-			<with-param name="compgenOptions">
-				<text>-A hostname</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletionHostname">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:param name="root" />
+		<xsl:call-template name="prg.bash.completion.argumentCompletionCompgenBased">
+			<xsl:with-param name="optionName" select="$optionName" />
+			<xsl:with-param name="currentVarName" select="$currentVarName" />
+			<xsl:with-param name="compgenOptions">
+				<xsl:text>-A hostname</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Add path type related restrictions -->
-	<template name="prg.bash.completion.argumentCompletionPath">
-		<param name="optionName" select="'option'" />
-		<param name="currentVarName" select="'current'" />
-		<param name="root" />
-		<variable name="pathNode" select="$root/prg:type/prg:path" />
-		<variable name="kinds" select="$pathNode/prg:kinds" />
-		<variable name="patterns" select="$pathNode/prg:patterns" />
-		<variable name="findOptions">
-			<if test="$pathNode/@access">
-				<text>$(</text>
-				<value-of select="$programGetFindPermissionOptionsFunctionName" />
-				<text> </text>
-				<value-of select="$pathNode/@access" />
-				<text>) </text>
-			</if>
-			<if test="$patterns and $patterns[@restrict = 'true']">
-				<for-each select="$patterns/prg:pattern">
-					<variable name="p" select="position()" />
-					<for-each select="./prg:rules/prg:rule">
-						<if test="($p != 1) or (position() != 1)">
-							<text> -o</text>
-						</if>
-						<text> -name </text>
-						<choose>
-							<when test="./prg:endWith">
-								<text>\"*</text>
-								<value-of select="./prg:endWith" />
-								<text>\"</text>
-							</when>
-							<when test="./prg:startWith">
-								<text>\"</text>
-								<value-of select="./prg:endWith" />
-								<text>*\"</text>
-							</when>
-							<when test="./prg:contains">
-								<text>\"*</text>
-								<value-of select="./prg:endWith" />
-								<text>*\"</text>
-							</when>
-						</choose>
-					</for-each>
-				</for-each>
-			</if>
+	<xsl:template name="prg.bash.completion.argumentCompletionPath">
+		<xsl:param name="optionName" select="'option'" />
+		<xsl:param name="currentVarName" select="'current'" />
+		<xsl:param name="root" />
+		<xsl:variable name="pathNode" select="$root/prg:type/prg:path" />
+		<xsl:variable name="kinds" select="$pathNode/prg:kinds" />
+		<xsl:variable name="patterns" select="$pathNode/prg:patterns" />
+		<xsl:variable name="findOptions">
+			<xsl:if test="$pathNode/@access">
+				<xsl:text>$(</xsl:text>
+				<xsl:value-of select="$programGetFindPermissionOptionsFunctionName" />
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$pathNode/@access" />
+				<xsl:text>) </xsl:text>
+			</xsl:if>
+			<xsl:if test="$patterns and $patterns[@restrict = 'true']">
+				<xsl:for-each select="$patterns/prg:pattern">
+					<xsl:variable name="p" select="position()" />
+					<xsl:for-each select="./prg:rules/prg:rule">
+						<xsl:if test="($p != 1) or (position() != 1)">
+							<xsl:text> -o</xsl:text>
+						</xsl:if>
+						<xsl:text> -name </xsl:text>
+						<xsl:choose>
+							<xsl:when test="./prg:endWith">
+								<xsl:text>\"*</xsl:text>
+								<xsl:value-of select="./prg:endWith" />
+								<xsl:text>\"</xsl:text>
+							</xsl:when>
+							<xsl:when test="./prg:startWith">
+								<xsl:text>\"</xsl:text>
+								<xsl:value-of select="./prg:endWith" />
+								<xsl:text>*\"</xsl:text>
+							</xsl:when>
+							<xsl:when test="./prg:contains">
+								<xsl:text>\"*</xsl:text>
+								<xsl:value-of select="./prg:endWith" />
+								<xsl:text>*\"</xsl:text>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:for-each>
+				</xsl:for-each>
+			</xsl:if>
 			<!-- stricly search for supported kinks -->
-			<for-each select="$kinds/* [self::prg:file or self::prg:folder or self::prg:symlink]">
-				<choose>
-					<when test="./self::prg:file">
-						<text> -type f</text>
-					</when>
-					<when test="./self::prg:folder">
-						<text> -type d</text>
-					</when>
-					<when test="./self::prg:symlink">
-						<text> -type l</text>
-					</when>
-				</choose>
-				<if test="position() != last()">
-					<text> -o </text>
-				</if>
-			</for-each>
-		</variable>
-		<choose>
-			<when test="true()">
+			<xsl:for-each select="$kinds/* [self::prg:file or self::prg:folder or self::prg:symlink]">
+				<xsl:choose>
+					<xsl:when test="./self::prg:file">
+						<xsl:text> -type f</xsl:text>
+					</xsl:when>
+					<xsl:when test="./self::prg:folder">
+						<xsl:text> -type d</xsl:text>
+					</xsl:when>
+					<xsl:when test="./self::prg:symlink">
+						<xsl:text> -type l</xsl:text>
+					</xsl:when>
+				</xsl:choose>
+				<xsl:if test="position() != last()">
+					<xsl:text> -o </xsl:text>
+				</xsl:if>
+			</xsl:for-each>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="true()">
 				<!-- Using find command -->
-				<value-of select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
-				<text> </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$currentVarName" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text> </text>
-				<value-of select="$findOptions" />
-				<text> </text>
-			</when>
-			<otherwise>
+				<xsl:value-of select="$prg.bash.completion.appendFileSystemItemsFunctionName" />
+				<xsl:text> </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$currentVarName" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$findOptions" />
+				<xsl:text> </xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
 				<!-- Using compgen command -->
-				<call-template name="prg.bash.completion.argumentCompletionCompgenBased">
-					<with-param name="optionName" select="$optionName" />
-					<with-param name="currentVarName" select="$currentVarName" />
-					<with-param name="compgenOptions">
-						<choose>
-							<when test="$kinds/prg:folder and $kinds/prg:file">
-								<text>-fd</text>
-							</when>
-							<when test="$kinds/prg:file">
-								<text>-f</text>
-							</when>
-							<when test="$kinds/prg:folder">
-								<text>-d</text>
-							</when>
-							<otherwise>
-								<text>-fd</text>
-							</otherwise>
-						</choose>
-					</with-param>
-					<with-param name="postProcess">
+				<xsl:call-template name="prg.bash.completion.argumentCompletionCompgenBased">
+					<xsl:with-param name="optionName" select="$optionName" />
+					<xsl:with-param name="currentVarName" select="$currentVarName" />
+					<xsl:with-param name="compgenOptions">
+						<xsl:choose>
+							<xsl:when test="$kinds/prg:folder and $kinds/prg:file">
+								<xsl:text>-fd</xsl:text>
+							</xsl:when>
+							<xsl:when test="$kinds/prg:file">
+								<xsl:text>-f</xsl:text>
+							</xsl:when>
+							<xsl:when test="$kinds/prg:folder">
+								<xsl:text>-d</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>-fd</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="postProcess">
 						<!-- TODO access checks -->
-						<call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
-							<with-param name="variableName">
-								<text>temporaryRepliesArray</text>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-			</otherwise>
-		</choose>
-	</template>
+						<xsl:call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
+							<xsl:with-param name="variableName">
+								<xsl:text>temporaryRepliesArray</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.bash.completion.argumentCompletionOther">
-		<param name="optionName">
-			<text>option</text>
-		</param>
-		<param name="currentVarName">
-			<text>current</text>
-		</param>
-		<param name="root" />
-		<call-template name="prg.bash.completion.argumentCompletionCompgenBased">
-			<with-param name="optionName" select="$optionName" />
-			<with-param name="currentVarName" select="$currentVarName" />
-			<with-param name="compgenOptions">
-				<text>-fd</text>
-			</with-param>
-			<with-param name="postProcess">
-				<call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
-					<with-param name="variableName">
-						<text>temporaryRepliesArray</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.argumentCompletionOther">
+		<xsl:param name="optionName">
+			<xsl:text>option</xsl:text>
+		</xsl:param>
+		<xsl:param name="currentVarName">
+			<xsl:text>current</xsl:text>
+		</xsl:param>
+		<xsl:param name="root" />
+		<xsl:call-template name="prg.bash.completion.argumentCompletionCompgenBased">
+			<xsl:with-param name="optionName" select="$optionName" />
+			<xsl:with-param name="currentVarName" select="$currentVarName" />
+			<xsl:with-param name="compgenOptions">
+				<xsl:text>-fd</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="postProcess">
+				<xsl:call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
+					<xsl:with-param name="variableName">
+						<xsl:text>temporaryRepliesArray</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- declare a subcommand option completion function -->
-	<template name="prg.bash.completion.subcommandCompletionFunction">
-		<param name="subcommand" select="." />
-		<variable name="functionName">
-			<call-template name="prg.bash.completion.subCommandCompletionFunctionName" />
-		</variable>
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$functionName" />
-			<with-param name="content">
-				<text># Context</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local current="${COMP_WORDS[COMP_CWORD]}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local previous="${COMP_WORDS[COMP_CWORD-1]}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text># argument option</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local option="$(</text>
-				<value-of select="$prg.bash.completion.getArgOptionFunctionName" />
-				<text> ${previous})"</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ -z "${option}" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>return 1</text>
-					</with-param>
-				</call-template>
-				<value-of select="$str.unix.endl"/>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="prg.bash.completion.argumentCompletionByTypeBlock">
-					<with-param name="path" select="$subcommand/prg:options//prg:argument" />
-				</call-template>
-				<text>return 1</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.bash.completion.subcommandCompletionFunction">
+		<xsl:param name="subcommand" select="." />
+		<xsl:variable name="functionName">
+			<xsl:call-template name="prg.bash.completion.subCommandCompletionFunctionName" />
+		</xsl:variable>
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$functionName" />
+			<xsl:with-param name="content">
+				<xsl:text># Context</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local current="${COMP_WORDS[COMP_CWORD]}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local previous="${COMP_WORDS[COMP_CWORD-1]}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text># argument option</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local option="$(</xsl:text>
+				<xsl:value-of select="$prg.bash.completion.getArgOptionFunctionName" />
+				<xsl:text> ${previous})"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ -z "${option}" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>return 1</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="prg.bash.completion.argumentCompletionByTypeBlock">
+					<xsl:with-param name="path" select="$subcommand/prg:options//prg:argument" />
+				</xsl:call-template>
+				<xsl:text>return 1</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- The main template Called only if prg:program/prg:name exists -->
-	<template name="prg.bash.completion.main">
-		<param name="program" select=".." />
-		<call-template name="prg.bash.completion.getArgOptionNameFunction" />
-		<value-of select="$str.unix.endl"/>
-		<call-template name="prg.bash.completion.getFindPermissionsOptionsFunction" />
-		<value-of select="$str.unix.endl"/>
-		<call-template name="prg.bash.completion.appendFileSystemItemFunction" />
-		<value-of select="$str.unix.endl"/>
-		<if test="../prg:subcommands">
-			<for-each select="../prg:subcommands/prg:subcommand">
-				<call-template name="prg.bash.completion.subcommandCompletionFunction" />
-			</for-each>
-			<for-each select="../prg:subcommands/prg:subcommand/prg:aliases/prg:alias">
-				<call-template name="sh.functionDefinition">
-					<with-param name="name">
-						<call-template name="prg.bash.completion.subCommandCompletionFunctionName">
-							<with-param name="name" select="." />
-						</call-template>
-					</with-param>
-					<with-param name="content">
-						<call-template name="prg.bash.completion.subCommandCompletionFunctionName">
-							<with-param name="name" select="normalize-space(../../prg:name)" />
-						</call-template>
-					</with-param>
-				</call-template>
-			</for-each>
-		</if>
-		<value-of select="$str.unix.endl"/>
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.bash.completion.completionFunctionName" />
-			</with-param>
-			<with-param name="content">
-				<text>#Context</text>
-				<value-of select="$str.unix.endl"/>
-				<text>COMPREPLY=()</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local current="${COMP_WORDS[COMP_CWORD]}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local previous="${COMP_WORDS[COMP_CWORD-1]}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local first="${COMP_WORDS[1]}"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local globalargs="</text>
-				<call-template name="prg.bash.completion.itemList">
-					<with-param name="path" select="$program/prg:options//prg:names/prg:long" />
-					<with-param name="prepend">
-						<text>--</text>
-					</with-param>
-				</call-template>
-				<call-template name="prg.bash.completion.itemList">
-					<with-param name="path" select="$program/prg:options/*/prg:names/prg:short" />
-					<with-param name="prepend">
-						<text> -</text>
-					</with-param>
-					<with-param name="separator" />
-				</call-template>
-				<text>"</text>
-				<value-of select="$str.unix.endl"/>
-				<text>local args="${globalargs}"</text>
-				<value-of select="$str.unix.endl"/>
-				<value-of select="$str.unix.endl"/>
+	<xsl:template name="prg.bash.completion.main">
+		<xsl:param name="program" select=".." />
+		<xsl:call-template name="prg.bash.completion.getArgOptionNameFunction" />
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:call-template name="prg.bash.completion.getFindPermissionsOptionsFunction" />
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:call-template name="prg.bash.completion.appendFileSystemItemFunction" />
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:if test="../prg:subcommands">
+			<xsl:for-each select="../prg:subcommands/prg:subcommand">
+				<xsl:call-template name="prg.bash.completion.subcommandCompletionFunction" />
+			</xsl:for-each>
+			<xsl:for-each select="../prg:subcommands/prg:subcommand/prg:aliases/prg:alias">
+				<xsl:call-template name="sh.functionDefinition">
+					<xsl:with-param name="name">
+						<xsl:call-template name="prg.bash.completion.subCommandCompletionFunctionName">
+							<xsl:with-param name="name" select="." />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="content">
+						<xsl:call-template name="prg.bash.completion.subCommandCompletionFunctionName">
+							<xsl:with-param name="name" select="normalize-space(../../prg:name)" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:for-each>
+		</xsl:if>
+		<xsl:value-of select="$str.unix.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.bash.completion.completionFunctionName" />
+			</xsl:with-param>
+			<xsl:with-param name="content">
+				<xsl:text>#Context</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>COMPREPLY=()</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local current="${COMP_WORDS[COMP_CWORD]}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local previous="${COMP_WORDS[COMP_CWORD-1]}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local first="${COMP_WORDS[1]}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local globalargs="</xsl:text>
+				<xsl:call-template name="prg.bash.completion.itemList">
+					<xsl:with-param name="path" select="$program/prg:options//prg:names/prg:long" />
+					<xsl:with-param name="prepend">
+						<xsl:text>--</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:call-template name="prg.bash.completion.itemList">
+					<xsl:with-param name="path" select="$program/prg:options/*/prg:names/prg:short" />
+					<xsl:with-param name="prepend">
+						<xsl:text> -</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="separator" />
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local args="${globalargs}"</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:value-of select="$str.unix.endl" />
 				<!-- Subcommand completion -->
-				<if test="$program/prg:subcommands">
-					<text># Subcommand proposal</text>
-					<value-of select="$str.unix.endl"/>
-					<call-template name="sh.if">
-						<with-param name="condition">
-							<text>[ ${COMP_CWORD} -eq 1 ]</text>
-						</with-param>
-						<with-param name="then">
+				<xsl:if test="$program/prg:subcommands">
+					<xsl:text># Subcommand proposal</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:call-template name="sh.if">
+						<xsl:with-param name="condition">
+							<xsl:text>[ ${COMP_CWORD} -eq 1 ]</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="then">
 							<!-- Subcoomands -->
-							<text>local subcommands="</text>
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="$program/prg:subcommands/prg:subcommand/prg:name" />
-							</call-template>
-							<call-template name="prg.bash.completion.itemList">
-								<with-param name="path" select="$program/prg:subcommands/prg:subcommand/prg:aliases/prg:alias" />
-								<with-param name="prepend">
-									<text> </text>
-								</with-param>
-								<with-param name="separator" />
-							</call-template>
-							<text>"</text>
-							<value-of select="$str.unix.endl"/>
+							<xsl:text>local subcommands="</xsl:text>
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="$program/prg:subcommands/prg:subcommand/prg:name" />
+							</xsl:call-template>
+							<xsl:call-template name="prg.bash.completion.itemList">
+								<xsl:with-param name="path" select="$program/prg:subcommands/prg:subcommand/prg:aliases/prg:alias" />
+								<xsl:with-param name="prepend">
+									<xsl:text> </xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="separator" />
+							</xsl:call-template>
+							<xsl:text>"</xsl:text>
+							<xsl:value-of select="$str.unix.endl" />
 							<!-- global options and subcommands -->
-							<text>COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )</text>
-							<value-of select="$str.unix.endl"/>
+							<xsl:text>COMPREPLY=( $(compgen -W "${globalargs} ${subcommands}" -- ${current}) )</xsl:text>
+							<xsl:value-of select="$str.unix.endl" />
 							<!--@todo complete only if <prg:values> and according to first prg:value Files and folders -->
-							<text>local temporaryRepliesArray=( $(compgen -fd -- </text>
-							<call-template name="sh.var">
-								<with-param name="name">
-									<text>current</text>
-								</with-param>
-								<with-param name="quoted" select="true()" />
-							</call-template>
-							<text>) )</text>
-							<value-of select="$str.unix.endl"/>
-							<call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
-								<with-param name="variableName">
-									<text>temporaryRepliesArray</text>
-								</with-param>
-							</call-template>
-							<value-of select="$str.unix.endl"/>
-							<call-template name="sh.arrayCopy">
-								<with-param name="from">
-									<text>temporaryRepliesArray</text>
-								</with-param>
-								<with-param name="to">
-									<text>COMPREPLY</text>
-								</with-param>
-								<with-param name="append" select="true()" />
-							</call-template>
-							<value-of select="$str.unix.endl"/>
-							<call-template name="prg.bash.completion.compreplyAddSpaces" />
-							<value-of select="$str.unix.endl"/>
-							<text>return 0</text>
-						</with-param>
-					</call-template>
-					<value-of select="$str.unix.endl"/>
-					<text># Subcommand option argument proposal</text>
-					<value-of select="$str.unix.endl"/>
-					<text>local sc_function_name="</text>
-					<call-template name="prg.bash.completion.subCommandCompletionFunctionName">
-						<with-param name="name">
-							<text>${first}</text>
-						</with-param>
-					</call-template>
-					<text>"</text>
-					<value-of select="$str.unix.endl"/>
-					<call-template name="sh.if">
-						<with-param name="condition">
-							<text>[ "$(type -t ${sc_function_name})" = "function" ] &amp;&amp; ${sc_function_name}</text>
-						</with-param>
-						<with-param name="then">
-							<text>return 0</text>
-						</with-param>
-					</call-template>
-					<value-of select="$str.unix.endl"/>
+							<xsl:text>local temporaryRepliesArray=( $(compgen -fd -- </xsl:text>
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name">
+									<xsl:text>current</xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="quoted" select="true()" />
+							</xsl:call-template>
+							<xsl:text>) )</xsl:text>
+							<xsl:value-of select="$str.unix.endl" />
+							<xsl:call-template name="prg.bash.completion.compreplyAddFoldersSlashes">
+								<xsl:with-param name="variableName">
+									<xsl:text>temporaryRepliesArray</xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
+							<xsl:value-of select="$str.unix.endl" />
+							<xsl:call-template name="sh.arrayCopy">
+								<xsl:with-param name="from">
+									<xsl:text>temporaryRepliesArray</xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="to">
+									<xsl:text>COMPREPLY</xsl:text>
+								</xsl:with-param>
+								<xsl:with-param name="append" select="true()" />
+							</xsl:call-template>
+							<xsl:value-of select="$str.unix.endl" />
+							<xsl:call-template name="prg.bash.completion.compreplyAddSpaces" />
+							<xsl:value-of select="$str.unix.endl" />
+							<xsl:text>return 0</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:text># Subcommand option argument proposal</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:text>local sc_function_name="</xsl:text>
+					<xsl:call-template name="prg.bash.completion.subCommandCompletionFunctionName">
+						<xsl:with-param name="name">
+							<xsl:text>${first}</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:text>"</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:call-template name="sh.if">
+						<xsl:with-param name="condition">
+							<xsl:text>[ "$(type -t ${sc_function_name})" = "function" ] &amp;&amp; ${sc_function_name}</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="then">
+							<xsl:text>return 0</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:value-of select="$str.unix.endl" />
 					<!-- Add Subcommand option to the list of global args -->
-					<text># Subcommand option completion</text>
-					<value-of select="$str.unix.endl"/>
-					<call-template name="sh.case">
-						<with-param name="case">
-							<text>${first}</text>
-						</with-param>
-						<with-param name="in">
-							<for-each select="$program/prg:subcommands/prg:subcommand">
-								<call-template name="sh.caseblock">
-									<with-param name="case">
-										<call-template name="prg.bash.completion.itemList">
-											<with-param name="path" select="./prg:name" />
-											<with-param name="quoted" select="true()" />
-										</call-template>
-										<call-template name="prg.bash.completion.itemList">
-											<with-param name="path" select="./prg:aliases/prg:alias" />
-											<with-param name="quoted" select="true()" />
-											<with-param name="prepend">
-												<text> | </text>
-											</with-param>
-											<with-param name="separator" />
-										</call-template>
-									</with-param>
-									<with-param name="content">
-										<text>args="</text>
-										<call-template name="prg.bash.completion.itemList">
-											<with-param name="path" select="./prg:options/*/prg:names/prg:long" />
-											<with-param name="prepend">
-												<text>--</text>
-											</with-param>
-										</call-template>
-										<call-template name="prg.bash.completion.itemList">
-											<with-param name="path" select="./prg:options/*/prg:names/prg:short" />
-											<with-param name="prepend">
-												<text> -</text>
-											</with-param>
-											<with-param name="separator" />
-										</call-template>
-										<text> ${globalargs}"</text>
-									</with-param>
-								</call-template>
-							</for-each>
-						</with-param>
-					</call-template>
-					<value-of select="$str.unix.endl"/>
-				</if>
+					<xsl:text># Subcommand option completion</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:call-template name="sh.case">
+						<xsl:with-param name="case">
+							<xsl:text>${first}</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="in">
+							<xsl:for-each select="$program/prg:subcommands/prg:subcommand">
+								<xsl:call-template name="sh.caseblock">
+									<xsl:with-param name="case">
+										<xsl:call-template name="prg.bash.completion.itemList">
+											<xsl:with-param name="path" select="./prg:name" />
+											<xsl:with-param name="quoted" select="true()" />
+										</xsl:call-template>
+										<xsl:call-template name="prg.bash.completion.itemList">
+											<xsl:with-param name="path" select="./prg:aliases/prg:alias" />
+											<xsl:with-param name="quoted" select="true()" />
+											<xsl:with-param name="prepend">
+												<xsl:text> | </xsl:text>
+											</xsl:with-param>
+											<xsl:with-param name="separator" />
+										</xsl:call-template>
+									</xsl:with-param>
+									<xsl:with-param name="content">
+										<xsl:text>args="</xsl:text>
+										<xsl:call-template name="prg.bash.completion.itemList">
+											<xsl:with-param name="path" select="./prg:options/*/prg:names/prg:long" />
+											<xsl:with-param name="prepend">
+												<xsl:text>--</xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<xsl:call-template name="prg.bash.completion.itemList">
+											<xsl:with-param name="path" select="./prg:options/*/prg:names/prg:short" />
+											<xsl:with-param name="prepend">
+												<xsl:text> -</xsl:text>
+											</xsl:with-param>
+											<xsl:with-param name="separator" />
+										</xsl:call-template>
+										<xsl:text> ${globalargs}"</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:for-each>
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:value-of select="$str.unix.endl" />
+				</xsl:if>
 				<!-- subcommands exists -->
-				<value-of select="$str.unix.endl"/>
-				<text># Option proposal</text>
-				<value-of select="$str.unix.endl"/>
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[[ ${current} == -* ]]</text>
-					</with-param>
-					<with-param name="then">
-						<text>COMPREPLY=( $(compgen -W "${args}" -- ${current}) )</text>
-						<value-of select="$str.unix.endl"/>
-						<call-template name="prg.bash.completion.compreplyAddSpaces" />
-						<text>return 0</text>
-					</with-param>
-				</call-template>
-				<if test="$program/prg:options//prg:argument">
-					<value-of select="$str.unix.endl"/>
-					<text># Option argument proposal</text>
-					<value-of select="$str.unix.endl"/>
-					<text>local option="$(</text>
-					<value-of select="$prg.bash.completion.getArgOptionFunctionName" />
-					<text> ${previous})"</text>
-					<value-of select="$str.unix.endl"/>
-					<call-template name="sh.if">
-						<with-param name="condition">
-							<text>[ ! -z "${option}" ]</text>
-						</with-param>
-						<with-param name="then">
-							<call-template name="prg.bash.completion.argumentCompletionByTypeBlock">
-								<with-param name="path" select="$program/prg:options//prg:argument" />
-							</call-template>
-						</with-param>
-					</call-template>
-				</if>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text># Option proposal</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[[ ${current} == -* ]]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>COMPREPLY=( $(compgen -W "${args}" -- ${current}) )</xsl:text>
+						<xsl:value-of select="$str.unix.endl" />
+						<xsl:call-template name="prg.bash.completion.compreplyAddSpaces" />
+						<xsl:text>return 0</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:if test="$program/prg:options//prg:argument">
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:text># Option argument proposal</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:text>local option="$(</xsl:text>
+					<xsl:value-of select="$prg.bash.completion.getArgOptionFunctionName" />
+					<xsl:text> ${previous})"</xsl:text>
+					<xsl:value-of select="$str.unix.endl" />
+					<xsl:call-template name="sh.if">
+						<xsl:with-param name="condition">
+							<xsl:text>[ ! -z "${option}" ]</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="then">
+							<xsl:call-template name="prg.bash.completion.argumentCompletionByTypeBlock">
+								<xsl:with-param name="path" select="$program/prg:options//prg:argument" />
+							</xsl:call-template>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
 				<!-- well, completing files and folders... -->
-				<value-of select="$str.unix.endl"/>
-				<text># Last hope: files and folders</text>
-				<value-of select="$str.unix.endl"/>
-				<text>COMPREPLY=( $(compgen -fd -- </text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>current</text>
-					</with-param>
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text>) )</text>
-				<value-of select="$str.unix.endl"/>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text># Last hope: files and folders</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>COMPREPLY=( $(compgen -fd -- </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:text>current</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text>) )</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
 				<!-- Auto add '/' at end of folders -->
-				<call-template name="prg.bash.completion.compreplyAddFoldersSlashes" />
-				<value-of select="$str.unix.endl"/>
-				<text>return 0</text>
-			</with-param>
-		</call-template>
+				<xsl:call-template name="prg.bash.completion.compreplyAddFoldersSlashes" />
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>return 0</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
 		<!-- end of main function -->
-		<text>complete -o nospace -F </text>
-		<value-of select="$prg.bash.completion.completionFunctionName" />
-		<text> </text>
-		<value-of select="normalize-space($program/prg:name)" />
-		<value-of select="$prg.bash.completion.programFileExtension" />
-		<value-of select="$str.unix.endl"/>
-	</template>
+		<xsl:text>complete -o nospace -F </xsl:text>
+		<xsl:value-of select="$prg.bash.completion.completionFunctionName" />
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="normalize-space($program/prg:name)" />
+		<xsl:value-of select="$prg.bash.completion.programFileExtension" />
+		<xsl:value-of select="$str.unix.endl" />
+	</xsl:template>
 
-	<template match="/prg:program/prg:name">
-		<call-template name="prg.bash.completion.main" />
-	</template>
+	<xsl:template match="/prg:program/prg:name">
+		<xsl:call-template name="prg.bash.completion.main" />
+	</xsl:template>
 
-	<template match="/">
-		<apply-templates select="/prg:program/prg:name" />
-	</template>
+	<xsl:template match="/">
+		<xsl:apply-templates select="/prg:program/prg:name" />
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

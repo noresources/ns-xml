@@ -3,21 +3,20 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Basic GNU Gengetopts elements -->
-<stylesheet version="1.0" 
-	xmlns="http://www.w3.org/1999/XSL/Transform" >
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<import href="../languages/base.xsl" />
+	<xsl:import href="../languages/base.xsl" />
 
 	<!-- Comment block -->
-	<template name="ggo.comment">
+	<xsl:template name="ggo.comment">
 		<!-- Comment text -->
-		<param name="content" select="." />
-		<call-template name="code.comment">
-			<with-param name="marker">
-				<text># </text>
-			</with-param>
-			<with-param name="content" select="$content" />
-		</call-template>
-	</template>	
+		<xsl:param name="content" select="." />
+		<xsl:call-template name="code.comment">
+			<xsl:with-param name="marker">
+				<xsl:text># </xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content" select="$content" />
+		</xsl:call-template>
+	</xsl:template>	
 	
-</stylesheet>
+</xsl:stylesheet>

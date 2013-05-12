@@ -3,126 +3,126 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Basic templates and variable used in many program interface definition schema processing -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="../../strings.xsl"/>
-	<import href="../../languages/base.xsl"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="../../strings.xsl" />
+	<xsl:import href="../../languages/base.xsl" />
 	
-	<param name="prg.prefix" />
-	<param name="prg.debug" select="false()" />
+	<xsl:param name="prg.prefix" />
+	<xsl:param name="prg.debug" select="false()" />
 	
 	<!-- Strip spaces -->
-	<template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:copyright|prg:version">
-		<value-of select="normalize-space(.)"/>
-	</template>
+	<xsl:template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:copyright|prg:version">
+		<xsl:value-of select="normalize-space(.)" />
+	</xsl:template>
 
 	<!-- Display the given name prefixed by the value of the parameter prg.prefix -->
-	<template name="prg.prefixedName">
-		<param name="name"/>
-		<value-of select="normalize-space($prg.prefix)"/>
-		<value-of select="normalize-space($name)"/>
-	</template>
+	<xsl:template name="prg.prefixedName">
+		<xsl:param name="name" />
+		<xsl:value-of select="normalize-space($prg.prefix)" />
+		<xsl:value-of select="normalize-space($name)" />
+	</xsl:template>
 
 	<!-- Option name as it appears on a command line -->
-	<template name="prg.cliOptionName">
-		<param name="nameNode" select="."/>
-		<choose>
-			<when test="$nameNode/self::prg:long">
-				<text>-</text>
-				<text>-</text>
-			</when>
-			<otherwise>
-				<text>-</text>
-			</otherwise>
-		</choose>
-		<value-of select="$nameNode"/>
-	</template>
+	<xsl:template name="prg.cliOptionName">
+		<xsl:param name="nameNode" select="." />
+		<xsl:choose>
+			<xsl:when test="$nameNode/self::prg:long">
+				<xsl:text>-</xsl:text>
+				<xsl:text>-</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>-</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:value-of select="$nameNode" />
+	</xsl:template>
 
 	<!-- Option level in the Option tree -->
-	<template name="prg.optionLevel">
+	<xsl:template name="prg.optionLevel">
 		<!-- Option node -->
-		<param name="optionNode" select="."/>
+		<xsl:param name="optionNode" select="." />
 		<!-- For internal use -->
-		<param name="_level" select="0"/>
-		<variable name="grandParent" select="$optionNode/../.."/>
-		<choose>
-			<when test="$grandParent/self::prg:group">
-				<call-template name="prg.optionLevel">
-					<with-param name="optionNode" select="$grandParent"/>
-					<with-param name="_level" select="$_level + 1"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$_level"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="_level" select="0" />
+		<xsl:variable name="grandParent" select="$optionNode/../.." />
+		<xsl:choose>
+			<xsl:when test="$grandParent/self::prg:group">
+				<xsl:call-template name="prg.optionLevel">
+					<xsl:with-param name="optionNode" select="$grandParent" />
+					<xsl:with-param name="_level" select="$_level + 1" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$_level" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
-	<template name="prg.optionId">
-		<param name="optionNode" select="."/>
+	<xsl:template name="prg.optionId">
+		<xsl:param name="optionNode" select="." />
 		
-		<variable name="grandParent" select="$optionNode/../.."/>
-		<variable name="isFinal" select="($optionNode/self::prg:program or $optionNode/self::prg:subcommand)"/>
-		<variable name="index" select="count($optionNode/preceding-sibling::*)+1"/>
+		<xsl:variable name="grandParent" select="$optionNode/../.." />
+		<xsl:variable name="isFinal" select="($optionNode/self::prg:program or $optionNode/self::prg:subcommand)" />
+		<xsl:variable name="index" select="count($optionNode/preceding-sibling::*)+1" />
 		
 		<!-- Recursive call -->
-		<choose>
-			<when test="$isFinal">
-				<choose>
-					<when test="$optionNode/self::prg:subcommand">
-						<text>SC</text>
-						<text>_</text>
-						<value-of select="$index"/>
-						<text>_</text>
-						<call-template name="cede.validIdentifierName">
-							<with-param name="name" select="$optionNode/prg:name" />
-						</call-template>
-					</when>
-					<when test="$optionNode/self::prg:program">
-						<text>G</text>
-					</when>
-				</choose>
-			</when>
-			<otherwise>
-				<call-template name="prg.optionId">
-					<with-param name="optionNode" select="$grandParent"/>
-				</call-template>
-				<text>_</text>
-				<value-of select="$index"/>
-				<text>_</text>
-				<choose>
-					<when test="$optionNode/self::prg:group">
-						<text>g</text>
-					</when>
-					<when test="$optionNode/prg:names/prg:long">
-						<call-template name="cede.validIdentifierName">
-							<with-param name="name">
-								<apply-templates select="$optionNode/prg:names/prg:long[1]"/>
-							</with-param>
-						</call-template>
-					</when>
-					<otherwise>
-						<call-template name="cede.validIdentifierName">
-							<with-param name="name">
-								<apply-templates select="$optionNode/prg:names/prg:short[1]"/>
-							</with-param>
-						</call-template>
-					</otherwise>
-				</choose>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:choose>
+			<xsl:when test="$isFinal">
+				<xsl:choose>
+					<xsl:when test="$optionNode/self::prg:subcommand">
+						<xsl:text>SC</xsl:text>
+						<xsl:text>_</xsl:text>
+						<xsl:value-of select="$index" />
+						<xsl:text>_</xsl:text>
+						<xsl:call-template name="cede.validIdentifierName">
+							<xsl:with-param name="name" select="$optionNode/prg:name" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:when test="$optionNode/self::prg:program">
+						<xsl:text>G</xsl:text>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="$grandParent" />
+				</xsl:call-template>
+				<xsl:text>_</xsl:text>
+				<xsl:value-of select="$index" />
+				<xsl:text>_</xsl:text>
+				<xsl:choose>
+					<xsl:when test="$optionNode/self::prg:group">
+						<xsl:text>g</xsl:text>
+					</xsl:when>
+					<xsl:when test="$optionNode/prg:names/prg:long">
+						<xsl:call-template name="cede.validIdentifierName">
+							<xsl:with-param name="name">
+								<xsl:apply-templates select="$optionNode/prg:names/prg:long[1]" />
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="cede.validIdentifierName">
+							<xsl:with-param name="name">
+								<xsl:apply-templates select="$optionNode/prg:names/prg:short[1]" />
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- 'User-friendly name' of the program -->
-	<template name="prg.programDisplayName">
-		<choose>
-			<when test="/prg:program/prg:ui/prg:label">
-				<value-of select="normalize-space(/prg:program/prg:ui/prg:label)"/>
-			</when>
-			<otherwise>
-				<value-of select="normalize-space(/prg:program/prg:name)"/>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.programDisplayName">
+		<xsl:choose>
+			<xsl:when test="/prg:program/prg:ui/prg:label">
+				<xsl:value-of select="normalize-space(/prg:program/prg:ui/prg:label)" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="normalize-space(/prg:program/prg:name)" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

@@ -3,43 +3,43 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Create CSS rules for XBL control bindings -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:xbl="http://www.mozilla.org/xbl">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xbl="http://www.mozilla.org/xbl">
 
-	<import href="css.xsl" />
+	<xsl:import href="css.xsl" />
 
-	<output method="text" encoding="utf-8" />
+	<xsl:output method="text" encoding="utf-8" />
 	
-	<param name="xbl.css.displayHeader" select="false()" />
+	<xsl:param name="xbl.css.displayHeader" select="false()" />
 
-	<template match="/">
-		<if test="$xbl.css.displayHeader">
-			<text>@CHARSET "UTF-8";</text>
-			<call-template name="endl" />
-		</if>
+	<xsl:template match="/">
+		<xsl:if test="$xbl.css.displayHeader">
+			<xsl:text>@CHARSET "UTF-8";</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
 
-		<for-each select="//xbl:binding">
-			<call-template name="css.rule">
-				<with-param name="name">
-					<text>.</text>
-					<value-of select="@id" />
-				</with-param>
-				<with-param name="content">
-					<call-template name="css.property">
-						<with-param name="name">
-							<text>-moz-binding</text>
-						</with-param>
-						<with-param name="value">
-							<text>url("</text>
-							<value-of select="$resourceURI" />
-							<text>#</text>
-							<value-of select="@id" />
-							<text>")</text>
-						</with-param>
-					</call-template>
-				</with-param>
-			</call-template>
-			<call-template name="endl" />
-		</for-each>
-	</template>
+		<xsl:for-each select="//xbl:binding">
+			<xsl:call-template name="css.rule">
+				<xsl:with-param name="name">
+					<xsl:text>.</xsl:text>
+					<xsl:value-of select="@id" />
+				</xsl:with-param>
+				<xsl:with-param name="content">
+					<xsl:call-template name="css.property">
+						<xsl:with-param name="name">
+							<xsl:text>-moz-binding</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="value">
+							<xsl:text>url("</xsl:text>
+							<xsl:value-of select="$resourceURI" />
+							<xsl:text>#</xsl:text>
+							<xsl:value-of select="@id" />
+							<xsl:text>")</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+			</xsl:call-template>
+			<xsl:call-template name="endl" />
+		</xsl:for-each>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

@@ -3,95 +3,95 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Javascript code base of a xul application based on program interface definition schema -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="../../../languages/javascript.xsl" />
-	<import href="base.xsl" />
+	<xsl:import href="../../../languages/javascript.xsl" />
+	<xsl:import href="base.xsl" />
 		
-	<output method="text" encoding="utf-8" />
+	<xsl:output method="text" encoding="utf-8" />
 	
-	<template match="text()">
-		<value-of select="normalize-space(.)" />
-	</template>
+	<xsl:template match="text()">
+		<xsl:value-of select="normalize-space(.)" />
+	</xsl:template>
 	
-	<template match="prg:name">
-		<value-of select="normalize-space(.)" />
-	</template>
+	<xsl:template match="prg:name">
+		<xsl:value-of select="normalize-space(.)" />
+	</xsl:template>
 
-	<template name="prg.xul.optionSpecs">
-		<param name="optionNode" select="." />
-		<variable name="exclusiveGroup" select="$optionNode/../../self::prg:group[@type = 'exclusive']" />
-		<text>type: "</text>
-		<call-template name="str.elementLocalPart">
-			<with-param name="node" select="." />
-		</call-template>
-		<text>", parent: </text>
-		<choose>
-			<when test="$optionNode/../../self::prg:group">
-				<text>"</text>
-				<call-template name="prg.optionId">
-					<with-param name="optionNode" select="$optionNode/../../self::prg:group" />
-				</call-template>
-				<text>"</text>
-			</when>
-			<otherwise>
-				<text>null</text>
-			</otherwise>
-		</choose>
-		<text>, optionName: </text>
-		<choose>
-			<when test="$optionNode/prg:names/prg:long">
-				<text>"--</text>
-				<value-of select="$optionNode/prg:names/prg:long[1]" />
-				<text>"</text>
-			</when>
-			<when test="$optionNode/prg:names/prg:short">
-				<text>"-</text>
-				<value-of select="$optionNode/prg:names/prg:short[1]" />
-				<text>"</text>
-			</when>
-			<otherwise>
-				<text>null</text>
-			</otherwise>
-		</choose>
-		<text>, uiMode: </text>
-		<choose>
-			<when test="$optionNode/prg:ui/@mode">
-				<text>"</text>
-				<value-of select="$optionNode/prg:ui/@mode" />
-				<text>"</text>
-			</when>
-			<otherwise>
+	<xsl:template name="prg.xul.optionSpecs">
+		<xsl:param name="optionNode" select="." />
+		<xsl:variable name="exclusiveGroup" select="$optionNode/../../self::prg:group[@type = 'exclusive']" />
+		<xsl:text>type: "</xsl:text>
+		<xsl:call-template name="str.elementLocalPart">
+			<xsl:with-param name="node" select="." />
+		</xsl:call-template>
+		<xsl:text>", parent: </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/../../self::prg:group">
+				<xsl:text>"</xsl:text>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="$optionNode/../../self::prg:group" />
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>null</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>, optionName: </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:names/prg:long">
+				<xsl:text>"--</xsl:text>
+				<xsl:value-of select="$optionNode/prg:names/prg:long[1]" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:names/prg:short">
+				<xsl:text>"-</xsl:text>
+				<xsl:value-of select="$optionNode/prg:names/prg:short[1]" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>null</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>, uiMode: </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:ui/@mode">
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$optionNode/prg:ui/@mode" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
 				"default"
-			</otherwise>
-		</choose>
-		<text>, hiddenValue: </text>
-		<choose>
-			<when test="$optionNode/prg:ui/prg:value">
-				<text>"</text>
-				<value-of select="$optionNode/prg:ui/prg:value" />
-				<text>"</text>
-			</when>
-			<when test="$optionNode/prg:ui/prg:values">
-				<text>[</text>
-				<for-each select="$optionNode/prg:ui/prg:values">
-					<text>"</text>
-					<value-of select="prg:value" />
-					<text>"</text>
-					<if test="position() != last()">
-						<text>, </text>
-					</if>
-				</for-each>
-				<text>]</text>
-			</when>
-			<otherwise>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>, hiddenValue: </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:ui/prg:value">
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$optionNode/prg:ui/prg:value" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:ui/prg:values">
+				<xsl:text>[</xsl:text>
+				<xsl:for-each select="$optionNode/prg:ui/prg:values">
+					<xsl:text>"</xsl:text>
+					<xsl:value-of select="prg:value" />
+					<xsl:text>"</xsl:text>
+					<xsl:if test="position() != last()">
+						<xsl:text>, </xsl:text>
+					</xsl:if>
+				</xsl:for-each>
+				<xsl:text>]</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
 				null
-			</otherwise>
-		</choose>
-	</template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Main  -->
-	<template match="/"><![CDATA[
+	<xsl:template match="/"><![CDATA[
 function MainWindow(app)
 {
 	this.app = app;
@@ -102,156 +102,156 @@ function MainWindow(app)
 	{
 		"::global::" : 
 		{
-]]><for-each select="prg:program/prg:options/* | prg:program/prg:options//prg:options/*">
-		<text>			"</text>
-		<call-template name="prg.optionId" />
-		<text>": {</text>
-		<call-template name="prg.xul.optionSpecs" />
-		<text>}</text>
-		<if test="position() != last()">
-			<text>,</text>
-			<call-template name="endl" />
-		</if>
-	</for-each><![CDATA[
-		}]]><if test="/prg:program/prg:subcommands">
-		<text>,</text>
-		<call-template name="endl" />
-	</if>
-		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
-			<text>		"</text>
-			<apply-templates select="prg:name" />
-			<text>":</text>
-			<call-template name="endl" />
-			<text>		{</text>
-			<call-template name="endl" />
-			<for-each select="prg:options/* | prg:options//prg:options/*">
-				<text>			"</text>
-				<call-template name="prg.optionId" />
-				<text>": {</text>
-				<call-template name="prg.xul.optionSpecs" />
-				<text>}</text>
-				<if test="position() != last()">
-					<text>,</text>
-					<call-template name="endl" />
-				</if>
-			</for-each>
-			<call-template name="endl" />
-			<text>		}</text>
-			<if test="position() != last()">
-				<text>,</text>
-				<call-template name="endl" />
-			</if>
-		</for-each><![CDATA[
+]]><xsl:for-each select="prg:program/prg:options/* | prg:program/prg:options//prg:options/*">
+		<xsl:text>			"</xsl:text>
+		<xsl:call-template name="prg.optionId" />
+		<xsl:text>": {</xsl:text>
+		<xsl:call-template name="prg.xul.optionSpecs" />
+		<xsl:text>}</xsl:text>
+		<xsl:if test="position() != last()">
+			<xsl:text>,</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
+	</xsl:for-each><![CDATA[
+		}]]><xsl:if test="/prg:program/prg:subcommands">
+		<xsl:text>,</xsl:text>
+		<xsl:call-template name="endl" />
+	</xsl:if>
+		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
+			<xsl:text>		"</xsl:text>
+			<xsl:apply-templates select="prg:name" />
+			<xsl:text>":</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>		{</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:for-each select="prg:options/* | prg:options//prg:options/*">
+				<xsl:text>			"</xsl:text>
+				<xsl:call-template name="prg.optionId" />
+				<xsl:text>": {</xsl:text>
+				<xsl:call-template name="prg.xul.optionSpecs" />
+				<xsl:text>}</xsl:text>
+				<xsl:if test="position() != last()">
+					<xsl:text>,</xsl:text>
+					<xsl:call-template name="endl" />
+				</xsl:if>
+			</xsl:for-each>
+			<xsl:call-template name="endl" />
+			<xsl:text>		}</xsl:text>
+			<xsl:if test="position() != last()">
+				<xsl:text>,</xsl:text>
+				<xsl:call-template name="endl" />
+			</xsl:if>
+		</xsl:for-each><![CDATA[
 	};
 	
 	this.values = 
 	{
 		"::global::" : 
 		[
-]]><for-each select="/prg:program/prg:values/*">
-		<text>			"</text>
-		<call-template name="prg.xul.valueId">
-			<with-param name="valueNode" select="." />
-			<with-param name="index" select="position()" />
-		</call-template>
-		<text>"</text>
-		<if test="position() != last()">
-			<text>,</text>
-			<call-template name="endl" />
-		</if>
-	</for-each><![CDATA[
-		]]]><if test="/prg:program/prg:subcommands">
-		<text>,</text>
-		<call-template name="endl" />
-	</if>
-		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
-			<text>		"</text>
-			<apply-templates select="prg:name" />
-			<text>":</text>
-			<call-template name="endl" />
-			<text>		[</text>
-			<call-template name="endl" />
-			<for-each select="prg:values/*">
-				<text>			"</text>
-				<call-template name="prg.xul.valueId">
-					<with-param name="index" select="position()" />
-				</call-template>
-				<text>"</text>
-				<if test="position() != last()">
-					<text>,</text>
-					<call-template name="endl" />
-				</if>
-			</for-each>
-			<call-template name="endl" />
-			<text>		]</text>
-			<if test="position() != last()">
-				<text>,</text>
-				<call-template name="endl" />
-			</if>
-		</for-each><![CDATA[
+]]><xsl:for-each select="/prg:program/prg:values/*">
+		<xsl:text>			"</xsl:text>
+		<xsl:call-template name="prg.xul.valueId">
+			<xsl:with-param name="valueNode" select="." />
+			<xsl:with-param name="index" select="position()" />
+		</xsl:call-template>
+		<xsl:text>"</xsl:text>
+		<xsl:if test="position() != last()">
+			<xsl:text>,</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
+	</xsl:for-each><![CDATA[
+		]]]><xsl:if test="/prg:program/prg:subcommands">
+		<xsl:text>,</xsl:text>
+		<xsl:call-template name="endl" />
+	</xsl:if>
+		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
+			<xsl:text>		"</xsl:text>
+			<xsl:apply-templates select="prg:name" />
+			<xsl:text>":</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>		[</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:for-each select="prg:values/*">
+				<xsl:text>			"</xsl:text>
+				<xsl:call-template name="prg.xul.valueId">
+					<xsl:with-param name="index" select="position()" />
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+				<xsl:if test="position() != last()">
+					<xsl:text>,</xsl:text>
+					<xsl:call-template name="endl" />
+				</xsl:if>
+			</xsl:for-each>
+			<xsl:call-template name="endl" />
+			<xsl:text>		]</xsl:text>
+			<xsl:if test="position() != last()">
+				<xsl:text>,</xsl:text>
+				<xsl:call-template name="endl" />
+			</xsl:if>
+		</xsl:for-each><![CDATA[
 	};
 	
 	this.optionNames = 
 	{
 		"::global::" : 
 		{
-]]><for-each select="prg:program/prg:options/*/prg:names/* | prg:program/prg:options//prg:options/*/prg:names/*">
-		<text>			"</text>
-		<value-of select="." />
-		<text>": "</text>
-		<call-template name="prg.optionId">
-			<with-param name="optionNode" select="../.." />
-		</call-template>
-		<text>"</text>
-		<if test="position() != last()">
-			<text>,</text>
-			<call-template name="endl" />
-		</if>
-	</for-each><![CDATA[
-		}]]><if test="/prg:program/prg:subcommands">
-		<text>,</text>
-		<call-template name="endl" />
-	</if>
-		<for-each select="/prg:program/prg:subcommands/prg:subcommand">
-			<text>		"</text>
-			<apply-templates select="prg:name" />
-			<text>":</text>
-			<call-template name="endl" />
-			<text>		{</text>
-			<call-template name="endl" />
-			<for-each select="prg:options/*/prg:names/* | prg:options//prg:options/*/prg:names/*">
-				<text>			"</text>
-				<value-of select="." />
-				<text>": "</text>
-				<call-template name="prg.optionId">
-					<with-param name="optionNode" select="../.." />
-				</call-template>
-				<text>"</text>
-				<if test="position() != last()">
-					<text>,</text>
-					<call-template name="endl" />
-				</if>
-			</for-each>
-			<call-template name="endl" />
-			<text>		}</text>
-			<if test="position() != last()">
-				<text>,</text>
-				<call-template name="endl" />
-			</if>
-		</for-each><![CDATA[	
+]]><xsl:for-each select="prg:program/prg:options/*/prg:names/* | prg:program/prg:options//prg:options/*/prg:names/*">
+		<xsl:text>			"</xsl:text>
+		<xsl:value-of select="." />
+		<xsl:text>": "</xsl:text>
+		<xsl:call-template name="prg.optionId">
+			<xsl:with-param name="optionNode" select="../.." />
+		</xsl:call-template>
+		<xsl:text>"</xsl:text>
+		<xsl:if test="position() != last()">
+			<xsl:text>,</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
+	</xsl:for-each><![CDATA[
+		}]]><xsl:if test="/prg:program/prg:subcommands">
+		<xsl:text>,</xsl:text>
+		<xsl:call-template name="endl" />
+	</xsl:if>
+		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
+			<xsl:text>		"</xsl:text>
+			<xsl:apply-templates select="prg:name" />
+			<xsl:text>":</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>		{</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:for-each select="prg:options/*/prg:names/* | prg:options//prg:options/*/prg:names/*">
+				<xsl:text>			"</xsl:text>
+				<xsl:value-of select="." />
+				<xsl:text>": "</xsl:text>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="../.." />
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+				<xsl:if test="position() != last()">
+					<xsl:text>,</xsl:text>
+					<xsl:call-template name="endl" />
+				</xsl:if>
+			</xsl:for-each>
+			<xsl:call-template name="endl" />
+			<xsl:text>		}</xsl:text>
+			<xsl:if test="position() != last()">
+				<xsl:text>,</xsl:text>
+				<xsl:call-template name="endl" />
+			</xsl:if>
+		</xsl:for-each><![CDATA[	
 	};
 	
 	this.subCommand = null;
 	
-	this.globalValueCount = ]]><choose>
-		<when test="/prg:program/prg:values">
-			<value-of select="count(/prg:program/prg:values/prg:value)" />
-		</when>
-		<otherwise>
-			<text>0</text>
-		</otherwise>
-	</choose>
-		<text>;</text><![CDATA[
+	this.globalValueCount = ]]><xsl:choose>
+		<xsl:when test="/prg:program/prg:values">
+			<xsl:value-of select="count(/prg:program/prg:values/prg:value)" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>0</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
+		<xsl:text>;</xsl:text><![CDATA[
 	
 	Components.utils.import("resource://ns/xbl/controls.jsm");	
 	this.optionChangeEventListener = new EventForwarder (this, this.handleOptionChange);
@@ -282,7 +282,7 @@ MainWindow.prototype.initialize = function()
 	}
 	
 	// Load user-defined post initialization
-	var onInitializeURI = "chrome://]]><value-of select="$prg.xul.appName" /><![CDATA[/content/]]><value-of select="$prg.xul.appName" /><![CDATA[-user.js";
+	var onInitializeURI = "chrome://]]><xsl:value-of select="$prg.xul.appName" /><![CDATA[/content/]]><xsl:value-of select="$prg.xul.appName" /><![CDATA[-user.js";
 	var user = {};
 	var scriptLoader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader);
 	try
@@ -316,7 +316,7 @@ MainWindow.prototype.trace = function(str)
 
 MainWindow.prototype.debug = function(str, e)
 {
-]]><if test="$prg.debug"><![CDATA[dump(str + ((e) ? "" : "\n"));]]></if><![CDATA[
+]]><xsl:if test="$prg.debug"><![CDATA[dump(str + ((e) ? "" : "\n"));]]></xsl:if><![CDATA[
 }
 
 MainWindow.prototype.setRowEnabled = function(e, value)
@@ -708,7 +708,7 @@ MainWindow.prototype.handleValueChange = function(event, object)
 
 MainWindow.prototype.updatePreview = function()
 {
-	var command = "]]><apply-templates select="/prg:program/prg:name" /><![CDATA[";
+	var command = "]]><xsl:apply-templates select="/prg:program/prg:name" /><![CDATA[";
 	var args = this.getCommandArguments();
 	this.setPreview(command + " " + args.join(" "));
 }
@@ -775,10 +775,10 @@ MainWindow.prototype.execute = function()
 	this.disable("execute");
 	
 	var args = this.getCommandArguments();
-	var command = "]]><apply-templates select="/prg:program/prg:name" /><![CDATA[";
+	var command = "]]><xsl:apply-templates select="/prg:program/prg:name" /><![CDATA[";
 	this.setPreview(command + " " + args.join(" "));
 	
-	var commandPath = this.app.getApplicationPath() + "sh/]]><value-of select="$prg.xul.appName" /><![CDATA["; 
+	var commandPath = this.app.getApplicationPath() + "sh/]]><xsl:value-of select="$prg.xul.appName" /><![CDATA["; 
 	this.executeCommand(commandPath, args, new this.ExecuteObserver(this));
 }
 
@@ -841,6 +841,6 @@ MainWindow.prototype.removeEventListener = function(e, h, w)
 	window.removeEventListener(e, h, w)
 }
 
-]]></template>
+]]></xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

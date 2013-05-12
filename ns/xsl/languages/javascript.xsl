@@ -3,119 +3,119 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Javascript language elements -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<import href="base.xsl" />
+	<xsl:import href="base.xsl" />
 
-	<template name="js.comment">
-		<param name="content" select="." />
-		<call-template name="code.comment">
-			<with-param name="marker">
-				<text>// </text>
-			</with-param>
-			<with-param name="content" select="$content" />
-		</call-template>
-	</template>
+	<xsl:template name="js.comment">
+		<xsl:param name="content" select="." />
+		<xsl:call-template name="code.comment">
+			<xsl:with-param name="marker">
+				<xsl:text>// </xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content" select="$content" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="js.block">
-		<param name="indent" select="true()" />
-		<param name="content" />
-		<choose>
-			<when test="$content">
-				<choose>
-					<when test="$indent">
-						<call-template name="code.block">
-							<with-param name="content" select="$content" />
-						</call-template>
-					</when>
-					<otherwise>
-						<call-template name="endl" />
-						<value-of select="$content" />
-						<call-template name="endl" />
-					</otherwise>
-				</choose>
-			</when>
-			<otherwise>
-				<call-template name="endl" />
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="js.block">
+		<xsl:param name="indent" select="true()" />
+		<xsl:param name="content" />
+		<xsl:choose>
+			<xsl:when test="$content">
+				<xsl:choose>
+					<xsl:when test="$indent">
+						<xsl:call-template name="code.block">
+							<xsl:with-param name="content" select="$content" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="endl" />
+						<xsl:value-of select="$content" />
+						<xsl:call-template name="endl" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="endl" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="js.callblock">
-		<param name="name" />
-		<param name="context" />
-		<param name="content" />
-		<param name="indent" select="true()" />
-		<if test="$name">
-			<value-of select="normalize-space($name)" />
-			<text> </text>
-		</if>
-		<text>(</text>
-		<value-of select="$context" />
-		<text>)</text>
-		<call-template name="endl" />
-		<text>{</text>
-		<call-template name="js.block">
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-		<text>}</text>
-		<call-template name="endl" />
-	</template>
+	<xsl:template name="js.callblock">
+		<xsl:param name="name" />
+		<xsl:param name="context" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
+		<xsl:if test="$name">
+			<xsl:value-of select="normalize-space($name)" />
+			<xsl:text> </xsl:text>
+		</xsl:if>
+		<xsl:text>(</xsl:text>
+		<xsl:value-of select="$context" />
+		<xsl:text>)</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:text>{</xsl:text>
+		<xsl:call-template name="js.block">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+		<xsl:text>}</xsl:text>
+		<xsl:call-template name="endl" />
+	</xsl:template>
 
 	<!-- Javascript function definition -->
-	<template name="js.function">
-		<param name="name" />
-		<param name="args" />
-		<param name="content" />
-		<param name="indent" select="true()" />
-		<text>function </text>
-		<call-template name="js.callblock">
-			<with-param name="name" select="$name" />
-			<with-param name="context" select="normalize-space($args)" />
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-	</template>
+	<xsl:template name="js.function">
+		<xsl:param name="name" />
+		<xsl:param name="args" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
+		<xsl:text>function </xsl:text>
+		<xsl:call-template name="js.callblock">
+			<xsl:with-param name="name" select="$name" />
+			<xsl:with-param name="context" select="normalize-space($args)" />
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="js.if">
-		<param name="condition" />
-		<param name="content" />
-		<param name="indent" select="true()" />
-		<call-template name="js.callblock">
-			<with-param name="name">
-				<text>if</text>
-			</with-param>
-			<with-param name="context" select="normalize-space($condition)" />
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-	</template>
+	<xsl:template name="js.if">
+		<xsl:param name="condition" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
+		<xsl:call-template name="js.callblock">
+			<xsl:with-param name="name">
+				<xsl:text>if</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="context" select="normalize-space($condition)" />
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="js.elseif">
-		<param name="condition" />
-		<param name="content" />
-		<param name="indent" select="true()" />
-		<call-template name="js.callblock">
-			<with-param name="name">
-				<text>else if</text>
-			</with-param>
-			<with-param name="context" select="normalize-space($condition)" />
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-	</template>
+	<xsl:template name="js.elseif">
+		<xsl:param name="condition" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
+		<xsl:call-template name="js.callblock">
+			<xsl:with-param name="name">
+				<xsl:text>else if</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="context" select="normalize-space($condition)" />
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="js.else">
-		<param name="name" />
-		<param name="condition" />
-		<param name="content" />
-		<param name="indent" select="true()" />
-		<text>else</text>
-		<call-template name="js.block">
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-	</template>
+	<xsl:template name="js.else">
+		<xsl:param name="name" />
+		<xsl:param name="condition" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
+		<xsl:text>else</xsl:text>
+		<xsl:call-template name="js.block">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

@@ -3,573 +3,572 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Shell script language elements -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<import href="base.xsl" />
+	<xsl:import href="base.xsl" />
 
 	<!-- End of line character for UNIX shell scripts -->
-	<variable name="sh.endl" select="$str.unix.endl" />
+	<xsl:variable name="sh.endl" select="$str.unix.endl" />
 
 	<!-- UNIX shell script code block (Indented code block) -->
-	<template name="sh.block">
+	<xsl:template name="sh.block">
 		<!-- Indent the content if true (the default) -->
-		<param name="indent" select="true()" />
+		<xsl:param name="indent" select="true()" />
 		<!-- Code snippet -->
-		<param name="content" />
+		<xsl:param name="content" />
 		<!-- Add a End-of-line at end of block -->
-		<param name="addFinalEndl" select="true()" />
-		<choose>
-			<when test="$content">
-				<choose>
-					<when test="$indent">
-						<call-template name="code.block">
-							<with-param name="content" select="$content" />
-							<with-param name="addFinalEndl" select="$addFinalEndl" />
-						</call-template>
-					</when>
-					<otherwise>
-						<value-of select="$sh.endl" />
-						<call-template name="str.trim">
-							<with-param name="text">
-								<value-of select="$content" />
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-					</otherwise>
-				</choose>
-			</when>
-			<otherwise>
-				<value-of select="$sh.endl" />
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="addFinalEndl" select="true()" />
+		<xsl:choose>
+			<xsl:when test="$content">
+				<xsl:choose>
+					<xsl:when test="$indent">
+						<xsl:call-template name="code.block">
+							<xsl:with-param name="content" select="$content" />
+							<xsl:with-param name="addFinalEndl" select="$addFinalEndl" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="str.trim">
+							<xsl:with-param name="text">
+								<xsl:value-of select="$content" />
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$sh.endl" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- UNIX shell comment block -->
-	<template name="sh.comment">
+	<xsl:template name="sh.comment">
 		<!-- Comment text -->
-		<param name="content" select="." />
-		<call-template name="code.comment">
-			<with-param name="marker">
-				<text># </text>
-			</with-param>
-			<with-param name="content" select="$content" />
-		</call-template>
-	</template>
+		<xsl:param name="content" select="." />
+		<xsl:call-template name="code.comment">
+			<xsl:with-param name="marker">
+				<xsl:text># </xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content" select="$content" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- UNIX shell local variable definition -->
-	<template name="sh.local">
+	<xsl:template name="sh.local">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Interpreter type -->
-		<param name="interpreter" select="sh" />
+		<xsl:param name="interpreter" select="sh" />
 		<!-- Variable initial value -->
-		<param name="value" />
+		<xsl:param name="value" />
 		<!-- Indicates if the value value have to be quoted -->
-		<param name="quoted" select="'auto'" />
+		<xsl:param name="quoted" select="'auto'" />
 
-		<variable name="isNumber" select="(string(number($value)) != 'NaN')" />
+		<xsl:variable name="isNumber" select="(string(number($value)) != 'NaN')" />
 
-		<variable name="quoteRequested">
-			<choose>
-				<when test="$quoted = 'auto'">
-					<value-of select="not ($isNumber)" />
-				</when>
-				<otherwise>
-					<value-of select="$quoted" />
-				</otherwise>
-			</choose>
-		</variable>
+		<xsl:variable name="quoteRequested">
+			<xsl:choose>
+				<xsl:when test="$quoted = 'auto'">
+					<xsl:value-of select="not ($isNumber)" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$quoted" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
-		<choose>
-			<when test="$interpreter = 'ksh'">
-				<text>typeset var </text>
-			</when>
-			<otherwise>
-				<text>local </text>
-			</otherwise>
-		</choose>
+		<xsl:choose>
+			<xsl:when test="$interpreter = 'ksh'">
+				<xsl:text>typeset var </xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>local </xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
 
-		<value-of select="$name" />
+		<xsl:value-of select="$name" />
 
-		<if test="($isNumber or (string-length($value) &gt; 0))">
-			<text>=</text>
-			<if test="$quoteRequested != 'false'">
-				<text>"</text>
-			</if>
-			<value-of select="$value" />
-			<if test="$quoteRequested != 'false'">
-				<text>"</text>
-			</if>
-		</if>
-	</template>
+		<xsl:if test="($isNumber or (string-length($value) &gt; 0))">
+			<xsl:text>=</xsl:text>
+			<xsl:if test="$quoteRequested != 'false'">
+				<xsl:text>"</xsl:text>
+			</xsl:if>
+			<xsl:value-of select="$value" />
+			<xsl:if test="$quoteRequested != 'false'">
+				<xsl:text>"</xsl:text>
+			</xsl:if>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Attempt to transform a string into a valid identifier name (variable, 
 		function) -->
-	<template name="sh.validIdentifierName">
-		<param name="name" />
-		<call-template name="cede.validIdentifierName">
-			<with-param name="name" select="$name" />
-		</call-template>
-	</template>
+	<xsl:template name="sh.validIdentifierName">
+		<xsl:param name="name" />
+		<xsl:call-template name="cede.validIdentifierName">
+			<xsl:with-param name="name" select="$name" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- UNIX shell variable call -->
-	<template name="sh.var">
+	<xsl:template name="sh.var">
 		<!-- Variable nmme -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Treat the variable as an array and retrieve the $index element (not 
 			compatible with all shells) -->
-		<param name="index" />
+		<xsl:param name="index" />
 		<!-- Retrieve a substring of the variable content starting at offset $start 
 			(not compatible with all shells) -->
-		<param name="start" />
+		<xsl:param name="start" />
 		<!-- Retrieve a substring of $lenght character of the variable content 
 			(not compatible with all shells) -->
-		<param name="length" />
+		<xsl:param name="length" />
 		<!-- Add quotes around -->
-		<param name="quoted" select="false()" />
-		<if test="$quoted">
-			<text>"</text>
-		</if>
-		<text>${</text>
-		<value-of select="normalize-space($name)" />
-		<choose>
-			<when test="$index">
-				<text>[</text>
-				<value-of select="normalize-space($index)" />
-				<text>]</text>
-			</when>
-			<when test="$start or $length">
-				<text>:</text>
-				<choose>
-					<when test="$start">
-						<value-of select="normalize-space($start)" />
-					</when>
-					<otherwise>
-						<text>0</text>
-					</otherwise>
-				</choose>
-				<if test="$length">
-					<text>:</text>
-					<value-of select="normalize-space($length)" />
-				</if>
-			</when>
-		</choose>
-		<text>}</text>
-		<if test="$quoted">
-			<text>"</text>
-		</if>
-	</template>
+		<xsl:param name="quoted" select="false()" />
+		<xsl:if test="$quoted">
+			<xsl:text>"</xsl:text>
+		</xsl:if>
+		<xsl:text>${</xsl:text>
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:choose>
+			<xsl:when test="$index">
+				<xsl:text>[</xsl:text>
+				<xsl:value-of select="normalize-space($index)" />
+				<xsl:text>]</xsl:text>
+			</xsl:when>
+			<xsl:when test="$start or $length">
+				<xsl:text>:</xsl:text>
+				<xsl:choose>
+					<xsl:when test="$start">
+						<xsl:value-of select="normalize-space($start)" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>0</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:if test="$length">
+					<xsl:text>:</xsl:text>
+					<xsl:value-of select="normalize-space($length)" />
+				</xsl:if>
+			</xsl:when>
+		</xsl:choose>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="$quoted">
+			<xsl:text>"</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Create the expression to retrieve a variable value length (${#var}) -->
-	<template name="sh.varLength">
+	<xsl:template name="sh.varLength">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Add quotes around -->
-		<param name="quoted" select="false()" />
-		<call-template name="sh.var">
-			<with-param name="name">
-				<text>#</text>
-				<value-of select="normalize-space($name)" />
-			</with-param>
-			<with-param name="quoted" select="$quoted" />
-		</call-template>
-	</template>
+		<xsl:param name="quoted" select="false()" />
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name">
+				<xsl:text>#</xsl:text>
+				<xsl:value-of select="normalize-space($name)" />
+			</xsl:with-param>
+			<xsl:with-param name="quoted" select="$quoted" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Operations on itself -->
-	<template name="sh.var.selfexpr">
+	<xsl:template name="sh.var.selfexpr">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Operator -->
-		<param name="operator" select="'+'" />
+		<xsl:param name="operator" select="'+'" />
 		<!-- Second operand -->
-		<param name="value" select="1" />
+		<xsl:param name="value" select="1" />
 
-		<value-of select="normalize-space($name)" />
-		<text>=$(expr </text>
-		<call-template name="sh.var">
-			<with-param name="name" select="$name" />
-		</call-template>
-		<text> </text>
-		<value-of select="normalize-space($operator)" />
-		<text> </text>
-		<value-of select="normalize-space($value)" />
-		<text>)</text>
-	</template>
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:text>=$(expr </xsl:text>
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$name" />
+		</xsl:call-template>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="normalize-space($operator)" />
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="normalize-space($value)" />
+		<xsl:text>)</xsl:text>
+	</xsl:template>
 
 	<!-- Treat the variable as an integer value and increment its value -->
-	<template name="sh.varincrement">
+	<xsl:template name="sh.varincrement">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Increment value -->
-		<param name="value" select="1" />
-		<call-template name="sh.var.selfexpr">
-			<with-param name="name" select="$name" />
-			<with-param name="value" select="$value" />
-			<with-param name="operator" select="'+'" />
-		</call-template>
-	</template>
+		<xsl:param name="value" select="1" />
+		<xsl:call-template name="sh.var.selfexpr">
+			<xsl:with-param name="name" select="$name" />
+			<xsl:with-param name="value" select="$value" />
+			<xsl:with-param name="operator" select="'+'" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Create the expression to retrieve an array element count (not compatible 
 		with all shells) -->
-	<template name="sh.arrayLength">
+	<xsl:template name="sh.arrayLength">
 		<!-- Variable name -->
-		<param name="name" />
-		<text>${#</text>
-		<value-of select="normalize-space($name)" />
-		<text>[*]}</text>
-	</template>
+		<xsl:param name="name" />
+		<xsl:text>${#</xsl:text>
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:text>[*]}</xsl:text>
+	</xsl:template>
 
 	<!-- Set an element of an array variable (not compatible with all shells) -->
-	<template name="sh.arraySetIndex">
+	<xsl:template name="sh.arraySetIndex">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Array index -->
-		<param name="index" />
+		<xsl:param name="index" />
 		<!-- Element value -->
-		<param name="value" />
-		<value-of select="normalize-space($name)" />
-		<text>[</text>
-		<value-of select="normalize-space($index)" />
-		<text>]=</text>
-		<value-of select="normalize-space($value)" />
-	</template>
+		<xsl:param name="value" />
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:text>[</xsl:text>
+		<xsl:value-of select="normalize-space($index)" />
+		<xsl:text>]=</xsl:text>
+		<xsl:value-of select="normalize-space($value)" />
+	</xsl:template>
 
 	<!-- TODO replace startIndex by interpreter param -->
 	<!-- Append a new element to an array variable -->
-	<template name="sh.arrayAppend">
+	<xsl:template name="sh.arrayAppend">
 		<!-- Variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- New element value -->
-		<param name="value" />
+		<xsl:param name="value" />
 		<!-- First element of the array (depends on interpreter type) -->
-		<param name="startIndex" select="0" />
+		<xsl:param name="startIndex" select="0" />
 
-		<variable name="index">
-			<choose>
-				<when
-					test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
-					<text>$(expr </text>
-					<call-template name="sh.arrayLength">
-						<with-param name="name" select="$name" />
-					</call-template>
-					<text> + </text>
-					<value-of select="$startIndex" />
-					<text>)</text>
-				</when>
-				<otherwise>
-					<call-template name="sh.arrayLength">
-						<with-param name="name" select="$name" />
-					</call-template>
-				</otherwise>
-			</choose>
-		</variable>
+		<xsl:variable name="index">
+			<xsl:choose>
+				<xsl:when test="not(number($startIndex) = number($startIndex)) or ($startIndex &gt; 0)">
+					<xsl:text>$(expr </xsl:text>
+					<xsl:call-template name="sh.arrayLength">
+						<xsl:with-param name="name" select="$name" />
+					</xsl:call-template>
+					<xsl:text> + </xsl:text>
+					<xsl:value-of select="$startIndex" />
+					<xsl:text>)</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="sh.arrayLength">
+						<xsl:with-param name="name" select="$name" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
-		<call-template name="sh.arraySetIndex">
-			<with-param name="name" select="$name" />
-			<with-param name="index" select="$index" />
-			<with-param name="value" select="$value" />
-		</call-template>
-	</template>
+		<xsl:call-template name="sh.arraySetIndex">
+			<xsl:with-param name="name" select="$name" />
+			<xsl:with-param name="index" select="$index" />
+			<xsl:with-param name="value" select="$value" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Copy array elements to another variable (not compatible with all shells) -->
-	<template name="sh.arrayCopy">
+	<xsl:template name="sh.arrayCopy">
 		<!-- Input variable name -->
-		<param name="from" />
+		<xsl:param name="from" />
 		<!-- Output variable name -->
-		<param name="to" />
+		<xsl:param name="to" />
 		<!-- Name of the index variable used in loop -->
-		<param name="indexVariableName" select="'i'" />
-		<param name="append" select="true()" />
+		<xsl:param name="indexVariableName" select="'i'" />
+		<xsl:param name="append" select="true()" />
 
-		<variable name="indexVariable">
-			<call-template name="sh.var">
-				<with-param name="name" select="$indexVariableName" />
-			</call-template>
-		</variable>
+		<xsl:variable name="indexVariable">
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$indexVariableName" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<call-template name="sh.for">
-			<with-param name="condition">
-				<text>((</text>
-				<value-of select="normalize-space($indexVariableName)" />
-				<text>=0;</text>
-				<value-of select="normalize-space($indexVariable)" />
-				<text>&lt;</text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$from" />
-				</call-template>
-				<text>;</text>
-				<value-of select="normalize-space($indexVariableName)" />
-				<text>++))</text>
-			</with-param>
-			<with-param name="do">
-				<call-template name="sh.arraySetIndex">
-					<with-param name="name" select="$to" />
-					<with-param name="index">
-						<choose>
-							<when test="$append">
-								<call-template name="sh.arrayLength">
-									<with-param name="name" select="$to" />
-								</call-template>
-							</when>
-							<otherwise>
-								<value-of select="normalize-space($indexVariable)" />
-							</otherwise>
-						</choose>
-					</with-param>
-					<with-param name="value">
-						<call-template name="sh.var">
-							<with-param name="name" select="$from" />
-							<with-param name="index" select="$indexVariable" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="condition">
+				<xsl:text>((</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariableName)" />
+				<xsl:text>=0;</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariable)" />
+				<xsl:text>&lt;</xsl:text>
+				<xsl:call-template name="sh.arrayLength">
+					<xsl:with-param name="name" select="$from" />
+				</xsl:call-template>
+				<xsl:text>;</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariableName)" />
+				<xsl:text>++))</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="do">
+				<xsl:call-template name="sh.arraySetIndex">
+					<xsl:with-param name="name" select="$to" />
+					<xsl:with-param name="index">
+						<xsl:choose>
+							<xsl:when test="$append">
+								<xsl:call-template name="sh.arrayLength">
+									<xsl:with-param name="name" select="$to" />
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="normalize-space($indexVariable)" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$from" />
+							<xsl:with-param name="index" select="$indexVariable" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Iterate through array elements -->
-	<template name="sh.arrayForEach">
+	<xsl:template name="sh.arrayForEach">
 		<!-- Array variable name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Internal loop index variable name -->
-		<param name="indexVariableName" select="'i'" />
+		<xsl:param name="indexVariableName" select="'i'" />
 		<!-- First index to consider -->
-		<param name="startIndex" select="0" />
+		<xsl:param name="startIndex" select="0" />
 		<!-- Code to execute for each element -->
-		<param name="do" />
+		<xsl:param name="do" />
 
-		<variable name="indexVariable">
-			<call-template name="sh.var">
-				<with-param name="name" select="$indexVariableName" />
-			</call-template>
-		</variable>
+		<xsl:variable name="indexVariable">
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$indexVariableName" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<call-template name="sh.for">
-			<with-param name="condition">
-				<text>((</text>
-				<value-of select="normalize-space($indexVariableName)" />
-				<text>=0;</text>
-				<value-of select="normalize-space($indexVariable)" />
-				<text>&lt;</text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$name" />
-				</call-template>
-				<text>;</text>
-				<value-of select="normalize-space($indexVariableName)" />
-				<text>++))</text>
-			</with-param>
-			<with-param name="do" select="$do" />
-		</call-template>
-	</template>
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="condition">
+				<xsl:text>((</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariableName)" />
+				<xsl:text>=0;</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariable)" />
+				<xsl:text>&lt;</xsl:text>
+				<xsl:call-template name="sh.arrayLength">
+					<xsl:with-param name="name" select="$name" />
+				</xsl:call-template>
+				<xsl:text>;</xsl:text>
+				<xsl:value-of select="normalize-space($indexVariableName)" />
+				<xsl:text>++))</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="do" select="$do" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- UNIX shell function definition (not compatible with all shells) -->
-	<template name="sh.functionDefinition">
+	<xsl:template name="sh.functionDefinition">
 		<!-- Function name -->
-		<param name="name" />
+		<xsl:param name="name" />
 		<!-- Function body -->
-		<param name="content" />
+		<xsl:param name="content" />
 		<!-- Indicates if the function body have to be indented -->
-		<param name="indent" select="true()" />
+		<xsl:param name="indent" select="true()" />
 		<!-- UNIX shell interpreter type -->
-		<param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="'sh'" />
 
-		<if test="$interpreter = 'ksh'">
-			<text>function </text>
-		</if>
-		<value-of select="normalize-space($name)" />
-		<if test="not($interpreter = 'ksh')">
-			<text>()</text>
-		</if>
-		<value-of select="$sh.endl" />
-		<text>{</text>
-		<call-template name="sh.block">
-			<with-param name="content" select="$content" />
-			<with-param name="indent" select="$indent" />
-		</call-template>
-		<text>}</text>
-		<value-of select="$sh.endl" />
-	</template>
+		<xsl:if test="$interpreter = 'ksh'">
+			<xsl:text>function </xsl:text>
+		</xsl:if>
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:if test="not($interpreter = 'ksh')">
+			<xsl:text>()</xsl:text>
+		</xsl:if>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>{</xsl:text>
+		<xsl:call-template name="sh.block">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="indent" select="$indent" />
+		</xsl:call-template>
+		<xsl:text>}</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+	</xsl:template>
 
 	<!-- While statement -->
-	<template name="sh.while">
+	<xsl:template name="sh.while">
 		<!-- Condition -->
-		<param name="condition" />
+		<xsl:param name="condition" />
 		<!-- Loop code -->
-		<param name="do" />
+		<xsl:param name="do" />
 		<!-- -->
-		<param name="indent" select="true()" />
+		<xsl:param name="indent" select="true()" />
 
-		<text>while </text>
-		<value-of select="normalize-space($condition)" />
-		<value-of select="$sh.endl" />
-		<text>do</text>
-		<call-template name="sh.block">
-			<with-param name="indent" select="$indent" />
-			<with-param name="content">
-				<value-of select="$do" />
-			</with-param>
-		</call-template>
-		<text>done</text>
-	</template>
+		<xsl:text>while </xsl:text>
+		<xsl:value-of select="normalize-space($condition)" />
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>do</xsl:text>
+		<xsl:call-template name="sh.block">
+			<xsl:with-param name="indent" select="$indent" />
+			<xsl:with-param name="content">
+				<xsl:value-of select="$do" />
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:text>done</xsl:text>
+	</xsl:template>
 
 	<!-- For statement -->
-	<template name="sh.for">
+	<xsl:template name="sh.for">
 		<!-- -->
-		<param name="condition" />
+		<xsl:param name="condition" />
 
-		<param name="do" />
-		<param name="indent" select="true()" />
+		<xsl:param name="do" />
+		<xsl:param name="indent" select="true()" />
 
-		<text>for </text>
-		<value-of select="normalize-space($condition)" />
-		<value-of select="$sh.endl" />
-		<text>do</text>
-		<call-template name="sh.block">
-			<with-param name="indent" select="$indent" />
-			<with-param name="content">
-				<value-of select="$do" />
-			</with-param>
-		</call-template>
-		<text>done</text>
-	</template>
+		<xsl:text>for </xsl:text>
+		<xsl:value-of select="normalize-space($condition)" />
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>do</xsl:text>
+		<xsl:call-template name="sh.block">
+			<xsl:with-param name="indent" select="$indent" />
+			<xsl:with-param name="content">
+				<xsl:value-of select="$do" />
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:text>done</xsl:text>
+	</xsl:template>
 
 	<!-- for in n .... m -->
-	<template name="sh.incrementalFor">
-		<param name="variable">
-			<text>i</text>
-		</param>
-		<param name="init" select="0" />
-		<param name="operator" select="'&lt;'" />
-		<param name="limit" />
-		<param name="increment" select="1" />
-		<param name="do" />
-		<param name="indent" select="true()" />
+	<xsl:template name="sh.incrementalFor">
+		<xsl:param name="variable">
+			<xsl:text>i</xsl:text>
+		</xsl:param>
+		<xsl:param name="init" select="0" />
+		<xsl:param name="operator" select="'&lt;'" />
+		<xsl:param name="limit" />
+		<xsl:param name="increment" select="1" />
+		<xsl:param name="do" />
+		<xsl:param name="indent" select="true()" />
 
-		<call-template name="sh.for">
-			<with-param name="indent" select="$indent" />
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="indent" select="$indent" />
 
-			<with-param name="condition">
-				<text>((</text>
-				<value-of select="normalize-space($variable)" />
-				<text>=</text>
-				<value-of select="normalize-space($init)" />
-				<text>;</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$variable" />
-				</call-template>
-				<value-of select="normalize-space($operator)" />
-				<value-of select="normalize-space($limit)" />
-				<text>;</text>
-				<value-of select="normalize-space($variable)" />
-				<choose>
-					<when test="$increment = 1">
-						<text>++</text>
-					</when>
-					<otherwise>
-						<text>=$(expr </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$variable" />
-						</call-template>
-						<text> + </text>
-						<value-of select="normalize-space($increment)" />
-						<text>))</text>
-					</otherwise>
-				</choose>
-				<text>))</text>
-			</with-param>
-			<with-param name="do" select="$do" />
-		</call-template>
-	</template>
+			<xsl:with-param name="condition">
+				<xsl:text>((</xsl:text>
+				<xsl:value-of select="normalize-space($variable)" />
+				<xsl:text>=</xsl:text>
+				<xsl:value-of select="normalize-space($init)" />
+				<xsl:text>;</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$variable" />
+				</xsl:call-template>
+				<xsl:value-of select="normalize-space($operator)" />
+				<xsl:value-of select="normalize-space($limit)" />
+				<xsl:text>;</xsl:text>
+				<xsl:value-of select="normalize-space($variable)" />
+				<xsl:choose>
+					<xsl:when test="$increment = 1">
+						<xsl:text>++</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>=$(expr </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$variable" />
+						</xsl:call-template>
+						<xsl:text> + </xsl:text>
+						<xsl:value-of select="normalize-space($increment)" />
+						<xsl:text>))</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:text>))</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="do" select="$do" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- IF statement -->
-	<template name="sh.if">
+	<xsl:template name="sh.if">
 		<!-- Condition -->
-		<param name="condition" />
+		<xsl:param name="condition" />
 		<!-- Code to execute if the condition is true -->
-		<param name="then" />
+		<xsl:param name="then" />
 		<!-- Code to execute if the condition is false -->
-		<param name="else" />
+		<xsl:param name="else" />
 		<!-- Indent 'then' and 'else' blocks -->
-		<param name="indent" select="true()" />
+		<xsl:param name="indent" select="true()" />
 		<!-- When possible, use the short form [ {condition} ] && {then} -->
-		<param name="shortForm" select="true()" />
+		<xsl:param name="shortForm" select="true()" />
 
-		<variable name="ncond" select="normalize-space($condition)" />
+		<xsl:variable name="ncond" select="normalize-space($condition)" />
 
-		<if test="(string-length($ncond) + string-length($then)) &gt; 0">
-			<variable name="hasElse" select="$else and (string-length($else) &gt; 0)" />
-			<variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
-			<variable name="simpleCondition" select="not (contains($ncond, $sh.endl) or contains($ncond, '&amp;&amp;') or contains($ncond, '||'))" />
-			<choose>
-				<when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
-					<value-of select="$ncond" />
-					<text> &amp;&amp; </text>
-					<value-of select="$then" />
-				</when>
-				<otherwise>
-					<text>if </text>
-					<value-of select="$ncond" />
-					<value-of select="$sh.endl" />
-					<text>then</text>
-					<call-template name="sh.block">
-						<with-param name="indent" select="$indent" />
-						<with-param name="content" select="$then" />
-					</call-template>
-					<if test="$hasElse">
-						<text>else</text>
-						<call-template name="sh.block">
-							<with-param name="indent" select="$indent" />
-							<with-param name="content" select="$else" />
-						</call-template>
-					</if>
-					<text>fi</text>
-				</otherwise>
-			</choose>
-		</if>
-		<value-of select="$sh.endl" />
-	</template>
+		<xsl:if test="(string-length($ncond) + string-length($then)) &gt; 0">
+			<xsl:variable name="hasElse" select="$else and (string-length($else) &gt; 0)" />
+			<xsl:variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
+			<xsl:variable name="simpleCondition" select="not (contains($ncond, $sh.endl) or contains($ncond, '&amp;&amp;') or contains($ncond, '||'))" />
+			<xsl:choose>
+				<xsl:when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
+					<xsl:value-of select="$ncond" />
+					<xsl:text> &amp;&amp; </xsl:text>
+					<xsl:value-of select="$then" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>if </xsl:text>
+					<xsl:value-of select="$ncond" />
+					<xsl:value-of select="$sh.endl" />
+					<xsl:text>then</xsl:text>
+					<xsl:call-template name="sh.block">
+						<xsl:with-param name="indent" select="$indent" />
+						<xsl:with-param name="content" select="$then" />
+					</xsl:call-template>
+					<xsl:if test="$hasElse">
+						<xsl:text>else</xsl:text>
+						<xsl:call-template name="sh.block">
+							<xsl:with-param name="indent" select="$indent" />
+							<xsl:with-param name="content" select="$else" />
+						</xsl:call-template>
+					</xsl:if>
+					<xsl:text>fi</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
+		<xsl:value-of select="$sh.endl" />
+	</xsl:template>
 
 	<!-- CASE statement -->
-	<template name="sh.case">
+	<xsl:template name="sh.case">
 		<!-- Case variable name -->
-		<param name="case" />
+		<xsl:param name="case" />
 		<!-- Case body -->
-		<param name="in" />
-		<param name="indent" select="true()" />
+		<xsl:param name="in" />
+		<xsl:param name="indent" select="true()" />
 
-		<text>case "</text>
-		<value-of select="$case" />
-		<text>" in</text>
-		<value-of select="$sh.endl" />
-		<value-of select="$in" />
-		<value-of select="$sh.endl" />
-		<text>esac</text>
-	</template>
+		<xsl:text>case "</xsl:text>
+		<xsl:value-of select="$case" />
+		<xsl:text>" in</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:value-of select="$in" />
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>esac</xsl:text>
+	</xsl:template>
 
 	<!-- -->
-	<template name="sh.caseblock">
-		<param name="case" />
-		<param name="content" />
-		<param name="indent" select="true()" />
+	<xsl:template name="sh.caseblock">
+		<xsl:param name="case" />
+		<xsl:param name="content" />
+		<xsl:param name="indent" select="true()" />
 
-		<value-of select="$case" />
-		<text>)</text>
-		<call-template name="sh.block">
-			<with-param name="indent" select="$indent" />
-			<with-param name="content">
-				<value-of select="$content" />
-				<value-of select="$sh.endl" />
-				<text>;;</text>
-			</with-param>
-		</call-template>
-	</template>
+		<xsl:value-of select="$case" />
+		<xsl:text>)</xsl:text>
+		<xsl:call-template name="sh.block">
+			<xsl:with-param name="indent" select="$indent" />
+			<xsl:with-param name="content">
+				<xsl:value-of select="$content" />
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>;;</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Code chunks -->
 
 	<!-- 1>/dev/null 2>&1 -->
-	<template name="sh.chunk.nullRedirection">
-		<text>1&gt;/dev/null 2&gt;&amp;1</text>
-	</template>
+	<xsl:template name="sh.chunk.nullRedirection">
+		<xsl:text>1&gt;/dev/null 2&gt;&amp;1</xsl:text>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

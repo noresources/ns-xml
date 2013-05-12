@@ -10,53 +10,53 @@
 	doctype-public="-//Apple Computer//DTD PLIST 1.0//EN"
 	encoding="utf-8" indent="yes" />
 -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<template name="plist.string">
-		<param name="key" />
-		<param name="value" />
-		<element name="key">
-			<value-of select="$key" />
-		</element>
-		<element name="string">
-			<value-of select="$value" />
-		</element>
-	</template>
+	<xsl:template name="plist.string">
+		<xsl:param name="key" />
+		<xsl:param name="value" />
+		<xsl:element name="key">
+			<xsl:value-of select="$key" />
+		</xsl:element>
+		<xsl:element name="string">
+			<xsl:value-of select="$value" />
+		</xsl:element>
+	</xsl:template>
 
-	<template name="plist.boolean">
-		<param name="key" />
-		<param name="value" select="false()" />
-		<element name="key">
-			<value-of select="$key" />
-		</element>
-		<choose>
-			<when test="$value">
-				<element name="true" />
-			</when>
-			<otherwise>
-				<element name="false" />
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="plist.boolean">
+		<xsl:param name="key" />
+		<xsl:param name="value" select="false()" />
+		<xsl:element name="key">
+			<xsl:value-of select="$key" />
+		</xsl:element>
+		<xsl:choose>
+			<xsl:when test="$value">
+				<xsl:element name="true" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:element name="false" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="plist.dict">
-		<param name="content" />
-		<element name="dict">
-			<copy-of select="$content" />
-		</element>
-	</template>
+	<xsl:template name="plist.dict">
+		<xsl:param name="content" />
+		<xsl:element name="dict">
+			<xsl:copy-of select="$content" />
+		</xsl:element>
+	</xsl:template>
 
-	<template name="plist.document">
-		<param name="content" />
-		<param name="version">
-			<text>1.0</text>
-		</param>
-		<element name="plist">
-			<attribute name="version"><value-of select="$version" /></attribute>
-			<call-template name="plist.dict">
-				<with-param name="content" select="$content" />
-			</call-template>
-		</element>
-	</template>
+	<xsl:template name="plist.document">
+		<xsl:param name="content" />
+		<xsl:param name="version">
+			<xsl:text>1.0</xsl:text>
+		</xsl:param>
+		<xsl:element name="plist">
+			<xsl:attribute name="version"><xsl:value-of select="$version" /></xsl:attribute>
+			<xsl:call-template name="plist.dict">
+				<xsl:with-param name="content" select="$content" />
+			</xsl:call-template>
+		</xsl:element>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

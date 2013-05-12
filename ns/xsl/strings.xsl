@@ -3,582 +3,582 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- String manipulation functions -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	
 	<!-- UNIX-style end of line character (LF) -->
-	<variable name="str.unix.endl">
-		<value-of select="'&#10;'"/>
-	</variable>
+	<xsl:variable name="str.unix.endl">
+		<xsl:value-of select="'&#10;'" />
+	</xsl:variable>
 	
 	<!-- MacOS-style end of line character (CR) -->
-	<variable name="str.mac.endl">
-		<value-of select="'&#13;'"/>
-	</variable>
+	<xsl:variable name="str.mac.endl">
+		<xsl:value-of select="'&#13;'" />
+	</xsl:variable>
 	
 	<!-- Windows-style end of line character (CRLF) -->
-	<variable name="str.windows.endl">
-		<value-of select="'&#13;&#10;'"/>
-	</variable>
+	<xsl:variable name="str.windows.endl">
+		<xsl:value-of select="'&#13;&#10;'" />
+	</xsl:variable>
 	
 	<!-- Default End-of-line character(s) -->
-	<param name="str.endl">
-		<value-of select="$str.unix.endl"/>
-	</param>
+	<xsl:param name="str.endl">
+		<xsl:value-of select="$str.unix.endl" />
+	</xsl:param>
 	
-	<param name="str.blanks" select="'&#9; '"/>
+	<xsl:param name="str.blanks" select="'&#9; '" />
 	
 	<!-- Add a new line. Deprecated: use str.endl directly -->
-	<template name="endl">
-		<value-of select="$str.endl"/>
-	</template>
+	<xsl:template name="endl">
+		<xsl:value-of select="$str.endl" />
+	</xsl:template>
 
 	<!-- Unix-style end-of-line marker. Deprecated: use str.unix.endl directly -->
-	<template name="unixEndl">
-		<value-of select="$str.unix.endl"/>
-	</template>
+	<xsl:template name="unixEndl">
+		<xsl:value-of select="$str.unix.endl" />
+	</xsl:template>
 
 	<!-- Microsoft Windows end-of-line marker. Deprecated: use str.windows.endl directly -->
-	<template name="windowsEndl">
-		<value-of select="$str.windows.endl"/>
-	</template>
+	<xsl:template name="windowsEndl">
+		<xsl:value-of select="$str.windows.endl" />
+	</xsl:template>
 
 	<!-- MacOS end-of-line marker. Deprecated: use str.mac.endl directly -->
-	<template name="macEndl">
-		<value-of select="$str.mac.endl"/>
-	</template>
+	<xsl:template name="macEndl">
+		<xsl:value-of select="$str.mac.endl" />
+	</xsl:template>
 
 	<!-- Indicates if text contains blank chars -->
-	<template name="str.isBlank">
+	<xsl:template name="str.isBlank">
 		<!-- Text to check -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Reserved -->
-		<param name="_position" select="1"/>
-		<variable name="c" select="substring($text, 1, 1)"/>
-		<choose>
-			<when test="string-length($c) = 1">
-				<variable name="cv">
-					<call-template name="str.isBlankChar">
-						<with-param name="char" select="$c"/>
-					</call-template>
-				</variable>
-				<variable name="others">
-					<call-template name="str.isBlank">
-						<with-param name="text" select="substring($text, 2)"/>
-					</call-template>
-				</variable>
-				<value-of select="$cv + $others"/>
-			</when>
-			<otherwise>
-				<value-of select="0"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="_position" select="1" />
+		<xsl:variable name="c" select="substring($text, 1, 1)" />
+		<xsl:choose>
+			<xsl:when test="string-length($c) = 1">
+				<xsl:variable name="cv">
+					<xsl:call-template name="str.isBlankChar">
+						<xsl:with-param name="char" select="$c" />
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:variable name="others">
+					<xsl:call-template name="str.isBlank">
+						<xsl:with-param name="text" select="substring($text, 2)" />
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:value-of select="$cv + $others" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="0" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Indicates if a characted is a blank character -->
-	<template name="str.isBlankChar">
+	<xsl:template name="str.isBlankChar">
 		<!-- Characted to test -->
-		<param name="char" select="substring(., 1, 1)"/>
-		<param name="_position" select="1"/>
-		<variable name="c" select="substring($char, 1, 1)"/>
-		<choose>
-			<when test="contains($str.blanks, $c)">
-				<value-of select="1"/>
-			</when>
-			<otherwise>
-				<value-of select="0"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="char" select="substring(., 1, 1)" />
+		<xsl:param name="_position" select="1" />
+		<xsl:variable name="c" select="substring($char, 1, 1)" />
+		<xsl:choose>
+			<xsl:when test="contains($str.blanks, $c)">
+				<xsl:value-of select="1" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="0" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Get the substring before the last occurrence of the given delimiter -->
-	<template name="str.substringBeforeLast">
-		<param name="text"/>
-		<param name="delimiter"/>
-		<if test="contains($text, $delimiter)">
-			<variable name="b" select="substring-before($text, $delimiter)"/>
-			<variable name="a" select="substring-after($text, $delimiter)"/>
-			<value-of select="$b"/>
-			<variable name="next">
-				<call-template name="str.substringBeforeLast">
-					<with-param name="text" select="$a"/>
-					<with-param name="delimiter" select="$delimiter"/>
-				</call-template>
-			</variable>
-			<if test="string-length($next) &gt; 0">
-				<value-of select="$delimiter"/>
-				<value-of select="$next"/>
-			</if>
-		</if>
-	</template>
+	<xsl:template name="str.substringBeforeLast">
+		<xsl:param name="text" />
+		<xsl:param name="delimiter" />
+		<xsl:if test="contains($text, $delimiter)">
+			<xsl:variable name="b" select="substring-before($text, $delimiter)" />
+			<xsl:variable name="a" select="substring-after($text, $delimiter)" />
+			<xsl:value-of select="$b" />
+			<xsl:variable name="next">
+				<xsl:call-template name="str.substringBeforeLast">
+					<xsl:with-param name="text" select="$a" />
+					<xsl:with-param name="delimiter" select="$delimiter" />
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:if test="string-length($next) &gt; 0">
+				<xsl:value-of select="$delimiter" />
+				<xsl:value-of select="$next" />
+			</xsl:if>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Get the substring after the last occurence of the given delimiter -->
-	<template name="str.substringAfterLast">
-		<param name="text"/>
-		<param name="delimiter"/>
-		<choose>
-			<when test="contains($text, $delimiter)">
-				<call-template name="str.substringAfterLast">
-					<with-param name="text" select="substring-after($text, $delimiter)"/>
-					<with-param name="delimiter" select="$delimiter"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$text"/>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="str.substringAfterLast">
+		<xsl:param name="text" />
+		<xsl:param name="delimiter" />
+		<xsl:choose>
+			<xsl:when test="contains($text, $delimiter)">
+				<xsl:call-template name="str.substringAfterLast">
+					<xsl:with-param name="text" select="substring-after($text, $delimiter)" />
+					<xsl:with-param name="delimiter" select="$delimiter" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Number of occurrence of a given string at the beginning of another string -->
-	<template name="str.startsWithCount">
+	<xsl:template name="str.startsWithCount">
 		<!-- Text -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Substring to search -->
-		<param name="needle"/>
+		<xsl:param name="needle" />
 		<!-- Internal use -->
-		<param name="offset" select="1"/>
+		<xsl:param name="offset" select="1" />
 		<!-- Internal use -->
-		<param name="count" select="0"/>
-		<variable name="needleLength" select="string-length($needle)"/>
-		<variable name="subtext" select="substring($text, $offset)"/>
-		<choose>
-			<when test="$needleLength = 0">
-				<value-of select="$count"/>
-			</when>
-			<when test="starts-with($subtext, $needle)">
-				<call-template name="str.startsWithCount">
-					<with-param name="text" select="$text"/>
-					<with-param name="needle" select="$needle"/>
-					<with-param name="offset" select="$offset + $needleLength"/>
-					<with-param name="count" select="$count + 1"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$count"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="count" select="0" />
+		<xsl:variable name="needleLength" select="string-length($needle)" />
+		<xsl:variable name="subtext" select="substring($text, $offset)" />
+		<xsl:choose>
+			<xsl:when test="$needleLength = 0">
+				<xsl:value-of select="$count" />
+			</xsl:when>
+			<xsl:when test="starts-with($subtext, $needle)">
+				<xsl:call-template name="str.startsWithCount">
+					<xsl:with-param name="text" select="$text" />
+					<xsl:with-param name="needle" select="$needle" />
+					<xsl:with-param name="offset" select="$offset + $needleLength" />
+					<xsl:with-param name="count" select="$count + 1" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$count" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="str.endsWith">
+	<xsl:template name="str.endsWith">
 		<!-- Text -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Substring to search -->
-		<param name="needle"/>
+		<xsl:param name="needle" />
 		
-		<variable name="needleLength" select="string-length($needle)"/>
-		<variable name="textLength" select="string-length($text)"/>
-		<variable name="end" select="substring($text, (($textLength - $needleLength) + 1))"/>
+		<xsl:variable name="needleLength" select="string-length($needle)" />
+		<xsl:variable name="textLength" select="string-length($text)" />
+		<xsl:variable name="end" select="substring($text, (($textLength - $needleLength) + 1))" />
 		
-		<value-of select="($end = $needle)" />	
-	</template>
+		<xsl:value-of select="($end = $needle)" />	
+	</xsl:template>
 	
 	<!-- Number of occurrence of a given string at the end of another string -->
-	<template name="str.endsWithCount">
+	<xsl:template name="str.endsWithCount">
 		<!-- Text -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Substring to search -->
-		<param name="needle"/>
+		<xsl:param name="needle" />
 		<!-- Internal use -->
-		<param name="offset" select="0"/>
+		<xsl:param name="offset" select="0" />
 		<!-- Internal use -->
-		<param name="count" select="0"/>
-		<variable name="needleLength" select="string-length($needle)"/>
-		<variable name="subtext" select="substring($text, 1, string-length($text) - $offset)"/>
-		<variable name="subtextLength" select="string-length($subtext)"/>
-		<variable name="toTest" select="substring($subtext, (($subtextLength - $needleLength) + 1))"/>
-		<choose>
-			<when test="($needleLength = 0) or ($subtextLength &lt; $needleLength)">
-				<value-of select="$count"/>
-			</when>
-			<when test="$toTest = $needle">
-				<call-template name="str.endsWithCount">
-					<with-param name="text" select="$text"/>
-					<with-param name="needle" select="$needle"/>
-					<with-param name="offset" select="$offset + $needleLength"/>
-					<with-param name="count" select="$count + 1"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$count"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="count" select="0" />
+		<xsl:variable name="needleLength" select="string-length($needle)" />
+		<xsl:variable name="subtext" select="substring($text, 1, string-length($text) - $offset)" />
+		<xsl:variable name="subtextLength" select="string-length($subtext)" />
+		<xsl:variable name="toTest" select="substring($subtext, (($subtextLength - $needleLength) + 1))" />
+		<xsl:choose>
+			<xsl:when test="($needleLength = 0) or ($subtextLength &lt; $needleLength)">
+				<xsl:value-of select="$count" />
+			</xsl:when>
+			<xsl:when test="$toTest = $needle">
+				<xsl:call-template name="str.endsWithCount">
+					<xsl:with-param name="text" select="$text" />
+					<xsl:with-param name="needle" select="$needle" />
+					<xsl:with-param name="offset" select="$offset + $needleLength" />
+					<xsl:with-param name="count" select="$count + 1" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$count" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Replace a string by another -->
-	<template name="str.replaceAll">
+	<xsl:template name="str.replaceAll">
 		<!-- Text to process -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Text to replace -->
-		<param name="replace"/>
+		<xsl:param name="replace" />
 		<!-- Replacement string -->
-		<param name="by"/>
-		<choose>
-			<when test="contains($text, $replace)">
-				<value-of select="substring-before($text,$replace)"/>
-				<value-of select="$by"/>
-				<call-template name="str.replaceAll">
-					<with-param name="text" select="substring-after($text,$replace)"/>
-					<with-param name="replace" select="$replace"/>
-					<with-param name="by" select="$by"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$text"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="by" />
+		<xsl:choose>
+			<xsl:when test="contains($text, $replace)">
+				<xsl:value-of select="substring-before($text,$replace)" />
+				<xsl:value-of select="$by" />
+				<xsl:call-template name="str.replaceAll">
+					<xsl:with-param name="text" select="substring-after($text,$replace)" />
+					<xsl:with-param name="replace" select="$replace" />
+					<xsl:with-param name="by" select="$by" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Count occurences of a string in another -->
-	<template name="str.count">
+	<xsl:template name="str.count">
 		<!-- Text to process -->
-		<param name="text"/>
+		<xsl:param name="text" />
 		<!-- Substring to count -->
-		<param name="substring"/>
+		<xsl:param name="substring" />
 		<!-- Reserved -->
-		<param name="_count" select="0"/>
-		<choose>
-			<when test="contains($text, $substring)">
-				<call-template name="str.count">
-					<with-param name="text" select="substring-after($text, $substring)"/>
-					<with-param name="substring" select="$substring"/>
-					<with-param name="_count" select="$_count + 1"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$_count"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="_count" select="0" />
+		<xsl:choose>
+			<xsl:when test="contains($text, $substring)">
+				<xsl:call-template name="str.count">
+					<xsl:with-param name="text" select="substring-after($text, $substring)" />
+					<xsl:with-param name="substring" select="$substring" />
+					<xsl:with-param name="_count" select="$_count + 1" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$_count" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Repeat a string -->
-	<template name="str.repeat">
+	<xsl:template name="str.repeat">
 		<!-- Text to repeat -->
-		<param name="text" select="' '"/>
+		<xsl:param name="text" select="' '" />
 		<!-- Repetitions -->
-		<param name="iterations" select="1"/>
-		<if test="$iterations &gt; 0">
-			<value-of select="$text"/>
-			<call-template name="str.repeat">
-				<with-param name="iterations" select="$iterations - 1"/>
-				<with-param name="text" select="$text"/>
-			</call-template>
-		</if>
-	</template>
+		<xsl:param name="iterations" select="1" />
+		<xsl:if test="$iterations &gt; 0">
+			<xsl:value-of select="$text" />
+			<xsl:call-template name="str.repeat">
+				<xsl:with-param name="iterations" select="$iterations - 1" />
+				<xsl:with-param name="text" select="$text" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
-	<template name="str.elementLocalPart">
-		<param name="node" select="."/>
-		<value-of select="substring-after(name($node), ':' )"/>
-	</template>
+	<xsl:template name="str.elementLocalPart">
+		<xsl:param name="node" select="." />
+		<xsl:value-of select="substring-after(name($node), ':' )" />
+	</xsl:template>
 
 	<!-- Find the last breakable character index -->
-	<template name="str.lastBreakableCharacterPosition">
+	<xsl:template name="str.lastBreakableCharacterPosition">
 		<!-- Text to process -->
-		<param name="text" select="."/>
+		<xsl:param name="text" select="." />
 		<!-- Internal use -->
-		<param name="_position" select="1"/>
+		<xsl:param name="_position" select="1" />
 		<!-- Internal use -->
-		<param name="_bestValue" select="-1"/>
+		<xsl:param name="_bestValue" select="-1" />
 		<!-- the first 2 characters are always breakable,
 		the others requires a space after -->
-		<variable name="breakables" select="' &#9;,;:?.!'"/>
-		<variable name="c">
-			<value-of select="substring($breakables, $_position, 1)"/>
-			<if test="$_position &gt; 2">
-				<value-of select="' '" />
-			</if>
-		</variable>
-		<choose>
-			<when test="(string-length($text) &gt; 0) and (string-length($c) = 1)">
-				<choose>
-					<when test="contains($text, $c)">
-						<variable name="sub">
-							<call-template name="str.substringBeforeLast">
-								<with-param name="text" select="$text"/>
-								<with-param name="delimiter" select="$c"/>
-							</call-template>
-						</variable>
-						<variable name="subIndex" select="string-length($sub)"/>
-						<variable name="newBest">
-							<choose>
-								<when test="$subIndex &gt; $_bestValue">
-									<value-of select="$subIndex"/>
-								</when>
-								<otherwise>
-									<value-of select="$_bestValue"/>
-								</otherwise>
-							</choose>
-						</variable>
-						<call-template name="str.lastBreakableCharacterPosition">
-							<with-param name="text" select="$text"/>
-							<with-param name="_position" select="$_position + 1"/>
-							<with-param name="_bestValue" select="$newBest"/>
-						</call-template>
-					</when>
-					<otherwise>
-						<call-template name="str.lastBreakableCharacterPosition">
-							<with-param name="text" select="$text"/>
-							<with-param name="_position" select="$_position + 1"/>
-							<with-param name="_bestValue" select="$_bestValue"/>
-						</call-template>
-					</otherwise>
-				</choose>
-			</when>
-			<otherwise>
-				<choose>
-					<when test="$_bestValue &gt;= 0">
-						<value-of select="$_bestValue + 1"/>
-					</when>
-					<otherwise>
-						<value-of select="string-length($text) + 1"/>
-					</otherwise>
-				</choose>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:variable name="breakables" select="' &#9;,;:?.!'" />
+		<xsl:variable name="c">
+			<xsl:value-of select="substring($breakables, $_position, 1)" />
+			<xsl:if test="$_position &gt; 2">
+				<xsl:value-of select="' '" />
+			</xsl:if>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="(string-length($text) &gt; 0) and (string-length($c) = 1)">
+				<xsl:choose>
+					<xsl:when test="contains($text, $c)">
+						<xsl:variable name="sub">
+							<xsl:call-template name="str.substringBeforeLast">
+								<xsl:with-param name="text" select="$text" />
+								<xsl:with-param name="delimiter" select="$c" />
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:variable name="subIndex" select="string-length($sub)" />
+						<xsl:variable name="newBest">
+							<xsl:choose>
+								<xsl:when test="$subIndex &gt; $_bestValue">
+									<xsl:value-of select="$subIndex" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$_bestValue" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+						<xsl:call-template name="str.lastBreakableCharacterPosition">
+							<xsl:with-param name="text" select="$text" />
+							<xsl:with-param name="_position" select="$_position + 1" />
+							<xsl:with-param name="_bestValue" select="$newBest" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="str.lastBreakableCharacterPosition">
+							<xsl:with-param name="text" select="$text" />
+							<xsl:with-param name="_position" select="$_position + 1" />
+							<xsl:with-param name="_bestValue" select="$_bestValue" />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="$_bestValue &gt;= 0">
+						<xsl:value-of select="$_bestValue + 1" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="string-length($text) + 1" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Wrap text -->
-	<template name="str.wrap">
+	<xsl:template name="str.wrap">
 		<!-- Text to wrap -->
-		<param name="text" select="."/>
+		<xsl:param name="text" select="." />
 		<!-- Maximum number of character per line -->
-		<param name="lineMaxLength" select="80"/>
+		<xsl:param name="lineMaxLength" select="80" />
 		<!-- End-of-line string -->
-		<param name="endlChar" select="$str.endl"/>
+		<xsl:param name="endlChar" select="$str.endl" />
 		
-		<variable name="hasEndl" select="contains($text, $endlChar)"/>
+		<xsl:variable name="hasEndl" select="contains($text, $endlChar)" />
 		
 		<!-- Get a line -->
-		<variable name="item">
-			<choose>
-				<when test="$hasEndl">
-					<value-of select="substring-before($text, $endlChar)"/>
-				</when>
-				<otherwise>
-					<value-of select="$text"/>
-				</otherwise>
-			</choose>
-		</variable>
+		<xsl:variable name="item">
+			<xsl:choose>
+				<xsl:when test="$hasEndl">
+					<xsl:value-of select="substring-before($text, $endlChar)" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$text" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		<!-- Get left blanks -->
-		<variable name="leftTrimmedItem">
-			<call-template name="str.trimLeft">
-				<with-param name="text" select="$item" />
-			</call-template>
-		</variable>
-		<variable name="leftBlankCount" select="(string-length($item) - string-length($leftTrimmedItem))" />
-		<variable name="remainingPartPadding" select="substring($item, 1, $leftBlankCount)" />
+		<xsl:variable name="leftTrimmedItem">
+			<xsl:call-template name="str.trimLeft">
+				<xsl:with-param name="text" select="$item" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="leftBlankCount" select="(string-length($item) - string-length($leftTrimmedItem))" />
+		<xsl:variable name="remainingPartPadding" select="substring($item, 1, $leftBlankCount)" />
 		
-		<if test="string-length($item) &gt; 0">
+		<xsl:if test="string-length($item) &gt; 0">
 			<!-- <text>(process: </text><value-of select="$item" /><text> of </text><value-of select="$text" /><text>)</text> -->
-			<choose>
-				<when test="string-length($item) &gt; $lineMaxLength">
+			<xsl:choose>
+				<xsl:when test="string-length($item) &gt; $lineMaxLength">
 					<!-- Text chunk before line length limit -->
-					<variable name="splititem" select="substring($item, 1, $lineMaxLength)"/>
+					<xsl:variable name="splititem" select="substring($item, 1, $lineMaxLength)" />
 					<!-- Position of the last breakable char in text chunk -->
-					<variable name="breakPosition">
-						<call-template name="str.lastBreakableCharacterPosition">
-							<with-param name="text" select="$splititem"/>
-						</call-template>
-					</variable>
-					<variable name="b" select="substring($splititem, $breakPosition, 1)"/>
-					<variable name="isBlank">
-						<choose>
-							<when test="string-length($b) &gt; 0">
-								<call-template name="str.isBlankChar">
-									<with-param name="char" select="$b"/>
-								</call-template>
-							</when>
-						</choose>
-					</variable>
-					<variable name="len">
-						<choose>
-							<when test="$breakPosition &gt; $lineMaxLength">
-								<value-of select="$lineMaxLength"/>
-							</when>
-							<otherwise>
-								<value-of select="$breakPosition"/>
-							</otherwise>
-						</choose>
-					</variable>
+					<xsl:variable name="breakPosition">
+						<xsl:call-template name="str.lastBreakableCharacterPosition">
+							<xsl:with-param name="text" select="$splititem" />
+						</xsl:call-template>
+					</xsl:variable>
+					<xsl:variable name="b" select="substring($splititem, $breakPosition, 1)" />
+					<xsl:variable name="isBlank">
+						<xsl:choose>
+							<xsl:when test="string-length($b) &gt; 0">
+								<xsl:call-template name="str.isBlankChar">
+									<xsl:with-param name="char" select="$b" />
+								</xsl:call-template>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:variable>
+					<xsl:variable name="len">
+						<xsl:choose>
+							<xsl:when test="$breakPosition &gt; $lineMaxLength">
+								<xsl:value-of select="$lineMaxLength" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$breakPosition" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
 					<!-- Text chunk before breakable -->
-					<variable name="part">
-						<choose>
-							<when test="($breakPosition = 1) and ($isBlank &gt; 0)">
-								<value-of select="substring($item, 2, $len - 1)"/>
-							</when>
-							<otherwise>
-								<value-of select="substring($item, 1, $len)"/>
-							</otherwise>
-						</choose>
-					</variable>
-					<if test="string-length($part) &gt; 0">
-						<value-of select="$part"/>
-						<value-of select="$endlChar"/>
-					</if>
-					<variable name="remaining" select="concat($remainingPartPadding, substring($item, $len + 1))"/>
+					<xsl:variable name="part">
+						<xsl:choose>
+							<xsl:when test="($breakPosition = 1) and ($isBlank &gt; 0)">
+								<xsl:value-of select="substring($item, 2, $len - 1)" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="substring($item, 1, $len)" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					<xsl:if test="string-length($part) &gt; 0">
+						<xsl:value-of select="$part" />
+						<xsl:value-of select="$endlChar" />
+					</xsl:if>
+					<xsl:variable name="remaining" select="concat($remainingPartPadding, substring($item, $len + 1))" />
 					<!-- remaining part -->
-					<if test="string-length($remaining) &gt; 0">
+					<xsl:if test="string-length($remaining) &gt; 0">
 						<!-- <text>(remain: </text><value-of select="$remaining" /><text>)</text> -->
-						<call-template name="str.wrap">
-							<with-param name="text" select="$remaining"/>
-							<with-param name="lineMaxLength" select="$lineMaxLength"/>
-							<with-param name="endlChar" select="$endlChar"/>
-						</call-template>
-					</if>
-				</when>
-				<otherwise>
-					<value-of select="$item"/>
-				</otherwise>
-			</choose>
-		</if>
+						<xsl:call-template name="str.wrap">
+							<xsl:with-param name="text" select="$remaining" />
+							<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
+							<xsl:with-param name="endlChar" select="$endlChar" />
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$item" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
 		<!-- other lines -->
-		<if test="$hasEndl = true()">
-			<value-of select="$endlChar"/>
-			<variable name="otherLines" select="substring-after($text, $endlChar)"/>
-			<if test="string-length($otherLines) &gt; 0">
+		<xsl:if test="$hasEndl = true()">
+			<xsl:value-of select="$endlChar" />
+			<xsl:variable name="otherLines" select="substring-after($text, $endlChar)" />
+			<xsl:if test="string-length($otherLines) &gt; 0">
 				<!-- <text>(continue with: </text><value-of select="$otherLines" /><text>)</text> -->
-				<call-template name="str.wrap">
-					<with-param name="text" select="$otherLines"/>
-					<with-param name="lineMaxLength" select="$lineMaxLength"/>
-					<with-param name="endlChar" select="$endlChar"/>
-				</call-template>
-			</if>
-		</if>
-	</template>
+				<xsl:call-template name="str.wrap">
+					<xsl:with-param name="text" select="$otherLines" />
+					<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
+					<xsl:with-param name="endlChar" select="$endlChar" />
+				</xsl:call-template>
+			</xsl:if>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Indent a text block by adding indentaction characters at the beginning of all text lines -->
-	<template name="str.prependLine">
-		<param name="text"/>
-		<param name="level" select="1"/>
-		<param name="prependedText">
-			<text>	</text>
-		</param>
-		<param name="endlChar" select="$str.endl"/>
-		<param name="wrap" select="false()"/>
-		<param name="lineMaxLength" select="80"/>
-		<variable name="fullPrependedText">
-			<call-template name="str.repeat">
-				<with-param name="iterations" select="$level"/>
-				<with-param name="text" select="$prependedText"/>
-			</call-template>
-		</variable>
-		<variable name="realLineMaxLength" select="$lineMaxLength - string-length($fullPrependedText)"/>
-		<variable name="content">
-			<choose>
-				<when test="$wrap">
-					<call-template name="str.wrap">
-						<with-param name="text" select="$text"/>
-						<with-param name="endlChar" select="$endlChar"/>
-						<with-param name="lineMaxLength" select="$realLineMaxLength"/>
-					</call-template>
-				</when>
-				<otherwise>
-					<value-of select="$text"/>
-				</otherwise>
-			</choose>
-		</variable>
-		<value-of select="$fullPrependedText"/>
-		<call-template name="str.replaceAll">
-			<with-param name="text">
-				<value-of select="$content"/>
-			</with-param>
-			<with-param name="replace">
-				<value-of select="$endlChar"/>
-			</with-param>
-			<with-param name="by">
-				<value-of select="$endlChar"/>
-				<value-of select="$fullPrependedText"/>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="str.prependLine">
+		<xsl:param name="text" />
+		<xsl:param name="level" select="1" />
+		<xsl:param name="prependedText">
+			<xsl:text>	</xsl:text>
+		</xsl:param>
+		<xsl:param name="endlChar" select="$str.endl" />
+		<xsl:param name="wrap" select="false()" />
+		<xsl:param name="lineMaxLength" select="80" />
+		<xsl:variable name="fullPrependedText">
+			<xsl:call-template name="str.repeat">
+				<xsl:with-param name="iterations" select="$level" />
+				<xsl:with-param name="text" select="$prependedText" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="realLineMaxLength" select="$lineMaxLength - string-length($fullPrependedText)" />
+		<xsl:variable name="content">
+			<xsl:choose>
+				<xsl:when test="$wrap">
+					<xsl:call-template name="str.wrap">
+						<xsl:with-param name="text" select="$text" />
+						<xsl:with-param name="endlChar" select="$endlChar" />
+						<xsl:with-param name="lineMaxLength" select="$realLineMaxLength" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$text" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:value-of select="$fullPrependedText" />
+		<xsl:call-template name="str.replaceAll">
+			<xsl:with-param name="text">
+				<xsl:value-of select="$content" />
+			</xsl:with-param>
+			<xsl:with-param name="replace">
+				<xsl:value-of select="$endlChar" />
+			</xsl:with-param>
+			<xsl:with-param name="by">
+				<xsl:value-of select="$endlChar" />
+				<xsl:value-of select="$fullPrependedText" />
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Trim text at the beginning and the end -->
-	<template name="str.trim">
+	<xsl:template name="str.trim">
 		<!-- Text to trim -->
-		<param name="text" select="."/>
-		<variable name="lTrimmed">
-			<call-template name="str.trimLeft">
-				<with-param name="text" select="$text"/>
-			</call-template>
-		</variable>
-		<call-template name="str.trimRight">
-			<with-param name="text" select="$lTrimmed"/>
-		</call-template>
-	</template>
+		<xsl:param name="text" select="." />
+		<xsl:variable name="lTrimmed">
+			<xsl:call-template name="str.trimLeft">
+				<xsl:with-param name="text" select="$text" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="str.trimRight">
+			<xsl:with-param name="text" select="$lTrimmed" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="str.trimLeft">
-		<param name="text"/>
-		<choose>
-			<when test="starts-with($text,'&#9;') or starts-with($text,'&#10;') or starts-with($text,'&#13;') or starts-with($text,' ')">
-				<call-template name="str.trimLeft">
-					<with-param name="text" select="substring($text, 2)"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$text"/>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="str.trimLeft">
+		<xsl:param name="text" />
+		<xsl:choose>
+			<xsl:when test="starts-with($text,'&#9;') or starts-with($text,'&#10;') or starts-with($text,'&#13;') or starts-with($text,' ')">
+				<xsl:call-template name="str.trimLeft">
+					<xsl:with-param name="text" select="substring($text, 2)" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="str.trimRight">
-		<param name="text"/>
-		<variable name="last-char">
-			<value-of select="substring($text, string-length($text), 1)"/>
-		</variable>
-		<choose>
-			<when test="($last-char = '&#9;') or ($last-char = '&#10;') or ($last-char = '&#13;') or ($last-char = ' ')">
-				<call-template name="str.trimRight">
-					<with-param name="text" select="substring($text, 1, string-length($text) - 1)"/>
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="$text"/>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="str.trimRight">
+		<xsl:param name="text" />
+		<xsl:variable name="last-char">
+			<xsl:value-of select="substring($text, string-length($text), 1)" />
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="($last-char = '&#9;') or ($last-char = '&#10;') or ($last-char = '&#13;') or ($last-char = ' ')">
+				<xsl:call-template name="str.trimRight">
+					<xsl:with-param name="text" select="substring($text, 1, string-length($text) - 1)" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<variable name="str.smallCase" select="'abcdefghijklmnopqrstuvwxyz'"/>
-	<variable name="str.upperCase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-	<template name="str.toUpper">
-		<param name="text" select="."/>
-		<value-of select="translate($text, $str.smallCase, $str.upperCase)"/>
-	</template>
+	<xsl:variable name="str.smallCase" select="'abcdefghijklmnopqrstuvwxyz'" />
+	<xsl:variable name="str.upperCase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
+	<xsl:template name="str.toUpper">
+		<xsl:param name="text" select="." />
+		<xsl:value-of select="translate($text, $str.smallCase, $str.upperCase)" />
+	</xsl:template>
 
-	<template name="str.toLower">
-		<param name="text" select="."/>
-		<value-of select="translate($text, $str.upperCase, $str.smallCase)"/>
-	</template>
+	<xsl:template name="str.toLower">
+		<xsl:param name="text" select="." />
+		<xsl:value-of select="translate($text, $str.upperCase, $str.smallCase)" />
+	</xsl:template>
 
-	<variable name="str.ascii">
-		<text> !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</text>
-	</variable>
-	<variable name="str.hex">
-		<text>0123456789ABCDEF</text>
-	</variable>
+	<xsl:variable name="str.ascii">
+		<xsl:text> !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</xsl:text>
+	</xsl:variable>
+	<xsl:variable name="str.hex">
+		<xsl:text>0123456789ABCDEF</xsl:text>
+	</xsl:variable>
 	<!-- http://lists.xml.org/archives/xml-dev/200109/msg00248.html -->
-	<template name="str.asciiToHex">
-		<param name="text"/>
-		<param name="prefix"/>
-		<param name="suffix"/>
-		<if test="$text">
-			<variable name="firstChar" select="substring($text, 1, 1)"/>
-			<variable name="asciiValue" select="string-length(substring-before($str.ascii, $firstChar)) + 32"/>
-			<variable name="hexDigit1" select="substring($str.hex, floor($asciiValue div 16) + 1, 1)"/>
-			<variable name="hexDigit2" select="substring($str.hex, $asciiValue mod 16 + 1, 1)"/>
-			<if test="$prefix">
-				<value-of select="$prefix"/>
-			</if>
-			<value-of select="concat($hexDigit1, $hexDigit2)"/>
-			<if test="$suffix">
-				<value-of select="$suffix"/>
-			</if>
-			<if test="string-length($text) &gt; 1">
-				<call-template name="str.asciiToHex">
-					<with-param name="text" select="substring($text, 2)"/>
-					<with-param name="prefix" select="$prefix"/>
-					<with-param name="suffix" select="$suffix"/>
-				</call-template>
-			</if>
-		</if>
-	</template>
+	<xsl:template name="str.asciiToHex">
+		<xsl:param name="text" />
+		<xsl:param name="prefix" />
+		<xsl:param name="suffix" />
+		<xsl:if test="$text">
+			<xsl:variable name="firstChar" select="substring($text, 1, 1)" />
+			<xsl:variable name="asciiValue" select="string-length(substring-before($str.ascii, $firstChar)) + 32" />
+			<xsl:variable name="hexDigit1" select="substring($str.hex, floor($asciiValue div 16) + 1, 1)" />
+			<xsl:variable name="hexDigit2" select="substring($str.hex, $asciiValue mod 16 + 1, 1)" />
+			<xsl:if test="$prefix">
+				<xsl:value-of select="$prefix" />
+			</xsl:if>
+			<xsl:value-of select="concat($hexDigit1, $hexDigit2)" />
+			<xsl:if test="$suffix">
+				<xsl:value-of select="$suffix" />
+			</xsl:if>
+			<xsl:if test="string-length($text) &gt; 1">
+				<xsl:call-template name="str.asciiToHex">
+					<xsl:with-param name="text" select="substring($text, 2)" />
+					<xsl:with-param name="prefix" select="$prefix" />
+					<xsl:with-param name="suffix" select="$suffix" />
+				</xsl:call-template>
+			</xsl:if>
+		</xsl:if>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

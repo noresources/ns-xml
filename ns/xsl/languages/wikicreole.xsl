@@ -3,119 +3,119 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Creole 1.0 basic syntax -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0">
-	<import href="../strings.xsl"/>
-	<param name="creole.support.anchor" select="false()"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	<xsl:import href="../strings.xsl" />
+	<xsl:param name="creole.support.anchor" select="false()" />
 	<!-- Force linebreak -->
-	<param name="creole.endl">
-		<text>\\</text>
-	</param>
+	<xsl:param name="creole.endl">
+		<xsl:text>\\</xsl:text>
+	</xsl:param>
 	<!-- Horizontal line -->
-	<param name="creole.line">
-		<call-template name="endl"/>
-		<text>----</text>
-		<call-template name="endl"/>
-	</param>
+	<xsl:param name="creole.line">
+		<xsl:call-template name="endl" />
+		<xsl:text>----</xsl:text>
+		<xsl:call-template name="endl" />
+	</xsl:param>
 	<!-- base for all surrounding-based syntax -->
-	<template name="creole.surround">
-		<param name="content" select="."/>
-		<param name="before"/>
-		<param name="after" select="$before"/>
-		<param name="acceptEmpty" select="false"/>
-		<if test="$acceptEmpty or (string-length($content) &gt; 0)">
-			<value-of select="$before"/>
-			<value-of select="$content"/>
-			<value-of select="$after"/>
-		</if>
-	</template>
+	<xsl:template name="creole.surround">
+		<xsl:param name="content" select="." />
+		<xsl:param name="before" />
+		<xsl:param name="after" select="$before" />
+		<xsl:param name="acceptEmpty" select="false" />
+		<xsl:if test="$acceptEmpty or (string-length($content) &gt; 0)">
+			<xsl:value-of select="$before" />
+			<xsl:value-of select="$content" />
+			<xsl:value-of select="$after" />
+		</xsl:if>
+	</xsl:template>
 
-	<template name="creole.prepend">
-		<param name="content" select="."/>
-		<param name="before"/>
-		<param name="repeat" select="1"/>
-		<param name="acceptEmpty" select="false"/>
-		<if test="$acceptEmpty or (string-length($content) &gt; 0)">
-			<call-template name="endl"/>
-			<call-template name="str.repeat">
-				<with-param name="iterations" select="$repeat"/>
-				<with-param name="text" select="$before"/>
-			</call-template>
-			<text> </text>
-			<value-of select="normalize-space($content)"/>
-		</if>
-	</template>
+	<xsl:template name="creole.prepend">
+		<xsl:param name="content" select="." />
+		<xsl:param name="before" />
+		<xsl:param name="repeat" select="1" />
+		<xsl:param name="acceptEmpty" select="false" />
+		<xsl:if test="$acceptEmpty or (string-length($content) &gt; 0)">
+			<xsl:call-template name="endl" />
+			<xsl:call-template name="str.repeat">
+				<xsl:with-param name="iterations" select="$repeat" />
+				<xsl:with-param name="text" select="$before" />
+			</xsl:call-template>
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="normalize-space($content)" />
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Bold -->
-	<template name="creole.bold">
-		<param name="content" select="."/>
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content"/>
-			<with-param name="before" select="'**'"/>
-		</call-template>
-	</template>
+	<xsl:template name="creole.bold">
+		<xsl:param name="content" select="." />
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="'**'" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Italic -->
-	<template name="creole.italic">
-		<param name="content" select="."/>
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content"/>
-			<with-param name="before" select="'//'"/>
-		</call-template>
-	</template>
+	<xsl:template name="creole.italic">
+		<xsl:param name="content" select="." />
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="'//'" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Preformatted (no wiki markup) -->
-	<template name="creole.pre">
-		<param name="content" select="."/>
+	<xsl:template name="creole.pre">
+		<xsl:param name="content" select="." />
 		<!-- If false, add line break before and after preformat markers -->
-		<param name="inline" select="true()"/>
-		<if test="string-length($content) &gt; 0">
-			<if test="not ($inline)">
-				<call-template name="endl"/>
-			</if>
-			<text>{{{</text>
-			<if test="not ($inline)">
-				<call-template name="endl"/>
-			</if>
-			<value-of select="$content"/>
-			<if test="not ($inline)">
-				<call-template name="endl"/>
-			</if>
-			<text>}}}</text>
-		</if>
-	</template>
+		<xsl:param name="inline" select="true()" />
+		<xsl:if test="string-length($content) &gt; 0">
+			<xsl:if test="not ($inline)">
+				<xsl:call-template name="endl" />
+			</xsl:if>
+			<xsl:text>{{{</xsl:text>
+			<xsl:if test="not ($inline)">
+				<xsl:call-template name="endl" />
+			</xsl:if>
+			<xsl:value-of select="$content" />
+			<xsl:if test="not ($inline)">
+				<xsl:call-template name="endl" />
+			</xsl:if>
+			<xsl:text>}}}</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Unordered list item -->
-	<template name="creole.unorderedList">
-		<param name="content" select="."/>
-		<param name="level" select="1"/>
-		<call-template name="creole.prepend">
-			<with-param name="content" select="$content"/>
-			<with-param name="before" select="':'"/>
-			<with-param name="repeat" select="$level"/>
-		</call-template>
-	</template>
+	<xsl:template name="creole.unorderedList">
+		<xsl:param name="content" select="." />
+		<xsl:param name="level" select="1" />
+		<xsl:call-template name="creole.prepend">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="':'" />
+			<xsl:with-param name="repeat" select="$level" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Heading -->
-	<template name="creole.heading">
-		<param name="content" select="."/>
-		<param name="level" select="1"/>
-		<param name="addAnchor" select="true()"/>
-		<call-template name="endl"/>
-		<call-template name="str.repeat">
-			<with-param name="iterations" select="$level"/>
-			<with-param name="text" select="'='"/>
-		</call-template>
-		<text> </text>
-		<value-of select="$content"/>
-		<if test="$addAnchor">
-			<call-template name="creole.anchor">
-				<with-param name="name" select="normalize-space($content)"/>
-			</call-template>
-		</if>
-	</template>
+	<xsl:template name="creole.heading">
+		<xsl:param name="content" select="." />
+		<xsl:param name="level" select="1" />
+		<xsl:param name="addAnchor" select="true()" />
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="str.repeat">
+			<xsl:with-param name="iterations" select="$level" />
+			<xsl:with-param name="text" select="'='" />
+		</xsl:call-template>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="$content" />
+		<xsl:if test="$addAnchor">
+			<xsl:call-template name="creole.anchor">
+				<xsl:with-param name="name" select="normalize-space($content)" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Anchor (not supported) -->
-	<template name="creole.anchor">
+	<xsl:template name="creole.anchor">
 		<!-- 
 		<param name="name" select="." />
 		<if test="string-length($name) > 0">
@@ -125,59 +125,59 @@
 			<text>]]</text>
 		</if>
 		 -->
-	</template>
+	</xsl:template>
 
 	<!-- Link -->
-	<template name="creole.link">
-		<param name="url" select="."/>
-		<param name="label"/>
-		<if test="string-length($url) &gt; 0">
-			<text>[[</text>
-			<value-of select="$url"/>
-			<if test="$label">
-				<text>|</text>
-				<value-of select="$label"/>
-			</if>
-			<text>]]</text>
-		</if>
-	</template>
+	<xsl:template name="creole.link">
+		<xsl:param name="url" select="." />
+		<xsl:param name="label" />
+		<xsl:if test="string-length($url) &gt; 0">
+			<xsl:text>[[</xsl:text>
+			<xsl:value-of select="$url" />
+			<xsl:if test="$label">
+				<xsl:text>|</xsl:text>
+				<xsl:value-of select="$label" />
+			</xsl:if>
+			<xsl:text>]]</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Image -->
-	<template name="creole.image">
-		<param name="url" select="."/>
-		<param name="label"/>
-		<if test="string-length($url) &gt; 0">
-			<text>{{</text>
-			<value-of select="$url"/>
-			<if test="$label">
-				<text>|</text>
-				<value-of select="$label"/>
-			</if>
-			<text>}}</text>
-		</if>
-	</template>
+	<xsl:template name="creole.image">
+		<xsl:param name="url" select="." />
+		<xsl:param name="label" />
+		<xsl:if test="string-length($url) &gt; 0">
+			<xsl:text>{{</xsl:text>
+			<xsl:value-of select="$url" />
+			<xsl:if test="$label">
+				<xsl:text>|</xsl:text>
+				<xsl:value-of select="$label" />
+			</xsl:if>
+			<xsl:text>}}</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Table header cell -->
-	<template name="creole.table.header">
-		<param name="content" select="."/>
-		<param name="last" select="false()"/>
-		<text>|= </text>
-		<value-of select="$content"/>
-		<if test="$last">
-			<text> |</text>
-			<call-template name="endl"/>
-		</if>
-	</template>
+	<xsl:template name="creole.table.header">
+		<xsl:param name="content" select="." />
+		<xsl:param name="last" select="false()" />
+		<xsl:text>|= </xsl:text>
+		<xsl:value-of select="$content" />
+		<xsl:if test="$last">
+			<xsl:text> |</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Table cell -->
-	<template name="creole.table.cell">
-		<param name="content" select="."/>
-		<param name="last" select="false()"/>
-		<text>| </text>
-		<value-of select="$content"/>
-		<if test="$last">
-			<text> |</text>
-		</if>
-	</template>
+	<xsl:template name="creole.table.cell">
+		<xsl:param name="content" select="." />
+		<xsl:param name="last" select="false()" />
+		<xsl:text>| </xsl:text>
+		<xsl:value-of select="$content" />
+		<xsl:if test="$last">
+			<xsl:text> |</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

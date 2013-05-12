@@ -3,32 +3,32 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Helper template to Retrieve program informations in scripts  -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<output method="text" encoding="utf-8"/>
-	<param name="name"/>
-	<template match="/prg:program">
-		<choose>
-			<when test="$name = 'name'">
-				<value-of select="normalize-space(prg:name)"/>
-			</when>
-			<when test="$name = 'label'">
-				<choose>
-					<when test="prg:ui/prg:label">
-						<value-of select="normalize-space(prg:ui/prg:label)"/>
-					</when>
-					<otherwise>
-						<value-of select="normalize-space(prg:name)"/>
-					</otherwise>
-				</choose>
-			</when>
-			<when test="$name = 'author'">
-				<value-of select="normalize-space(prg:author)"/>
-			</when>
-			<when test="$name = 'version'">
-				<value-of select="normalize-space(prg:version)"/>
-			</when>
-		</choose>
-		<value-of select="'&#10;'"/>
-	</template>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:output method="text" encoding="utf-8" />
+	<xsl:param name="name" />
+	<xsl:template match="/prg:program">
+		<xsl:choose>
+			<xsl:when test="$name = 'name'">
+				<xsl:value-of select="normalize-space(prg:name)" />
+			</xsl:when>
+			<xsl:when test="$name = 'label'">
+				<xsl:choose>
+					<xsl:when test="prg:ui/prg:label">
+						<xsl:value-of select="normalize-space(prg:ui/prg:label)" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="normalize-space(prg:name)" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$name = 'author'">
+				<xsl:value-of select="normalize-space(prg:author)" />
+			</xsl:when>
+			<xsl:when test="$name = 'version'">
+				<xsl:value-of select="normalize-space(prg:version)" />
+			</xsl:when>
+		</xsl:choose>
+		<xsl:value-of select="'&#10;'" />
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

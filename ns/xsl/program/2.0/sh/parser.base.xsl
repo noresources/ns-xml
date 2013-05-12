@@ -3,63 +3,63 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Shell parser base templates -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="base.xsl" />
+	<xsl:import href="base.xsl" />
 
-	<param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
+	<xsl:param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
 
-	<template name="prg.sh.parser.boundVariableName">
+	<xsl:template name="prg.sh.parser.boundVariableName">
 		<!-- Variable name node -->
-		<param name="variableNode" />
+		<xsl:param name="variableNode" />
 		<!-- Option/Positional argument node -->
-		<param name="node" select="$variableNode/../.." />
-		<param name="usePrefix" select="($prg.sh.parser.prefixSubcommandOptionVariable = 'yes')" />
+		<xsl:param name="node" select="$variableNode/../.." />
+		<xsl:param name="usePrefix" select="($prg.sh.parser.prefixSubcommandOptionVariable = 'yes')" />
 
-		<choose>
-			<when test="$node/self::prg:program">
-				<call-template name="sh.validIdentifierName">
-					<with-param name="name" select="$variableNode" />
-				</call-template>
-			</when>
-			<when test="$node/self::prg:subcommand">
-				<call-template name="sh.validIdentifierName">
-					<with-param name="name">
-						<if test="$usePrefix">
-							<value-of select="normalize-space($node/prg:name)" />
-							<text>_</text>
-						</if>
-						<value-of select="normalize-space($variableNode)" />
-					</with-param>
-				</call-template>
-			</when>
-			<when test="$node/../..">
-				<call-template name="prg.sh.parser.boundVariableName">
-					<with-param name="variableNode" select="$variableNode" />
-					<with-param name="node" select="$node/../.." />
-					<with-param name="usePrefix" select="$usePrefix" />
-				</call-template>
-			</when>
-			<otherwise>
-				<value-of select="normalize-space($variableNode)" />
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:choose>
+			<xsl:when test="$node/self::prg:program">
+				<xsl:call-template name="sh.validIdentifierName">
+					<xsl:with-param name="name" select="$variableNode" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$node/self::prg:subcommand">
+				<xsl:call-template name="sh.validIdentifierName">
+					<xsl:with-param name="name">
+						<xsl:if test="$usePrefix">
+							<xsl:value-of select="normalize-space($node/prg:name)" />
+							<xsl:text>_</xsl:text>
+						</xsl:if>
+						<xsl:value-of select="normalize-space($variableNode)" />
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$node/../..">
+				<xsl:call-template name="prg.sh.parser.boundVariableName">
+					<xsl:with-param name="variableNode" select="$variableNode" />
+					<xsl:with-param name="node" select="$node/../.." />
+					<xsl:with-param name="usePrefix" select="$usePrefix" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="normalize-space($variableNode)" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Prefix of all parser functions -->
-	<variable name="prg.sh.parser.functionNamePrefix">
-		<text>parse_</text>
-	</variable>
+	<xsl:variable name="prg.sh.parser.functionNamePrefix">
+		<xsl:text>parse_</xsl:text>
+	</xsl:variable>
 
 	<!-- Prefix of all parser variable -->
-	<variable name="prg.sh.parser.variableNamePrefix">
-		<text>parser_</text>
-	</variable>
+	<xsl:variable name="prg.sh.parser.variableNamePrefix">
+		<xsl:text>parser_</xsl:text>
+	</xsl:variable>
 
-	<template match="//prg:databinding/prg:variable">
-		<call-template name="prg.sh.parser.boundVariableName">
-			<with-param name="variableNode" select="." />
-		</call-template>
-	</template>
+	<xsl:template match="//prg:databinding/prg:variable">
+		<xsl:call-template name="prg.sh.parser.boundVariableName">
+			<xsl:with-param name="variableNode" select="." />
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

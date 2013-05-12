@@ -3,443 +3,443 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Shell parser variables -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
-	<import href="parser.base.xsl" />
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="parser.base.xsl" />
 
 	<!-- Name of the used shell interpreter -->
-	<variable name="prg.sh.parser.vName_shell">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>shell</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_shell">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>shell</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<!-- Command line items -->
-	<variable name="prg.sh.parser.vName_input">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>input</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_input">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>input</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<!-- Command line item count -->
-	<variable name="prg.sh.parser.vName_itemcount">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>itemcount</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_itemcount">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>itemcount</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<!-- Value of the first index in a table -->
-	<variable name="prg.sh.parser.vName_startindex">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>startindex</text>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.var_startindex">
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_startindex" />
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_startindex">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>startindex</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.var_startindex">
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$prg.sh.parser.vName_startindex" />
+		</xsl:call-template>
+	</xsl:variable>
 
 	<!-- Index of the processed command line item -->
-	<variable name="prg.sh.parser.vName_index">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>index</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_index">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>index</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<!-- Character index in the processed command line item -->
-	<variable name="prg.sh.parser.vName_subindex">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>subindex</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_subindex">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>subindex</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<!-- Current command line item -->
-	<variable name="prg.sh.parser.vName_item">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>item</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_item">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>item</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_option">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>option</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_option">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>option</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_optiontail">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>optiontail</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_optiontail">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>optiontail</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_ma_local_count">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>ma_local_count</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_ma_local_count">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>ma_local_count</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_ma_total_count">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>ma_total_count</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_ma_total_count">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>ma_total_count</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	<!-- Selected subcommand -->
-	<variable name="prg.sh.parser.vName_subcommand">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>subcommand</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_subcommand">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>subcommand</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.var_subcommand">
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-			<with-param name="quoted" select="true()" />
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_subcommand_expected">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>subcommand_expected</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.var_subcommand">
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+			<xsl:with-param name="quoted" select="true()" />
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_subcommand_expected">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>subcommand_expected</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_values">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>values</text>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_required">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>required</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_values">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>values</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_required">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>required</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_warnings">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>warnings</text>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_errors">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>errors</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_warnings">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>warnings</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_errors">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>errors</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_fatalerrors">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>fatalerrors</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_fatalerrors">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>fatalerrors</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_set_default">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>set_default</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_set_default">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>set_default</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_aborted">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.variableNamePrefix" />
-				<text>aborted</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_aborted">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>aborted</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 		
-	<variable name="prg.sh.parser.vName_OK">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>OK</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.var_OK">
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_OK" />
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_ERROR">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>ERROR</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_OK">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>OK</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.var_OK">
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_ERROR">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>ERROR</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.var_ERROR">
-		<call-template name="sh.var">
-			<with-param name="name" select="$prg.sh.parser.vName_ERROR" />
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_SC_OK">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>SC_OK</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.var_ERROR">
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$prg.sh.parser.vName_ERROR" />
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_SC_OK">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>SC_OK</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_SC_ERROR">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>SC_ERROR</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.vName_SC_UNKNOWN">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>SC_UNKNOWN</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_SC_ERROR">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>SC_ERROR</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.vName_SC_UNKNOWN">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>SC_UNKNOWN</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.vName_SC_SKIP">
-		<call-template name="str.toUpper">
-			<with-param name="text">
-				<call-template name="prg.prefixedName">
-					<with-param name="name">
-						<value-of select="$prg.sh.parser.variableNamePrefix" />
-						<text>SC_SKIP</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.vName_SC_SKIP">
+		<xsl:call-template name="str.toUpper">
+			<xsl:with-param name="text">
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>SC_SKIP</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<!-- The main command line parser function -->
-	<variable name="prg.sh.parser.fName_parse">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<text>parse</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_parse">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:text>parse</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<!-- Check number interval -->
-	<variable name="prg.sh.parser.fName_numberLesserEqualcheck">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>numberlesserequalcheck</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_numberLesserEqualcheck">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>numberlesserequalcheck</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<!-- Restricted values validator -->
-	<variable name="prg.sh.parser.fName_enumcheck">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>enumcheck</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_enumcheck">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>enumcheck</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_addvalue">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>addvalue</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_addvalue">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>addvalue</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_displayerrors">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>displayerrors</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_displayerrors">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>displayerrors</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_setoptionpresence">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>setoptionpresence</text>
-			</with-param>
-		</call-template>
-	</variable>
-	<variable name="prg.sh.parser.fName_checkrequired">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>checkrequired</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_setoptionpresence">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>setoptionpresence</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.sh.parser.fName_checkrequired">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>checkrequired</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_checkminmax">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>checkminmax</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_checkminmax">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>checkminmax</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<!-- Set default values for single argument options -->
-	<variable name="prg.sh.parser.fName_setdefaultarguments">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>setdefaultarguments</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_setdefaultarguments">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>setdefaultarguments</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_addmessage">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>addmessage</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_addmessage">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>addmessage</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_addwarning">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>addwarning</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_addwarning">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>addwarning</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_adderror">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>adderror</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_adderror">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>adderror</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_addfatalerror">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>addfatalerror</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_addfatalerror">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>addfatalerror</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_debug">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>debug</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_debug">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>debug</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_process_subcommand_option">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>process_subcommand_option</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_process_subcommand_option">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>process_subcommand_option</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_process_option">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>process_option</text>
-			</with-param>
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.sh.parser.fName_process_option">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>process_option</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
-	<variable name="prg.sh.parser.fName_pathaccesscheck">
-		<call-template name="prg.prefixedName">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>pathaccesscheck</text>
-			</with-param>
-		</call-template>
-	</variable>
-</stylesheet>
+	<xsl:variable name="prg.sh.parser.fName_pathaccesscheck">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>pathaccesscheck</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+</xsl:stylesheet>

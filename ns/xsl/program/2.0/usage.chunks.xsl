@@ -3,484 +3,484 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Program usage text chunks -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="base.xsl"/>
-	<import href="usage.strings.xsl"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="base.xsl" />
+	<xsl:import href="usage.strings.xsl" />
 	<!-- String representing an indentation level -->
-	<param name="prg.usage.indentChar" select="'&#9;'"/>
+	<xsl:param name="prg.usage.indentChar" select="'&#9;'" />
 	<!-- Indicates if documentation text have to be wrapped -->
-	<param name="prg.usage.wrap" select="true()"/>
+	<xsl:param name="prg.usage.wrap" select="true()" />
 	<!-- Maximum text line length (for text wrapping) -->
-	<param name="prg.usage.lineMaxLength" select="80"/>
+	<xsl:param name="prg.usage.lineMaxLength" select="80" />
 	<!-- Literal representation of an option argument/value type -->
-	<template name="prg.usage.typeDisplay">
+	<xsl:template name="prg.usage.typeDisplay">
 		<!-- type Node -->
-		<param name="typeNode"/>
-		<choose>
-			<when test="$typeNode/prg:string">
-				<text>string</text>
-			</when>
-			<when test="$typeNode/prg:number">
-				<text>number</text>
-			</when>
-			<when test="$typeNode/prg:integer">
-				<text>integer</text>
-			</when>
-			<when test="$typeNode/prg:path">
-				<text>path</text>
-			</when>
-			<when test="$typeNode/prg:existingcommand">
-				<text>existing command</text>
-			</when>
-			<otherwise>
-				<text>...</text>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="typeNode" />
+		<xsl:choose>
+			<xsl:when test="$typeNode/prg:string">
+				<xsl:text>string</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:number">
+				<xsl:text>number</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:integer">
+				<xsl:text>integer</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:path">
+				<xsl:text>path</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:existingcommand">
+				<xsl:text>existing command</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>...</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Display the option description -->
-	<template name="prg.usage.descriptionDisplay">
-		<param name="textNode" select="."/>
-		<for-each select="$textNode/node()">
-			<choose>
-				<when test="self::node()[1][self::text()]">
-					<value-of select="normalize-space(self::node()[1])"/>
-				</when>
-				<otherwise>
-					<apply-templates select="."/>
-				</otherwise>
-			</choose>
-		</for-each>
-	</template>
+	<xsl:template name="prg.usage.descriptionDisplay">
+		<xsl:param name="textNode" select="." />
+		<xsl:for-each select="$textNode/node()">
+			<xsl:choose>
+				<xsl:when test="self::node()[1][self::text()]">
+					<xsl:value-of select="normalize-space(self::node()[1])" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:apply-templates select="." />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- List of enumerated values -->
-	<template name="prg.usage.selectValueList">
+	<xsl:template name="prg.usage.selectValueList">
 		<!-- Option node -->
-		<param name="optionNode" select="."/>
+		<xsl:param name="optionNode" select="." />
 		<!-- Display mode: 'inline' or anything else -->
-		<param name="mode"/>
+		<xsl:param name="mode" />
 		<!-- Indicates if the text have to be wrapped -->
-		<param name="wrap" select="$prg.usage.wrap"/>
-		<variable name="level">
-			<call-template name="prg.optionLevel">
-				<with-param name="optionNode" select="$optionNode"/>
-			</call-template>
-		</variable>
-		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 3)"/>
-		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="$prg.usage.indentChar"/>
-			<with-param name="wrap" select="$wrap"/>
-			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
-			<with-param name="text">
-				<choose>
-					<when test="$mode = 'inline'">
-						<call-template name="endl"/>
-						<for-each select="$optionNode/prg:option">
-							<value-of select="normalize-space(.)"/>
-							<choose>
-								<when test="position() = (last() - 1)">
-									<text> </text>
-									<value-of select="$prg.usage.str.or"/>
-									<text> </text>
-								</when>
-								<when test="position() != last()">
-									<text>, </text>
-								</when>
-							</choose>
-						</for-each>
-					</when>
-					<otherwise>
-						<for-each select="$optionNode/prg:option">
-							<call-template name="endl"/>
-							<text>- </text>
-							<value-of select="normalize-space(.)"/>
-						</for-each>
-					</otherwise>
-				</choose>
-			</with-param>
-		</call-template>
-	</template>
+		<xsl:param name="wrap" select="$prg.usage.wrap" />
+		<xsl:variable name="level">
+			<xsl:call-template name="prg.optionLevel">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 3)" />
+		<xsl:call-template name="str.prependLine">
+			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+			<xsl:with-param name="wrap" select="$wrap" />
+			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
+			<xsl:with-param name="text">
+				<xsl:choose>
+					<xsl:when test="$mode = 'inline'">
+						<xsl:call-template name="endl" />
+						<xsl:for-each select="$optionNode/prg:option">
+							<xsl:value-of select="normalize-space(.)" />
+							<xsl:choose>
+								<xsl:when test="position() = (last() - 1)">
+									<xsl:text> </xsl:text>
+									<xsl:value-of select="$prg.usage.str.or" />
+									<xsl:text> </xsl:text>
+								</xsl:when>
+								<xsl:when test="position() != last()">
+									<xsl:text>, </xsl:text>
+								</xsl:when>
+							</xsl:choose>
+						</xsl:for-each>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:for-each select="$optionNode/prg:option">
+							<xsl:call-template name="endl" />
+							<xsl:text>- </xsl:text>
+							<xsl:value-of select="normalize-space(.)" />
+						</xsl:for-each>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.usage.firstOptionNameDisplay">
-		<param name="optionNode" select="."/>
-		<choose>
-			<when test="$optionNode/prg:names/prg:short">
-				<call-template name="prg.cliOptionName">
-					<with-param name="nameNode" select="$optionNode/prg:names/prg:short[1]"/>
-				</call-template>
-			</when>
-			<when test="$optionNode/prg:names/prg:long">
-				<call-template name="prg.cliOptionName">
-					<with-param name="nameNode" select="$optionNode/prg:names/prg:long[1]"/>
-				</call-template>
-			</when>
-		</choose>
-	</template>
+	<xsl:template name="prg.usage.firstOptionNameDisplay">
+		<xsl:param name="optionNode" select="." />
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:names/prg:short">
+				<xsl:call-template name="prg.cliOptionName">
+					<xsl:with-param name="nameNode" select="$optionNode/prg:names/prg:short[1]" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$optionNode/prg:names/prg:long">
+				<xsl:call-template name="prg.cliOptionName">
+					<xsl:with-param name="nameNode" select="$optionNode/prg:names/prg:long[1]" />
+				</xsl:call-template>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Display all option's names like they could appear on the command line -->
-	<template name="prg.usage.allOptionNameDisplay">
-		<param name="optionNode" select="."/>
-		<for-each select="$optionNode/prg:names/prg:short">
-			<call-template name="prg.cliOptionName">
-				<with-param name="nameNode" select="."/>
-			</call-template>
-			<if test="(position() != last())">
-				<text>, </text>
-			</if>
-		</for-each>
-		<if test="$optionNode/prg:names/prg:short and $optionNode/prg:names/prg:long">
-			<text>, </text>
-		</if>
-		<for-each select="$optionNode/prg:names/prg:long">
-			<call-template name="prg.cliOptionName">
-				<with-param name="nameNode" select="."/>
-			</call-template>
-			<if test="(position() != last())">
-				<text>, </text>
-			</if>
-		</for-each>
-	</template>
+	<xsl:template name="prg.usage.allOptionNameDisplay">
+		<xsl:param name="optionNode" select="." />
+		<xsl:for-each select="$optionNode/prg:names/prg:short">
+			<xsl:call-template name="prg.cliOptionName">
+				<xsl:with-param name="nameNode" select="." />
+			</xsl:call-template>
+			<xsl:if test="(position() != last())">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+		</xsl:for-each>
+		<xsl:if test="$optionNode/prg:names/prg:short and $optionNode/prg:names/prg:long">
+			<xsl:text>, </xsl:text>
+		</xsl:if>
+		<xsl:for-each select="$optionNode/prg:names/prg:long">
+			<xsl:call-template name="prg.cliOptionName">
+				<xsl:with-param name="nameNode" select="." />
+			</xsl:call-template>
+			<xsl:if test="(position() != last())">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- inline display of a switch argument (choose the first option name) -->
-	<template name="prg.usage.switchInline">
-		<param name="optionNode" select="."/>
-		<call-template name="prg.usage.firstOptionNameDisplay">
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.usage.switchInline">
+		<xsl:param name="optionNode" select="." />
+		<xsl:call-template name="prg.usage.firstOptionNameDisplay">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Description of a switch argument (all option names + description) -->
-	<template name="prg.usage.switchDescription">
-		<param name="optionNode" select="."/>
-		<param name="details" select="true()"/>
-		<variable name="level">
-			<call-template name="prg.optionLevel">
-				<with-param name="optionNode" select="$optionNode"/>
-			</call-template>
-		</variable>
-		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
-		<call-template name="prg.usage.allOptionNameDisplay">
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-		<text>: </text>
-		<call-template name="prg.usage.descriptionDisplay">
-			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract"/>
-		</call-template>
-		<if test="$details and $optionNode/prg:documentation/prg:details">
-			<call-template name="endl"/>
-			<call-template name="str.prependLine">
-				<with-param name="prependedText" select="$prg.usage.indentChar"/>
-				<with-param name="text">
-					<call-template name="prg.usage.descriptionDisplay">
-						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details"/>
-					</call-template>
-				</with-param>
-				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
-			</call-template>
-		</if>
-	</template>
+	<xsl:template name="prg.usage.switchDescription">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="details" select="true()" />
+		<xsl:variable name="level">
+			<xsl:call-template name="prg.optionLevel">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)" />
+		<xsl:call-template name="prg.usage.allOptionNameDisplay">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+		<xsl:text>: </xsl:text>
+		<xsl:call-template name="prg.usage.descriptionDisplay">
+			<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
+		</xsl:call-template>
+		<xsl:if test="$details and $optionNode/prg:documentation/prg:details">
+			<xsl:call-template name="endl" />
+			<xsl:call-template name="str.prependLine">
+				<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+				<xsl:with-param name="text">
+					<xsl:call-template name="prg.usage.descriptionDisplay">
+						<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Inline description of argument option -->
-	<template name="prg.usage.argumentInline">
-		<param name="optionNode" select="."/>
-		<call-template name="prg.usage.firstOptionNameDisplay">
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-		<choose>
-			<when test="$optionNode/prg:type">
-				<text> &lt;</text>
-				<call-template name="prg.usage.typeDisplay">
-					<with-param name="typeNode" select="$optionNode/prg:type"/>
-				</call-template>
-				<text>&gt;</text>
-			</when>
-			<otherwise>
-				<text> &lt;...&gt;</text>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.usage.argumentInline">
+		<xsl:param name="optionNode" select="." />
+		<xsl:call-template name="prg.usage.firstOptionNameDisplay">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:type">
+				<xsl:text> &lt;</xsl:text>
+				<xsl:call-template name="prg.usage.typeDisplay">
+					<xsl:with-param name="typeNode" select="$optionNode/prg:type" />
+				</xsl:call-template>
+				<xsl:text>&gt;</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text> &lt;...&gt;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Inline description of argument option value type -->
-	<template name="prg.usage.argumentValueDescription">
-		<param name="optionNode" select="."/>
-		<if test="$optionNode/prg:select">
-			<call-template name="endl"/>
-			<choose>
-				<when test="$optionNode/prg:select/@restrict">
-					<text>The argument value have to be one of the following:</text>
-				</when>
-				<otherwise>
-					<text>The argument can be:</text>
-				</otherwise>
-			</choose>
-			<call-template name="prg.usage.selectValueList">
-				<with-param name="mode">
-					<text>inline</text>
-				</with-param>
-				<with-param name="optionNode" select="$optionNode/prg:select"/>
-			</call-template>
-		</if>
-		<if test="$optionNode/prg:default">
-			<call-template name="endl"/>
-			<text>Default value: </text>
-			<value-of select="$optionNode/prg:default"/>
-		</if>
-		<if test="$optionNode/@min">
-			<call-template name="endl"/>
-			<text>Minimal argument count: </text>
-			<value-of select="$optionNode/@min"/>
-		</if>
-		<if test="$optionNode/@max">
-			<call-template name="endl"/>
-			<text>Maximal argument count: </text>
-			<value-of select="$optionNode/@max"/>
-		</if>
-	</template>
+	<xsl:template name="prg.usage.argumentValueDescription">
+		<xsl:param name="optionNode" select="." />
+		<xsl:if test="$optionNode/prg:select">
+			<xsl:call-template name="endl" />
+			<xsl:choose>
+				<xsl:when test="$optionNode/prg:select/@restrict">
+					<xsl:text>The argument value have to be one of the following:</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>The argument can be:</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:call-template name="prg.usage.selectValueList">
+				<xsl:with-param name="mode">
+					<xsl:text>inline</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="optionNode" select="$optionNode/prg:select" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="$optionNode/prg:default">
+			<xsl:call-template name="endl" />
+			<xsl:text>Default value: </xsl:text>
+			<xsl:value-of select="$optionNode/prg:default" />
+		</xsl:if>
+		<xsl:if test="$optionNode/@min">
+			<xsl:call-template name="endl" />
+			<xsl:text>Minimal argument count: </xsl:text>
+			<xsl:value-of select="$optionNode/@min" />
+		</xsl:if>
+		<xsl:if test="$optionNode/@max">
+			<xsl:call-template name="endl" />
+			<xsl:text>Maximal argument count: </xsl:text>
+			<xsl:value-of select="$optionNode/@max" />
+		</xsl:if>
+	</xsl:template>
 
-	<template name="prg.usage.argumentDescription">
-		<param name="optionNode" select="."/>
-		<param name="details" select="true()"/>
-		<variable name="level">
-			<call-template name="prg.optionLevel">
-				<with-param name="optionNode" select="$optionNode"/>
-			</call-template>
-		</variable>
-		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
-		<call-template name="prg.usage.allOptionNameDisplay">
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-		<text>: </text>
-		<call-template name="prg.usage.descriptionDisplay">
-			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract"/>
-		</call-template>
-		<if test="$details and $optionNode/prg:documentation/prg:details">
-			<call-template name="endl"/>
-			<call-template name="str.prependLine">
-				<with-param name="prependedText" select="$prg.usage.indentChar"/>
-				<with-param name="text">
-					<call-template name="prg.usage.descriptionDisplay">
-						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details"/>
-					</call-template>
-				</with-param>
-				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
-			</call-template>
-		</if>
-		<variable name="argumentValueDesc">
-			<call-template name="prg.usage.argumentValueDescription">
-				<with-param name="optionNode" select="$optionNode"/>
-			</call-template>
-		</variable>
-		<if test="string-length($argumentValueDesc)">
-			<call-template name="str.prependLine">
-				<with-param name="prependedText" select="$prg.usage.indentChar"/>
-				<with-param name="text">
-					<value-of select="$argumentValueDesc"/>
-				</with-param>
-				<with-param name="wrap" select="$prg.usage.wrap"/>
-				<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - (string-length($prg.usage.indentChar) * 2)"/>
-			</call-template>
-		</if>
-	</template>
+	<xsl:template name="prg.usage.argumentDescription">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="details" select="true()" />
+		<xsl:variable name="level">
+			<xsl:call-template name="prg.optionLevel">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)" />
+		<xsl:call-template name="prg.usage.allOptionNameDisplay">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+		<xsl:text>: </xsl:text>
+		<xsl:call-template name="prg.usage.descriptionDisplay">
+			<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
+		</xsl:call-template>
+		<xsl:if test="$details and $optionNode/prg:documentation/prg:details">
+			<xsl:call-template name="endl" />
+			<xsl:call-template name="str.prependLine">
+				<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+				<xsl:with-param name="text">
+					<xsl:call-template name="prg.usage.descriptionDisplay">
+						<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:variable name="argumentValueDesc">
+			<xsl:call-template name="prg.usage.argumentValueDescription">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:if test="string-length($argumentValueDesc)">
+			<xsl:call-template name="str.prependLine">
+				<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+				<xsl:with-param name="text">
+					<xsl:value-of select="$argumentValueDesc" />
+				</xsl:with-param>
+				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - (string-length($prg.usage.indentChar) * 2)" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
-	<template name="prg.usage.multiargumentInline">
-		<param name="optionNode" select="."/>
-		<call-template name="prg.usage.firstOptionNameDisplay">
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-		<choose>
-			<when test="$optionNode/prg:type">
-				<text> &lt;</text>
-				<call-template name="prg.usage.typeDisplay">
-					<with-param name="typeNode" select="$optionNode/prg:type"/>
-				</call-template>
-				<text> [ ... ]&gt;</text>
-			</when>
-			<otherwise>
-				<text> &lt;...  [ ... ]&gt;</text>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.usage.multiargumentInline">
+		<xsl:param name="optionNode" select="." />
+		<xsl:call-template name="prg.usage.firstOptionNameDisplay">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:type">
+				<xsl:text> &lt;</xsl:text>
+				<xsl:call-template name="prg.usage.typeDisplay">
+					<xsl:with-param name="typeNode" select="$optionNode/prg:type" />
+				</xsl:call-template>
+				<xsl:text> [ ... ]&gt;</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text> &lt;...  [ ... ]&gt;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.usage.multiargumentDescription">
-		<param name="optionNode" select="."/>
-		<param name="details" select="true()"/>
-		<call-template name="prg.usage.argumentDescription">
-			<with-param name="optionNode" select="$optionNode"/>
-			<with-param name="details" select="true()"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.usage.multiargumentDescription">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="details" select="true()" />
+		<xsl:call-template name="prg.usage.argumentDescription">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+			<xsl:with-param name="details" select="true()" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.usage.groupInline">
-		<param name="optionNode" select="."/>
-		<if test="$optionNode[@type = 'exclusive']">
-			<text>(</text>
-		</if>
-		<call-template name="prg.usage.optionListInline">
-			<with-param name="optionsNode" select="$optionNode/prg:options"/>
-			<with-param name="separator">
-				<choose>
-					<when test="$optionNode[@type = 'exclusive']">
-						<text> | </text>
-					</when>
-					<otherwise>
-						<text> </text>
-					</otherwise>
-				</choose>
-			</with-param>
-		</call-template>
-		<if test="$optionNode[@type = 'exclusive']">
-			<text>)</text>
-		</if>
-	</template>
+	<xsl:template name="prg.usage.groupInline">
+		<xsl:param name="optionNode" select="." />
+		<xsl:if test="$optionNode[@type = 'exclusive']">
+			<xsl:text>(</xsl:text>
+		</xsl:if>
+		<xsl:call-template name="prg.usage.optionListInline">
+			<xsl:with-param name="optionsNode" select="$optionNode/prg:options" />
+			<xsl:with-param name="separator">
+				<xsl:choose>
+					<xsl:when test="$optionNode[@type = 'exclusive']">
+						<xsl:text> | </xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text> </xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:if test="$optionNode[@type = 'exclusive']">
+			<xsl:text>)</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
-	<template name="prg.usage.groupDescription">
-		<param name="optionNode" select="."/>
-		<param name="details" select="true()"/>
-		<variable name="level">
-			<call-template name="prg.optionLevel">
-				<with-param name="optionNode" select="$optionNode"/>
-			</call-template>
-		</variable>
-		<variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)"/>
-		<call-template name="prg.usage.descriptionDisplay">
-			<with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract"/>
-		</call-template>
-		<call-template name="endl"/>
-		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="$prg.usage.indentChar"/>
-			<with-param name="text">
-				<if test="$details and $optionNode/prg:documentation/prg:details">
-					<call-template name="prg.usage.descriptionDisplay">
-						<with-param name="textNode" select="$optionNode/prg:documentation/prg:details"/>
-					</call-template>
-					<call-template name="endl"/>
-					<call-template name="endl"/>
-				</if>
-				<call-template name="prg.usage.optionListDescription">
-					<with-param name="optionsNode" select="$optionNode/prg:options"/>
-				</call-template>
-			</with-param>
-			<with-param name="wrap" select="$prg.usage.wrap"/>
-			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength"/>
-		</call-template>
-		<call-template name="endl"/>
-	</template>
+	<xsl:template name="prg.usage.groupDescription">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="details" select="true()" />
+		<xsl:variable name="level">
+			<xsl:call-template name="prg.optionLevel">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 2)" />
+		<xsl:call-template name="prg.usage.descriptionDisplay">
+			<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:abstract" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="str.prependLine">
+			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+			<xsl:with-param name="text">
+				<xsl:if test="$details and $optionNode/prg:documentation/prg:details">
+					<xsl:call-template name="prg.usage.descriptionDisplay">
+						<xsl:with-param name="textNode" select="$optionNode/prg:documentation/prg:details" />
+					</xsl:call-template>
+					<xsl:call-template name="endl" />
+					<xsl:call-template name="endl" />
+				</xsl:if>
+				<xsl:call-template name="prg.usage.optionListDescription">
+					<xsl:with-param name="optionsNode" select="$optionNode/prg:options" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+	</xsl:template>
 
 	<!-- Display the option list -->
-	<template name="prg.usage.optionListInline">
-		<param name="optionsNode"/>
-		<param name="separator">
-			<text>, </text>
-		</param>
-		<variable name="inGroup" select="$optionsNode/../self::prg:group"/>
+	<xsl:template name="prg.usage.optionListInline">
+		<xsl:param name="optionsNode" />
+		<xsl:param name="separator">
+			<xsl:text>, </xsl:text>
+		</xsl:param>
+		<xsl:variable name="inGroup" select="$optionsNode/../self::prg:group" />
 		<!-- Group all short-named switches -->
-		<if test="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
-			<text>-</text>
-			<for-each select="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
-				<apply-templates select="./prg:names/prg:short[1]"/>
-			</for-each>
-			<text> </text>
-		</if>
-		<if test="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
-			<text>[-</text>
-			<for-each select="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
-				<apply-templates select="./prg:names/prg:short[1]"/>
-			</for-each>
-			<text>] </text>
-		</if>
-		<for-each select="$optionsNode/prg:switch[not(prg:names/prg:short)] | $optionsNode/prg:argument | $optionsNode/prg:multiargument | $optionsNode/prg:group">
-			<if test="not(@required = 'true') and not($inGroup)">
-				<text>[</text>
-			</if>
-			<choose>
-				<when test="./self::prg:switch">
-					<call-template name="prg.usage.switchInline">
-						<with-param name="optionNode" select="."/>
-					</call-template>
-				</when>
-				<when test="./self::prg:argument">
-					<call-template name="prg.usage.argumentInline">
-						<with-param name="optionNode" select="."/>
-					</call-template>
-				</when>
-				<when test="./self::prg:multiargument">
-					<call-template name="prg.usage.multiargumentInline">
-						<with-param name="optionNode" select="."/>
-					</call-template>
-				</when>
-				<when test="./self::prg:group">
-					<call-template name="prg.usage.groupInline">
-						<with-param name="optionNode" select="."/>
-					</call-template>
-				</when>
-			</choose>
-			<if test="not(@required = 'true') and not($inGroup)">
-				<text>]</text>
-			</if>
-			<if test="(position() != last())">
-				<value-of select="$separator"/>
-			</if>
-		</for-each>
-	</template>
+		<xsl:if test="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
+			<xsl:text>-</xsl:text>
+			<xsl:for-each select="$optionsNode/prg:switch[prg:names/prg:short and @required='true']">
+				<xsl:apply-templates select="./prg:names/prg:short[1]" />
+			</xsl:for-each>
+			<xsl:text> </xsl:text>
+		</xsl:if>
+		<xsl:if test="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
+			<xsl:text>[-</xsl:text>
+			<xsl:for-each select="$optionsNode/prg:switch[prg:names/prg:short and not(@required='true')]">
+				<xsl:apply-templates select="./prg:names/prg:short[1]" />
+			</xsl:for-each>
+			<xsl:text>] </xsl:text>
+		</xsl:if>
+		<xsl:for-each select="$optionsNode/prg:switch[not(prg:names/prg:short)] | $optionsNode/prg:argument | $optionsNode/prg:multiargument | $optionsNode/prg:group">
+			<xsl:if test="not(@required = 'true') and not($inGroup)">
+				<xsl:text>[</xsl:text>
+			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="./self::prg:switch">
+					<xsl:call-template name="prg.usage.switchInline">
+						<xsl:with-param name="optionNode" select="." />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:argument">
+					<xsl:call-template name="prg.usage.argumentInline">
+						<xsl:with-param name="optionNode" select="." />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:multiargument">
+					<xsl:call-template name="prg.usage.multiargumentInline">
+						<xsl:with-param name="optionNode" select="." />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:group">
+					<xsl:call-template name="prg.usage.groupInline">
+						<xsl:with-param name="optionNode" select="." />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:if test="not(@required = 'true') and not($inGroup)">
+				<xsl:text>]</xsl:text>
+			</xsl:if>
+			<xsl:if test="(position() != last())">
+				<xsl:value-of select="$separator" />
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Display the full documentation for each option -->
-	<template name="prg.usage.optionListDescription">
-		<param name="optionsNode"/>
-		<param name="details" select="true()"/>
-		<for-each select="$optionsNode/*">
-			<if test="position() != 1">
-				<call-template name="endl"/>
-			</if>
-			<choose>
-				<when test="./self::prg:switch">
-					<call-template name="prg.usage.switchDescription">
-						<with-param name="optionNode" select="."/>
-						<with-param name="details" select="$details"/>
-					</call-template>
-				</when>
-				<when test="./self::prg:argument">
-					<call-template name="prg.usage.argumentDescription">
-						<with-param name="optionNode" select="."/>
-						<with-param name="details" select="$details"/>
-					</call-template>
-				</when>
-				<when test="./self::prg:multiargument">
-					<call-template name="prg.usage.multiargumentDescription">
-						<with-param name="optionNode" select="."/>
-						<with-param name="details" select="$details"/>
-					</call-template>
-				</when>
-				<when test="./self::prg:group">
-					<call-template name="prg.usage.groupDescription">
-						<with-param name="optionNode" select="."/>
-						<with-param name="details" select="$details"/>
-					</call-template>
-				</when>
-			</choose>
-		</for-each>
-	</template>
+	<xsl:template name="prg.usage.optionListDescription">
+		<xsl:param name="optionsNode" />
+		<xsl:param name="details" select="true()" />
+		<xsl:for-each select="$optionsNode/*">
+			<xsl:if test="position() != 1">
+				<xsl:call-template name="endl" />
+			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="./self::prg:switch">
+					<xsl:call-template name="prg.usage.switchDescription">
+						<xsl:with-param name="optionNode" select="." />
+						<xsl:with-param name="details" select="$details" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:argument">
+					<xsl:call-template name="prg.usage.argumentDescription">
+						<xsl:with-param name="optionNode" select="." />
+						<xsl:with-param name="details" select="$details" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:multiargument">
+					<xsl:call-template name="prg.usage.multiargumentDescription">
+						<xsl:with-param name="optionNode" select="." />
+						<xsl:with-param name="details" select="$details" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="./self::prg:group">
+					<xsl:call-template name="prg.usage.groupDescription">
+						<xsl:with-param name="optionNode" select="." />
+						<xsl:with-param name="details" select="$details" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Default behavior for documentation blocks -->
-	<template match="prg:br">
-		<call-template name="endl"/>
-	</template>
+	<xsl:template match="prg:br">
+		<xsl:call-template name="endl" />
+	</xsl:template>
 
-	<template match="prg:endl">
-		<call-template name="endl"/>
-	</template>
+	<xsl:template match="prg:endl">
+		<xsl:call-template name="endl" />
+	</xsl:template>
 
-	<template match="prg:block">
-		<call-template name="endl"/>
-		<call-template name="str.prependLine">
-			<with-param name="prependedText" select="$prg.usage.indentChar"/>
-			<with-param name="text">
-				<apply-templates/>
-			</with-param>
-			<with-param name="wrap" select="$prg.usage.wrap"/>
-			<with-param name="lineMaxLength" select="$prg.usage.lineMaxLength"/>
-		</call-template>
-	</template>
+	<xsl:template match="prg:block">
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="str.prependLine">
+			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+			<xsl:with-param name="text">
+				<xsl:apply-templates />
+			</xsl:with-param>
+			<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength" />
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

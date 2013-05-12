@@ -3,99 +3,99 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Creole 1.0 common extensions -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<import href="wikicreole.xsl" />
+	<xsl:import href="wikicreole.xsl" />
 
 	
 	<!-- Monospace character style -->
-	<template name="creole.monospace">
-		<param name="content" select="." />
+	<xsl:template name="creole.monospace">
+		<xsl:param name="content" select="." />
 		
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content" />
-			<with-param name="before" select="'##'" />
-		</call-template>
-	</template>
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="'##'" />
+		</xsl:call-template>
+	</xsl:template>
 	
 	<!-- Subscript character style -->
-	<template name="creole.subscript">
-		<param name="content" select="." />
+	<xsl:template name="creole.subscript">
+		<xsl:param name="content" select="." />
 		
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content" />
-			<with-param name="before" select="',,'" />
-		</call-template>
-	</template>
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="',,'" />
+		</xsl:call-template>
+	</xsl:template>
 	
 	<!-- Superscript character style -->
-	<template name="creole.superscript">
-		<param name="content" select="." />
+	<xsl:template name="creole.superscript">
+		<xsl:param name="content" select="." />
 		
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content" />
-			<with-param name="before" select="'^^'" />
-		</call-template>
-	</template>
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="'^^'" />
+		</xsl:call-template>
+	</xsl:template>
 	
 	<!-- Underline character style -->
-	<template name="creole.underline">
-		<param name="content" select="." />
+	<xsl:template name="creole.underline">
+		<xsl:param name="content" select="." />
 		
-		<call-template name="creole.surround">
-			<with-param name="content" select="$content" />
-			<with-param name="before" select="'__'" />
-		</call-template>
-	</template>
+		<xsl:call-template name="creole.surround">
+			<xsl:with-param name="content" select="$content" />
+			<xsl:with-param name="before" select="'__'" />
+		</xsl:call-template>
+	</xsl:template>
 	
 	<!-- Indent -->
-	<template name="creole.indent">
+	<xsl:template name="creole.indent">
 		<!-- Term definition -->
-		<param name="content" select="." />
-		<param name="level" select="1" />
+		<xsl:param name="content" select="." />
+		<xsl:param name="level" select="1" />
 		
-		<call-template name="endl" />
-		<call-template name="str.repeat">
-			<with-param name="iterations" select="$level" />
-			<with-param name="text" select="':'" />
-		</call-template>
-		<value-of select="$content" />
-	</template>
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="str.repeat">
+			<xsl:with-param name="iterations" select="$level" />
+			<xsl:with-param name="text" select="':'" />
+		</xsl:call-template>
+		<xsl:value-of select="$content" />
+	</xsl:template>
 	
 	<!-- Definition title -->
-	<template name="creole.definitionTitle">
+	<xsl:template name="creole.definitionTitle">
 		<!-- Term -->
-		<param name="content" select="." />
+		<xsl:param name="content" select="." />
 		
-		<call-template name="endl" />
-		<text>;</text>
-		<value-of select="$content" />
-	</template>
+		<xsl:call-template name="endl" />
+		<xsl:text>;</xsl:text>
+		<xsl:value-of select="$content" />
+	</xsl:template>
 	
 
 	<!-- Definition item -->
-	<template name="creole.definition">
+	<xsl:template name="creole.definition">
 		<!-- Term definition -->
-		<param name="content" select="." />
+		<xsl:param name="content" select="." />
 		
-		<call-template name="endl" />
-		<text>:</text>
-		<value-of select="$content" />
-	</template>
+		<xsl:call-template name="endl" />
+		<xsl:text>:</xsl:text>
+		<xsl:value-of select="$content" />
+	</xsl:template>
 
 	<!-- Term with a single definition -->
-	<template name="creole.simpleDefinition">
-		<param name="title" />
-		<param name="definition" />
+	<xsl:template name="creole.simpleDefinition">
+		<xsl:param name="title" />
+		<xsl:param name="definition" />
 
-		<if test="string-length($title) > 0">
-			<call-template name="creole.definitionTitle">
-				<with-param name="content" select="$title" />
-			</call-template>
-			<call-template name="creole.definition">
-				<with-param name="content" select="$definition" />
-			</call-template>
-		</if>
-	</template>
+		<xsl:if test="string-length($title) &gt; 0">
+			<xsl:call-template name="creole.definitionTitle">
+				<xsl:with-param name="content" select="$title" />
+			</xsl:call-template>
+			<xsl:call-template name="creole.definition">
+				<xsl:with-param name="content" select="$definition" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

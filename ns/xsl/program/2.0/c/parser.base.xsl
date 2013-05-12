@@ -3,175 +3,175 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Base functions and transformation rules for the C parser -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="../base.xsl"/>
-	<import href="../../../languages/c.xsl"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="../base.xsl" />
+	<xsl:import href="../../../languages/c.xsl" />
 	<!-- Program-relative prefix -->
-	<param name="prg.c.parser.prefix">
-		<call-template name="c.validIdentifierName">
-			<with-param name="name" select="normalize-space(/prg:program/prg:name)"/>
-		</call-template>
-	</param>
+	<xsl:param name="prg.c.parser.prefix">
+		<xsl:call-template name="c.validIdentifierName">
+			<xsl:with-param name="name" select="normalize-space(/prg:program/prg:name)" />
+		</xsl:call-template>
+	</xsl:param>
 	<!-- If not empty, use #include to add nsxml header -->
-	<param name="prg.c.parser.nsxmlHeaderPath" select="''"/>
+	<xsl:param name="prg.c.parser.nsxmlHeaderPath" select="''" />
 	<!-- Naming style for variable and enum names -->
-	<param name="prg.c.parser.variableNamingStyle" select="'none'"/>
+	<xsl:param name="prg.c.parser.variableNamingStyle" select="'none'" />
 	<!-- Naming style for structs -->
-	<param name="prg.c.parser.structNamingStyle" select="'none'"/>
+	<xsl:param name="prg.c.parser.structNamingStyle" select="'none'" />
 	<!-- Naming style for functions -->
-	<param name="prg.c.parser.functionNamingStyle" select="'none'"/>
+	<xsl:param name="prg.c.parser.functionNamingStyle" select="'none'" />
 	<!-- Transform a variable name according to parser naming style -->
-	<template name="prg.c.parser.variableName">
-		<param name="name"/>
-		<call-template name="code.identifierNamingStyle">
-			<with-param name="identifier" select="$name"/>
-			<with-param name="to" select="$prg.c.parser.variableNamingStyle"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.variableName">
+		<xsl:param name="name" />
+		<xsl:call-template name="code.identifierNamingStyle">
+			<xsl:with-param name="identifier" select="$name" />
+			<xsl:with-param name="to" select="$prg.c.parser.variableNamingStyle" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Transform a function name according to parser naming style -->
-	<template name="prg.c.parser.functionName">
-		<param name="name"/>
-		<call-template name="code.identifierNamingStyle">
-			<with-param name="identifier" select="$name"/>
-			<with-param name="to" select="$prg.c.parser.functionNamingStyle"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.functionName">
+		<xsl:param name="name" />
+		<xsl:call-template name="code.identifierNamingStyle">
+			<xsl:with-param name="identifier" select="$name" />
+			<xsl:with-param name="to" select="$prg.c.parser.functionNamingStyle" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Transform a struct name according to parser naming style -->
-	<template name="prg.c.parser.structName">
-		<param name="name"/>
-		<call-template name="code.identifierNamingStyle">
-			<with-param name="identifier" select="$name"/>
-			<with-param name="to" select="$prg.c.parser.structNamingStyle"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.structName">
+		<xsl:param name="name" />
+		<xsl:call-template name="code.identifierNamingStyle">
+			<xsl:with-param name="identifier" select="$name" />
+			<xsl:with-param name="to" select="$prg.c.parser.structNamingStyle" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Keyword used for the given item (node name is used) -->
-	<template name="prg.c.parser.itemTypeName">
+	<xsl:template name="prg.c.parser.itemTypeName">
 		<!-- Node -->
-		<param name="itemNode"/>
+		<xsl:param name="itemNode" />
 		<!-- If @c true all option nodes will return 'option' -->
-		<param name="base" select="false()"/>
-		<choose>
-			<when test="$base and ($itemNode/self::prg:switch|$itemNode/self::prg:argument|$itemNode/self::prg:multiargument|$itemNode/self::prg:group)">
-				<text>option</text>
-			</when>
-			<when test="$itemNode/self::prg:switch">
-				<text>switch</text>
-			</when>
-			<when test="$itemNode/self::prg:argument">
-				<text>argument</text>
-			</when>
-			<when test="$itemNode/self::prg:multiargument">
-				<text>multiargument</text>
-			</when>
-			<when test="$itemNode/self::prg:group">
-				<text>group</text>
-			</when>
-			<when test="$itemNode/self::prg:program">
-				<text>program</text>
-			</when>
-			<when test="$itemNode/self::prg:subcommand">
-				<text>subcommand</text>
-			</when>
-			<when test="$itemNode/self::prg:value|$itemNode/self::prg:other">
-				<text>positional_argument</text>
-			</when>
-			<otherwise>
-				<value-of select="name($itemNode)"/>
-			</otherwise>
-		</choose>
-	</template>
+		<xsl:param name="base" select="false()" />
+		<xsl:choose>
+			<xsl:when test="$base and ($itemNode/self::prg:switch|$itemNode/self::prg:argument|$itemNode/self::prg:multiargument|$itemNode/self::prg:group)">
+				<xsl:text>option</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:switch">
+				<xsl:text>switch</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:argument">
+				<xsl:text>argument</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:multiargument">
+				<xsl:text>multiargument</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:group">
+				<xsl:text>group</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:program">
+				<xsl:text>program</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:subcommand">
+				<xsl:text>subcommand</xsl:text>
+			</xsl:when>
+			<xsl:when test="$itemNode/self::prg:value|$itemNode/self::prg:other">
+				<xsl:text>positional_argument</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="name($itemNode)" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
-	<template name="prg.c.parser.itemTypeBasedName">
-		<param name="itemNode" select="."/>
-		<param name="name"/>
-		<value-of select="substring-before($name,'(itemType)')"/>
-		<call-template name="prg.c.parser.itemTypeName">
-			<with-param name="itemNode" select="$itemNode"/>
-		</call-template>
-		<value-of select="substring-after($name,'(itemType)')"/>
-	</template>
+	<xsl:template name="prg.c.parser.itemTypeBasedName">
+		<xsl:param name="itemNode" select="." />
+		<xsl:param name="name" />
+		<xsl:value-of select="substring-before($name,'(itemType)')" />
+		<xsl:call-template name="prg.c.parser.itemTypeName">
+			<xsl:with-param name="itemNode" select="$itemNode" />
+		</xsl:call-template>
+		<xsl:value-of select="substring-after($name,'(itemType)')" />
+	</xsl:template>
 
 	<!-- Get the option index (relative to root item) -->
-	<template name="prg.c.parser.optionIndex">
-		<param name="rootNode"/>
-		<param name="optionNode"/>
-		<for-each select="$rootNode//prg:options/*">
-			<if test="$optionNode = .">
-				<value-of select="position() - 1"/>
-			</if>
-		</for-each>
-	</template>
+	<xsl:template name="prg.c.parser.optionIndex">
+		<xsl:param name="rootNode" />
+		<xsl:param name="optionNode" />
+		<xsl:for-each select="$rootNode//prg:options/*">
+			<xsl:if test="$optionNode = .">
+				<xsl:value-of select="position() - 1" />
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Get the anonymous option index (relative to program node) -->
-	<template name="prg.c.parser.anonymousOptionIndex">
-		<param name="programNode"/>
-		<param name="optionNode"/>
-		<for-each select="$programNode//prg:options/*[not(prg:databinding/prg:variable)]">
-			<if test="$optionNode = .">
-				<value-of select="position() - 1"/>
-			</if>
-		</for-each>
-	</template>
+	<xsl:template name="prg.c.parser.anonymousOptionIndex">
+		<xsl:param name="programNode" />
+		<xsl:param name="optionNode" />
+		<xsl:for-each select="$programNode//prg:options/*[not(prg:databinding/prg:variable)]">
+			<xsl:if test="$optionNode = .">
+				<xsl:value-of select="position() - 1" />
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Global item index -->
-	<template name="prg.c.parser.itemIndex">
-		<param name="itemNode" select="."/>
-		<param name="rootNode" select="$itemNode/.."/>
-		<for-each select="$rootNode//*">
-			<if test="$itemNode = .">
-				<value-of select="position() - 1"/>
-			</if>
-		</for-each>
-	</template>
+	<xsl:template name="prg.c.parser.itemIndex">
+		<xsl:param name="itemNode" select="." />
+		<xsl:param name="rootNode" select="$itemNode/.." />
+		<xsl:for-each select="$rootNode//*">
+			<xsl:if test="$itemNode = .">
+				<xsl:value-of select="position() - 1" />
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
 
 	<!-- Return the number of options in a program or subcommand, including 
 		group options -->
-	<template name="prg.c.parser.rootElementOptionCount">
+	<xsl:template name="prg.c.parser.rootElementOptionCount">
 		<!-- program or subcommand node -->
-		<param name="rootNode" select="."/>
-		<value-of select="count($rootNode//prg:options/*)"/>
-	</template>
+		<xsl:param name="rootNode" select="." />
+		<xsl:value-of select="count($rootNode//prg:options/*)" />
+	</xsl:template>
 
 	<!-- Return the number of anonymous options in a program -->
-	<template name="prg.c.parser.anonymousOptionCount">
-		<param name="programNode" select="."/>
-		<value-of select="count($programNode//prg:options/*[not(prg:databinding/prg:variable)])"/>
-	</template>
+	<xsl:template name="prg.c.parser.anonymousOptionCount">
+		<xsl:param name="programNode" select="." />
+		<xsl:value-of select="count($programNode//prg:options/*[not(prg:databinding/prg:variable)])" />
+	</xsl:template>
 
-	<template match="prg:databinding/prg:variable">
-		<call-template name="c.validIdentifierName">
-			<with-param name="name" select="translate(normalize-space(.),'-','_')"/>
-		</call-template>
-	</template>
+	<xsl:template match="prg:databinding/prg:variable">
+		<xsl:call-template name="c.validIdentifierName">
+			<xsl:with-param name="name" select="translate(normalize-space(.),'-','_')" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
-		<call-template name="str.replaceAll">
-			<with-param name="text">
-				<call-template name="str.replaceAll">
-					<with-param name="text" select="normalize-space(.)"/>
-					<with-param name="replace" select="'\'"/>
-					<with-param name="by" select="'\\'"/>
-				</call-template>
-			</with-param>
-			<with-param name="replace" select="'&quot;'"/>
-			<with-param name="by" select="'\&quot;'"/>
-		</call-template>
-	</template>
+	<xsl:template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
+		<xsl:call-template name="str.replaceAll">
+			<xsl:with-param name="text">
+				<xsl:call-template name="str.replaceAll">
+					<xsl:with-param name="text" select="normalize-space(.)" />
+					<xsl:with-param name="replace" select="'\'" />
+					<xsl:with-param name="by" select="'\\'" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="replace" select="'&quot;'" />
+			<xsl:with-param name="by" select="'\&quot;'" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template match="prg:br|prg:endl">
-		<text>\n</text>
-	</template>
+	<xsl:template match="prg:br|prg:endl">
+		<xsl:text>\n</xsl:text>
+	</xsl:template>
 
-	<template match="prg:block">
-		<call-template name="str.prependLine">
-			<with-param name="text">
-				<apply-templates/>
-			</with-param>
-			<with-param name="prependedText" select="'\t'"/>
-		</call-template>
-	</template>
+	<xsl:template match="prg:block">
+		<xsl:call-template name="str.prependLine">
+			<xsl:with-param name="text">
+				<xsl:apply-templates />
+			</xsl:with-param>
+			<xsl:with-param name="prependedText" select="'\t'" />
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

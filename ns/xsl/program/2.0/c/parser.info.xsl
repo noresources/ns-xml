@@ -3,1000 +3,1000 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Convert program infos to C structs -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="parser.base.xsl"/>
-	<import href="parser.generic-names.xsl"/>
-	<import href="parser.names.xsl"/>
-	<template name="prg.c.parser.memberSet">
-		<param name="variable"/>
-		<param name="pointer"/>
-		<value-of select="$variable"/>
-		<choose>
-			<when test="$pointer">
-				<text>-&gt;</text>
-			</when>
-			<otherwise>
-				<text>.</text>
-			</otherwise>
-		</choose>
-	</template>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="parser.base.xsl" />
+	<xsl:import href="parser.generic-names.xsl" />
+	<xsl:import href="parser.names.xsl" />
+	<xsl:template name="prg.c.parser.memberSet">
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" />
+		<xsl:value-of select="$variable" />
+		<xsl:choose>
+			<xsl:when test="$pointer">
+				<xsl:text>-&gt;</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>.</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Create validators for option and positional arguments -->
-	<template name="prg.c.parser.infoValidators">
-		<param name="itemNode"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
+	<xsl:template name="prg.c.parser.infoValidators">
+		<xsl:param name="itemNode" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
 		<!-- Path validator -->
-		<variable name="pathNode" select="$itemNode/prg:type/prg:path"/>
-		<if test="$pathNode/@access | $pathNode/prg:kinds | $pathNode/@exist">
-			<call-template name="endl"/>
-			<text>validator_flags = 0;</text>
-			<if test="contains($pathNode/@access, 'r')">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_path_readable;</text>
-			</if>
-			<if test="contains($pathNode/@access, 'w')">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_path_writable;</text>
-			</if>
-			<if test="contains($pathNode/@access, 'x')">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_path_executable;</text>
-			</if>
-			<if test="$pathNode/@exist = 'true'">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_path_exists;</text>
-			</if>
-			<if test="$pathNode/prg:kinds">
-				<if test="$pathNode/prg:kinds/prg:file">
-					<call-template name="endl"/>
-					<text>validator_flags |= nsxml_value_validator_path_type_file;</text>
-				</if>
-				<if test="$pathNode/prg:kinds/prg:folder">
-					<call-template name="endl"/>
-					<text>validator_flags |= nsxml_value_validator_path_type_folder;</text>
-				</if>
-				<if test="$pathNode/prg:kinds/prg:symlink">
-					<call-template name="endl"/>
-					<text>validator_flags |= nsxml_value_validator_path_type_symlink;</text>
-				</if>
-			</if>
-			<call-template name="endl"/>
-			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator));</text>
-			<call-template name="endl"/>
-			<text> validator_ptr = validator;</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_path, NULL, &amp;nsxml_value_validator_usage_path, validator_flags);</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_add(</text>
-			<text>&amp;</text>
-			<value-of select="$memberSet"/>
-			<text>validators</text>
-			<text>, validator);</text>
-			<call-template name="endl"/>
-		</if>
+		<xsl:variable name="pathNode" select="$itemNode/prg:type/prg:path" />
+		<xsl:if test="$pathNode/@access | $pathNode/prg:kinds | $pathNode/@exist">
+			<xsl:call-template name="endl" />
+			<xsl:text>validator_flags = 0;</xsl:text>
+			<xsl:if test="contains($pathNode/@access, 'r')">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_path_readable;</xsl:text>
+			</xsl:if>
+			<xsl:if test="contains($pathNode/@access, 'w')">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_path_writable;</xsl:text>
+			</xsl:if>
+			<xsl:if test="contains($pathNode/@access, 'x')">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_path_executable;</xsl:text>
+			</xsl:if>
+			<xsl:if test="$pathNode/@exist = 'true'">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_path_exists;</xsl:text>
+			</xsl:if>
+			<xsl:if test="$pathNode/prg:kinds">
+				<xsl:if test="$pathNode/prg:kinds/prg:file">
+					<xsl:call-template name="endl" />
+					<xsl:text>validator_flags |= nsxml_value_validator_path_type_file;</xsl:text>
+				</xsl:if>
+				<xsl:if test="$pathNode/prg:kinds/prg:folder">
+					<xsl:call-template name="endl" />
+					<xsl:text>validator_flags |= nsxml_value_validator_path_type_folder;</xsl:text>
+				</xsl:if>
+				<xsl:if test="$pathNode/prg:kinds/prg:symlink">
+					<xsl:call-template name="endl" />
+					<xsl:text>validator_flags |= nsxml_value_validator_path_type_symlink;</xsl:text>
+				</xsl:if>
+			</xsl:if>
+			<xsl:call-template name="endl" />
+			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator));</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text> validator_ptr = validator;</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_path, NULL, &amp;nsxml_value_validator_usage_path, validator_flags);</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_add(</xsl:text>
+			<xsl:text>&amp;</xsl:text>
+			<xsl:value-of select="$memberSet" />
+			<xsl:text>validators</xsl:text>
+			<xsl:text>, validator);</xsl:text>
+			<xsl:call-template name="endl" />
+		</xsl:if>
 		<!-- number validator -->
-		<variable name="numberNode" select="$itemNode/prg:type/prg:number"/>
-		<if test="$numberNode">
-			<call-template name="endl"/>
-			<text>validator_flags = 0;</text>
-			<if test="$numberNode/@min">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_checkmin;</text>
-			</if>
-			<if test="$numberNode/@max">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_checkmax;</text>
-			</if>
-			<call-template name="endl"/>
-			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_number));</text>
-			<call-template name="endl"/>
-			<text> validator_ptr = validator;</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_number, NULL, &amp;nsxml_value_validator_usage_number, validator_flags);</text>
-			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;min_value = </text>
-			<choose>
-				<when test="$numberNode/@min">
-					<value-of select="$numberNode/@min"/>
-					<if test="not(contains($numberNode/@min, '.'))">
-						<text>.</text>
-					</if>
-					<text>F</text>
-				</when>
-				<otherwise>
-					<text>0.F</text>
-				</otherwise>
-			</choose>
-			<text>;</text>
-			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;max_value = </text>
-			<choose>
-				<when test="$numberNode/@max">
-					<value-of select="$numberNode/@max"/>
-					<if test="not(contains($numberNode/@max, '.'))">
-						<text>.</text>
-					</if>
-					<text>F</text>
-				</when>
-				<otherwise>
-					<text>0.F</text>
-				</otherwise>
-			</choose>
-			<text>;</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_add(</text>
+		<xsl:variable name="numberNode" select="$itemNode/prg:type/prg:number" />
+		<xsl:if test="$numberNode">
+			<xsl:call-template name="endl" />
+			<xsl:text>validator_flags = 0;</xsl:text>
+			<xsl:if test="$numberNode/@min">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_checkmin;</xsl:text>
+			</xsl:if>
+			<xsl:if test="$numberNode/@max">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_checkmax;</xsl:text>
+			</xsl:if>
+			<xsl:call-template name="endl" />
+			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_number));</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text> validator_ptr = validator;</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_number, NULL, &amp;nsxml_value_validator_usage_number, validator_flags);</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;min_value = </xsl:text>
+			<xsl:choose>
+				<xsl:when test="$numberNode/@min">
+					<xsl:value-of select="$numberNode/@min" />
+					<xsl:if test="not(contains($numberNode/@min, '.'))">
+						<xsl:text>.</xsl:text>
+					</xsl:if>
+					<xsl:text>F</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>0.F</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:text>;</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;max_value = </xsl:text>
+			<xsl:choose>
+				<xsl:when test="$numberNode/@max">
+					<xsl:value-of select="$numberNode/@max" />
+					<xsl:if test="not(contains($numberNode/@max, '.'))">
+						<xsl:text>.</xsl:text>
+					</xsl:if>
+					<xsl:text>F</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>0.F</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:text>;</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_add(</xsl:text>
 			<!-- <value-of select="$variable"/> -->
-			<text>&amp;</text>
-			<value-of select="$memberSet"/>
-			<text>validators</text>
-			<text>, validator);</text>
-		</if>
+			<xsl:text>&amp;</xsl:text>
+			<xsl:value-of select="$memberSet" />
+			<xsl:text>validators</xsl:text>
+			<xsl:text>, validator);</xsl:text>
+		</xsl:if>
 		<!-- enumeration validator -->
-		<variable name="selectNode" select="$itemNode/prg:select"/>
-		<if test="$selectNode">
-			<call-template name="endl"/>
-			<text>validator_flags = 0;</text>
-			<if test="$selectNode/@restrict = 'true'">
-				<call-template name="endl"/>
-				<text>validator_flags |= nsxml_value_validator_enum_strict;</text>
-			</if>
-			<call-template name="endl"/>
-			<text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_enum));</text>
-			<call-template name="endl"/>
-			<text> validator_ptr = validator;</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_enum, &amp;nsxml_value_validator_cleanup_enum, &amp;nsxml_value_validator_usage_enum, validator_flags);</text>
-			<call-template name="endl"/>
-			<text>((struct nsxml_value_validator_enum *)(validator_ptr))-&gt;values = nsxml_item_names_new(</text>
-			<for-each select="$selectNode/prg:option">
-				<text>"</text>
-				<apply-templates select="."/>
-				<text>", </text>
-			</for-each>
-			<text>NULL);</text>
-			<call-template name="endl"/>
-			<text>nsxml_value_validator_add(</text>
+		<xsl:variable name="selectNode" select="$itemNode/prg:select" />
+		<xsl:if test="$selectNode">
+			<xsl:call-template name="endl" />
+			<xsl:text>validator_flags = 0;</xsl:text>
+			<xsl:if test="$selectNode/@restrict = 'true'">
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags |= nsxml_value_validator_enum_strict;</xsl:text>
+			</xsl:if>
+			<xsl:call-template name="endl" />
+			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_enum));</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text> validator_ptr = validator;</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_enum, &amp;nsxml_value_validator_cleanup_enum, &amp;nsxml_value_validator_usage_enum, validator_flags);</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>((struct nsxml_value_validator_enum *)(validator_ptr))-&gt;values = nsxml_item_names_new(</xsl:text>
+			<xsl:for-each select="$selectNode/prg:option">
+				<xsl:text>"</xsl:text>
+				<xsl:apply-templates select="." />
+				<xsl:text>", </xsl:text>
+			</xsl:for-each>
+			<xsl:text>NULL);</xsl:text>
+			<xsl:call-template name="endl" />
+			<xsl:text>nsxml_value_validator_add(</xsl:text>
 			<!-- <value-of select="$variable"/> -->
-			<text>&amp;</text>
-			<value-of select="$memberSet"/>
-			<text>validators</text>
-			<text>, validator);</text>
-		</if>
-	</template>
+			<xsl:text>&amp;</xsl:text>
+			<xsl:value-of select="$memberSet" />
+			<xsl:text>validators</xsl:text>
+			<xsl:text>, validator);</xsl:text>
+		</xsl:if>
+	</xsl:template>
 
 	<!-- Initioalize item_info -->
-	<template name="prg.c.parser.itemInfoInit">
-		<param name="itemNode"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<variable name="abstract">
-			<apply-templates select="$itemNode/prg:documentation/prg:abstract"/>
-		</variable>
-		<variable name="details">
-			<apply-templates select="$itemNode/prg:documentation/prg:details"/>
-		</variable>
-		<text>nsxml_item_info_init(&amp;</text>
-		<value-of select="$variable"/>
-		<text>, nsxml_item_type_</text>
-		<call-template name="prg.c.parser.itemTypeName">
-			<with-param name="itemNode" select="$itemNode"/>
-			<with-param name="base" select="true()"/>
-		</call-template>
-		<text>, </text>
-		<choose>
-			<when test="string-length($abstract) &gt; 0">
-				<text>"</text>
-				<value-of select="$abstract"/>
-				<text>"</text>
-			</when>
-			<otherwise>
-				<text>NULL</text>
-			</otherwise>
-		</choose>
-		<text>, </text>
-		<choose>
-			<when test="string-length($details) &gt; 0">
-				<text>"</text>
-				<value-of select="$details"/>
-				<text>"</text>
-			</when>
-			<otherwise>
-				<text>NULL</text>
-			</otherwise>
-		</choose>
-		<text>);</text>
-	</template>
+	<xsl:template name="prg.c.parser.itemInfoInit">
+		<xsl:param name="itemNode" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:variable name="abstract">
+			<xsl:apply-templates select="$itemNode/prg:documentation/prg:abstract" />
+		</xsl:variable>
+		<xsl:variable name="details">
+			<xsl:apply-templates select="$itemNode/prg:documentation/prg:details" />
+		</xsl:variable>
+		<xsl:text>nsxml_item_info_init(&amp;</xsl:text>
+		<xsl:value-of select="$variable" />
+		<xsl:text>, nsxml_item_type_</xsl:text>
+		<xsl:call-template name="prg.c.parser.itemTypeName">
+			<xsl:with-param name="itemNode" select="$itemNode" />
+			<xsl:with-param name="base" select="true()" />
+		</xsl:call-template>
+		<xsl:text>, </xsl:text>
+		<xsl:choose>
+			<xsl:when test="string-length($abstract) &gt; 0">
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$abstract" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>NULL</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>, </xsl:text>
+		<xsl:choose>
+			<xsl:when test="string-length($details) &gt; 0">
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$details" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>NULL</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>);</xsl:text>
+	</xsl:template>
 
 	<!-- Initialize option_info -->
-	<template name="prg.c.parser.optionItemInfoInit">
-		<param name="optionNode"/>
-		<param name="variable"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<param name="pointer" select="false()"/>
-		<call-template name="prg.c.parser.itemInfoInit">
-			<with-param name="itemNode" select="$optionNode"/>
-			<with-param name="variable" select="concat($variable, '-&gt;item_info')"/>
-		</call-template>
-		<call-template name="endl"/>
-		<text>nsxml_option_info_init(</text>
-		<value-of select="$variable"/>
-		<text>, nsxml_option_type_</text>
-		<call-template name="prg.c.parser.itemTypeName">
-			<with-param name="itemNode" select="$optionNode"/>
-		</call-template>
-		<text>, (0</text>
-		<if test="$optionNode/@required">
-			<text>| nsxml_option_flag_required</text>
-		</if>
-		<text>), </text>
-		<choose>
-			<when test="$optionNode/prg:databinding/prg:variable">
-				<text>"</text>
+	<xsl:template name="prg.c.parser.optionItemInfoInit">
+		<xsl:param name="optionNode" />
+		<xsl:param name="variable" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:call-template name="prg.c.parser.itemInfoInit">
+			<xsl:with-param name="itemNode" select="$optionNode" />
+			<xsl:with-param name="variable" select="concat($variable, '-&gt;item_info')" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:text>nsxml_option_info_init(</xsl:text>
+		<xsl:value-of select="$variable" />
+		<xsl:text>, nsxml_option_type_</xsl:text>
+		<xsl:call-template name="prg.c.parser.itemTypeName">
+			<xsl:with-param name="itemNode" select="$optionNode" />
+		</xsl:call-template>
+		<xsl:text>, (0</xsl:text>
+		<xsl:if test="$optionNode/@required">
+			<xsl:text>| nsxml_option_flag_required</xsl:text>
+		</xsl:if>
+		<xsl:text>), </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:databinding/prg:variable">
+				<xsl:text>"</xsl:text>
 				<!-- Note: here we do not protect variable name -->
-				<value-of select="normalize-space($optionNode/prg:databinding/prg:variable)"/>
-				<text>"</text>
-			</when>
-			<otherwise>
-				<text>NULL</text>
-			</otherwise>
-		</choose>
-		<text>, nsxml_item_names_new(</text>
-		<for-each select="$optionNode/prg:names/*">
-			<text>"</text>
-			<apply-templates select="."/>
-			<text>", </text>
-		</for-each>
-		<text>NULL), </text>
-		<choose>
-			<when test="$optionNode/../../self::prg:group">
-				<value-of select="$containerVariable"/>
-				<text>[</text>
-				<call-template name="prg.c.parser.optionIndex">
-					<with-param name="rootNode" select="$rootNode"/>
-					<with-param name="optionNode" select="$optionNode/../../self::prg:group"/>
-				</call-template>
-				<text>]</text>
-			</when>
-			<otherwise>
-				<text>NULL</text>
-			</otherwise>
-		</choose>
-		<text>);</text>
-		<call-template name="endl"/>
+				<xsl:value-of select="normalize-space($optionNode/prg:databinding/prg:variable)" />
+				<xsl:text>"</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>NULL</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>, nsxml_item_names_new(</xsl:text>
+		<xsl:for-each select="$optionNode/prg:names/*">
+			<xsl:text>"</xsl:text>
+			<xsl:apply-templates select="." />
+			<xsl:text>", </xsl:text>
+		</xsl:for-each>
+		<xsl:text>NULL), </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/../../self::prg:group">
+				<xsl:value-of select="$containerVariable" />
+				<xsl:text>[</xsl:text>
+				<xsl:call-template name="prg.c.parser.optionIndex">
+					<xsl:with-param name="rootNode" select="$rootNode" />
+					<xsl:with-param name="optionNode" select="$optionNode/../../self::prg:group" />
+				</xsl:call-template>
+				<xsl:text>]</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>NULL</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>);</xsl:text>
+		<xsl:call-template name="endl" />
 		<!-- Validators -->
-		<call-template name="prg.c.parser.infoValidators">
-			<with-param name="itemNode" select="$optionNode"/>
-			<with-param name="variable" select="$variable"/>
-			<with-param name="pointer" select="true()"/>
-		</call-template>
-	</template>
+		<xsl:call-template name="prg.c.parser.infoValidators">
+			<xsl:with-param name="itemNode" select="$optionNode" />
+			<xsl:with-param name="variable" select="$variable" />
+			<xsl:with-param name="pointer" select="true()" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Initialize switch info -->
-	<template name="prg.c.parser.switch_optionItemInfoInit">
-		<param name="optionNode"/>
-		<param name="optionInfoVariable"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<call-template name="prg.c.parser.optionItemInfoInit">
-			<with-param name="optionNode" select="$optionNode"/>
-			<with-param name="variable">
-				<choose>
-					<when test="$optionInfoVariable">
-						<value-of select="$optionInfoVariable"/>
-					</when>
-					<otherwise>
-						<value-of select="concat($memberSet, 'option_info')"/>
-					</otherwise>
-				</choose>
-			</with-param>
-			<with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)"/>
-			<with-param name="containerVariable" select="$containerVariable"/>
-			<with-param name="rootNode" select="$rootNode"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.switch_optionItemInfoInit">
+		<xsl:param name="optionNode" />
+		<xsl:param name="optionInfoVariable" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="prg.c.parser.optionItemInfoInit">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+			<xsl:with-param name="variable">
+				<xsl:choose>
+					<xsl:when test="$optionInfoVariable">
+						<xsl:value-of select="$optionInfoVariable" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat($memberSet, 'option_info')" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)" />
+			<xsl:with-param name="containerVariable" select="$containerVariable" />
+			<xsl:with-param name="rootNode" select="$rootNode" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- argument type enum name -->
-	<template name="prg.c.parser.argumentType">
-		<param name="typeNode"/>
-		<text>nsxml_argument_type_</text>
-		<choose>
-			<when test="$typeNode/prg:existingcommand">
-				<text>existingcommand</text>
-			</when>
-			<when test="$typeNode/prg:hostname">
-				<text>hostname</text>
-			</when>
-			<when test="$typeNode/prg:number">
-				<text>number</text>
-			</when>
-			<when test="$typeNode/prg:path">
-				<text>path</text>
-			</when>
-			<when test="$typeNode/prg:string">
-				<text>string</text>
-			</when>
-			<otherwise>
-				<text>mixed</text>
-			</otherwise>
-		</choose>
-	</template>
+	<xsl:template name="prg.c.parser.argumentType">
+		<xsl:param name="typeNode" />
+		<xsl:text>nsxml_argument_type_</xsl:text>
+		<xsl:choose>
+			<xsl:when test="$typeNode/prg:existingcommand">
+				<xsl:text>existingcommand</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:hostname">
+				<xsl:text>hostname</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:number">
+				<xsl:text>number</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:path">
+				<xsl:text>path</xsl:text>
+			</xsl:when>
+			<xsl:when test="$typeNode/prg:string">
+				<xsl:text>string</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>mixed</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 
 	<!-- Initialize argument option -->
-	<template name="prg.c.parser.optionArgumentInfoInit">
-		<param name="memberSet"/>
-		<param name="optionNode"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<value-of select="$memberSet"/>
-		<text>argument_type = </text>
-		<call-template name="prg.c.parser.argumentType">
-			<with-param name="typeNode" select="$optionNode/prg:type"/>
-		</call-template>
-		<text>;</text>
-	</template>
+	<xsl:template name="prg.c.parser.optionArgumentInfoInit">
+		<xsl:param name="memberSet" />
+		<xsl:param name="optionNode" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>argument_type = </xsl:text>
+		<xsl:call-template name="prg.c.parser.argumentType">
+			<xsl:with-param name="typeNode" select="$optionNode/prg:type" />
+		</xsl:call-template>
+		<xsl:text>;</xsl:text>
+	</xsl:template>
 
 	<!--  -->
-	<template name="prg.c.parser.argumentOptionItemInfoInit">
-		<param name="optionNode"/>
-		<param name="optionInfoVariable"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<call-template name="prg.c.parser.optionItemInfoInit">
-			<with-param name="optionNode" select="$optionNode"/>
-			<with-param name="variable">
-				<choose>
-					<when test="$optionInfoVariable">
-						<value-of select="$optionInfoVariable"/>
-					</when>
-					<otherwise>
-						<value-of select="concat($memberSet, 'option_info')"/>
-					</otherwise>
-				</choose>
-			</with-param>
-			<with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)"/>
-			<with-param name="containerVariable" select="$containerVariable"/>
-			<with-param name="rootNode" select="$rootNode"/>
-		</call-template>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>default_value = </text>
-		<choose>
-			<when test="$optionNode/prg:default">
-				<text>strdup("</text>
-				<apply-templates select="$optionNode/prg:default"/>
-				<text>");</text>
-			</when>
-			<otherwise>
-				<text>NULL;</text>
-			</otherwise>
-		</choose>
-		<call-template name="endl"/>
-		<call-template name="prg.c.parser.optionArgumentInfoInit">
-			<with-param name="memberSet" select="$memberSet"/>
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.argumentOptionItemInfoInit">
+		<xsl:param name="optionNode" />
+		<xsl:param name="optionInfoVariable" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="prg.c.parser.optionItemInfoInit">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+			<xsl:with-param name="variable">
+				<xsl:choose>
+					<xsl:when test="$optionInfoVariable">
+						<xsl:value-of select="$optionInfoVariable" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat($memberSet, 'option_info')" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)" />
+			<xsl:with-param name="containerVariable" select="$containerVariable" />
+			<xsl:with-param name="rootNode" select="$rootNode" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>default_value = </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:default">
+				<xsl:text>strdup("</xsl:text>
+				<xsl:apply-templates select="$optionNode/prg:default" />
+				<xsl:text>");</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>NULL;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="prg.c.parser.optionArgumentInfoInit">
+			<xsl:with-param name="memberSet" select="$memberSet" />
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!--  -->
-	<template name="prg.c.parser.multiargumentOptionItemInfoInit">
-		<param name="optionNode"/>
-		<param name="optionInfoVariable"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<call-template name="prg.c.parser.optionItemInfoInit">
-			<with-param name="optionNode" select="$optionNode"/>
-			<with-param name="variable">
-				<choose>
-					<when test="$optionInfoVariable">
-						<value-of select="$optionInfoVariable"/>
-					</when>
-					<otherwise>
-						<value-of select="concat($memberSet, 'option_info')"/>
-					</otherwise>
-				</choose>
-			</with-param>
-			<with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)"/>
-			<with-param name="containerVariable" select="$containerVariable"/>
-			<with-param name="rootNode" select="$rootNode"/>
-		</call-template>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>min_argument = </text>
-		<choose>
-			<when test="$optionNode/@min">
-				<value-of select="$optionNode/@min"/>
-			</when>
-			<otherwise>
-				<text>1</text>
-			</otherwise>
-		</choose>
-		<text>;</text>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>max_argument = </text>
-		<choose>
-			<when test="$optionNode/@max">
-				<value-of select="$optionNode/@max"/>
-			</when>
-			<otherwise>
-				<text>0</text>
-			</otherwise>
-		</choose>
-		<text>;</text>
-		<call-template name="endl"/>
-		<call-template name="prg.c.parser.optionArgumentInfoInit">
-			<with-param name="memberSet" select="$memberSet"/>
-			<with-param name="optionNode" select="$optionNode"/>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.multiargumentOptionItemInfoInit">
+		<xsl:param name="optionNode" />
+		<xsl:param name="optionInfoVariable" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="prg.c.parser.optionItemInfoInit">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+			<xsl:with-param name="variable">
+				<xsl:choose>
+					<xsl:when test="$optionInfoVariable">
+						<xsl:value-of select="$optionInfoVariable" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat($memberSet, 'option_info')" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)" />
+			<xsl:with-param name="containerVariable" select="$containerVariable" />
+			<xsl:with-param name="rootNode" select="$rootNode" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>min_argument = </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/@min">
+				<xsl:value-of select="$optionNode/@min" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>1</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>max_argument = </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/@max">
+				<xsl:value-of select="$optionNode/@max" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>0</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="prg.c.parser.optionArgumentInfoInit">
+			<xsl:with-param name="memberSet" select="$memberSet" />
+			<xsl:with-param name="optionNode" select="$optionNode" />
+		</xsl:call-template>
+	</xsl:template>
 
 	<!--  -->
-	<template name="prg.c.parser.group_optionItemInfoInit">
-		<param name="optionNode"/>
-		<param name="optionInfoVariable"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<param name="containerVariable"/>
-		<param name="rootNode"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<call-template name="prg.c.parser.optionItemInfoInit">
-			<with-param name="optionNode" select="$optionNode"/>
-			<with-param name="variable">
-				<choose>
-					<when test="$optionInfoVariable">
-						<value-of select="$optionInfoVariable"/>
-					</when>
-					<otherwise>
-						<value-of select="concat($memberSet, 'option_info')"/>
-					</otherwise>
-				</choose>
-			</with-param>
-			<with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)"/>
-			<with-param name="containerVariable" select="$containerVariable"/>
-			<with-param name="rootNode" select="$rootNode"/>
-		</call-template>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>group_type = nsxml_group_option_</text>
-		<choose>
-			<when test="$optionNode/@type = 'exclusive'">
-				<text>exclusive</text>
-			</when>
-			<otherwise>
-				<text>standard</text>
-			</otherwise>
-		</choose>
-		<text>;</text>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>option_info_count = </text>
-		<value-of select="count($optionNode/prg:options/*)"/>
-		<text>;</text>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>option_info_refs = (struct nsxml_option_info **)malloc(sizeof(struct nsxml_option_info *) * </text>
-		<value-of select="count($optionNode/prg:options/*)"/>
-		<text>);</text>
-	</template>
+	<xsl:template name="prg.c.parser.group_optionItemInfoInit">
+		<xsl:param name="optionNode" />
+		<xsl:param name="optionInfoVariable" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:param name="containerVariable" />
+		<xsl:param name="rootNode" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="prg.c.parser.optionItemInfoInit">
+			<xsl:with-param name="optionNode" select="$optionNode" />
+			<xsl:with-param name="variable">
+				<xsl:choose>
+					<xsl:when test="$optionInfoVariable">
+						<xsl:value-of select="$optionInfoVariable" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat($memberSet, 'option_info')" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="pointer" select="(string-length($optionInfoVariable) &gt; 0)" />
+			<xsl:with-param name="containerVariable" select="$containerVariable" />
+			<xsl:with-param name="rootNode" select="$rootNode" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>group_type = nsxml_group_option_</xsl:text>
+		<xsl:choose>
+			<xsl:when test="$optionNode/@type = 'exclusive'">
+				<xsl:text>exclusive</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>standard</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>option_info_count = </xsl:text>
+		<xsl:value-of select="count($optionNode/prg:options/*)" />
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>option_info_refs = (struct nsxml_option_info **)malloc(sizeof(struct nsxml_option_info *) * </xsl:text>
+		<xsl:value-of select="count($optionNode/prg:options/*)" />
+		<xsl:text>);</xsl:text>
+	</xsl:template>
 
 	<!--  -->
-	<template name="prg.c.parser.rootItemInfoInit">
-		<param name="rootNode"/>
-		<param name="variable"/>
-		<param name="pointer" select="false()"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<call-template name="prg.c.parser.itemInfoInit">
-			<with-param name="itemNode" select="$rootNode"/>
-			<with-param name="variable" select="concat($memberSet, 'item_info')"/>
-		</call-template>
-		<call-template name="endl"/>
-		<variable name="optionCount" select="count($rootNode/prg:options/* | $rootNode/prg:options//prg:options/*)"/>
-		<value-of select="$memberSet"/>
-		<text>option_info_count = </text>
-		<value-of select="$optionCount"/>
-		<text>;</text>
-		<call-template name="endl"/>
-		<choose>
-			<when test="$optionCount = 0">
-				<value-of select="$memberSet"/>
-				<text>option_infos = NULL;</text>
-			</when>
-			<otherwise>
-				<value-of select="$memberSet"/>
-				<text>option_infos = (struct nsxml_option_info**) malloc(sizeof(struct nsxml_option_info*) * </text>
-				<value-of select="$optionCount"/>
-				<text>);</text>
-				<call-template name="c.block">
-					<with-param name="content">
-						<text>struct nsxml_option_info *o = NULL;</text>
-						<call-template name="endl"/>
-						<text>void *o_ptr = NULL;</text>
-						<call-template name="endl"/>
-						<variable name="containerVariable">
-							<value-of select="$memberSet"/>
-							<text>option_infos</text>
-						</variable>
-						<for-each select="$rootNode/prg:options/* | $rootNode/prg:options//prg:options/*">
-							<variable name="optionIndex" select="position() - 1"/>
-							<variable name="optionVariable">
-								<value-of select="$containerVariable"/>
-								<text>[</text>
-								<value-of select="$optionIndex"/>
-								<text>]</text>
-							</variable>
-							<call-template name="c.inlineComment">
-								<with-param name="content">
-									<value-of select="$optionIndex"/>
-									<if test="./prg:databinding/prg:variable">
-										<text>: </text>
-										<apply-templates select="./prg:databinding/prg:variable"/>
-									</if>
-								</with-param>
-							</call-template>
-							<call-template name="endl"/>
-							<value-of select="$optionVariable"/>
-							<text> = </text>
-							<choose>
-								<when test="./self::prg:switch">
-									<text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_switch_option_info));</text>
-									<call-template name="endl"/>
-									<text>o = </text>
-									<value-of select="$optionVariable"/>
-									<text>;</text>
-									<text>o_ptr = o;</text>
-									<call-template name="endl"/>
-									<call-template name="prg.c.parser.switch_optionItemInfoInit">
-										<with-param name="optionNode" select="."/>
-										<with-param name="optionInfoVariable" select="'o'"/>
-										<with-param name="variable">
-											<text>((struct nsxml_switch_option_info*)o_ptr)</text>
-										</with-param>
-										<with-param name="pointer" select="true()"/>
-										<with-param name="containerVariable" select="$containerVariable"/>
-										<with-param name="rootNode" select="$rootNode"/>
-									</call-template>
-								</when>
-								<when test="./self::prg:argument">
-									<text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_argument_option_info));</text>
-									<call-template name="endl"/>
-									<text>o = </text>
-									<value-of select="$optionVariable"/>
-									<text>;</text>
-									<text>o_ptr = o;</text>
-									<call-template name="endl"/>
-									<call-template name="prg.c.parser.argumentOptionItemInfoInit">
-										<with-param name="optionNode" select="."/>
-										<with-param name="optionInfoVariable" select="'o'"/>
-										<with-param name="variable">
-											<text>((struct nsxml_argument_option_info*)o_ptr)</text>
-										</with-param>
-										<with-param name="pointer" select="true()"/>
-										<with-param name="containerVariable" select="$containerVariable"/>
-										<with-param name="rootNode" select="$rootNode"/>
-									</call-template>
-								</when>
-								<when test="./self::prg:multiargument">
-									<text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_multiargument_option_info));</text>
-									<call-template name="endl"/>
-									<text>o = </text>
-									<value-of select="$optionVariable"/>
-									<text>;</text>
-									<text>o_ptr = o;</text>
-									<call-template name="endl"/>
-									<call-template name="prg.c.parser.multiargumentOptionItemInfoInit">
-										<with-param name="optionNode" select="."/>
-										<with-param name="optionInfoVariable" select="'o'"/>
-										<with-param name="variable">
-											<text>((struct nsxml_multiargument_option_info*)o_ptr)</text>
-										</with-param>
-										<with-param name="pointer" select="true()"/>
-										<with-param name="containerVariable" select="$containerVariable"/>
-										<with-param name="rootNode" select="$rootNode"/>
-									</call-template>
-								</when>
-								<when test="./self::prg:group">
-									<text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_group_option_info));</text>
-									<call-template name="endl"/>
-									<text>o = </text>
-									<value-of select="$optionVariable"/>
-									<text>;</text>
-									<text>o_ptr = o;</text>
-									<call-template name="endl"/>
-									<call-template name="prg.c.parser.group_optionItemInfoInit">
-										<with-param name="optionNode" select="."/>
-										<with-param name="optionInfoVariable" select="'o'"/>
-										<with-param name="variable">
-											<text>((struct nsxml_group_option_info*)o_ptr)</text>
-										</with-param>
-										<with-param name="pointer" select="true()"/>
-										<with-param name="containerVariable" select="$containerVariable"/>
-										<with-param name="rootNode" select="$rootNode"/>
-									</call-template>
-								</when>
-							</choose>
-							<call-template name="endl"/>
-						</for-each>
+	<xsl:template name="prg.c.parser.rootItemInfoInit">
+		<xsl:param name="rootNode" />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="false()" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:call-template name="prg.c.parser.itemInfoInit">
+			<xsl:with-param name="itemNode" select="$rootNode" />
+			<xsl:with-param name="variable" select="concat($memberSet, 'item_info')" />
+		</xsl:call-template>
+		<xsl:call-template name="endl" />
+		<xsl:variable name="optionCount" select="count($rootNode/prg:options/* | $rootNode/prg:options//prg:options/*)" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>option_info_count = </xsl:text>
+		<xsl:value-of select="$optionCount" />
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:choose>
+			<xsl:when test="$optionCount = 0">
+				<xsl:value-of select="$memberSet" />
+				<xsl:text>option_infos = NULL;</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$memberSet" />
+				<xsl:text>option_infos = (struct nsxml_option_info**) malloc(sizeof(struct nsxml_option_info*) * </xsl:text>
+				<xsl:value-of select="$optionCount" />
+				<xsl:text>);</xsl:text>
+				<xsl:call-template name="c.block">
+					<xsl:with-param name="content">
+						<xsl:text>struct nsxml_option_info *o = NULL;</xsl:text>
+						<xsl:call-template name="endl" />
+						<xsl:text>void *o_ptr = NULL;</xsl:text>
+						<xsl:call-template name="endl" />
+						<xsl:variable name="containerVariable">
+							<xsl:value-of select="$memberSet" />
+							<xsl:text>option_infos</xsl:text>
+						</xsl:variable>
+						<xsl:for-each select="$rootNode/prg:options/* | $rootNode/prg:options//prg:options/*">
+							<xsl:variable name="optionIndex" select="position() - 1" />
+							<xsl:variable name="optionVariable">
+								<xsl:value-of select="$containerVariable" />
+								<xsl:text>[</xsl:text>
+								<xsl:value-of select="$optionIndex" />
+								<xsl:text>]</xsl:text>
+							</xsl:variable>
+							<xsl:call-template name="c.inlineComment">
+								<xsl:with-param name="content">
+									<xsl:value-of select="$optionIndex" />
+									<xsl:if test="./prg:databinding/prg:variable">
+										<xsl:text>: </xsl:text>
+										<xsl:apply-templates select="./prg:databinding/prg:variable" />
+									</xsl:if>
+								</xsl:with-param>
+							</xsl:call-template>
+							<xsl:call-template name="endl" />
+							<xsl:value-of select="$optionVariable" />
+							<xsl:text> = </xsl:text>
+							<xsl:choose>
+								<xsl:when test="./self::prg:switch">
+									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_switch_option_info));</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:text>o = </xsl:text>
+									<xsl:value-of select="$optionVariable" />
+									<xsl:text>;</xsl:text>
+									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:call-template name="prg.c.parser.switch_optionItemInfoInit">
+										<xsl:with-param name="optionNode" select="." />
+										<xsl:with-param name="optionInfoVariable" select="'o'" />
+										<xsl:with-param name="variable">
+											<xsl:text>((struct nsxml_switch_option_info*)o_ptr)</xsl:text>
+										</xsl:with-param>
+										<xsl:with-param name="pointer" select="true()" />
+										<xsl:with-param name="containerVariable" select="$containerVariable" />
+										<xsl:with-param name="rootNode" select="$rootNode" />
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:when test="./self::prg:argument">
+									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_argument_option_info));</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:text>o = </xsl:text>
+									<xsl:value-of select="$optionVariable" />
+									<xsl:text>;</xsl:text>
+									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:call-template name="prg.c.parser.argumentOptionItemInfoInit">
+										<xsl:with-param name="optionNode" select="." />
+										<xsl:with-param name="optionInfoVariable" select="'o'" />
+										<xsl:with-param name="variable">
+											<xsl:text>((struct nsxml_argument_option_info*)o_ptr)</xsl:text>
+										</xsl:with-param>
+										<xsl:with-param name="pointer" select="true()" />
+										<xsl:with-param name="containerVariable" select="$containerVariable" />
+										<xsl:with-param name="rootNode" select="$rootNode" />
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:when test="./self::prg:multiargument">
+									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_multiargument_option_info));</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:text>o = </xsl:text>
+									<xsl:value-of select="$optionVariable" />
+									<xsl:text>;</xsl:text>
+									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:call-template name="prg.c.parser.multiargumentOptionItemInfoInit">
+										<xsl:with-param name="optionNode" select="." />
+										<xsl:with-param name="optionInfoVariable" select="'o'" />
+										<xsl:with-param name="variable">
+											<xsl:text>((struct nsxml_multiargument_option_info*)o_ptr)</xsl:text>
+										</xsl:with-param>
+										<xsl:with-param name="pointer" select="true()" />
+										<xsl:with-param name="containerVariable" select="$containerVariable" />
+										<xsl:with-param name="rootNode" select="$rootNode" />
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:when test="./self::prg:group">
+									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_group_option_info));</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:text>o = </xsl:text>
+									<xsl:value-of select="$optionVariable" />
+									<xsl:text>;</xsl:text>
+									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:call-template name="prg.c.parser.group_optionItemInfoInit">
+										<xsl:with-param name="optionNode" select="." />
+										<xsl:with-param name="optionInfoVariable" select="'o'" />
+										<xsl:with-param name="variable">
+											<xsl:text>((struct nsxml_group_option_info*)o_ptr)</xsl:text>
+										</xsl:with-param>
+										<xsl:with-param name="pointer" select="true()" />
+										<xsl:with-param name="containerVariable" select="$containerVariable" />
+										<xsl:with-param name="rootNode" select="$rootNode" />
+									</xsl:call-template>
+								</xsl:when>
+							</xsl:choose>
+							<xsl:call-template name="endl" />
+						</xsl:for-each>
 						<!-- Link group options -->
-						<for-each select="$rootNode//prg:group">
-							<variable name="optionIndex">
-								<call-template name="prg.c.parser.optionIndex">
-									<with-param name="rootNode" select="$rootNode"/>
-									<with-param name="optionNode" select="."/>
-								</call-template>
-							</variable>
-							<variable name="groupNode" select="."/>
-							<text>o = info-&gt;rootitem_info.option_infos[</text>
-							<value-of select="$optionIndex"/>
-							<text>];</text>
-							<text>o_ptr = o;</text>
-							<call-template name="endl"/>
-							<for-each select="$groupNode/prg:options/*">
-								<text>((struct nsxml_group_option_info *)(o_ptr))-&gt;option_info_refs[</text>
-								<value-of select="position() - 1"/>
-								<text>] = info-&gt;rootitem_info.option_infos[</text>
-								<call-template name="prg.c.parser.optionIndex">
-									<with-param name="rootNode" select="$rootNode"/>
-									<with-param name="optionNode" select="."/>
-								</call-template>
-								<text>];</text>
-								<call-template name="endl"/>
-							</for-each>
-						</for-each>
-					</with-param>
-				</call-template>
-			</otherwise>
-		</choose>
+						<xsl:for-each select="$rootNode//prg:group">
+							<xsl:variable name="optionIndex">
+								<xsl:call-template name="prg.c.parser.optionIndex">
+									<xsl:with-param name="rootNode" select="$rootNode" />
+									<xsl:with-param name="optionNode" select="." />
+								</xsl:call-template>
+							</xsl:variable>
+							<xsl:variable name="groupNode" select="." />
+							<xsl:text>o = info-&gt;rootitem_info.option_infos[</xsl:text>
+							<xsl:value-of select="$optionIndex" />
+							<xsl:text>];</xsl:text>
+							<xsl:text>o_ptr = o;</xsl:text>
+							<xsl:call-template name="endl" />
+							<xsl:for-each select="$groupNode/prg:options/*">
+								<xsl:text>((struct nsxml_group_option_info *)(o_ptr))-&gt;option_info_refs[</xsl:text>
+								<xsl:value-of select="position() - 1" />
+								<xsl:text>] = info-&gt;rootitem_info.option_infos[</xsl:text>
+								<xsl:call-template name="prg.c.parser.optionIndex">
+									<xsl:with-param name="rootNode" select="$rootNode" />
+									<xsl:with-param name="optionNode" select="." />
+								</xsl:call-template>
+								<xsl:text>];</xsl:text>
+								<xsl:call-template name="endl" />
+							</xsl:for-each>
+						</xsl:for-each>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
 		<!-- Positional arguments -->
-		<call-template name="endl"/>
-		<variable name="valueCount" select="count($rootNode/prg:values/*)"/>
-		<value-of select="$memberSet"/>
-		<text>positional_argument_info_count = </text>
-		<value-of select="$valueCount"/>
-		<text>;</text>
-		<call-template name="endl"/>
-		<value-of select="$memberSet"/>
-		<text>positional_argument_infos = </text>
-		<choose>
-			<when test="$valueCount = 0">
-				<text>NULL</text>
-			</when>
-			<otherwise>
-				<text>(struct nsxml_positional_argument_info*)malloc (sizeof(struct nsxml_positional_argument_info) * </text>
-				<value-of select="$valueCount"/>
-				<text>)</text>
-			</otherwise>
-		</choose>
-		<text>;</text>
-		<if test="$valueCount &gt; 0">
-			<call-template name="c.block">
-				<with-param name="content">
-					<text>int flags = 0;</text>
-					<for-each select="$rootNode/prg:values/*">
-						<variable name="info">
-							<value-of select="$memberSet"/>
-							<text>positional_argument_infos[</text>
-							<value-of select="position() - 1"/>
-							<text>]</text>
-						</variable>
-						<call-template name="endl"/>
+		<xsl:call-template name="endl" />
+		<xsl:variable name="valueCount" select="count($rootNode/prg:values/*)" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>positional_argument_info_count = </xsl:text>
+		<xsl:value-of select="$valueCount" />
+		<xsl:text>;</xsl:text>
+		<xsl:call-template name="endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>positional_argument_infos = </xsl:text>
+		<xsl:choose>
+			<xsl:when test="$valueCount = 0">
+				<xsl:text>NULL</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>(struct nsxml_positional_argument_info*)malloc (sizeof(struct nsxml_positional_argument_info) * </xsl:text>
+				<xsl:value-of select="$valueCount" />
+				<xsl:text>)</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>;</xsl:text>
+		<xsl:if test="$valueCount &gt; 0">
+			<xsl:call-template name="c.block">
+				<xsl:with-param name="content">
+					<xsl:text>int flags = 0;</xsl:text>
+					<xsl:for-each select="$rootNode/prg:values/*">
+						<xsl:variable name="info">
+							<xsl:value-of select="$memberSet" />
+							<xsl:text>positional_argument_infos[</xsl:text>
+							<xsl:value-of select="position() - 1" />
+							<xsl:text>]</xsl:text>
+						</xsl:variable>
+						<xsl:call-template name="endl" />
 						<!-- item info -->
-						<call-template name="prg.c.parser.itemInfoInit">
-							<with-param name="itemNode" select="."/>
-							<with-param name="variable" select="concat($info, '.item_info')"/>
-						</call-template>
-						<call-template name="endl"/>
-						<text>flags = 0;</text>
-						<call-template name="endl"/>
-						<if test="./@required = 'true'">
-							<text>flags |= nsxml_positional_argument_required;</text>
-							<call-template name="endl"/>
-						</if>
-						<text>nsxml_positional_argument_info_init(&amp;</text>
-						<value-of select="$info"/>
+						<xsl:call-template name="prg.c.parser.itemInfoInit">
+							<xsl:with-param name="itemNode" select="." />
+							<xsl:with-param name="variable" select="concat($info, '.item_info')" />
+						</xsl:call-template>
+						<xsl:call-template name="endl" />
+						<xsl:text>flags = 0;</xsl:text>
+						<xsl:call-template name="endl" />
+						<xsl:if test="./@required = 'true'">
+							<xsl:text>flags |= nsxml_positional_argument_required;</xsl:text>
+							<xsl:call-template name="endl" />
+						</xsl:if>
+						<xsl:text>nsxml_positional_argument_info_init(&amp;</xsl:text>
+						<xsl:value-of select="$info" />
 						<!-- flags -->
-						<text>, flags</text>
+						<xsl:text>, flags</xsl:text>
 						<!-- arg type -->
-						<text>, </text>
-						<call-template name="prg.c.parser.argumentType">
-							<with-param name="typeNode" select="./prg:type"/>
-						</call-template>
-						<text>, </text>
-						<choose>
-							<when test="./self::prg:value">
-								<text>1</text>
-							</when>
-							<when test="./self::prg:other and ./@max">
-								<value-of select="./@max"/>
-							</when>
-							<otherwise>
-								<text>0</text>
-							</otherwise>
-						</choose>
-						<text>);</text>
-						<call-template name="endl"/>
+						<xsl:text>, </xsl:text>
+						<xsl:call-template name="prg.c.parser.argumentType">
+							<xsl:with-param name="typeNode" select="./prg:type" />
+						</xsl:call-template>
+						<xsl:text>, </xsl:text>
+						<xsl:choose>
+							<xsl:when test="./self::prg:value">
+								<xsl:text>1</xsl:text>
+							</xsl:when>
+							<xsl:when test="./self::prg:other and ./@max">
+								<xsl:value-of select="./@max" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>0</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:text>);</xsl:text>
+						<xsl:call-template name="endl" />
 						<!-- validators -->
-						<call-template name="prg.c.parser.infoValidators">
-							<with-param name="itemNode" select="."/>
-							<with-param name="variable" select="$info"/>
-						</call-template>
-					</for-each>
-				</with-param>
-			</call-template>
-		</if>
-	</template>
+						<xsl:call-template name="prg.c.parser.infoValidators">
+							<xsl:with-param name="itemNode" select="." />
+							<xsl:with-param name="variable" select="$info" />
+						</xsl:call-template>
+					</xsl:for-each>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<!--  -->
-	<template name="prg.c.parser.subcommandInfoInit">
-		<param name="subcommandNode" select="."/>
-		<param name="variable"/>
-		<param name="pointer" select="true()"/>
-		<variable name="memberSet">
-			<call-template name="prg.c.parser.memberSet">
-				<with-param name="variable" select="$variable"/>
-				<with-param name="pointer" select="$pointer"/>
-			</call-template>
-		</variable>
-		<value-of select="$memberSet"/>
-		<text>names = nsxml_item_names_new("</text>
-		<apply-templates select="$subcommandNode/prg:name"/>
-		<text>", </text>
-		<for-each select="$subcommandNode/prg:aliases/prg:alias">
-			<text>"</text>
-			<apply-templates select="."/>
-			<text>", </text>
-		</for-each>
-		<text>NULL);</text>
-		<call-template name="endl"/>
+	<xsl:template name="prg.c.parser.subcommandInfoInit">
+		<xsl:param name="subcommandNode" select="." />
+		<xsl:param name="variable" />
+		<xsl:param name="pointer" select="true()" />
+		<xsl:variable name="memberSet">
+			<xsl:call-template name="prg.c.parser.memberSet">
+				<xsl:with-param name="variable" select="$variable" />
+				<xsl:with-param name="pointer" select="$pointer" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>names = nsxml_item_names_new("</xsl:text>
+		<xsl:apply-templates select="$subcommandNode/prg:name" />
+		<xsl:text>", </xsl:text>
+		<xsl:for-each select="$subcommandNode/prg:aliases/prg:alias">
+			<xsl:text>"</xsl:text>
+			<xsl:apply-templates select="." />
+			<xsl:text>", </xsl:text>
+		</xsl:for-each>
+		<xsl:text>NULL);</xsl:text>
+		<xsl:call-template name="endl" />
 		<!-- rootitem members -->
-		<call-template name="prg.c.parser.rootItemInfoInit">
-			<with-param name="rootNode" select="$subcommandNode"/>
-			<with-param name="variable">
-				<value-of select="$variable"/>
-				<text>-&gt;rootitem_info</text>
-			</with-param>
-		</call-template>
-	</template>
+		<xsl:call-template name="prg.c.parser.rootItemInfoInit">
+			<xsl:with-param name="rootNode" select="$subcommandNode" />
+			<xsl:with-param name="variable">
+				<xsl:value-of select="$variable" />
+				<xsl:text>-&gt;rootitem_info</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Typedefs -->
-	<template name="prg.c.parser.programInfoTypedefs">
-		<text>typedef struct nsxml_program_info </text>
-		<value-of select="$prg.c.parser.structName.program_info"/>
-		<text>;</text>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoTypedefs">
+		<xsl:text>typedef struct nsxml_program_info </xsl:text>
+		<xsl:value-of select="$prg.c.parser.structName.program_info" />
+		<xsl:text>;</xsl:text>
+	</xsl:template>
 
 	<!-- Program info initioalization function declaration -->
-	<template name="prg.c.parser.programInfoInitFunctionDeclaration">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDeclaration">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_init"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoInitFunctionDeclaration">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDeclaration">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_init" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info initioalization function definition -->
-	<template name="prg.c.parser.programInfoInitFunctionDefinition">
-		<param name="programNode" select="."/>
-		<variable name="infoParam" select="'info'"/>
-		<variable name="subcommandCount" select="count($programNode/prg:subcommands/*)"/>
-		<call-template name="c.functionDefinition">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_init"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-			<with-param name="content">
-				<text>struct nsxml_value_validator *validator;</text>
-				<text> void *validator_ptr;</text>
-				<call-template name="endl"/>
-				<text>int validator_flags;</text>
-				<call-template name="endl"/>
-				<text>validator = NULL;</text>
-				<call-template name="endl"/>
-				<text> validator_ptr = validator;</text>
-				<call-template name="endl"/>
-				<text>validator_flags = 0;</text>
-				<call-template name="endl"/>
+	<xsl:template name="prg.c.parser.programInfoInitFunctionDefinition">
+		<xsl:param name="programNode" select="." />
+		<xsl:variable name="infoParam" select="'info'" />
+		<xsl:variable name="subcommandCount" select="count($programNode/prg:subcommands/*)" />
+		<xsl:call-template name="c.functionDefinition">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_init" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content">
+				<xsl:text>struct nsxml_value_validator *validator;</xsl:text>
+				<xsl:text> void *validator_ptr;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>int validator_flags;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>validator = NULL;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text> validator_ptr = validator;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags = 0;</xsl:text>
+				<xsl:call-template name="endl" />
 				<!-- nsxml_program_info member -->
-				<value-of select="$infoParam"/>
-				<text>-&gt;name = "</text>
-				<apply-templates select="$programNode/prg:name"/>
-				<text>";</text>
-				<call-template name="endl"/>
-				<value-of select="$infoParam"/>
-				<text>-&gt;subcommand_info_count = </text>
-				<value-of select="$subcommandCount"/>
-				<text>;</text>
-				<call-template name="endl"/>
-				<value-of select="$infoParam"/>
-				<text>-&gt;subcommand_infos = </text>
-				<choose>
-					<when test="$subcommandCount = 0">
-						<text>NULL;</text>
-					</when>
-					<otherwise>
-						<text>(struct nsxml_subcommand_info *)(malloc(sizeof(struct nsxml_subcommand_info) *</text>
-						<value-of select="$subcommandCount"/>
-						<text>));</text>
-						<for-each select="$programNode/prg:subcommands/prg:subcommand">
-							<variable name="subcommandIndex" select="position() - 1"/>
-							<call-template name="c.block">
-								<with-param name="content">
-									<call-template name="c.inlineComment">
-										<with-param name="content" select="prg:name"/>
-									</call-template>
-									<call-template name="endl"/>
-									<text>struct nsxml_subcommand_info *s = &amp;(</text>
-									<value-of select="$infoParam"/>
-									<text>-&gt;subcommand_infos[</text>
-									<value-of select="$subcommandIndex"/>
-									<text>]);</text>
-									<call-template name="endl"/>
-									<call-template name="prg.c.parser.subcommandInfoInit">
-										<with-param name="variable" select="'s'"/>
-									</call-template>
-								</with-param>
-							</call-template>
-						</for-each>
-					</otherwise>
-				</choose>
-				<call-template name="endl"/>
+				<xsl:value-of select="$infoParam" />
+				<xsl:text>-&gt;name = "</xsl:text>
+				<xsl:apply-templates select="$programNode/prg:name" />
+				<xsl:text>";</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:value-of select="$infoParam" />
+				<xsl:text>-&gt;subcommand_info_count = </xsl:text>
+				<xsl:value-of select="$subcommandCount" />
+				<xsl:text>;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:value-of select="$infoParam" />
+				<xsl:text>-&gt;subcommand_infos = </xsl:text>
+				<xsl:choose>
+					<xsl:when test="$subcommandCount = 0">
+						<xsl:text>NULL;</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>(struct nsxml_subcommand_info *)(malloc(sizeof(struct nsxml_subcommand_info) *</xsl:text>
+						<xsl:value-of select="$subcommandCount" />
+						<xsl:text>));</xsl:text>
+						<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
+							<xsl:variable name="subcommandIndex" select="position() - 1" />
+							<xsl:call-template name="c.block">
+								<xsl:with-param name="content">
+									<xsl:call-template name="c.inlineComment">
+										<xsl:with-param name="content" select="prg:name" />
+									</xsl:call-template>
+									<xsl:call-template name="endl" />
+									<xsl:text>struct nsxml_subcommand_info *s = &amp;(</xsl:text>
+									<xsl:value-of select="$infoParam" />
+									<xsl:text>-&gt;subcommand_infos[</xsl:text>
+									<xsl:value-of select="$subcommandIndex" />
+									<xsl:text>]);</xsl:text>
+									<xsl:call-template name="endl" />
+									<xsl:call-template name="prg.c.parser.subcommandInfoInit">
+										<xsl:with-param name="variable" select="'s'" />
+									</xsl:call-template>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:for-each>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:call-template name="endl" />
 				<!-- rootitem members -->
-				<call-template name="prg.c.parser.rootItemInfoInit">
-					<with-param name="rootNode" select="$programNode"/>
-					<with-param name="variable">
-						<value-of select="$infoParam"/>
-						<text>-&gt;rootitem_info</text>
-					</with-param>
-				</call-template>
-				<call-template name="endl"/>
-				<text>/*shut up compiler */</text>
-				<call-template name="endl"/>
-				<text>validator_flags = (int)sizeof(validator);</text>
-				<call-template name="endl"/>
-				<text>validator_ptr = &amp;validator_flags;</text>
-				<call-template name="endl"/>
-				<text> validator = (struct nsxml_value_validator *)validator_ptr;</text>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:call-template name="prg.c.parser.rootItemInfoInit">
+					<xsl:with-param name="rootNode" select="$programNode" />
+					<xsl:with-param name="variable">
+						<xsl:value-of select="$infoParam" />
+						<xsl:text>-&gt;rootitem_info</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:call-template name="endl" />
+				<xsl:text>/*shut up compiler */</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_flags = (int)sizeof(validator);</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>validator_ptr = &amp;validator_flags;</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text> validator = (struct nsxml_value_validator *)validator_ptr;</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info creation function declaration -->
-	<template name="prg.c.parser.programInfoNewFunctionDeclaration">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDeclaration">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_new"/>
-			<with-param name="returnType">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoNewFunctionDeclaration">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDeclaration">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_new" />
+			<xsl:with-param name="returnType">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info creation function definition -->
-	<template name="prg.c.parser.programInfoNewFunctionDefinition">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDefinition">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_new"/>
-			<with-param name="returnType">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *</text>
-			</with-param>
-			<with-param name="content">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info = (</text>
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *)malloc(sizeof(</text>
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text>));</text>
-				<call-template name="endl"/>
-				<value-of select="$prg.c.parser.functionName.program_info_init"/>
-				<text>(info);</text>
-				<call-template name="endl"/>
-				<text>return info;</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoNewFunctionDefinition">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDefinition">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_new" />
+			<xsl:with-param name="returnType">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info = (</xsl:text>
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *)malloc(sizeof(</xsl:text>
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text>));</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:value-of select="$prg.c.parser.functionName.program_info_init" />
+				<xsl:text>(info);</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>return info;</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info cleanup function declaration -->
-	<template name="prg.c.parser.programInfoCleanupFunctionDeclaration">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDeclaration">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_cleanup"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoCleanupFunctionDeclaration">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDeclaration">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_cleanup" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info cleanup function definition -->
-	<template name="prg.c.parser.programInfoCleanupFunctionDefinition">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDefinition">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_cleanup"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-			<with-param name="content">
-				<text>nsxml_program_info_cleanup(info);</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoCleanupFunctionDefinition">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDefinition">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_cleanup" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content">
+				<xsl:text>nsxml_program_info_cleanup(info);</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info free function declaration -->
-	<template name="prg.c.parser.programInfoFreeFunctionDeclaration">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDeclaration">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_free"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoFreeFunctionDeclaration">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDeclaration">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_free" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Program info free function definition -->
-	<template name="prg.c.parser.programInfoFreeFunctionDefinition">
-		<param name="programNode" select="."/>
-		<call-template name="c.functionDefinition">
-			<with-param name="name" select="$prg.c.parser.functionName.program_info_free"/>
-			<with-param name="parameters">
-				<value-of select="$prg.c.parser.structName.program_info"/>
-				<text> *info</text>
-			</with-param>
-			<with-param name="content">
-				<value-of select="$prg.c.parser.functionName.program_info_cleanup"/>
-				<text>(info);</text>
-				<call-template name="endl"/>
-				<text>free(info);</text>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.c.parser.programInfoFreeFunctionDefinition">
+		<xsl:param name="programNode" select="." />
+		<xsl:call-template name="c.functionDefinition">
+			<xsl:with-param name="name" select="$prg.c.parser.functionName.program_info_free" />
+			<xsl:with-param name="parameters">
+				<xsl:value-of select="$prg.c.parser.structName.program_info" />
+				<xsl:text> *info</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="content">
+				<xsl:value-of select="$prg.c.parser.functionName.program_info_cleanup" />
+				<xsl:text>(info);</xsl:text>
+				<xsl:call-template name="endl" />
+				<xsl:text>free(info);</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

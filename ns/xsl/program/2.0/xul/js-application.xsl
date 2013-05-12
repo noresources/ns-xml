@@ -3,19 +3,19 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Javascript code base of a xul application based on program interface definition schema -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="../../../languages/javascript.xsl" />
-	<import href="./base.xsl" />
+	<xsl:import href="../../../languages/javascript.xsl" />
+	<xsl:import href="./base.xsl" />
 	
-	<output method="text" encoding="utf-8" />
+	<xsl:output method="text" encoding="utf-8" />
 
-	<template match="text()">
-		<value-of select="normalize-space(.)" />
-	</template>
+	<xsl:template match="text()">
+		<xsl:value-of select="normalize-space(.)" />
+	</xsl:template>
 
 	<!-- Main -->
-	<template match="/"><![CDATA[var EXPORTED_SYMBOLS = [ "]]><value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[" ];
+	<xsl:template match="/"><![CDATA[var EXPORTED_SYMBOLS = [ "]]><xsl:value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[" ];
 
 function Application()
 {
@@ -32,7 +32,7 @@ Application.prototype.trace = function(str)
 // Trace message if the application was generated with the prg.debug parameter to true()
 Application.prototype.debug = function(str, e)
 {
-]]><if test="$prg.debug"><![CDATA[dump(str + ((e) ? "" : "\n"));]]></if><![CDATA[
+]]><xsl:if test="$prg.debug"><![CDATA[dump(str + ((e) ? "" : "\n"));]]></xsl:if><![CDATA[
 }
 
 // Exit application
@@ -79,7 +79,7 @@ Application.prototype.getApplicationPath = function()
 // Return the directory where the application folder (linux) or application bundle (Mac OS X) is located
 Application.prototype.getBundleURI = function()
 {
-	var relativePath = "..]]><if test="$prg.xul.platform = 'macosx'"><![CDATA[/../..]]></if><![CDATA[";
+	var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'macosx'"><![CDATA[/../..]]></xsl:if><![CDATA[";
 	try
 	{
 		var appUri = this.getApplicationURI();
@@ -114,7 +114,7 @@ Application.prototype.getBundleName = function()
 {
 	try
 	{
-		var relativePath = "..]]><if test="$prg.xul.platform = 'macosx'"><![CDATA[/..]]></if><![CDATA[";
+		var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'macosx'"><![CDATA[/..]]></xsl:if><![CDATA[";
 		var appUri = this.getApplicationURI();
 		var rootUri = this.ioService.newURI(appUri.resolve(appUri.path + relativePath), null, null);
 		
@@ -131,8 +131,8 @@ Application.prototype.getBundleName = function()
 }
 
 // Application object instance
-var ]]><value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[ = new Application();
+var ]]><xsl:value-of select="$prg.xul.js.applicationInstanceName" /><![CDATA[ = new Application();
 
-]]></template>
+]]></xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

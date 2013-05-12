@@ -3,1512 +3,1512 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Shell parser function definitions -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 
-	<import href="parser.base.xsl" />
-	<import href="parser.variables.xsl" />
+	<xsl:import href="parser.base.xsl" />
+	<xsl:import href="parser.variables.xsl" />
 
 	<!-- Message functions -->
-	<template name="prg.sh.parser.addMessageFunctionHelper">
-		<param name="name" />
-		<param name="table" select="$name" />
-		<param name="onEnd" />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.addMessageFunctionHelper">
+		<xsl:param name="name" />
+		<xsl:param name="table" select="$name" />
+		<xsl:param name="onEnd" />
+		<xsl:param name="interpreter" />
 
-		<variable name="tableName">
-			<value-of select="$prg.prefix" />
-			<value-of select="$prg.sh.parser.variableNamePrefix" />
-			<value-of select="$table" />
-			<text>s</text>
-		</variable>
+		<xsl:variable name="tableName">
+			<xsl:value-of select="$prg.prefix" />
+			<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+			<xsl:value-of select="$table" />
+			<xsl:text>s</xsl:text>
+		</xsl:variable>
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.prefix" />
-				<value-of select="$prg.sh.parser.functionNamePrefix" />
-				<text>add</text>
-				<value-of select="$name" />
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'message'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value" select="'${1}'" />
-				</call-template>
-				<value-of select="$sh.endl" />
-				<call-template name="sh.local">
-					<with-param name="name" select="'m'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<text>[</text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_option" />
-						</call-template>
-						<text>:</text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_index" />
-						</call-template>
-						<text>:</text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_subindex" />
-						</call-template>
-						<text>] </text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>message</text>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.prefix" />
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>add</xsl:text>
+				<xsl:value-of select="$name" />
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'message'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value" select="'${1}'" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'m'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:text>[</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
+						</xsl:call-template>
+						<xsl:text>:</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+						</xsl:call-template>
+						<xsl:text>:</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_subindex" />
+						</xsl:call-template>
+						<xsl:text>] </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>message</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.local">
-					<with-param name="name" select="'c'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$tableName" />
-						</call-template>
-					</with-param>
-					<with-param name="quoted" select="false()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'c'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$tableName" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<text>c=$(expr </text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>c</text>
-					</with-param>
-				</call-template>
-				<text> + </text>
-				<value-of select="$prg.sh.parser.var_startindex" />
-				<text>)</text>
-				<value-of select="$sh.endl" />
+				<xsl:text>c=$(expr </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:text>c</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text> + </xsl:text>
+				<xsl:value-of select="$prg.sh.parser.var_startindex" />
+				<xsl:text>)</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 
 
-				<value-of select="$tableName" />
-				<text>[</text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>c</text>
-					</with-param>
-				</call-template>
-				<text>]="</text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>m</text>
-					</with-param>
-				</call-template>
-				<text>"</text>
-				<if test="string-length($onEnd)">
-					<value-of select="$sh.endl" />
-					<value-of select="$onEnd" />
-				</if>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:value-of select="$tableName" />
+				<xsl:text>[</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:text>c</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text>]="</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:text>m</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+				<xsl:if test="string-length($onEnd)">
+					<xsl:value-of select="$sh.endl" />
+					<xsl:value-of select="$onEnd" />
+				</xsl:if>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.displayErrorFunction">
-		<param name="interpreter" />
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_displayerrors" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.incrementalFor">
-					<with-param name="init" select="$prg.sh.parser.var_startindex" />
-					<with-param name="operator">
-						<text>&lt;</text>
-					</with-param>
-					<with-param name="limit">
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$prg.sh.parser.vName_errors" />
-						</call-template>
-					</with-param>
-					<with-param name="do">
-						<text>echo -e "\t- </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_errors" />
-							<with-param name="index">
-								<call-template name="sh.var">
-									<with-param name="name">
-										<text>i</text>
-									</with-param>
-								</call-template>
-							</with-param>
-						</call-template>
-						<text>"</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+	<xsl:template name="prg.sh.parser.displayErrorFunction">
+		<xsl:param name="interpreter" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_displayerrors" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.incrementalFor">
+					<xsl:with-param name="init" select="$prg.sh.parser.var_startindex" />
+					<xsl:with-param name="operator">
+						<xsl:text>&lt;</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="limit">
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_errors" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:text>echo -e "\t- </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_errors" />
+							<xsl:with-param name="index">
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name">
+										<xsl:text>i</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:text>"</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.messageFunctions">
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.messageFunctions">
+		<xsl:param name="interpreter" />
 
 		<!-- addwarning -->
-		<call-template name="prg.sh.parser.addMessageFunctionHelper">
-			<with-param name="name">
-				<text>warning</text>
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
+		<xsl:call-template name="prg.sh.parser.addMessageFunctionHelper">
+			<xsl:with-param name="name">
+				<xsl:text>warning</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
 
 		<!-- adderror -->
-		<call-template name="prg.sh.parser.addMessageFunctionHelper">
-			<with-param name="name">
-				<text>error</text>
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
+		<xsl:call-template name="prg.sh.parser.addMessageFunctionHelper">
+			<xsl:with-param name="name">
+				<xsl:text>error</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
 
-		<call-template name="prg.sh.parser.addMessageFunctionHelper">
-			<with-param name="name" select="'fatalerror'" />
-			<with-param name="table" select="'error'" />
-			<with-param name="onEnd">
-				<value-of select="$prg.sh.parser.vName_aborted" />
-				<text>=true</text>
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<value-of select="$sh.endl" />
+		<xsl:call-template name="prg.sh.parser.addMessageFunctionHelper">
+			<xsl:with-param name="name" select="'fatalerror'" />
+			<xsl:with-param name="table" select="'error'" />
+			<xsl:with-param name="onEnd">
+				<xsl:value-of select="$prg.sh.parser.vName_aborted" />
+				<xsl:text>=true</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
 
 		<!-- displayerror -->
-		<call-template name="prg.sh.parser.displayErrorFunction">
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<value-of select="$sh.endl" />
+		<xsl:call-template name="prg.sh.parser.displayErrorFunction">
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
 
 		<!-- parser_debug -->
-		<if test="$prg.debug">
-			<call-template name="sh.functionDefinition">
-				<with-param name="name" select="$prg.sh.parser.fName_debug" />
-				<with-param name="interpreter" select="$interpreter" />
-				<with-param name="content">
-					<text>echo "DEBUG: ${@}"</text>
-				</with-param>
-			</call-template>
-		</if>
-		<value-of select="$sh.endl" />
+		<xsl:if test="$prg.debug">
+			<xsl:call-template name="sh.functionDefinition">
+				<xsl:with-param name="name" select="$prg.sh.parser.fName_debug" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+				<xsl:with-param name="content">
+					<xsl:text>echo "DEBUG: ${@}"</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:value-of select="$sh.endl" />
 
-	</template>
+	</xsl:template>
 
 	<!-- Value check functions -->
 
 	<!-- File system item functions -->
 
-	<template name="prg.sh.parser.pathAccessCheckFunction">
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.pathAccessCheckFunction">
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_pathaccesscheck" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'file'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.var">
-							<with-param name="name" select="1" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_pathaccesscheck" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'file'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="1" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- We can't check access on non-existing file -->
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ ! -a "${file}" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>return 0</text>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ ! -a "${file}" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>return 0</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.local">
-					<with-param name="name" select="'accessString'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.var">
-							<with-param name="name" select="2" />
-						</call-template>
-					</with-param>
-				</call-template>
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'accessString'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="2" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
-				<value-of select="$sh.endl" />
-				<call-template name="sh.while">
-					<with-param name="condition">
-						<text>[ ! -z </text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>accessString</text>
-							</with-param>
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> ]</text>
-					</with-param>
-					<with-param name="do">
-						<text>[ -</text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>accessString</text>
-							</with-param>
-							<with-param name="start" select="0" />
-							<with-param name="length" select="1" />
-						</call-template>
-						<value-of select="' '" />
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>file</text>
-							</with-param>
-							<with-param name="quoted" />
-						</call-template>
-						<text> ] || return 1;</text>
-						<value-of select="$sh.endl" />
-						<text>accessString=</text>
-						<call-template name="sh.var">
-							<with-param name="name">
-								<text>accessString</text>
-							</with-param>
-							<with-param name="quoted" />
-							<with-param name="start" select="1" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<text>return 0</text>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:call-template name="sh.while">
+					<xsl:with-param name="condition">
+						<xsl:text>[ ! -z </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>accessString</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:text>[ -</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>accessString</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="start" select="0" />
+							<xsl:with-param name="length" select="1" />
+						</xsl:call-template>
+						<xsl:value-of select="' '" />
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>file</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="quoted" />
+						</xsl:call-template>
+						<xsl:text> ] || return 1;</xsl:text>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>accessString=</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>accessString</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="quoted" />
+							<xsl:with-param name="start" select="1" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return 0</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.optionSetPresenceFunctions">
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.optionSetPresenceFunctions">
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_setoptionpresence" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.incrementalFor">
-					<with-param name="init" select="$prg.sh.parser.var_startindex" />
-					<with-param name="limit">
-						<text>$(expr </text>
-						<value-of select="$prg.sh.parser.var_startindex" />
-						<text> + </text>
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$prg.sh.parser.vName_required" />
-						</call-template>
-						<text>)</text>
-					</with-param>
-					<with-param name="do">
-						<variable name="requiredVar">
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_required" />
-								<with-param name="quoted" select="true()" />
-								<with-param name="index">
-									<call-template name="sh.var">
-										<with-param name="name">
-											<text>i</text>
-										</with-param>
-									</call-template>
-								</with-param>
-							</call-template>
-						</variable>
-						<call-template name="sh.local">
-							<with-param name="name" select="'idPart'" />
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="value">
-								<text>$(echo </text>
-								<value-of select="$requiredVar" />
-								<text> | cut -f 1 -d":" )</text>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_setoptionpresence" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.incrementalFor">
+					<xsl:with-param name="init" select="$prg.sh.parser.var_startindex" />
+					<xsl:with-param name="limit">
+						<xsl:text>$(expr </xsl:text>
+						<xsl:value-of select="$prg.sh.parser.var_startindex" />
+						<xsl:text> + </xsl:text>
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+						</xsl:call-template>
+						<xsl:text>)</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:variable name="requiredVar">
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+								<xsl:with-param name="quoted" select="true()" />
+								<xsl:with-param name="index">
+									<xsl:call-template name="sh.var">
+										<xsl:with-param name="name">
+											<xsl:text>i</xsl:text>
+										</xsl:with-param>
+									</xsl:call-template>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="name" select="'idPart'" />
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo </xsl:text>
+								<xsl:value-of select="$requiredVar" />
+								<xsl:text> | cut -f 1 -d":" )</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
 
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<text>[ </text>
-								<call-template name="sh.var">
-									<with-param name="name">
-										<text>idPart</text>
-									</with-param>
-									<with-param name="quoted" select="true()" />
-								</call-template>
-								<text> = </text>
-								<call-template name="sh.var">
-									<with-param name="name">
-										<text>1</text>
-									</with-param>
-									<with-param name="quoted" select="true()" />
-								</call-template>
-								<text> ]</text>
-							</with-param>
-							<with-param name="then">
-								<call-template name="sh.arraySetIndex">
-									<with-param name="name" select="$prg.sh.parser.vName_required" />
-									<with-param name="index">
-										<call-template name="sh.var">
-											<with-param name="name">
-												<text>i</text>
-											</with-param>
-										</call-template>
-									</with-param>
-									<with-param name="value">
-										<text>""</text>
-									</with-param>
-								</call-template>
-								<value-of select="$sh.endl" />
-								<text>return 0</text>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<text>return 1</text>
-			</with-param>
-		</call-template>
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:text>[ </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name">
+										<xsl:text>idPart</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="quoted" select="true()" />
+								</xsl:call-template>
+								<xsl:text> = </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name">
+										<xsl:text>1</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="quoted" select="true()" />
+								</xsl:call-template>
+								<xsl:text> ]</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:call-template name="sh.arraySetIndex">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+									<xsl:with-param name="index">
+										<xsl:call-template name="sh.var">
+											<xsl:with-param name="name">
+												<xsl:text>i</xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+									</xsl:with-param>
+									<xsl:with-param name="value">
+										<xsl:text>""</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:text>return 0</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return 1</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_checkrequired" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.comment">
-					<with-param name="content">
-						<text>First round: set default values</text>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_checkrequired" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.comment">
+					<xsl:with-param name="content">
+						<xsl:text>First round: set default values</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<variable name="requiredVar">
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_required" />
-						<with-param name="quoted" select="true()" />
-						<with-param name="index">
-							<call-template name="sh.var">
-								<with-param name="name">
-									<text>i</text>
-								</with-param>
-							</call-template>
-						</with-param>
-					</call-template>
-				</variable>
+				<xsl:variable name="requiredVar">
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+						<xsl:with-param name="quoted" select="true()" />
+						<xsl:with-param name="index">
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name">
+									<xsl:text>i</xsl:text>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:variable>
 
-				<variable name="init" select="$prg.sh.parser.var_startindex" />
-				<variable name="limit">
-					<text>$(expr </text>
-					<value-of select="$prg.sh.parser.var_startindex" />
-					<text> + </text>
-					<call-template name="sh.arrayLength">
-						<with-param name="name" select="$prg.sh.parser.vName_required" />
-					</call-template>
-					<text>)</text>
-				</variable>
+				<xsl:variable name="init" select="$prg.sh.parser.var_startindex" />
+				<xsl:variable name="limit">
+					<xsl:text>$(expr </xsl:text>
+					<xsl:value-of select="$prg.sh.parser.var_startindex" />
+					<xsl:text> + </xsl:text>
+					<xsl:call-template name="sh.arrayLength">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+					</xsl:call-template>
+					<xsl:text>)</xsl:text>
+				</xsl:variable>
 
-				<variable name="isNotEmpty">
-					<text>[ ! -z </text>
-					<value-of select="$requiredVar" />
-					<text> ]</text>
-				</variable>
+				<xsl:variable name="isNotEmpty">
+					<xsl:text>[ ! -z </xsl:text>
+					<xsl:value-of select="$requiredVar" />
+					<xsl:text> ]</xsl:text>
+				</xsl:variable>
 
-				<call-template name="sh.incrementalFor">
-					<with-param name="init" select="$init" />
-					<with-param name="limit" select="$limit" />
-					<with-param name="do">
-						<call-template name="sh.local">
-							<with-param name="name" select="'todoPart'" />
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="value">
-								<text>$(echo </text>
-								<value-of select="$requiredVar" />
-								<text> | cut -f 3 -d":" )"</text>
-								<value-of select="$sh.endl" />
-								<text>[ -z "${todoPart}" ] || eval "${todoPart}</text>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.incrementalFor">
+					<xsl:with-param name="init" select="$init" />
+					<xsl:with-param name="limit" select="$limit" />
+					<xsl:with-param name="do">
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="name" select="'todoPart'" />
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo </xsl:text>
+								<xsl:value-of select="$requiredVar" />
+								<xsl:text> | cut -f 3 -d":" )"</xsl:text>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:text>[ -z "${todoPart}" ] || eval "${todoPart}</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.local">
-					<with-param name="name" select="'c'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value" select="0" />
-					<with-param name="quoted" select="false()" />
-				</call-template>
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'c'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value" select="0" />
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
 
-				<value-of select="$sh.endl" />
-				<call-template name="sh.incrementalFor">
-					<with-param name="init" select="$init" />
-					<with-param name="limit" select="$limit" />
-					<with-param name="do">
-						<call-template name="sh.if">
-							<with-param name="condition" select="$isNotEmpty" />
-							<with-param name="then">
-								<call-template name="sh.local">
-									<with-param name="name" select="'displayPart'" />
-									<with-param name="interpreter" select="$interpreter" />
-									<with-param name="value">
-										<text>$(echo </text>
-										<value-of select="$requiredVar" />
-										<text> | cut -f 2 -d":" )</text>
-									</with-param>
-								</call-template>
-								<value-of select="$sh.endl" />
-								<call-template name="sh.arrayAppend">
-									<with-param name="name" select="$prg.sh.parser.vName_errors" />
-									<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
-									<with-param name="value">
-										<text>"Missing required option </text>
-										<call-template name="sh.var">
-											<with-param name="name">
-												<text>displayPart</text>
-											</with-param>
-										</call-template>
-										<text>"</text>
-									</with-param>
-								</call-template>
-								<value-of select="$sh.endl" />
+				<xsl:value-of select="$sh.endl" />
+				<xsl:call-template name="sh.incrementalFor">
+					<xsl:with-param name="init" select="$init" />
+					<xsl:with-param name="limit" select="$limit" />
+					<xsl:with-param name="do">
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition" select="$isNotEmpty" />
+							<xsl:with-param name="then">
+								<xsl:call-template name="sh.local">
+									<xsl:with-param name="name" select="'displayPart'" />
+									<xsl:with-param name="interpreter" select="$interpreter" />
+									<xsl:with-param name="value">
+										<xsl:text>$(echo </xsl:text>
+										<xsl:value-of select="$requiredVar" />
+										<xsl:text> | cut -f 2 -d":" )</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:call-template name="sh.arrayAppend">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_errors" />
+									<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
+									<xsl:with-param name="value">
+										<xsl:text>"Missing required option </xsl:text>
+										<xsl:call-template name="sh.var">
+											<xsl:with-param name="name">
+												<xsl:text>displayPart</xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+										<xsl:text>"</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
 
-								<call-template name="sh.varincrement">
-									<with-param name="name">
-										<text>c</text>
-									</with-param>
-								</call-template>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<text>return </text>
-				<call-template name="sh.var">
-					<with-param name="name">
-						<text>c</text>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+								<xsl:call-template name="sh.varincrement">
+									<xsl:with-param name="name">
+										<xsl:text>c</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name">
+						<xsl:text>c</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.setDefaultArgumentsFunction">
-		<param name="programNode" />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.setDefaultArgumentsFunction">
+		<xsl:param name="programNode" />
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_setdefaultarguments" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="$prg.sh.parser.vName_set_default" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value" select="'false'" />
-					<with-param name="quoted" select="false()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_setdefaultarguments" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_set_default" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value" select="'false'" />
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- Global options -->
-				<call-template name="prg.sh.parser.setDefaultArguments">
-					<with-param name="rootNode" select="$programNode" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
+				<xsl:call-template name="prg.sh.parser.setDefaultArguments">
+					<xsl:with-param name="rootNode" select="$programNode" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+				</xsl:call-template>
 
 				<!-- Subcommand options -->
-				<if test="$programNode/prg:subcommands">
-					<call-template name="sh.case">
-						<with-param name="case">
-							<call-template name="sh.var">
-								<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-							</call-template>
-						</with-param>
-						<with-param name="in">
-							<for-each select="$programNode/prg:subcommands/*">
-								<call-template name="sh.caseblock">
-									<with-param name="case">
-										<value-of select="./prg:name" />
-										<for-each select="./prg:aliases/prg:alias">
-											<text> | </text>
-											<value-of select="." />
-										</for-each>
-									</with-param>
-									<with-param name="content">
-										<call-template name="prg.sh.parser.setDefaultArguments">
-											<with-param name="rootNode" select="." />
-											<with-param name="interpreter" select="$interpreter" />
-										</call-template>
-									</with-param>
-								</call-template>
-							</for-each>
-						</with-param>
-					</call-template>
-				</if>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:if test="$programNode/prg:subcommands">
+					<xsl:call-template name="sh.case">
+						<xsl:with-param name="case">
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+							</xsl:call-template>
+						</xsl:with-param>
+						<xsl:with-param name="in">
+							<xsl:for-each select="$programNode/prg:subcommands/*">
+								<xsl:call-template name="sh.caseblock">
+									<xsl:with-param name="case">
+										<xsl:value-of select="./prg:name" />
+										<xsl:for-each select="./prg:aliases/prg:alias">
+											<xsl:text> | </xsl:text>
+											<xsl:value-of select="." />
+										</xsl:for-each>
+									</xsl:with-param>
+									<xsl:with-param name="content">
+										<xsl:call-template name="prg.sh.parser.setDefaultArguments">
+											<xsl:with-param name="rootNode" select="." />
+											<xsl:with-param name="interpreter" select="$interpreter" />
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:for-each>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.minmaxCheckFunction">
-		<param name="programNode" />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.minmaxCheckFunction">
+		<xsl:param name="programNode" />
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_checkminmax" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'errorCount'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value" select="0" />
-					<with-param name="quoted" select="false()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_checkminmax" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'errorCount'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value" select="0" />
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.comment">
-					<with-param name="content">
-						<text>Check min argument for multiargument</text>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.comment">
+					<xsl:with-param name="content">
+						<xsl:text>Check min argument for multiargument</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<for-each select="$programNode//prg:multiargument[@min &gt; 0]">
-					<variable name="optionName">
-						<call-template name="prg.sh.optionDisplayName">
-							<with-param name="optionNode" select="." />
-						</call-template>
-					</variable>
-					<if test="prg:databinding/prg:variable">
-						<variable name="argCountVariable">
-							<call-template name="sh.arrayLength">
-								<with-param name="name">
-									<apply-templates select="prg:databinding/prg:variable" />
-								</with-param>
-							</call-template>
-						</variable>
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<text>[ </text>
-								<value-of select="$argCountVariable" />
-								<text> -gt 0 ] &amp;&amp; [ </text>
-								<value-of select="$argCountVariable" />
-								<text> -lt </text>
-								<value-of select="@min" />
-								<text> ]</text>
-							</with-param>
-							<with-param name="then">
-								<call-template name="prg.sh.parser.addGlobalError">
-									<with-param name="value">
-										<text>"Invalid argument count for option \"</text>
-										<value-of select="$optionName" />
-										<text>\". At least </text>
-										<value-of select="@min" />
-										<text> expected, </text>
-										<value-of select="$argCountVariable" />
-										<text> given"</text>
-									</with-param>
-								</call-template>
+				<xsl:for-each select="$programNode//prg:multiargument[@min &gt; 0]">
+					<xsl:variable name="optionName">
+						<xsl:call-template name="prg.sh.optionDisplayName">
+							<xsl:with-param name="optionNode" select="." />
+						</xsl:call-template>
+					</xsl:variable>
+					<xsl:if test="prg:databinding/prg:variable">
+						<xsl:variable name="argCountVariable">
+							<xsl:call-template name="sh.arrayLength">
+								<xsl:with-param name="name">
+									<xsl:apply-templates select="prg:databinding/prg:variable" />
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:text>[ </xsl:text>
+								<xsl:value-of select="$argCountVariable" />
+								<xsl:text> -gt 0 ] &amp;&amp; [ </xsl:text>
+								<xsl:value-of select="$argCountVariable" />
+								<xsl:text> -lt </xsl:text>
+								<xsl:value-of select="@min" />
+								<xsl:text> ]</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:call-template name="prg.sh.parser.addGlobalError">
+									<xsl:with-param name="value">
+										<xsl:text>"Invalid argument count for option \"</xsl:text>
+										<xsl:value-of select="$optionName" />
+										<xsl:text>\". At least </xsl:text>
+										<xsl:value-of select="@min" />
+										<xsl:text> expected, </xsl:text>
+										<xsl:value-of select="$argCountVariable" />
+										<xsl:text> given"</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 
-								<value-of select="$sh.endl" />
-								<call-template name="sh.varincrement">
-									<with-param name="name">
-										<text>errorCount</text>
-									</with-param>
-								</call-template>
-							</with-param>
-						</call-template>
-					</if>
-				</for-each>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:call-template name="sh.varincrement">
+									<xsl:with-param name="name">
+										<xsl:text>errorCount</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:for-each>
 
-				<value-of select="$sh.endl" />
-				<text>return ${errorCount}</text>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return ${errorCount}</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.numberLesserEqualCheckFunction">
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.numberLesserEqualCheckFunction">
+		<xsl:param name="interpreter" />
 		
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'hasBC'" />
-					<with-param name="quoted" select="false()" />
-					<with-param name="value">
-						<text>false</text>
-					</with-param>
-				</call-template>
-				<text></text>
-				<value-of select="$sh.endl" />
-				<text>which bc </text>
-				<call-template name="sh.chunk.nullRedirection" />
-				<text> &amp;&amp; hasBC=true</text>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'hasBC'" />
+					<xsl:with-param name="quoted" select="false()" />
+					<xsl:with-param name="value">
+						<xsl:text>false</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>which bc </xsl:text>
+				<xsl:call-template name="sh.chunk.nullRedirection" />
+				<xsl:text> &amp;&amp; hasBC=true</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 				
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<call-template name="sh.var">
-							<with-param name="name" select="'hasBC'" />
-						</call-template>
-					</with-param>
-					<with-param name="then">
-						<text>[ "$(echo "${1} &lt;= ${2}" | bc)" = "0" ] &amp;&amp; return 1</text>
-					</with-param>
-					<with-param name="else">
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="'hasBC'" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>[ "$(echo "${1} &lt;= ${2}" | bc)" = "0" ] &amp;&amp; return 1</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="else">
 						<!-- Split into integral & decimal part -->
-						<call-template name="sh.local">
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="name" select="'a_int'" />
-							<with-param name="value">
-								<text>$(echo "${1}" | cut -f 1 -d".")</text>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-						<call-template name="sh.local">
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="name" select="'a_dec'" />
-							<with-param name="value">
-								<text>$(echo "${1}" | cut -f 2 -d".")</text>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-						<text>[ "${a_dec}" = "${1}" ] &amp;&amp; a_dec="0"</text>
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="name" select="'a_int'" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo "${1}" | cut -f 1 -d".")</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="name" select="'a_dec'" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo "${1}" | cut -f 2 -d".")</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>[ "${a_dec}" = "${1}" ] &amp;&amp; a_dec="0"</xsl:text>
 						
-						<value-of select="$sh.endl" />
-						<call-template name="sh.local">
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="name" select="'b_int'" />
-							<with-param name="value">
-								<text>$(echo "${2}" | cut -f 1 -d".")</text>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-						<call-template name="sh.local">
-							<with-param name="interpreter" select="$interpreter" />
-							<with-param name="name" select="'b_dec'" />
-							<with-param name="value">
-								<text>$(echo "${2}" | cut -f 2 -d".")</text>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-						<text>[ "${b_dec}" = "${2}" ] &amp;&amp; b_dec="0"</text>
-						<value-of select="$sh.endl" />
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="name" select="'b_int'" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo "${2}" | cut -f 1 -d".")</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="sh.local">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+							<xsl:with-param name="name" select="'b_dec'" />
+							<xsl:with-param name="value">
+								<xsl:text>$(echo "${2}" | cut -f 2 -d".")</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>[ "${b_dec}" = "${2}" ] &amp;&amp; b_dec="0"</xsl:text>
+						<xsl:value-of select="$sh.endl" />
 						
-						<text>[ ${a_int} -lt ${b_int} ] &amp;&amp; return 0</text>
-						<value-of select="$sh.endl" />
-						<text>[ ${a_int} -gt ${b_int} ] &amp;&amp; return 1</text>
-						<value-of select="$sh.endl" />
-						<text>([ ${a_int} -ge 0 ] &amp;&amp; [ ${a_dec} -gt ${b_dec} ]) &amp;&amp; return 1</text>
-						<value-of select="$sh.endl" />
-						<text>([ ${a_int} -lt 0 ] &amp;&amp; [ ${b_dec} -gt ${a_dec} ]) &amp;&amp; return 1</text>
-					</with-param>
-				</call-template>
+						<xsl:text>[ ${a_int} -lt ${b_int} ] &amp;&amp; return 0</xsl:text>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>[ ${a_int} -gt ${b_int} ] &amp;&amp; return 1</xsl:text>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>([ ${a_int} -ge 0 ] &amp;&amp; [ ${a_dec} -gt ${b_dec} ]) &amp;&amp; return 1</xsl:text>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>([ ${a_int} -lt 0 ] &amp;&amp; [ ${b_dec} -gt ${a_dec} ]) &amp;&amp; return 1</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
 			
-				<text>return 0</text>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:text>return 0</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.enumCheckFunction">
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.enumCheckFunction">
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name">
-				<value-of select="$prg.sh.parser.fName_enumcheck" />
-			</with-param>
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'ref'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.var">
-							<with-param name="name" select="1" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.fName_enumcheck" />
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'ref'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="1" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<text>shift 1</text>
-				<value-of select="$sh.endl" />
+				<xsl:text>shift 1</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.while">
-					<with-param name="condition">
-						<text>[ $# -gt 0 ]</text>
-					</with-param>
-					<with-param name="do">
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<text>[ "${ref}" = "${1}" ]</text>
-							</with-param>
-							<with-param name="then">
-								<text>return 0</text>
-							</with-param>
-						</call-template>
-						<text>shift</text>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<text>return 1</text>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:call-template name="sh.while">
+					<xsl:with-param name="condition">
+						<xsl:text>[ $# -gt 0 ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:text>[ "${ref}" = "${1}" ]</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:text>return 0</xsl:text>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:text>shift</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return 1</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Check and add anonymous value -->
-	<template name="prg.sh.parser.addValueFunction">
-		<param name="programNode" />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.addValueFunction">
+		<xsl:param name="programNode" />
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_addvalue" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.local">
-					<with-param name="name" select="'position'" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$prg.sh.parser.vName_values" />
-						</call-template>
-					</with-param>
-					<with-param name="quoted" select="false()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_addvalue" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'position'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_values" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.local">
-					<with-param name="name" select="'value'" />
-					<with-param name="interpreter" select="$interpreter" />
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="'value'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<text>if [ $# -gt 0 ] &amp;&amp; [ ! -z "${1}" ]; then value="${1}"; else return </text>
-				<value-of select="$prg.sh.parser.var_ERROR" />
-				<text>; fi</text>
-				<value-of select="$sh.endl" />
-				<text>shift</text>
-				<value-of select="$sh.endl" />
+				<xsl:text>if [ $# -gt 0 ] &amp;&amp; [ ! -z "${1}" ]; then value="${1}"; else return </xsl:text>
+				<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+				<xsl:text>; fi</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>shift</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ -z </text>
-						<value-of select="$prg.sh.parser.var_subcommand" />
-						<text> ]</text>
-					</with-param>
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ -z </xsl:text>
+						<xsl:value-of select="$prg.sh.parser.var_subcommand" />
+						<xsl:text> ]</xsl:text>
+					</xsl:with-param>
 
 					<!-- Add global values -->
-					<with-param name="then">
-						<choose>
-							<when test="count($programNode/prg:values/*)">
-								<call-template name="prg.sh.parser.checkValue">
-									<with-param name="valuesNode" select="$programNode/prg:values" />
-									<with-param name="interpreter" select="$interpreter" />
-								</call-template>
-							</when>
-							<otherwise>
-								<call-template name="prg.sh.parser.addGlobalError">
-									<with-param name="value">
-										<text>"Positional argument not allowed"</text>
-									</with-param>
-								</call-template>
-								<value-of select="$sh.endl" />
-								<text>return </text>
-								<value-of select="$prg.sh.parser.var_ERROR" />
-							</otherwise>
-						</choose>
-					</with-param>
+					<xsl:with-param name="then">
+						<xsl:choose>
+							<xsl:when test="count($programNode/prg:values/*)">
+								<xsl:call-template name="prg.sh.parser.checkValue">
+									<xsl:with-param name="valuesNode" select="$programNode/prg:values" />
+									<xsl:with-param name="interpreter" select="$interpreter" />
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:call-template name="prg.sh.parser.addGlobalError">
+									<xsl:with-param name="value">
+										<xsl:text>"Positional argument not allowed"</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:text>return </xsl:text>
+								<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
 
 					<!-- Subcommand values -->
-					<with-param name="else">
-						<call-template name="sh.case">
-							<with-param name="case">
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-								</call-template>
-							</with-param>
-							<with-param name="in">
-								<for-each select="$programNode/prg:subcommands/*">
-									<call-template name="sh.caseblock">
-										<with-param name="case" select="prg:name" />
-										<with-param name="content">
-											<choose>
-												<when test="count(./prg:values/*)">
-													<call-template name="prg.sh.parser.checkValue">
-														<with-param name="valuesNode" select="./prg:values" />
-													</call-template>
-												</when>
-												<otherwise>
-													<call-template name="prg.sh.parser.addGlobalError">
-														<with-param name="value">
-															<text>"Positional argument not allowed in subcommand </text>
-															<value-of select="./prg:name" />
-															<text>"</text>
-														</with-param>
-													</call-template>
-													<value-of select="$sh.endl" />
-													<text>return </text>
-													<value-of select="$prg.sh.parser.var_ERROR" />
-												</otherwise>
-											</choose>
-										</with-param>
-									</call-template>
-								</for-each>
-								<call-template name="sh.caseblock">
-									<with-param name="case">
-										<text>*</text>
-									</with-param>
-									<with-param name="content">
-										<text>return </text>
-										<value-of select="$prg.sh.parser.var_ERROR" />
-									</with-param>
-								</call-template>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
+					<xsl:with-param name="else">
+						<xsl:call-template name="sh.case">
+							<xsl:with-param name="case">
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+								</xsl:call-template>
+							</xsl:with-param>
+							<xsl:with-param name="in">
+								<xsl:for-each select="$programNode/prg:subcommands/*">
+									<xsl:call-template name="sh.caseblock">
+										<xsl:with-param name="case" select="prg:name" />
+										<xsl:with-param name="content">
+											<xsl:choose>
+												<xsl:when test="count(./prg:values/*)">
+													<xsl:call-template name="prg.sh.parser.checkValue">
+														<xsl:with-param name="valuesNode" select="./prg:values" />
+													</xsl:call-template>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:call-template name="prg.sh.parser.addGlobalError">
+														<xsl:with-param name="value">
+															<xsl:text>"Positional argument not allowed in subcommand </xsl:text>
+															<xsl:value-of select="./prg:name" />
+															<xsl:text>"</xsl:text>
+														</xsl:with-param>
+													</xsl:call-template>
+													<xsl:value-of select="$sh.endl" />
+													<xsl:text>return </xsl:text>
+													<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:with-param>
+									</xsl:call-template>
+								</xsl:for-each>
+								<xsl:call-template name="sh.caseblock">
+									<xsl:with-param name="case">
+										<xsl:text>*</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="content">
+										<xsl:text>return </xsl:text>
+										<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
-				<call-template name="sh.arrayAppend">
-					<with-param name="name" select="$prg.sh.parser.vName_values" />
-					<with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
-					<with-param name="value">
-						<call-template name="sh.var">
-							<with-param name="name" select="'value'" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-					</with-param>
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:call-template name="sh.arrayAppend">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_values" />
+					<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="'value'" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Main function for subcommand -->
-	<template name="prg.sh.parser.subCommandOptionParseFunction">
-		<param name="programNode" select="." />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.subCommandOptionParseFunction">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="interpreter" />
 
-		<variable name="onError">
-			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_SC_ERROR" />
-			</call-template>
-		</variable>
-		<variable name="onSuccess">
-			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
-			</call-template>
-		</variable>
-		<variable name="onUnknownOption">
-			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
-			</call-template>
-		</variable>
+		<xsl:variable name="onError">
+			<xsl:text>return </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_ERROR" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="onSuccess">
+			<xsl:text>return </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="onUnknownOption">
+			<xsl:text>return </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
+			</xsl:call-template>
+		</xsl:variable>
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_process_subcommand_option" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<value-of select="$prg.sh.parser.vName_item" />
-				<text>=</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_input" />
-					<with-param name="index">
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_index" />
-						</call-template>
-					</with-param>
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_process_subcommand_option" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:value-of select="$prg.sh.parser.vName_item" />
+				<xsl:text>=</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
+					<xsl:with-param name="index">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<if test="$prg.debug">
-					<value-of select="$prg.sh.parser.fName_debug" />
-					<text> "Processing subcommand </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_item" />
-					</call-template>
-					<text> [subindex: </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_subindex" />
-					</call-template>
-					<text>] (</text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_index" />
-					</call-template>
-					<text> of </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-					</call-template>
-					<text>)"</text>
-					<value-of select="$sh.endl" />
-				</if>
+				<xsl:if test="$prg.debug">
+					<xsl:value-of select="$prg.sh.parser.fName_debug" />
+					<xsl:text> "Processing subcommand </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					</xsl:call-template>
+					<xsl:text> [subindex: </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_subindex" />
+					</xsl:call-template>
+					<xsl:text>] (</xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+					</xsl:call-template>
+					<xsl:text> of </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+					</xsl:call-template>
+					<xsl:text>)"</xsl:text>
+					<xsl:value-of select="$sh.endl" />
+				</xsl:if>
 
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ -z </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> ] || [ </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-							<with-param name="length" select="1" />
-						</call-template>
-						<text> != "-" ] || [ </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> = "--" ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ -z </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> ] || [ </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+							<xsl:with-param name="length" select="1" />
+						</xsl:call-template>
+						<xsl:text> != "-" ] || [ </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> = "--" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<choose>
+				<xsl:choose>
 					<!-- There is at least one option in one subcommand -->
-					<when test="$programNode/prg:subcommands/prg:subcommand[prg:options]">
-						<call-template name="sh.case">
-							<with-param name="case">
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-								</call-template>
-							</with-param>
-							<with-param name="in">
-								<for-each select="$programNode/prg:subcommands/prg:subcommand">
-									<if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
-										<call-template name="sh.caseblock">
-											<with-param name="case">
-												<value-of select="./prg:name" />
-											</with-param>
-											<with-param name="content">
-												<if test="./prg:options//prg:names/prg:long">
-													<call-template name="prg.sh.parser.longOptionNameElif">
-														<with-param name="optionsNode" select="./prg:options" />
-														<with-param name="onError" select="$onError" />
-														<with-param name="onSuccess" select="$onSuccess" />
-														<with-param name="onUnknownOption" select="$onUnknownOption" />
-														<with-param name="interpreter" select="$interpreter" />
-														<with-param name="keyword">
-															<text>if</text>
-														</with-param>
-													</call-template>
-												</if>
+					<xsl:when test="$programNode/prg:subcommands/prg:subcommand[prg:options]">
+						<xsl:call-template name="sh.case">
+							<xsl:with-param name="case">
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+								</xsl:call-template>
+							</xsl:with-param>
+							<xsl:with-param name="in">
+								<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
+									<xsl:if test="./prg:options//prg:names/prg:long or ./prg:options//prg:names/prg:short">
+										<xsl:call-template name="sh.caseblock">
+											<xsl:with-param name="case">
+												<xsl:value-of select="./prg:name" />
+											</xsl:with-param>
+											<xsl:with-param name="content">
+												<xsl:if test="./prg:options//prg:names/prg:long">
+													<xsl:call-template name="prg.sh.parser.longOptionNameElif">
+														<xsl:with-param name="optionsNode" select="./prg:options" />
+														<xsl:with-param name="onError" select="$onError" />
+														<xsl:with-param name="onSuccess" select="$onSuccess" />
+														<xsl:with-param name="onUnknownOption" select="$onUnknownOption" />
+														<xsl:with-param name="interpreter" select="$interpreter" />
+														<xsl:with-param name="keyword">
+															<xsl:text>if</xsl:text>
+														</xsl:with-param>
+													</xsl:call-template>
+												</xsl:if>
 
 											<!-- short option -->
-												<if test="./prg:options//prg:names/prg:short">
-													<call-template name="prg.sh.parser.shortOptionNameElif">
-														<with-param name="optionsNode" select="./prg:options" />
-														<with-param name="onError" select="$onError" />
-														<with-param name="onSuccess" select="$onSuccess" />
-														<with-param name="onUnknownOption" select="$onUnknownOption" />
-														<with-param name="interpreter" select="$interpreter" />
-														<with-param name="keyword">
-															<choose>
-																<when test="./prg:options//prg:names/prg:long">
-																	<text>elif</text>
-																</when>
-																<otherwise>
-																	<text>if</text>
-																</otherwise>
-															</choose>
-														</with-param>
-													</call-template>
-												</if>
-												<text>fi</text>
-											</with-param>
-										</call-template>
-									</if>
-								</for-each>
-							</with-param>
-						</call-template>
-						<value-of select="$sh.endl" />
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
-						</call-template>
-					</when>
-					<otherwise>
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
-						</call-template>
-					</otherwise>
-				</choose>
-			</with-param>
-		</call-template>
-	</template>
+												<xsl:if test="./prg:options//prg:names/prg:short">
+													<xsl:call-template name="prg.sh.parser.shortOptionNameElif">
+														<xsl:with-param name="optionsNode" select="./prg:options" />
+														<xsl:with-param name="onError" select="$onError" />
+														<xsl:with-param name="onSuccess" select="$onSuccess" />
+														<xsl:with-param name="onUnknownOption" select="$onUnknownOption" />
+														<xsl:with-param name="interpreter" select="$interpreter" />
+														<xsl:with-param name="keyword">
+															<xsl:choose>
+																<xsl:when test="./prg:options//prg:names/prg:long">
+																	<xsl:text>elif</xsl:text>
+																</xsl:when>
+																<xsl:otherwise>
+																	<xsl:text>if</xsl:text>
+																</xsl:otherwise>
+															</xsl:choose>
+														</xsl:with-param>
+													</xsl:call-template>
+												</xsl:if>
+												<xsl:text>fi</xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
+									</xsl:if>
+								</xsl:for-each>
+							</xsl:with-param>
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Main option parser function -->
-	<template name="prg.sh.parser.optionParseFunction">
-		<param name="programNode" select="." />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.optionParseFunction">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="interpreter" />
 
-		<variable name="onError">
-			<text>return </text>
-			<value-of select="$prg.sh.parser.var_ERROR" />
-		</variable>
-		<variable name="onSuccess">
-			<text>return </text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
-			</call-template>
-		</variable>
-		<variable name="onUnknownOption">
-			<value-of select="$prg.sh.parser.fName_addfatalerror" />
-			<text> "Unknown option \"</text>
-			<call-template name="sh.var">
-				<with-param name="name" select="$prg.sh.parser.vName_option" />
-			</call-template>
-			<text>\""</text>
-			<value-of select="$sh.endl" />
-			<text>return </text>
-			<value-of select="$prg.sh.parser.var_ERROR" />
-		</variable>
+		<xsl:variable name="onError">
+			<xsl:text>return </xsl:text>
+			<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+		</xsl:variable>
+		<xsl:variable name="onSuccess">
+			<xsl:text>return </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_OK" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="onUnknownOption">
+			<xsl:value-of select="$prg.sh.parser.fName_addfatalerror" />
+			<xsl:text> "Unknown option \"</xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
+			</xsl:call-template>
+			<xsl:text>\""</xsl:text>
+			<xsl:value-of select="$sh.endl" />
+			<xsl:text>return </xsl:text>
+			<xsl:value-of select="$prg.sh.parser.var_ERROR" />
+		</xsl:variable>
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_process_option" />
-			<with-param name="interpreter" select="$interpreter" />
-			<with-param name="content">
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ ! -z </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> ] &amp;&amp; [ </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> != "--" ]</text>
-					</with-param>
-					<with-param name="then">
-						<if test="$prg.debug">
-							<value-of select="$prg.sh.parser.fName_debug" />
-							<text> "Subcommand option check"</text>
-							<value-of select="$sh.endl" />
-						</if>
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_process_option" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ ! -z </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> ] &amp;&amp; [ </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> != "--" ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:if test="$prg.debug">
+							<xsl:value-of select="$prg.sh.parser.fName_debug" />
+							<xsl:text> "Subcommand option check"</xsl:text>
+							<xsl:value-of select="$sh.endl" />
+						</xsl:if>
 
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<value-of select="$prg.sh.parser.fName_process_subcommand_option" />
-							</with-param>
-							<with-param name="then">
-								<if test="$prg.debug">
-									<value-of select="$prg.sh.parser.fName_debug" />
-									<text> "Subcommand option parsing success"</text>
-									<value-of select="$sh.endl" />
-								</if>
-								<text>return </text>
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_OK" />
-								</call-template>
-							</with-param>
-						</call-template>
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:value-of select="$prg.sh.parser.fName_process_subcommand_option" />
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:if test="$prg.debug">
+									<xsl:value-of select="$prg.sh.parser.fName_debug" />
+									<xsl:text> "Subcommand option parsing success"</xsl:text>
+									<xsl:value-of select="$sh.endl" />
+								</xsl:if>
+								<xsl:text>return </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
 
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<text>[ </text>
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_index" />
-								</call-template>
-								<text> -ge </text>
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-								</call-template>
-								<text> ]</text>
-							</with-param>
-							<with-param name="then">
-								<if test="$prg.debug">
-									<value-of select="$prg.sh.parser.fName_debug" />
-									<text> "End of items"</text>
-									<value-of select="$sh.endl" />
-								</if>
-								<text>return </text>
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_OK" />
-								</call-template>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:text>[ </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+								</xsl:call-template>
+								<xsl:text> -ge </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+								</xsl:call-template>
+								<xsl:text> ]</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:if test="$prg.debug">
+									<xsl:value-of select="$prg.sh.parser.fName_debug" />
+									<xsl:text> "End of items"</xsl:text>
+									<xsl:value-of select="$sh.endl" />
+								</xsl:if>
+								<xsl:text>return </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- get current item -->
-				<value-of select="$prg.sh.parser.vName_item" />
-				<text>=</text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_input" />
-					<with-param name="quoted" select="true()" />
-					<with-param name="index">
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_index" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<value-of select="$sh.endl" />
+				<xsl:value-of select="$prg.sh.parser.vName_item" />
+				<xsl:text>=</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
+					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="index">
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>[ -z </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> ]</text>
-					</with-param>
-					<with-param name="then">
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_OK" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ -z </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then">
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
-				<if test="$prg.debug">
-					<value-of select="$prg.sh.parser.fName_debug" />
-					<text> "Processing </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_item" />
-					</call-template>
-					<text> [subindex: </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_subindex" />
-					</call-template>
-					<text>] (</text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_index" />
-					</call-template>
-					<text> of </text>
-					<call-template name="sh.var">
-						<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-					</call-template>
-					<text>)"</text>
-					<value-of select="$sh.endl" />
-				</if>
+				<xsl:if test="$prg.debug">
+					<xsl:value-of select="$prg.sh.parser.fName_debug" />
+					<xsl:text> "Processing </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					</xsl:call-template>
+					<xsl:text> [subindex: </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_subindex" />
+					</xsl:call-template>
+					<xsl:text>] (</xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+					</xsl:call-template>
+					<xsl:text> of </xsl:text>
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+					</xsl:call-template>
+					<xsl:text>)"</xsl:text>
+					<xsl:value-of select="$sh.endl" />
+				</xsl:if>
 
 				<!-- End of options -->
-				<text>if [ </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_item" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text> = "--" ]</text>
-				<value-of select="$sh.endl" />
-				<text>then</text>
-				<call-template name="code.block">
-					<with-param name="content">
-						<call-template name="prg.sh.parser.copyValues" />
-						<value-of select="$sh.endl" />
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_OK" />
-						</call-template>
-					</with-param>
-				</call-template>
+				<xsl:text>if [ </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text> = "--" ]</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>then</xsl:text>
+				<xsl:call-template name="code.block">
+					<xsl:with-param name="content">
+						<xsl:call-template name="prg.sh.parser.copyValues" />
+						<xsl:value-of select="$sh.endl" />
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
 				<!-- End of option values -->
-				<text>elif [ </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_item" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text> = "-" ]</text>
-				<value-of select="$sh.endl" />
-				<text>then</text>
-				<call-template name="code.block">
-					<with-param name="content">
-						<text>return </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_OK" />
-						</call-template>
-					</with-param>
-				</call-template>
+				<xsl:text>elif [ </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text> = "-" ]</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>then</xsl:text>
+				<xsl:call-template name="code.block">
+					<xsl:with-param name="content">
+						<xsl:text>return </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
 				<!-- Protected value -->
-				<text>elif [ </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_item" />
-					<with-param name="quoted" select="true()" />
-					<with-param name="length" select="2" />
-				</call-template>
-				<text> = "\-" ]</text>
-				<value-of select="$sh.endl" />
-				<text>then</text>
-				<call-template name="code.block">
-					<with-param name="content">
-						<value-of select="$prg.sh.parser.fName_addvalue" />
-						<value-of select="' '" />
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-							<with-param name="start" select="1" />
-						</call-template>
-					</with-param>
-				</call-template>
+				<xsl:text>elif [ </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="length" select="2" />
+				</xsl:call-template>
+				<xsl:text> = "\-" ]</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>then</xsl:text>
+				<xsl:call-template name="code.block">
+					<xsl:with-param name="content">
+						<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
+						<xsl:value-of select="' '" />
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+							<xsl:with-param name="start" select="1" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
-				<variable name="optionsNode" select="$programNode/prg:options" />
+				<xsl:variable name="optionsNode" select="$programNode/prg:options" />
 
 				<!-- long option -->
-				<if test="$optionsNode//prg:names/prg:long">
-					<call-template name="prg.sh.parser.longOptionNameElif">
-						<with-param name="optionsNode" select="$programNode/prg:options" />
-						<with-param name="onError" select="$onError" />
-						<with-param name="onSuccess" select="$onSuccess" />
-						<with-param name="onUnknownOption" select="$onUnknownOption" />
-						<with-param name="interpreter" select="$interpreter" />
-					</call-template>
-				</if>
+				<xsl:if test="$optionsNode//prg:names/prg:long">
+					<xsl:call-template name="prg.sh.parser.longOptionNameElif">
+						<xsl:with-param name="optionsNode" select="$programNode/prg:options" />
+						<xsl:with-param name="onError" select="$onError" />
+						<xsl:with-param name="onSuccess" select="$onSuccess" />
+						<xsl:with-param name="onUnknownOption" select="$onUnknownOption" />
+						<xsl:with-param name="interpreter" select="$interpreter" />
+					</xsl:call-template>
+				</xsl:if>
 
 				<!-- short option -->
-				<if test="$optionsNode//prg:names/prg:short">
-					<call-template name="prg.sh.parser.shortOptionNameElif">
-						<with-param name="optionsNode" select="$programNode/prg:options" />
-						<with-param name="onError" select="$onError" />
-						<with-param name="onSuccess" select="$onSuccess" />
-						<with-param name="onUnknownOption" select="$onUnknownOption" />
-						<with-param name="interpreter" select="$interpreter" />
-					</call-template>
-				</if>
+				<xsl:if test="$optionsNode//prg:names/prg:short">
+					<xsl:call-template name="prg.sh.parser.shortOptionNameElif">
+						<xsl:with-param name="optionsNode" select="$programNode/prg:options" />
+						<xsl:with-param name="onError" select="$onError" />
+						<xsl:with-param name="onSuccess" select="$onSuccess" />
+						<xsl:with-param name="onUnknownOption" select="$onUnknownOption" />
+						<xsl:with-param name="interpreter" select="$interpreter" />
+					</xsl:call-template>
+				</xsl:if>
 
 				<!-- subcommand -->
-				<text>elif </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_subcommand_expected" />
-				</call-template>
-				<text> &amp;&amp; [ -z </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_subcommand" />
-					<with-param name="quoted" select="true()" />
-				</call-template>
-				<text> ] &amp;&amp; [ </text>
-				<call-template name="sh.arrayLength">
-					<with-param name="name" select="$prg.sh.parser.vName_values" />
-				</call-template>
-				<text> -eq 0 ]</text>
-				<value-of select="$sh.endl" />
-				<text>then</text>
-				<call-template name="code.block">
-					<with-param name="content">
-						<call-template name="sh.case">
-							<with-param name="case">
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_item" />
-								</call-template>
-							</with-param>
-							<with-param name="in">
-								<for-each select="$programNode/prg:subcommands/prg:subcommand">
-									<call-template name="sh.caseblock">
-										<with-param name="case">
-											<value-of select="./prg:name" />
-											<for-each select="./prg:aliases/prg:alias">
-												<text> | </text>
-												<value-of select="." />
-											</for-each>
-										</with-param>
-										<with-param name="content">
-											<value-of select="$prg.sh.parser.vName_subcommand" />
-											<text>="</text>
-											<value-of select="./prg:name" />
-											<text>"</text>
-											<call-template name="prg.sh.parser.optionAddRequired">
-												<with-param name="optionsNode" select="./prg:options" />
-											</call-template>
-										</with-param>
-									</call-template>
-								</for-each>
-								<call-template name="sh.caseblock">
-									<with-param name="case">
-										<text>*</text>
-									</with-param>
-									<with-param name="content">
+				<xsl:text>elif </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand_expected" />
+				</xsl:call-template>
+				<xsl:text> &amp;&amp; [ -z </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+				<xsl:text> ] &amp;&amp; [ </xsl:text>
+				<xsl:call-template name="sh.arrayLength">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_values" />
+				</xsl:call-template>
+				<xsl:text> -eq 0 ]</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>then</xsl:text>
+				<xsl:call-template name="code.block">
+					<xsl:with-param name="content">
+						<xsl:call-template name="sh.case">
+							<xsl:with-param name="case">
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+								</xsl:call-template>
+							</xsl:with-param>
+							<xsl:with-param name="in">
+								<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
+									<xsl:call-template name="sh.caseblock">
+										<xsl:with-param name="case">
+											<xsl:value-of select="./prg:name" />
+											<xsl:for-each select="./prg:aliases/prg:alias">
+												<xsl:text> | </xsl:text>
+												<xsl:value-of select="." />
+											</xsl:for-each>
+										</xsl:with-param>
+										<xsl:with-param name="content">
+											<xsl:value-of select="$prg.sh.parser.vName_subcommand" />
+											<xsl:text>="</xsl:text>
+											<xsl:value-of select="./prg:name" />
+											<xsl:text>"</xsl:text>
+											<xsl:call-template name="prg.sh.parser.optionAddRequired">
+												<xsl:with-param name="optionsNode" select="./prg:options" />
+											</xsl:call-template>
+										</xsl:with-param>
+									</xsl:call-template>
+								</xsl:for-each>
+								<xsl:call-template name="sh.caseblock">
+									<xsl:with-param name="case">
+										<xsl:text>*</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="content">
 										<!-- It's the first value -->
-										<value-of select="$prg.sh.parser.fName_addvalue" />
-										<value-of select="' '" />
-										<call-template name="sh.var">
-											<with-param name="name" select="$prg.sh.parser.vName_item" />
-											<with-param name="quoted" select="true()" />
-										</call-template>
-									</with-param>
-								</call-template>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
+										<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
+										<xsl:value-of select="' '" />
+										<xsl:call-template name="sh.var">
+											<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+											<xsl:with-param name="quoted" select="true()" />
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
 
 				<!-- values -->
-				<text>else</text>
-				<call-template name="code.block">
-					<with-param name="content">
-						<value-of select="$prg.sh.parser.fName_addvalue" />
-						<value-of select="' '" />
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_item" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-					</with-param>
-				</call-template>
-				<text>fi</text>
-				<value-of select="$sh.endl" />
-				<text>return </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_OK" />
-				</call-template>
-			</with-param>
-		</call-template>
-	</template>
+				<xsl:text>else</xsl:text>
+				<xsl:call-template name="code.block">
+					<xsl:with-param name="content">
+						<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
+						<xsl:value-of select="' '" />
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:text>fi</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:text>return </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_OK" />
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="prg.sh.parser.parseFunction">
-		<param name="programNode" select="." />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.parseFunction">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="interpreter" />
 
-		<call-template name="sh.functionDefinition">
-			<with-param name="name" select="$prg.sh.parser.fName_parse" />
-			<with-param name="interpreter" select="$interpreter" />
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_parse" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
 
-			<with-param name="content">
-				<value-of select="$prg.sh.parser.vName_aborted" />
-				<text>=false</text>
-				<value-of select="$sh.endl" />
+			<xsl:with-param name="content">
+				<xsl:value-of select="$prg.sh.parser.vName_aborted" />
+				<xsl:text>=false</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.while">
-					<with-param name="condition">
-						<text>[ </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_index" />
-						</call-template>
-						<text> -lt </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-						</call-template>
-						<text> ] &amp;&amp; ! </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_aborted" />
-						</call-template>
-					</with-param>
-					<with-param name="do">
-						<value-of select="$prg.sh.parser.fName_process_option" />
-						<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.while">
+					<xsl:with-param name="condition">
+						<xsl:text>[ </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+						</xsl:call-template>
+						<xsl:text> -lt </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+						</xsl:call-template>
+						<xsl:text> ] &amp;&amp; ! </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_aborted" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="do">
+						<xsl:value-of select="$prg.sh.parser.fName_process_option" />
+						<xsl:value-of select="$sh.endl" />
 
-						<call-template name="sh.if">
-							<with-param name="condition">
-								<text>[ -z </text>
-								<call-template name="sh.var">
-									<with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-									<with-param name="quoted" select="true()" />
-								</call-template>
-								<text> ]</text>
-							</with-param>
-							<with-param name="then">
-								<call-template name="prg.sh.parser.indexIncrement" />
-								<value-of select="$sh.endl" />
-								<value-of select="$prg.sh.parser.vName_subindex" />
-								<text>=0</text>
-							</with-param>
-							<with-param name="else">
-								<call-template name="sh.varincrement">
-									<with-param name="name" select="$prg.sh.parser.vName_subindex" />
-								</call-template>
-							</with-param>
-						</call-template>
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<value-of select="$sh.endl" />
+						<xsl:call-template name="sh.if">
+							<xsl:with-param name="condition">
+								<xsl:text>[ -z </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
+									<xsl:with-param name="quoted" select="true()" />
+								</xsl:call-template>
+								<xsl:text> ]</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="then">
+								<xsl:call-template name="prg.sh.parser.indexIncrement" />
+								<xsl:value-of select="$sh.endl" />
+								<xsl:value-of select="$prg.sh.parser.vName_subindex" />
+								<xsl:text>=0</xsl:text>
+							</xsl:with-param>
+							<xsl:with-param name="else">
+								<xsl:call-template name="sh.varincrement">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_subindex" />
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.if">
-					<with-param name="condition">
-						<text>! </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_aborted" />
-						</call-template>
-					</with-param>
-					<with-param name="then">
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>! </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_aborted" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="then">
 						<!-- Set group default options -->
-						<for-each select="$programNode//prg:group[prg:default]">
-							<variable name="groupNode" select="." />
-							<variable name="optionIdRef" select="./prg:default/@id" />
-							<variable name="optionNode" select="$groupNode/prg:options/*/@id[.=$optionIdRef]/.." />
-							<variable name="groupNodeId">
-								<call-template name="prg.optionId">
-									<with-param name="optionNode" select="$groupNode" />
-								</call-template>
-							</variable>
+						<xsl:for-each select="$programNode//prg:group[prg:default]">
+							<xsl:variable name="groupNode" select="." />
+							<xsl:variable name="optionIdRef" select="./prg:default/@id" />
+							<xsl:variable name="optionNode" select="$groupNode/prg:options/*/@id[.=$optionIdRef]/.." />
+							<xsl:variable name="groupNodeId">
+								<xsl:call-template name="prg.optionId">
+									<xsl:with-param name="optionNode" select="$groupNode" />
+								</xsl:call-template>
+							</xsl:variable>
 
-							<if test="$groupNode/prg:databinding/prg:variable and $optionNode/prg:databinding/prg:variable">
-								<text># Set default option for group </text>
-								<value-of select="$groupNodeId" />
-								<text> (if not already set)</text>
-								<value-of select="$sh.endl" />
-								<call-template name="sh.if">
-									<with-param name="condition">
-										<text>[ "${</text>
-										<apply-templates select="$groupNode/prg:databinding/prg:variable" />
-										<text>:0:1}" = "@" ]</text>
-									</with-param>
-									<with-param name="then">
-										<apply-templates select="$groupNode/prg:databinding/prg:variable" />
-										<text>="</text>
-										<apply-templates select="$optionNode/prg:databinding/prg:variable" />
-										<text>"</text>
-										<value-of select="$sh.endl" />
-										<value-of select="$prg.sh.parser.fName_setoptionpresence" />
-										<value-of select="' '" />
-										<value-of select="$groupNodeId" />
-									</with-param>
-								</call-template>
-								<value-of select="$sh.endl" />
-							</if>
-						</for-each>
+							<xsl:if test="$groupNode/prg:databinding/prg:variable and $optionNode/prg:databinding/prg:variable">
+								<xsl:text># Set default option for group </xsl:text>
+								<xsl:value-of select="$groupNodeId" />
+								<xsl:text> (if not already set)</xsl:text>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:call-template name="sh.if">
+									<xsl:with-param name="condition">
+										<xsl:text>[ "${</xsl:text>
+										<xsl:apply-templates select="$groupNode/prg:databinding/prg:variable" />
+										<xsl:text>:0:1}" = "@" ]</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="then">
+										<xsl:apply-templates select="$groupNode/prg:databinding/prg:variable" />
+										<xsl:text>="</xsl:text>
+										<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
+										<xsl:text>"</xsl:text>
+										<xsl:value-of select="$sh.endl" />
+										<xsl:value-of select="$prg.sh.parser.fName_setoptionpresence" />
+										<xsl:value-of select="' '" />
+										<xsl:value-of select="$groupNodeId" />
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
+							</xsl:if>
+						</xsl:for-each>
 
 						<!-- Set options with defaults value -->
-						<value-of select="$prg.sh.parser.fName_setdefaultarguments" />
-						<value-of select="$sh.endl" />
+						<xsl:value-of select="$prg.sh.parser.fName_setdefaultarguments" />
+						<xsl:value-of select="$sh.endl" />
 
 						<!-- Check required options -->
-						<value-of select="$prg.sh.parser.fName_checkrequired" />
-						<value-of select="$sh.endl" />
+						<xsl:value-of select="$prg.sh.parser.fName_checkrequired" />
+						<xsl:value-of select="$sh.endl" />
 
 						<!-- Check multiargument min attribute -->
-						<value-of select="$prg.sh.parser.fName_checkminmax" />
-					</with-param>
-				</call-template>
-				<value-of select="$sh.endl" />
-				<value-of select="$sh.endl" />
+						<xsl:value-of select="$prg.sh.parser.fName_checkminmax" />
+					</xsl:with-param>
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- Return error count -->
-				<variable name="errorCount">
-					<call-template name="prg.prefixedName">
-						<with-param name="name">
-							<value-of select="$prg.sh.parser.variableNamePrefix" />
-							<text>errorcount</text>
-						</with-param>
-					</call-template>
-				</variable>
-				<value-of select="$sh.endl" />
+				<xsl:variable name="errorCount">
+					<xsl:call-template name="prg.prefixedName">
+						<xsl:with-param name="name">
+							<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+							<xsl:text>errorcount</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:value-of select="$sh.endl" />
 
-				<call-template name="sh.local">
-					<with-param name="name" select="$errorCount" />
-					<with-param name="interpreter" select="$interpreter" />
-					<with-param name="value">
-						<call-template name="sh.arrayLength">
-							<with-param name="name" select="$prg.sh.parser.vName_errors" />
-						</call-template>
-					</with-param>
-					<with-param name="quoted" select="false()" />
-				</call-template>
-				<value-of select="$sh.endl" />
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="$errorCount" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value">
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_errors" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- ???
 				<call-template name="sh.if">
@@ -1531,68 +1531,68 @@
 				</call-template>
 				 -->
 
-				<text>return </text>
-				<call-template name="sh.var">
-					<with-param name="name" select="$errorCount" />
-				</call-template>
+				<xsl:text>return </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$errorCount" />
+				</xsl:call-template>
 
-			</with-param>
-		</call-template>
-	</template>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:template>
 
 	<!-- Main -->
-	<template name="prg.sh.parser.main">
-		<param name="programNode" select="." />
-		<param name="interpreter" />
+	<xsl:template name="prg.sh.parser.main">
+		<xsl:param name="programNode" select="." />
+		<xsl:param name="interpreter" />
 
-		<call-template name="prg.sh.parser.initialize">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.messageFunctions">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.pathAccessCheckFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.optionSetPresenceFunctions">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.setDefaultArgumentsFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.minmaxCheckFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.numberLesserEqualCheckFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.enumCheckFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.addValueFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.subCommandOptionParseFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.optionParseFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-		<call-template name="prg.sh.parser.parseFunction">
-			<with-param name="programNode" select="$programNode" />
-			<with-param name="interpreter" select="$interpreter" />
-		</call-template>
-	</template>
+		<xsl:call-template name="prg.sh.parser.initialize">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.messageFunctions">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.pathAccessCheckFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.optionSetPresenceFunctions">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.setDefaultArgumentsFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.minmaxCheckFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.numberLesserEqualCheckFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.enumCheckFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.addValueFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.subCommandOptionParseFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.optionParseFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+		<xsl:call-template name="prg.sh.parser.parseFunction">
+			<xsl:with-param name="programNode" select="$programNode" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+		</xsl:call-template>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

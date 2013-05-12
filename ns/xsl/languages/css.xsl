@@ -3,59 +3,59 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- CSS language elements -->
-<stylesheet version="1.0" xmlns="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<import href="base.xsl" />
+	<xsl:import href="base.xsl" />
 
-	<template match="text()">
-		<value-of select="normalize-space(.)" />
-	</template>
+	<xsl:template match="text()">
+		<xsl:value-of select="normalize-space(.)" />
+	</xsl:template>
 
-	<template name="css.comment">
-		<param name="content" select="." />
-		<text>/*</text>
-		<value-of select="normalize-space($content)" />
-		<text>*/</text>
-	</template>
+	<xsl:template name="css.comment">
+		<xsl:param name="content" select="." />
+		<xsl:text>/*</xsl:text>
+		<xsl:value-of select="normalize-space($content)" />
+		<xsl:text>*/</xsl:text>
+	</xsl:template>
 
-	<template name="css.block">
-		<param name="indent" select="true()" />
-		<param name="content" />
-		<text>{</text>
-		<if test="$content">
-			<choose>
-				<when test="$indent">
-					<call-template name="code.block">
-						<with-param name="content" select="normalize-space($content)" />
-					</call-template>
-				</when>
-				<otherwise>
-					<call-template name="endl" />
-					<value-of select="normalize-space($content)" />
-					<call-template name="endl" />
-				</otherwise>
-			</choose>
-		</if>
-		<text>}</text>
-	</template>
+	<xsl:template name="css.block">
+		<xsl:param name="indent" select="true()" />
+		<xsl:param name="content" />
+		<xsl:text>{</xsl:text>
+		<xsl:if test="$content">
+			<xsl:choose>
+				<xsl:when test="$indent">
+					<xsl:call-template name="code.block">
+						<xsl:with-param name="content" select="normalize-space($content)" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="endl" />
+					<xsl:value-of select="normalize-space($content)" />
+					<xsl:call-template name="endl" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
+		<xsl:text>}</xsl:text>
+	</xsl:template>
 
-	<template name="css.rule">
-		<param name="name" />
-		<param name="content" />
-		<value-of select="normalize-space($name)" />
-		<call-template name="endl" />
-		<call-template name="css.block">
-			<with-param name="content" select="normalize-space($content)" />
-		</call-template>
-	</template>
+	<xsl:template name="css.rule">
+		<xsl:param name="name" />
+		<xsl:param name="content" />
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:call-template name="endl" />
+		<xsl:call-template name="css.block">
+			<xsl:with-param name="content" select="normalize-space($content)" />
+		</xsl:call-template>
+	</xsl:template>
 
-	<template name="css.property">
-		<param name="name" />
-		<param name="value" />
-		<value-of select="normalize-space($name)" />
-		<text>: </text>
-		<value-of select="normalize-space($value)" />
-		<text>;</text>
-	</template>
+	<xsl:template name="css.property">
+		<xsl:param name="name" />
+		<xsl:param name="value" />
+		<xsl:value-of select="normalize-space($name)" />
+		<xsl:text>: </xsl:text>
+		<xsl:value-of select="normalize-space($value)" />
+		<xsl:text>;</xsl:text>
+	</xsl:template>
 
-</stylesheet>
+</xsl:stylesheet>

@@ -2,12 +2,12 @@
 <!-- Copyright © 2012-2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
-	<import href="parser.generic-names.xsl" />
-	<output method="text" encoding="utf-8" />
-	<param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="parser.generic-names.xsl" />
+	<xsl:output method="text" encoding="utf-8" />
+	<xsl:param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
 	
-	<variable name="prg.c.parser.genericHeader"><![CDATA[
+	<xsl:variable name="prg.c.parser.genericHeader"><![CDATA[
 /**************************************************************************************$
  * * ns-xml c parser
  ***************************************************************************************
@@ -86,7 +86,7 @@ NSXML_EXTERNC_BEGIN
  * the result will be truncated
  * @return  Difference between @p input_length and the real number of character copied
  */
-NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![CDATA[(char *output, size_t output_length, const char *input, size_t input_length);
+NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![CDATA[(char *output, size_t output_length, const char *input, size_t input_length);
 
 /** Copy a string */
 /**
@@ -100,7 +100,7 @@ NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"
  *
  * @return  Copied characters
  */
-NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_strcpy"/><![CDATA[(char *output, size_t output_length, const char *input);
+NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strcpy"/><![CDATA[(char *output, size_t output_length, const char *input);
 
 /** snprintf with automatic reallocation */
 /**
@@ -112,7 +112,7 @@ NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_strcpy"/
  * Parameters @param output and @param output_length will be modified if the printed strings
  * is taller than @param output_length
  */
-NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(char **output, size_t *output_length, const char *format, ...);
+NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(char **output, size_t *output_length, const char *format, ...);
 
 /** Indicates if a string begins with a given character sequence */
 /**
@@ -120,14 +120,14 @@ NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_asnprint
  * @param needle
  * @return A non-zero valueif @param haystack starts with the string @param needle
  */
-NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_string_starts_with"/><![CDATA[(const char *haystack, const char *needle);
+NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_string_starts_with"/><![CDATA[(const char *haystack, const char *needle);
 
 /** Test a file system path permission */
 /**
  * @path Path
  * @flag access function flags
  */
-NSXMLAPI int ]]><value-of select="$prg.c.parser.functionName.nsxml_util_path_access_check"/><![CDATA[(const char *path, int flag);
+NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_path_access_check"/><![CDATA[(const char *path, int flag);
 
 /**
  * Options for text wrapping
@@ -152,16 +152,16 @@ NSXMLAPI struct _nsxml_util_text_wrap_options
 	char eol[3];
 };
 
-typedef struct _nsxml_util_text_wrap_options ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[;
+typedef struct _nsxml_util_text_wrap_options ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[;
 
 /**
  * Text wrapping indentation modes
  */
 NSXMLAPI enum nsxml_util_text_indent_mode
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_none"/><![CDATA[ = 0,/**!< Do not indent */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_first"/><![CDATA[,   /**!< Indent first line */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_others"/><![CDATA[   /**!< Indent all line except the first */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_none"/><![CDATA[ = 0,/**!< Do not indent */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_first"/><![CDATA[,   /**!< Indent first line */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_indent_others"/><![CDATA[   /**!< Indent all line except the first */
 };
 
 /**
@@ -169,9 +169,9 @@ NSXMLAPI enum nsxml_util_text_indent_mode
  */
 NSXMLAPI enum nsxml_util_text_wrap_eol
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_cr"/><![CDATA[ = 1, /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_cr"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_lf"/><![CDATA[ = 2, /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_lf"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_crlf"/><![CDATA[ = 3/**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_crlf"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_cr"/><![CDATA[ = 1, /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_cr"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_lf"/><![CDATA[ = 2, /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_lf"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_crlf"/><![CDATA[ = 3/**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_util_text_wrap_eol_crlf"/><![CDATA[ */
 };
 
 /** Initialize text wrapping option structure */
@@ -182,7 +182,7 @@ NSXMLAPI enum nsxml_util_text_wrap_eol
  * @param indent_mode Indentation mode
  * @param eol End of line mode
  */
-NSXMLAPI void ]]><value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_options_init"/><![CDATA[(]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t tab, size_t line, int indent_mode, int eol);
+NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_options_init"/><![CDATA[(]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t tab, size_t line, int indent_mode, int eol);
 
 /** Print a text using text wrapping options */
 /**
@@ -191,7 +191,7 @@ NSXMLAPI void ]]><value-of select="$prg.c.parser.functionName.nsxml_util_text_wr
  * @param options Text wrapping option
  * @param level Initial indentation level
  */
-NSXMLAPI void ]]><value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprintf"/><![CDATA[(FILE *stream, const char *text, const ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
+NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprintf"/><![CDATA[(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
 
 /* Messages **************************************/
 
@@ -200,39 +200,39 @@ NSXMLAPI void ]]><value-of select="$prg.c.parser.functionName.nsxml_util_text_wr
  */
 NSXMLAPI enum nsxml_message_type
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[ = 0,  /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[,    /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,      /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_fatal_error"/><![CDATA[,/**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_fatal_error"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[ = 0,  /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[,    /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_warning"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,      /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_fatal_error"/><![CDATA[,/**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_fatal_error"/><![CDATA[ */
 	
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[       /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[       /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[ */
 };
 
 NSXMLAPI enum nsxml_message_warning
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_warning_ignore_endofarguments"/><![CDATA[ = 1
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_warning_ignore_endofarguments"/><![CDATA[ = 1
 };
 
 NSXMLAPI enum nsxml_message_error
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[ = 1,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_pa_argument"/><![CDATA[ = 2,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_option_argument"/><![CDATA[ = 3,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_option"/><![CDATA[ = 4,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_group_option"/><![CDATA[ = 5,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_xgroup_option"/><![CDATA[ = 6,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_pa"/><![CDATA[ = 7,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_program_pa_not_allowed"/><![CDATA[ = 8,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_subcommand_pa_not_allowed"/><![CDATA[ = 9,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_too_many_pa"/><![CDATA[ = 10,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_not_enough_arguments"/><![CDATA[ = 11,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_unexpected_option"/><![CDATA[ = 12,
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed"/><![CDATA[ = 13
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[ = 1,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_pa_argument"/><![CDATA[ = 2,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_option_argument"/><![CDATA[ = 3,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_option"/><![CDATA[ = 4,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_group_option"/><![CDATA[ = 5,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_xgroup_option"/><![CDATA[ = 6,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_missing_required_pa"/><![CDATA[ = 7,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_program_pa_not_allowed"/><![CDATA[ = 8,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_subcommand_pa_not_allowed"/><![CDATA[ = 9,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_too_many_pa"/><![CDATA[ = 10,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_not_enough_arguments"/><![CDATA[ = 11,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_unexpected_option"/><![CDATA[ = 12,
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed"/><![CDATA[ = 13
 };
 
 NSXMLAPI enum nsxml_message_fatal_error
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_message_fatal_error_unknown_option"/><![CDATA[ = 1
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_fatal_error_unknown_option"/><![CDATA[ = 1
 };
 
 /**
@@ -246,11 +246,11 @@ NSXMLAPI struct _nsxml_message
 	struct _nsxml_message *next_message;
 };
 
-typedef struct _nsxml_message ]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[;
+typedef struct _nsxml_message ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[;
 
-NSXMLAPI size_t nsxml_message_count(const ]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *list);
+NSXMLAPI size_t nsxml_message_count(const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *list);
 
-]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *nsxml_message_new_ref(]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *ref);
+]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *nsxml_message_new_ref(]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *ref);
 
 /* Item names *************************************/
 
@@ -377,11 +377,11 @@ enum nsxml_option_type
 /** Type of option or positional argument value */
 NSXMLAPI enum nsxml_value_type
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_unset"/><![CDATA[ = -1,/**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_unset"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_null"/><![CDATA[,      /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_null"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_int"/><![CDATA[,       /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_int"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_float"/><![CDATA[,     /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_float"/><![CDATA[ */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_string"/><![CDATA[    /**!< ]]><value-of select="$prg.c.parser.variableName.nsxml_value_type_string"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_unset"/><![CDATA[ = -1,/**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_unset"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_null"/><![CDATA[,      /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_null"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_int"/><![CDATA[,       /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_int"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_float"/><![CDATA[,     /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_float"/><![CDATA[ */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_string"/><![CDATA[    /**!< ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_string"/><![CDATA[ */
 };
 
 struct nsxml_group_option_info;
@@ -523,7 +523,7 @@ NSXMLAPI struct _nsxml_value
 	struct _nsxml_value *next_value;
 };
 
-typedef struct _nsxml_value ]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[;
+typedef struct _nsxml_value ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[;
 
 /* Parser internal state *************************/
 
@@ -631,7 +631,7 @@ struct nsxml_parser_state
 	struct nsxml_option_result **anonymous_option_results;
 	
 	size_t value_count;
-	]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *values;
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *values;
 };
 
 /**
@@ -702,7 +702,7 @@ struct nsxml_argument_option_result
 	/**
 	 * Option argument value
 	 */
-	]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ argument;
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ argument;
 };
 
 /**
@@ -725,7 +725,7 @@ struct nsxml_multiargument_option_result
 	/**
 	 * Option arguments value
 	 */
-	]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *arguments;
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *arguments;
 };
 
 /**
@@ -765,13 +765,13 @@ struct nsxml_program_result
 	 * A list of messages generated during the command line parsing
 	 * grouped by severity
 	 */
-	]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *messages[]]><value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[];
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *messages[]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[];
 	
 	/**
 	 * A list of messages generated during the command line parsing
 	 * sorted by apparition
 	 */
-	]]><value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *first_message;
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *first_message;
 	
 	/**
 	 * Name of the selected subcommand if any
@@ -787,7 +787,7 @@ struct nsxml_program_result
 	/**
 	 * List of positional arguments
 	 */
-	]]><value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *values;
+	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_value"/><![CDATA[ *values;
 };
 
 void nsxml_program_result_init(void *result_ptr);
@@ -803,12 +803,12 @@ NSXMLAPI size_t nsxml_program_result_message_count(const struct nsxml_program_re
  */
 NSXMLAPI enum nsxml_usage_format
 {
-	]]><value-of select="$prg.c.parser.variableName.nsxml_usage_format_short"/><![CDATA[ = 1,   /**!< Short form */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[ = 2,/**!<  */
-	]]><value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[ = 7  /**!< Full description */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_short"/><![CDATA[ = 1,   /**!< Short form */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[ = 2,/**!<  */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[ = 7  /**!< Full description */
 };
 
-NSXMLAPI void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsxml_program_result *result, int format, const ]]><value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap);
+NSXMLAPI void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsxml_program_result *result, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap);
 
 /* Parser Functions ******************************/
 
@@ -817,10 +817,10 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 NSXML_EXTERNC_END
 
 #endif /* __NSXML_PROGRAM_PARSER_H__ */
-]]></variable>
+]]></xsl:variable>
 
-	<template match="//prg:program">
-		<value-of select="$prg.c.parser.genericHeader"/>
-	</template>
-</stylesheet>
+	<xsl:template match="//prg:program">
+		<xsl:value-of select="$prg.c.parser.genericHeader"/>
+	</xsl:template>
+</xsl:stylesheet>
 

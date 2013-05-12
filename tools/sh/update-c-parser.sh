@@ -643,12 +643,12 @@ transform_c()
 <!-- Copyright © 2012-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
-	<import href="parser.generic-names.xsl" />
-	<output method="text" encoding="utf-8" />
-	<param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="parser.generic-names.xsl" />
+	<xsl:output method="text" encoding="utf-8" />
+	<xsl:param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
 	
-	<variable name="prg.c.parser.${templateName}"><![CDATA[
+	<xsl:variable name="prg.c.parser.${templateName}"><![CDATA[
 EOF
 	# Use Artistic Style to format code
 	if ${hasAstyle}
@@ -659,12 +659,12 @@ EOF
 	cat "${input}" >> "${tmpFile}"
 		
 	cat >> "${tmpFile}" << EOF
-]]></variable>
+]]></xsl:variable>
 
-	<template match="//prg:program">
-		<value-of select="\$prg.c.parser.${templateName}"/>
-	</template>
-</stylesheet>
+	<xsl:template match="//prg:program">
+		<xsl:value-of select="\$prg.c.parser.${templateName}"/>
+	</xsl:template>
+</xsl:stylesheet>
 
 EOF
 	
@@ -672,25 +672,25 @@ EOF
 	for t in "${transformableStructs[@]}"
 	do
 		#echo "Transform struct $t"
-		ns_sed_inplace "s,struct[ \t]\+${t}\([^_]\),struct ]]><value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\1,g" "${tmpFile}"
-		ns_sed_inplace "s,\(typedef struct[ \t]\+[a-zA-Z0-9_-]\+[ \t]\+\)${t};,\\1]]><value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[;,g" "${tmpFile}"
-		ns_sed_inplace "s,\(^\| \|\t\|(\)${t}\([ \t)]\+\),\\1]]><value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\2,g" "${tmpFile}"
+		ns_sed_inplace "s,struct[ \t]\+${t}\([^_]\),struct ]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\1,g" "${tmpFile}"
+		ns_sed_inplace "s,\(typedef struct[ \t]\+[a-zA-Z0-9_-]\+[ \t]\+\)${t};,\\1]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[;,g" "${tmpFile}"
+		ns_sed_inplace "s,\(^\| \|\t\|(\)${t}\([ \t)]\+\),\\1]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\2,g" "${tmpFile}"
 	done
 	
 	for t in "${transformableFunctions[@]}"
 	do
 		#echo "Transform function $t()"
-		ns_sed_inplace "s,${t}[ \t]*(,]]><value-of select=\"\$prg.c.parser.functionName.${t}\"/><![CDATA[(,g" "${tmpFile}"
+		ns_sed_inplace "s,${t}[ \t]*(,]]><xsl:value-of select=\"\$prg.c.parser.functionName.${t}\"/><![CDATA[(,g" "${tmpFile}"
 	done
 	
 	for t in "${transformableEnumPrefixes[@]}"
 	do
 		#echo "Transform enum $t*"
-		ns_sed_inplace "s,${t}\([a-zA-Z0-9_]\+\),]]><value-of select=\"\$prg.c.parser.variableName.${t}\\1\"/><![CDATA[,g" "${tmpFile}"
+		ns_sed_inplace "s,${t}\([a-zA-Z0-9_]\+\),]]><xsl:value-of select=\"\$prg.c.parser.variableName.${t}\\1\"/><![CDATA[,g" "${tmpFile}"
 	done
 	
 	# Include (if source)
-	ns_sed_inplace "s,#include[ \t][ \t]*\"nsxml_program_parser\.h\",#include \"]]><value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
+	ns_sed_inplace "s,#include[ \t][ \t]*\"nsxml_program_parser\.h\",#include \"]]><xsl:value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
 
 	# Finally 
 	mv "${tmpFile}" "${output}"
@@ -708,31 +708,31 @@ create_identifier_variables()
 <!-- Copyright © 2012-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- List of variable, structs and function names which can be modified by the user -->
-<stylesheet xmlns="http://www.w3.org/1999/XSL/Transform"
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:prg="http://xsd.nore.fr/program" version="1.0">
-	<import href="parser.base.xsl" />
+	<xsl:import href="parser.base.xsl" />
 	
 EOF
 
 	for t in "${transformableFunctions[@]}"
 	do
 		cat >> "${tmpFile}" << EOF
-	<variable name="prg.c.parser.functionName.${t}">
-		<call-template name="prg.c.parser.functionName">
-			<with-param name="name" select="'${t}'" />
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.c.parser.functionName.${t}">
+		<xsl:call-template name="prg.c.parser.functionName">
+			<xsl:with-param name="name" select="'${t}'" />
+		</xsl:call-template>
+	</xsl:variable>
 EOF
 	done	
 	
 	for t in "${transformableStructs[@]}"
 	do
 		cat >> "${tmpFile}" << EOF
-	<variable name="prg.c.parser.structName.${t}">
-		<call-template name="prg.c.parser.structName">
-			<with-param name="name" select="'${t}'" />
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.c.parser.structName.${t}">
+		<xsl:call-template name="prg.c.parser.structName">
+			<xsl:with-param name="name" select="'${t}'" />
+		</xsl:call-template>
+	</xsl:variable>
 EOF
 	done
 	
@@ -742,16 +742,16 @@ EOF
 		egrep -o "${b}[a-z0-9_]+" "${header}" | uniq | while read t
 		do
 			cat >> "${tmpFile}" << EOF
-	<variable name="prg.c.parser.variableName.${t}">
-		<call-template name="prg.c.parser.variableName">
-			<with-param name="name" select="'${t}'" />
-		</call-template>
-	</variable>
+	<xsl:variable name="prg.c.parser.variableName.${t}">
+		<xsl:call-template name="prg.c.parser.variableName">
+			<xsl:with-param name="name" select="'${t}'" />
+		</xsl:call-template>
+	</xsl:variable>
 EOF
 		done
 	done
 	
-	echo -e "</stylesheet>" >> "${tmpFile}"
+	echo -e "</xsl:stylesheet>" >> "${tmpFile}"
 	#xmllint --format --output "${tmpFile}" "${tmpFile}"
 	
 	# Finally 
