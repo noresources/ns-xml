@@ -13,7 +13,7 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--hg-only --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help]
+  update-doc [--hg-only --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
   With:
     XSLT documentation
       --hg-only: Generate documentation for XSLT files in the mercurial 
