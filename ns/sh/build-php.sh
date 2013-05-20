@@ -875,25 +875,25 @@ parse()
 
 ns_realpath()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
 	local cwd="$(pwd)"
-	[ -d "${path}" ] && cd "${path}" && path="."
-	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 	
-	if [ -d "${path}" ]
+	if [ -d "${inputPath}" ]
 	then
-		path="$( cd -P "$( dirname "${path}" )" && pwd )"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 	else
-		path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 	fi
 	
 	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${path}"
+	echo "${inputPath}"
 }
 ns_mktemp()
 {

@@ -399,45 +399,45 @@ error()
 }
 ns_isdir()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
-	[ ! -z "${path}" ] && [ -d "${path}" ]
+	[ ! -z "${inputPath}" ] && [ -d "${inputPath}" ]
 }
 ns_issymlink()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
-	[ ! -z "${path}" ] && [ -L "${path}" ]
+	[ ! -z "${inputPath}" ] && [ -L "${inputPath}" ]
 }
 ns_realpath()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
 	local cwd="$(pwd)"
-	[ -d "${path}" ] && cd "${path}" && path="."
-	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 	
-	if [ -d "${path}" ]
+	if [ -d "${inputPath}" ]
 	then
-		path="$( cd -P "$( dirname "${path}" )" && pwd )"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 	else
-		path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 	fi
 	
 	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${path}"
+	echo "${inputPath}"
 }
 ns_relativepath()
 {
@@ -533,21 +533,17 @@ ns_sed_inplace()
 	# 2: Mac OS X 10.5-10.8 - => sed -i ""
 	# TODO test Mac OS X < 10.5
 	local sedForm=1
-	
 	# Use gsed if available
 	local sedBin="$(which "gsed")"
-	
 	[ -z "${sedBin}" ] && sedBin="$(which "sed")"
 	[ -z "${sedBin}" ] && return 1
 	
 	if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
 	then
 	local macOSXVersion="$(sw_vers -productVersion)"
-	
 	if [ ! -z "${macOSXVersion}" ]
 		then
 	local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
-	
 	local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
 	if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 			then
