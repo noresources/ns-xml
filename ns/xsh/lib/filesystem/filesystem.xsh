@@ -3,34 +3,34 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
 	<xsh:function name="ns_isdir">
-		<xsh:parameter name="path" />
+		<xsh:parameter name="inputPath" />
 		<xsh:body><![CDATA[
-[ ! -z "${path}" ] && [ -d "${path}" ]
+[ ! -z "${inputPath}" ] && [ -d "${inputPath}" ]
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_issymlink">
-		<xsh:parameter name="path" />
+		<xsh:parameter name="inputPath" />
 		<xsh:body><![CDATA[
-[ ! -z "${path}" ] && [ -L "${path}" ]
+[ ! -z "${inputPath}" ] && [ -L "${inputPath}" ]
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_realpath">
-		<xsh:parameter name="path" />
+		<xsh:parameter name="inputPath" />
 		<xsh:body>
 		<xsh:local name="cwd">$(pwd)</xsh:local>
 		<![CDATA[
-[ -d "${path}" ] && cd "${path}" && path="."
-while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 
-if [ -d "${path}" ]
+if [ -d "${inputPath}" ]
 then
-	path="$( cd -P "$( dirname "${path}" )" && pwd )"
+	inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 else
-	path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+	inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 fi
 
 cd "${cwd}" 1>/dev/null 2>&1
-echo "${path}"
+echo "${inputPath}"
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_relativepath">
