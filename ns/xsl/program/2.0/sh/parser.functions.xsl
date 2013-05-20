@@ -633,6 +633,7 @@
 			<xsl:with-param name="content">
 				<xsl:call-template name="sh.local">
 					<xsl:with-param name="name" select="'hasBC'" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
 					<xsl:with-param name="quoted" select="false()" />
 					<xsl:with-param name="value">
 						<xsl:text>false</xsl:text>
