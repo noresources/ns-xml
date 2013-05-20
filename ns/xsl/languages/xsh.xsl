@@ -2,43 +2,76 @@
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
-<!-- Transform documents based on the xsh XML schema (http://xsd.nore.fr/xsh) to UNIX shell script code -->
+<!-- Transform documents based on the xsh XML schema (http://xsd.nore.fr/xsh)
+	to UNIX shell script code -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:bash="http://xsd.nore.fr/bash">
 
 	<xsl:output method="text" encoding="utf-8" />
 
 	<xsl:include href="shellscript.xsl" />
 
-	<!-- Interpreter type to use if none is set in the xsh:program node. Should be one of the name defined by the interpreterNameType in the xsh XML schema -->
+	<!-- Interpreter type to use if none is set in the xsh:program node. Should
+		be one of the name defined by the interpreterNameType in the xsh XML schema -->
 	<xsl:param name="xsh.defaultInterpreterType" />
-	
+
+	<!-- Force user-defined interpreter (using.defaultInterpreterType and/or xsh.defaultInterpreterCommand) -->
+	<xsl:param name="xsh.forceInterpreter" select="'no'" />
+
 	<xsl:param name="xsh.defaultInterpreterCommand">
 		<xsl:if test="$xsh.defaultInterpreterType and string-length($xsh.defaultInterpreterType) &gt; 0">
 			<xsl:value-of select="concat('/usr/bin/env ', $xsh.defaultInterpreterType)" />
 		</xsl:if>
 	</xsl:param>
 
-	<!-- Retrieve interpreter name from $xsh.defaultInterpreterType, program node @intrepreterType attribute
-		or program node @interpreterCommand attribute. If none of these options are available, use 'sh' -->
+	<xsl:template name="xsh.guessInterpreterType">
+		<xsl:param name="interpreterCommand" />
+
+		<xsl:choose>
+			<xsl:when test="contains($interpreterCommand, '/ksh') or contains($interpreterCommand, ' ksh')">
+				<xsl:text>ksh</xsl:text>
+			</xsl:when>
+			<xsl:when test="contains($interpreterCommand, '/bash') or contains($interpreterCommand, ' bash')">
+				<xsl:text>bash</xsl:text>
+			</xsl:when>
+			<xsl:when test="contains($interpreterCommand, '/zsh') or contains($interpreterCommand, ' zsh')">
+				<xsl:text>zsh</xsl:text>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Retrieve interpreter name from $xsh.defaultInterpreterType, program
+		node @intrepreterType attribute or program node @interpreterCommand attribute.
+		If none of these options are available, use 'sh' -->
 	<xsl:template name="xsh.getInterpreter">
 		<!-- xsh:program node -->
 		<xsl:param name="programNode" select="//xsh:program" />
 
 		<xsl:choose>
+			<!-- Forced value -->
+			<xsl:when test="$programNode/self::xsh:program and ($xsh.forceInterpreter = 'yes') and (string-length($xsh.defaultInterpreterType) &gt; 0)">
+				<xsl:value-of select="$xsh.defaultInterpreterType" />
+			</xsl:when>
+			<!-- From XML definition -->
 			<xsl:when test="$programNode/self::xsh:program and $programNode/@interpreterType and (string-length($programNode/@interpreterType) &gt; 0)">
 				<xsl:value-of select="$programNode/@interpreterType" />
 			</xsl:when>
-			<!-- attempt to guess type from invocation command -->
+			<!-- Attempt to guess type from invocation command -->
+			<!-- - from forced invocation command -->
+			<xsl:when test="$programNode/self::xsh:program and ($xsh.forceInterpreter = 'yes') and (string-length($xsh.defaultInterpreterCommand) &gt; 0)">
+				<xsl:call-template name="xsh.guessInterpreterType">
+					<xsl:with-param name="interpreterCommand" select="$xsh.defaultInterpreterCommand" />
+				</xsl:call-template>
+			</xsl:when>
+			<!-- - from XML definition -->
 			<xsl:when test="$programNode/self::xsh:program and $programNode/@interpreterCommand and string-length($programNode/@interpreterCommand) &gt; 0">
+				<xsl:variable name="command">
+					<xsl:call-template name="xsh.guessInterpreterType">
+						<xsl:with-param name="interpreterCommand" select="$programNode/@interpreterCommand" />
+					</xsl:call-template>
+				</xsl:variable>
 				<xsl:choose>
-					<xsl:when test="contains($programNode/@interpreterCommand, '/ksh') or contains($programNode/@interpreterCommand, ' ksh')">
-						<xsl:text>ksh</xsl:text>
-					</xsl:when>
-					<xsl:when test="contains($programNode/@interpreterCommand, '/bash') or contains($programNode/@interpreterCommand, ' bash')">
-						<xsl:text>bash</xsl:text>
-					</xsl:when>
-					<xsl:when test="contains($programNode/@interpreterCommand, '/zsh') or contains($programNode/@interpreterCommand, ' zsh')">
-						<xsl:text>zsh</xsl:text>
+					<xsl:when test="string-length($command) &gt; 0">
+						<xsl:value-of select="$command" />
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:choose>
@@ -65,12 +98,20 @@
 	<xsl:template name="xsh.getInterpreterCommand">
 		<!-- xsh:program node -->
 		<xsl:param name="programNode" select="//xsh:program" />
-		<xsl:param name="interpreter" />
+		<!-- Forced interpreter program type name -->
+		<xsl:param name="interpreterType" />
 
 		<xsl:variable name="name">
-			<xsl:call-template name="xsh.getInterpreter">
-				<xsl:with-param name="programNode" select="$programNode" />
-			</xsl:call-template>
+			<xsl:choose>
+				<xsl:when test="string-length($interpreterType) &gt; 0">
+					<xsl:value-of select="$interpreterType" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="xsh.getInterpreter">
+						<xsl:with-param name="programNode" select="$programNode" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 
 		<xsl:choose>
@@ -193,7 +234,9 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:if test="following-sibling::*[1][text()]">
-			<xsl:value-of select="$str.unix.endl" />
+			<xsl:if test="string-length(following-sibling) &gt; 0">
+				<xsl:value-of select="$str.unix.endl" />
+			</xsl:if>
 		</xsl:if>
 	</xsl:template>
 
@@ -203,7 +246,7 @@
 		</xsl:call-template>
 		<xsl:value-of select="$str.unix.endl" />
 	</xsl:template>
-	
+
 	<xsl:template match="xsh:body/text()">
 		<xsl:variable name="content">
 			<xsl:call-template name="str.trim">
@@ -340,16 +383,16 @@
 				<xsl:with-param name="programNode" select="." />
 			</xsl:call-template>
 		</xsl:variable>
-		
+
 		<xsl:variable name="interpreter">
 			<xsl:call-template name="xsh.getInterpreter">
 				<xsl:with-param name="programNode" select="." />
 			</xsl:call-template>
 		</xsl:variable>
-		
+
 		<xsl:text>#!</xsl:text>
 		<xsl:value-of select="$interpreterCommand" />
-								
+
 		<xsl:apply-templates select="xsh:functions">
 			<xsl:with-param name="interpreter" select="$interpreter" />
 		</xsl:apply-templates>

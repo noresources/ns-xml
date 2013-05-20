@@ -2,12 +2,10 @@
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
-<!-- Build a shell script by combining program option parsing & usage from 
-	the XML program interface definition schema and shell code and functions 
+<!-- Build a shell script by combining program option parsing & usage from
+	the XML program interface definition schema and shell code and functions
 	from the XSH schema (hhe old bash scheam is still supported) -->
-<xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program"
-	xmlns:bash="http://xsd.nore.fr/bash" xmlns:xsh="http://xsd.nore.fr/xsh">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:bash="http://xsd.nore.fr/bash" xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<xsl:import href="../../languages/bash.xsl" />
 	<xsl:import href="../../languages/xsh.xsl" />
@@ -16,11 +14,6 @@
 	<xsl:import href="sh/usage.chunks.xsl" />
 
 	<xsl:output method="text" encoding="utf-8" />
-
-	<!-- Unix shell interpreter directive. If neither prg.xsh.defaultInterpreterCommand 
-		nor xsh.defaultInterpreterType are defined, use '/usr/bin/env bash'. If xsh.defaultInterpreterType 
-		is defined, use '/usr/bin/env <type>' -->
-	<xsl:param name="prg.xsh.defaultInterpreterCommand" />
 
 	<!-- Help string -->
 	<xsl:template name="prg.sh.usage.programUsage">
@@ -66,8 +59,7 @@
 												<xsl:value-of select="normalize-space(./prg:name)" />
 												<xsl:text>: </xsl:text>
 												<xsl:call-template name="prg.usage.descriptionDisplay">
-													<xsl:with-param name="textNode"
-														select="./prg:documentation/prg:abstract" />
+													<xsl:with-param name="textNode" select="./prg:documentation/prg:abstract" />
 												</xsl:call-template>
 												<xsl:value-of select="$sh.endl" />
 												<xsl:text>Usage: </xsl:text>
@@ -96,21 +88,17 @@
 													<xsl:text>With</xsl:text>
 													<xsl:text>:</xsl:text>
 													<xsl:call-template name="code.block">
-														<xsl:with-param name="indentChar"
-															select="$prg.sh.usage.indentChar" />
+														<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 														<xsl:with-param name="addFinalEndl" select="false()" />
 														<xsl:with-param name="content">
 															<xsl:call-template name="prg.usage.optionListDescription">
-																<xsl:with-param name="optionsNode"
-																	select="./prg:options" />
+																<xsl:with-param name="optionsNode" select="./prg:options" />
 															</xsl:call-template>
 															<!-- Program documentation & details -->
 															<xsl:if test="./prg:documentation/prg:details">
 																<xsl:call-template name="code.block">
-																	<xsl:with-param name="indentChar"
-																		select="$prg.sh.usage.indentChar" />
-																	<xsl:with-param name="addFinalEndl"
-																		select="false()" />
+																	<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
+																	<xsl:with-param name="addFinalEndl" select="false()" />
 																	<xsl:with-param name="content">
 																		<xsl:apply-templates select="./prg:documentation/prg:details" />
 																	</xsl:with-param>
@@ -137,8 +125,7 @@
 				<xsl:text>: </xsl:text>
 				<!-- Program description -->
 				<xsl:call-template name="prg.usage.descriptionDisplay">
-					<xsl:with-param name="textNode"
-						select="$programNode/prg:documentation/prg:abstract" />
+					<xsl:with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
 				</xsl:call-template>
 				<xsl:value-of select="$sh.endl" />
 				<xsl:text>Usage: </xsl:text>
@@ -184,13 +171,11 @@
 											<xsl:value-of select="normalize-space(.)" />
 										</xsl:for-each>
 										<xsl:text>: </xsl:text>
-										<xsl:value-of
-											select="normalize-space(./prg:documentation/prg:abstract)" />
+										<xsl:value-of select="normalize-space(./prg:documentation/prg:abstract)" />
 										<!-- Option description -->
 										<xsl:if test="./prg:options">
 											<xsl:call-template name="code.block">
-												<xsl:with-param name="indentChar"
-													select="$prg.sh.usage.indentChar" />
+												<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 												<xsl:with-param name="addFinalEndl" select="false()" />
 												<xsl:with-param name="content">
 													<xsl:text>options: </xsl:text>
@@ -234,8 +219,7 @@
 					<xsl:call-template name="str.prependLine">
 						<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
 						<xsl:with-param name="wrap" select="$prg.usage.wrap" />
-						<xsl:with-param name="lineMaxLength"
-							select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar)" />
+						<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar)" />
 						<xsl:with-param name="text">
 							<xsl:apply-templates select="$programNode/prg:documentation/prg:details" />
 						</xsl:with-param>
@@ -249,12 +233,16 @@
 
 	<xsl:template match="/bash:program|/xsh:program">
 
+		<xsl:variable name="defaultInterpreterCommand" select="normalize-space($xsh.defaultInterpreterCommand)" />
+		<xsl:variable name="defaultInterpreterType" select="normalize-space($xsh.defaultInterpreterType)" />
+
 		<xsl:variable name="interpreterCommand">
 			<xsl:choose>
 				<xsl:when test="./self::xsh:program">
 					<xsl:call-template name="xsh.getInterpreterCommand">
 						<xsl:with-param name="programNode" select="." />
 					</xsl:call-template>
+
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:choose>
@@ -263,8 +251,7 @@
 							<xsl:value-of select="normalize-space(./@interpreter)" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of
-								select="normalize-space($prg.xsh.defaultInterpreterCommand)" />
+							<xsl:value-of select="normalize-space($xsh.defaultInterpreterCommand)" />
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:otherwise>
@@ -288,8 +275,7 @@
 		<!-- Interpreter invocation command -->
 		<xsl:text>#!</xsl:text>
 		<xsl:choose>
-			<xsl:when
-				test="$interpreterCommand and (string-length($interpreterCommand) &gt; 0)">
+			<xsl:when test="$interpreterCommand and (string-length($interpreterCommand) &gt; 0)">
 				<xsl:value-of select="$interpreterCommand" />
 			</xsl:when>
 			<xsl:when test="$interpreter and (string-length($interpreter) &gt; 0)">
@@ -297,27 +283,18 @@
 				<xsl:value-of select="$interpreter" />
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="normalize-space($prg.xsh.defaultInterpreterCommand)" />
+				<xsl:value-of select="$defaultInterpreterCommand" />
 			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:value-of select="$sh.endl" />
-
-		<!-- <xsl:call-template name="sh.comment"> <xsl:with-param name="content"> 
-			<xsl:text>prg.xsh.defaultInterpreterCommand: </xsl:text> <xsl:value-of select="$prg.xsh.defaultInterpreterCommand" 
-			/> <xsl:value-of select="$str.unix.endl" /> <xsl:text>xsh.defaultInterpreterType: 
-			</xsl:text> <xsl:value-of select="$interpreter" /> <xsl:value-of select="$str.unix.endl" 
-			/> <xsl:text>nterpreterCommand: </xsl:text> <xsl:value-of select="$interpreterCommand" 
-			/> <xsl:value-of select="$str.unix.endl" /> </xsl:with-param> </xsl:call-template> -->
 
 		<xsl:choose>
 			<xsl:when test="./bash:info|./xsh:info">
 				<xsl:if test="./bash:info/prg:program|./xsh:info/prg:program">
 
-					<xsl:variable name="programNode"
-						select="./bash:info/prg:program|./xsh:info/prg:program" />
+					<xsl:variable name="programNode" select="./bash:info/prg:program|./xsh:info/prg:program" />
 
-					<xsl:if
-						test="$programNode[prg:author|prg:version|prg:license|prg:copyright|prg:documentation/prg:abstract]">
+					<xsl:if test="$programNode[prg:author|prg:version|prg:license|prg:copyright|prg:documentation/prg:abstract]">
 						<xsl:call-template name="sh.comment">
 							<xsl:with-param name="content">
 								<xsl:text>####################################</xsl:text>
@@ -342,8 +319,7 @@
 								</xsl:if>
 								<xsl:if test="$programNode/prg:documentation/prg:abstract">
 									<xsl:value-of select="$sh.endl" />
-									<xsl:apply-templates
-										select="$programNode/prg:documentation/prg:abstract" />
+									<xsl:apply-templates select="$programNode/prg:documentation/prg:abstract" />
 									<xsl:value-of select="$sh.endl" />
 								</xsl:if>
 							</xsl:with-param>
