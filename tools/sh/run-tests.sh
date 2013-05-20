@@ -593,45 +593,45 @@ parse()
 
 ns_isdir()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
-	[ ! -z "${path}" ] && [ -d "${path}" ]
+	[ ! -z "${inputPath}" ] && [ -d "${inputPath}" ]
 }
 ns_issymlink()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
-	[ ! -z "${path}" ] && [ -L "${path}" ]
+	[ ! -z "${inputPath}" ] && [ -L "${inputPath}" ]
 }
 ns_realpath()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
 	local cwd="$(pwd)"
-	[ -d "${path}" ] && cd "${path}" && path="."
-	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 	
-	if [ -d "${path}" ]
+	if [ -d "${inputPath}" ]
 	then
-		path="$( cd -P "$( dirname "${path}" )" && pwd )"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 	else
-		path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 	fi
 	
 	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${path}"
+	echo "${inputPath}"
 }
 ns_relativepath()
 {
@@ -1138,7 +1138,7 @@ EOF
 		for p in "${pythonInterpreters[@]}"
 		do
 			pyProgram="${pyProgramBase}${p}.py"
-			pyPrograms=("${pyProgram[@]}" "${pyProgram}")
+			pyPrograms=("${pyPrograms[@]}" "${pyProgram}")
 			xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
 			chmod 755 "${pyProgram}"
 		done
@@ -1441,17 +1441,21 @@ EOFSH
 	
 	if ${testPython}
 	then
-		pi=0
+		pi=${parser_startindex}
 		hasErrors=false
-		for p in ${pythonInterpreters[@]}
+		for p in "${pythonInterpreters[@]}"
 		do
 			if [ $(find "${d}/tests" -name "*.result-${p}" | wc -l) -eq 0 ]
 			then
 				${keepTemporaryFiles} || rm -f "${pyPrograms[${pi}]}"
-				rm -f "${pyPrograms[${pi}]}c"
 			else
 				hasErrors=true
 			fi
+			
+			# Python cache files are always removed
+			rm -f "${pyPrograms[${pi}]}c"
+			rm -fr "${d}/__pycache__"
+			
 			pi=$(expr ${pi} + 1)
 		done
 		

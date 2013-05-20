@@ -401,7 +401,7 @@ EOF
 		for p in "${pythonInterpreters[@]}"
 		do
 			pyProgram="${pyProgramBase}${p}.py"
-			pyPrograms=("${pyProgram[@]}" "${pyProgram}")
+			pyPrograms=("${pyPrograms[@]}" "${pyProgram}")
 			xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
 			chmod 755 "${pyProgram}"
 		done
@@ -704,17 +704,21 @@ EOFSH
 	
 	if ${testPython}
 	then
-		pi=0
+		pi=${parser_startindex}
 		hasErrors=false
-		for p in ${pythonInterpreters[@]}
+		for p in "${pythonInterpreters[@]}"
 		do
 			if [ $(find "${d}/tests" -name "*.result-${p}" | wc -l) -eq 0 ]
 			then
 				${keepTemporaryFiles} || rm -f "${pyPrograms[${pi}]}"
-				rm -f "${pyPrograms[${pi}]}c"
 			else
 				hasErrors=true
 			fi
+			
+			# Python cache files are always removed
+			rm -f "${pyPrograms[${pi}]}c"
+			rm -fr "${d}/__pycache__"
+			
 			pi=$(expr ${pi} + 1)
 		done
 		
