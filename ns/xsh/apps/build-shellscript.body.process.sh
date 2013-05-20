@@ -37,7 +37,7 @@ if [ ! -z "${defaultInterpreterCommand}" ]
 then
 	# See ns/xsl/program/*/xsh.xsl
 	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
-	xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreterCommand"
+	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterCommand"
 	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterCommand}"
 elif [ ! -z "${defaultInterpreterType}" ]
 then
@@ -46,6 +46,13 @@ then
 	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterType"
 	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterType}"
 fi
+
+if ${forceInterpreter} && ([ ! -z "${defaultInterpreterCommand}" ] || [ ! -z "${defaultInterpreterType}" ])
+then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.forceInterpreter"
+	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
+fi 
 
 if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then

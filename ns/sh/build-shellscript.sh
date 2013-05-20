@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ####################################
 # Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
-# Distributed under the terms of the MIT License, see LICENSE
+# Distributed under the terms of the MIT License, see
+# 		LICENSE
 # Author: Renaud Guillard
 # Version: 2.0
 # 
@@ -13,7 +14,7 @@ usage()
 cat << EOFUSAGE
 build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [(-i <...> | -I <...>)] [--help] -o <path>
+  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [(-i <...> | -I <...>)] [--force-interpreter] [--help] -o <path>
   With:
     ns-xml source path options
       --ns-xml-path: ns-xml source path
@@ -43,6 +44,10 @@ Usage:
         The argument can be:  
           /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
     
+    --force-interpreter: 
+      Force to use the interpreter defined by --interpreter or --interpreter-cmd
+      This option has no meaning if none of --interpreter or --interpreter-cmd 
+      is set
     -p, --prefix-sc-variables: Prefix subcommand options bound variable names
       This will prefix all subcommand options bound variable name by the 
       subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
@@ -79,10 +84,11 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_shell:--shell"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_9_output:--output"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_10_output:--output"
 # Switch options
 nsxmlPathRelative=false
 skipValidation=false
+forceInterpreter=false
 prefixSubcommandBoundVariableName=false
 debugMode=false
 displayHelp=false
@@ -372,6 +378,16 @@ parse_process_option()
 			skipValidation=true
 			parse_setoptionpresence G_4_skip_validation
 			;;
+		force-interpreter)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parser_optiontail=""
+				return ${PARSER_ERROR}
+			fi
+			forceInterpreter=true
+			parse_setoptionpresence G_6_force_interpreter
+			;;
 		prefix-sc-variables)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -380,7 +396,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_6_prefix_sc_variables
+			parse_setoptionpresence G_7_prefix_sc_variables
 			;;
 		debug)
 			if [ ! -z "${parser_optiontail}" ]
@@ -390,7 +406,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_7_debug
+			parse_setoptionpresence G_8_debug
 			;;
 		help)
 			if [ ! -z "${parser_optiontail}" ]
@@ -400,7 +416,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_8_help
+			parse_setoptionpresence G_9_help
 			;;
 		output)
 			if [ ! -z "${parser_optiontail}" ]
@@ -427,7 +443,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_9_output
+			parse_setoptionpresence G_10_output
 			;;
 		ns-xml-path)
 			# Group checks
@@ -687,11 +703,11 @@ parse_process_option()
 			;;
 		p)
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_6_prefix_sc_variables
+			parse_setoptionpresence G_7_prefix_sc_variables
 			;;
 		d)
 			debugMode=true
-			parse_setoptionpresence G_7_debug
+			parse_setoptionpresence G_8_debug
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -718,7 +734,7 @@ parse_process_option()
 			parser_optiontail=""
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_9_output
+			parse_setoptionpresence G_10_output
 			;;
 		i)
 			# Group checks
@@ -887,25 +903,25 @@ parse()
 
 ns_realpath()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
 	local cwd="$(pwd)"
-	[ -d "${path}" ] && cd "${path}" && path="."
-	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 	
-	if [ -d "${path}" ]
+	if [ -d "${inputPath}" ]
 	then
-		path="$( cd -P "$( dirname "${path}" )" && pwd )"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 	else
-		path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 	fi
 	
 	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${path}"
+	echo "${inputPath}"
 }
 error()
 {
@@ -1097,7 +1113,7 @@ if [ ! -z "${defaultInterpreterCommand}" ]
 then
 	# See ns/xsl/program/*/xsh.xsl
 	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
-	xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreterCommand"
+	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterCommand"
 	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterCommand}"
 elif [ ! -z "${defaultInterpreterType}" ]
 then
@@ -1106,6 +1122,13 @@ then
 	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterType"
 	xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterType}"
 fi
+
+if ${forceInterpreter} && ([ ! -z "${defaultInterpreterCommand}" ] || [ ! -z "${defaultInterpreterType}" ])
+then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="xsh.forceInterpreter"
+	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
+fi 
 
 if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 then

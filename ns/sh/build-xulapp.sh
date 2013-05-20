@@ -2030,25 +2030,25 @@ parse()
 
 ns_realpath()
 {
-	local path
+	local inputPath
 	if [ $# -gt 0 ]
 	then
-		path="${1}"
+		inputPath="${1}"
 		shift
 	fi
 	local cwd="$(pwd)"
-	[ -d "${path}" ] && cd "${path}" && path="."
-	while [ -h "${path}" ] ; do path="$(readlink "${path}")"; done
+	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
+	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
 	
-	if [ -d "${path}" ]
+	if [ -d "${inputPath}" ]
 	then
-		path="$( cd -P "$( dirname "${path}" )" && pwd )"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
 	else
-		path="$( cd -P "$( dirname "${path}" )" && pwd )/$(basename "${path}")"
+		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
 	fi
 	
 	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${path}"
+	echo "${inputPath}"
 }
 ns_mktemp()
 {
@@ -2087,21 +2087,13 @@ error()
 build_php()
 {
 local xmlShellFileDescriptionPath="${php_xmlShellFileDescriptionPath}"
-
 local programInfoClassname="${php_programInfoClassname}"
-
 local parserNamespace="${php_parserNamespace}"
-
 local programNamespace="${php_programNamespace}"
-
 local outputScriptFilePath="${commandLauncherFile}"
-
 local generationMode="generateMerge"
-
 local generateBase="false"
-
 local generateInfo="false"
-
 local generateMerge="${php_scriptPath}"
 info " - Generate PHP file"
 buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
@@ -2164,14 +2156,11 @@ return 0
 build_xsh()
 {
 	local prefixSubcommandBoundVariableName="${xsh_prefixSubcommandBoundVariableName}"
-	
 	local xmlShellFileDescriptionPath="${xsh_xmlShellFileDescriptionPath}"
-	
 	local defaultInterpreterCommand="${xsh_defaultInterpreterCommand}"
-	
 	local defaultInterpreterType="${xsh_defaultInterpreterType}"
+	local forceInterpreter="${xsh_forceInterpreter}"
 	local xshXslTemplatePath
-	
 	local outputScriptFilePath="${commandLauncherFile}"
 	info " - Generate shell file"
 	# Check required XSLT files
@@ -2213,7 +2202,7 @@ build_xsh()
 	then
 		# See ns/xsl/program/*/xsh.xsl
 		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
-		xsltprocArgs[${#xsltprocArgs[*]}]="prg.xsh.defaultInterpreterCommand"
+		xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterCommand"
 		xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterCommand}"
 	elif [ ! -z "${defaultInterpreterType}" ]
 	then
@@ -2222,6 +2211,13 @@ build_xsh()
 		xsltprocArgs[${#xsltprocArgs[*]}]="xsh.defaultInterpreterType"
 		xsltprocArgs[${#xsltprocArgs[*]}]="${defaultInterpreterType}"
 	fi
+	
+	if ${forceInterpreter} && ([ ! -z "${defaultInterpreterCommand}" ] || [ ! -z "${defaultInterpreterType}" ])
+	then
+		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+		xsltprocArgs[${#xsltprocArgs[*]}]="xsh.forceInterpreter"
+		xsltprocArgs[${#xsltprocArgs[*]}]="yes"
+	fi 
 	
 	if ! xsltproc "${xsltprocArgs[@]}" -o "${outputScriptFilePath}" "${xshXslTemplatePath}" "${xmlShellFileDescriptionPath}"
 	then
@@ -2235,16 +2231,11 @@ build_xsh()
 build_python()
 {
 local xmlShellFileDescriptionPath="${python_xmlShellFileDescriptionPath}"
-
 local programInfoClassname="${python_programInfoClassname}"
-
 local outputScriptFilePath="${commandLauncherFile}"
-
 local generationMode="generateMerge"
-
 local generateBase="false"
 local generateInfo
-
 local generateMerge="${python_scriptPath}"
 info " - Generate Python file"
 buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"

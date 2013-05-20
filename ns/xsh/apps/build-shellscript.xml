@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+<prg:program xmlns:prg="http://xsd.nore.fr/program"
+	xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>build-shellscript</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>2.0</prg:version>
 	<prg:copyright>Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
-	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
+	<prg:license>Distributed under the terms of the MIT License, see
+		LICENSE</prg:license>
 	<prg:documentation>
-		<prg:abstract>Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages</prg:abstract>
+		<prg:abstract>Shell script builder which use program interface XML
+			definition file to automatically generate command line processing and
+			help messages</prg:abstract>
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>Shellscript builder</prg:label>
@@ -16,9 +20,11 @@
 	</prg:ui>
 	<prg:options>
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
+		<xi:include href="options.xml"
+			xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
 		<!-- program interface XML definition file -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
+		<xi:include href="options.xml"
+			xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.xmlProgramDescriptionPath'])" />
 		<prg:argument required="true" id="xmlShellFileDescriptionPath">
 			<prg:databinding>
 				<prg:variable>xmlShellFileDescriptionPath</prg:variable>
@@ -54,7 +60,8 @@
 			</prg:names>
 		</prg:argument>
 		<!-- Skip validation -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
+		<xi:include href="options.xml"
+			xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
 		<!-- Tweaks -->
 		<prg:group id="defaultInterpreter" type="exclusive">
 			<prg:databinding>
@@ -71,9 +78,12 @@
 					<prg:documentation>
 						<prg:abstract>Default shell interpreter type</prg:abstract>
 						<prg:details>
-							The interpreter family to use if the XSH file does not define one.
-							<prg:block>Attention: This parameter is only available for XSH file using the
-								XSH XML schema (http://xsd.nore.fr/xsh). The old http://xsd.nore.fr/bash XSD schema is not
+							The interpreter family to use if the XSH file does not define
+							one.
+							<prg:block>Attention: This parameter is only available for XSH
+								file using the
+								XSH XML schema (http://xsd.nore.fr/xsh). The old
+								http://xsd.nore.fr/bash XSD schema is not
 								supported.
 							</prg:block>
 						</prg:details>
@@ -94,7 +104,8 @@
 					</prg:databinding>
 					<prg:documentation>
 						<prg:abstract>Default shell interpreter invocation directive</prg:abstract>
-						<prg:details>This value if used if the XSH file does not define one</prg:details>
+						<prg:details>This value if used if the XSH file does not define
+							one</prg:details>
 					</prg:documentation>
 					<prg:names>
 						<prg:long>interpreter-cmd</prg:long>
@@ -109,14 +120,33 @@
 				</prg:argument>
 			</prg:options>
 		</prg:group>
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>forceInterpreter</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>
+				</prg:abstract>
+				<prg:details>Force to use the interpreter defined by --interpreter
+					or --interpreter-cmd
+					<prg:endl/>
+					This option has no meaning if none of --interpreter or --interpreter-cmd is set 
+					</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>force-interpreter</prg:long>
+			</prg:names>
+		</prg:switch>
 		<prg:switch id="prefixSubcommandBoundVariableName">
 			<prg:databinding>
 				<prg:variable>prefixSubcommandBoundVariableName</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>Prefix subcommand options bound variable names</prg:abstract>
-				<prg:details>This will prefix all subcommand options bound variable name by the subcommand name (sc_varianbleNmae).
-					This avoid variable name aliasing.
+				<prg:details>This will prefix all subcommand options bound variable
+					name by the subcommand name (sc_varianbleNmae).
+					This avoid variable
+					name aliasing.
 				</prg:details>
 			</prg:documentation>
 			<prg:names>
@@ -125,9 +155,11 @@
 			</prg:names>
 		</prg:switch>
 		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
+		<xi:include href="options.xml"
+			xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+		<xi:include href="../lib/options/options.xml"
+			xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>outputScriptFilePath</prg:variable>

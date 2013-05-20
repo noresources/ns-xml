@@ -50,6 +50,7 @@ return 0]]></xsh:body>
 				<xsh:local name="xmlShellFileDescriptionPath">${xsh_xmlShellFileDescriptionPath}</xsh:local>
 				<xsh:local name="defaultInterpreterCommand">${xsh_defaultInterpreterCommand}</xsh:local>
 				<xsh:local name="defaultInterpreterType">${xsh_defaultInterpreterType}</xsh:local>
+				<xsh:local name="forceInterpreter">${xsh_forceInterpreter}</xsh:local>
 				<xsh:local name="xshXslTemplatePath" />
 				<!-- Forced parameters -->
 				<xsh:local name="outputScriptFilePath">${commandLauncherFile}</xsh:local>
