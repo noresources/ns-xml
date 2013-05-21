@@ -1,0 +1,18 @@
+# Unittests temporary files
+*.result-bash
+*.result-ksh
+*.result-zsh
+*.result-c
+*.result-valgrind.xml
+*.result-php
+*.result-python*
+unittests/parsers/apps/*/program-*
+unittests/parsers/apps/*/program.bash
+unittests/parsers/apps/*/program.ksh
+unittests/parsers/apps/*/program.zsh
+unittests/parsers/apps/*/Parser.py
+unittests/parsers/apps/*/ProgramInfo.py
+run-tests.sh.log
+
+# Generated documentation files
+doc/html

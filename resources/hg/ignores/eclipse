@@ -1,7 +1,0 @@
-syntax: regexp
-^scripts/eclipse/ns$
-^scripts/eclipse/tools$
-^scripts/eclipse/resources$
-^scripts/eclipse/doc$
-^scripts/eclipse/unittests$
-^scripts/eclipse/\.settings$
