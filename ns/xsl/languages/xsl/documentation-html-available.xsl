@@ -27,7 +27,7 @@ if something can be processed. Otherwise 'no' -->
 				<xsl:text>no</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
-		<xsl:call-template name="endl"/>
+		<xsl:value-of select="$str.endl"/>
 	</xsl:template>
 
 </xsl:stylesheet>

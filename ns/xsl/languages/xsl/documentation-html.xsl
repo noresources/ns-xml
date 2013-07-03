@@ -552,24 +552,24 @@
 		<xsl:comment>
 			<xsl:text>xsl.doc.html.fileName: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fileName"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 			<xsl:text>xsl.doc.html.cssPath: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.cssPath"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 			<xsl:text>xsl.doc.html.directoryIndexPath: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.directoryIndexPath"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 			<xsl:text>xsl.doc.html.directoryIndexPathMode: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.directoryIndexPathMode"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 			<xsl:text>xsl.doc.html.fullHtmlPage: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.fullHtmlPage"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 			<xsl:text>xsl.doc.html.stylesheetAbstract: </xsl:text>
 			<xsl:value-of select="$xsl.doc.html.stylesheetAbstract"/>
-			<xsl:call-template name="endl"/>
+			<xsl:value-of select="$str.endl"/>
 		</xsl:comment>
-		<xsl:call-template name="endl"/>
+		<xsl:value-of select="$str.endl"/>
 		<xsl:variable name="abstract">
 			<xsl:call-template name="xsl.doc.html.comment">
 				<xsl:with-param name="node" select="./xsl:stylesheet"/>

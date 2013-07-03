@@ -17,7 +17,7 @@
 	</xsl:template>
 
 	<xsl:template match="prg:block">
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="str.prependLine">
 			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
 			<xsl:with-param name="text">

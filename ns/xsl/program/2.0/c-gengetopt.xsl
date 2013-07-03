@@ -149,7 +149,7 @@
 		<xsl:text>"</xsl:text>
 
 
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="prg.c.ggo.indent">
 			<xsl:with-param name="text">
 				<!-- Optional/required -->
@@ -228,7 +228,7 @@
 			<xsl:with-param name="groupType" select="$groupType" />
 			<xsl:with-param name="groupId" select="$groupId" />
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<xsl:template name="prg.c.ggo.argumentOptionDefinition">
@@ -246,7 +246,7 @@
 			<xsl:with-param name="groupType" select="$groupType" />
 			<xsl:with-param name="groupId" select="$groupId" />
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<xsl:template name="prg.c.ggo.multiargumentOptionDefinition">
@@ -265,7 +265,7 @@
 			<xsl:with-param name="groupId" select="$groupId" />
 		</xsl:call-template>
 		<xsl:text> multiple</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<xsl:template name="prg.c.ggo.groupOptionDefinition">
@@ -306,7 +306,7 @@
 				<xsl:if test="/@required = 'true'">
 					<xsl:text> required</xsl:text>
 				</xsl:if>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:for-each select="$optionNode/prg:options/*">
 					<xsl:call-template name="prg.c.ggo.optionDefinition">
 						<xsl:with-param name="optionNode" select="." />
@@ -320,15 +320,15 @@
 					<xsl:with-param name="content">
 						<xsl:text>Unsupported group</xsl:text>
 						<xsl:if test="not($topLevelGroup)">
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:text>- not a top level group</xsl:text>
 						</xsl:if>
 						<xsl:if test="$validSubOptions">
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:text>- contains nested group(s)</xsl:text>
 						</xsl:if>
 						<xsl:if test="not($optionNode/@type = 'exclusive')">
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:text>- not exclusive</xsl:text>
 						</xsl:if>
 					</xsl:with-param>
@@ -400,22 +400,22 @@
 		<xsl:text>package "</xsl:text>
 		<xsl:value-of select="./prg:name"></xsl:value-of>
 		<xsl:text>"</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 
 		<!-- <text>args "- -no-help - -no-version"</text> -->
-		<!-- <call-template name="endl" /> -->
+		<!-- <value-of select="$str.endl" /> -->
 
 		<xsl:if test="./prg:version">
 			<xsl:text>version "</xsl:text>
 			<xsl:value-of select="./prg:version" />
 			<xsl:text>"</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:if test="./prg:documentation/prg:abstract">
 			<xsl:text>description "</xsl:text>
 			<xsl:apply-templates select="./prg:documentation/prg:abstract" />
 			<xsl:text>"</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 
 		<!-- -->

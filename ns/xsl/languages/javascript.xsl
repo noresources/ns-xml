@@ -29,14 +29,14 @@
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:value-of select="$content" />
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -53,14 +53,14 @@
 		<xsl:text>(</xsl:text>
 		<xsl:value-of select="$context" />
 		<xsl:text>)</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>{</xsl:text>
 		<xsl:call-template name="js.block">
 			<xsl:with-param name="content" select="$content" />
 			<xsl:with-param name="indent" select="$indent" />
 		</xsl:call-template>
 		<xsl:text>}</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<!-- Javascript function definition -->

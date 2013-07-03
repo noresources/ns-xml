@@ -13,7 +13,7 @@
 		<xsl:processing-instruction name="xml-stylesheet">
 			<xsl:text>type="text/css" href="chrome://global/skin/"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:processing-instruction name="xml-stylesheet">
 			<xsl:text>type="text/css" href="chrome://</xsl:text>
 			<xsl:value-of select="$prg.xul.appName" />
@@ -21,7 +21,7 @@
 			<xsl:value-of select="$prg.xul.appName" />
 			<xsl:text>.css"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 
 		<xsl:processing-instruction name="xul-overlay">
 			<xsl:text>href="chrome://</xsl:text>
@@ -30,7 +30,7 @@
 			<xsl:value-of select="$prg.xul.appName" />
 			<xsl:text>-overlay.xul"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 
 		<xsl:apply-templates select="prg:program" />
 	</xsl:template>

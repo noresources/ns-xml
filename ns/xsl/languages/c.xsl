@@ -54,7 +54,7 @@
 		<!-- Add a linebreak after the block -->
 		<xsl:param name="addFinalEndl" select="false()" />
 		<xsl:if test="$addInitialEndl = true()">
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:text>{</xsl:text>
 		<xsl:choose>
@@ -69,9 +69,9 @@
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:value-of select="$content" />
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
@@ -79,7 +79,7 @@
 		</xsl:choose>
 		<xsl:text>}</xsl:text>
 		<xsl:if test="$addFinalEndl">
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:template>
 
@@ -103,7 +103,7 @@
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$then" />
 			</xsl:otherwise>
 		</xsl:choose>
@@ -116,7 +116,7 @@
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:value-of select="$else" />
 				</xsl:otherwise>
 			</xsl:choose>

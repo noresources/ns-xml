@@ -11,7 +11,7 @@
 
 	<xsl:template match="/prg:program">
 		<xsl:text># Check option consitency</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>global_switches="</xsl:text>
 		<xsl:for-each select="./prg:options//prg:switch/prg:names/prg:short">
 			<xsl:value-of select="." />
@@ -27,7 +27,7 @@
 
 		<xsl:variable name="hasGlobalArgs" select="(./prg:options//prg:argument/prg:names/prg:long or ./prg:options//prg:argument/prg:names/prg:short or ./prg:options//prg:multiargument/prg:names/prg:long or ./prg:options//prg:multiargument/prg:names/prg:short)" />
 
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>global_args="</xsl:text>
 		<xsl:for-each select="./prg:options//prg:argument/prg:names/prg:short">
 			<xsl:value-of select="." />
@@ -47,16 +47,16 @@
 		</xsl:for-each>
 		<xsl:text>"</xsl:text>
 
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 
 		<xsl:for-each select="prg:subcommands/prg:subcommand">
 			<xsl:text>#Checking </xsl:text>
 			<xsl:value-of select="prg:name" />
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 
 			<xsl:if test="$hasGlobalArgs and (./prg:options//prg:switch/prg:names/prg:long or ./prg:options//prg:switch/prg:names/prg:long)">
 				<xsl:text># Check subcommand switches against global arg-like options</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.sh.check.checkSubCommandOptions">
 					<xsl:with-param name="scname">
 						<xsl:value-of select="prg:name" />
@@ -79,7 +79,7 @@
 
 			<xsl:if test="$hasGlobalSwitches and (./prg:options//prg:argument/prg:names/prg:long or ./prg:options//prg:argument/prg:names/prg:short or ./prg:options//prg:multiargument/prg:names/prg:long or ./prg:options//prg:multiargument/prg:names/prg:short)">
 				<xsl:text># Check subcommand arg-like options against global switches options</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.sh.check.checkSubCommandOptions">
 					<xsl:with-param name="scname">
 						<xsl:value-of select="prg:name" />
@@ -108,7 +108,7 @@
 				</xsl:call-template>
 			</xsl:if>
 		</xsl:for-each>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>exit 0</xsl:text>
 	</xsl:template>
 
@@ -136,7 +136,7 @@
 								<xsl:text>echo "Type conflict for option \"${sco}\" between \"</xsl:text>
 								<xsl:value-of select="$scname" />
 								<xsl:text>\" subcommand and globals - switch-type/arg-like mismatch"</xsl:text>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 								<xsl:text>exit 1</xsl:text>
 							</xsl:with-param>
 						</xsl:call-template>
@@ -144,7 +144,7 @@
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 </xsl:stylesheet>

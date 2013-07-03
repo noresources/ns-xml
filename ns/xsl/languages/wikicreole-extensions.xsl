@@ -54,7 +54,7 @@
 		<xsl:param name="content" select="." />
 		<xsl:param name="level" select="1" />
 		
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="str.repeat">
 			<xsl:with-param name="iterations" select="$level" />
 			<xsl:with-param name="text" select="':'" />
@@ -67,7 +67,7 @@
 		<!-- Term -->
 		<xsl:param name="content" select="." />
 		
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$content" />
 	</xsl:template>
@@ -78,7 +78,7 @@
 		<!-- Term definition -->
 		<xsl:param name="content" select="." />
 		
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>:</xsl:text>
 		<xsl:value-of select="$content" />
 	</xsl:template>

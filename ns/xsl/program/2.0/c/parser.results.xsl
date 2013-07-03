@@ -36,7 +36,7 @@
 		<xsl:variable name="rootOptionsNode" select="$rootNode/prg:options" />
 		<xsl:for-each select="$rootOptionsNode//*[prg:databinding/prg:variable]">
 			<xsl:call-template name="prg.c.parser.optionResultDeclaration" />
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:for-each>
 	</xsl:template>
 
@@ -75,13 +75,13 @@
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Subcommand options'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.optionResultsDeclaration">
 					<xsl:with-param name="rootNode" select="$subcommandNode" />
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<!-- Define the main program result type -->
@@ -99,56 +99,56 @@
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Messages - Sorted by severity'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$prg.c.parser.structName.nsxml_message" />
 				<xsl:text> *messages[</xsl:text>
 				<xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_count" />
 				<xsl:text>];</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Messages - Sorted by apparition'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$prg.c.parser.structName.nsxml_message" />
 				<xsl:text> *first_message;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Positional arguments (Values) -->
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Subcommand'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.variableDeclaration">
 					<xsl:with-param name="type" select="'const char'" />
 					<xsl:with-param name="pointer" select="1" />
 					<xsl:with-param name="name" select="'subcommand_name'" />
 					<xsl:with-param name="nameStyle" select="'none'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Positional arguments'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.variableDeclaration">
 					<xsl:with-param name="type" select="'size_t'" />
 					<xsl:with-param name="nameStyle" select="'none'" />
 					<xsl:with-param name="name" select="'value_count'" />
 					<xsl:with-param name="variableNameStyle" select="'none'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.variableDeclaration">
 					<xsl:with-param name="type" select="$prg.c.parser.structName.nsxml_value" />
 					<xsl:with-param name="nameStyle" select="'none'" />
 					<xsl:with-param name="name" select="'values'" />
 					<xsl:with-param name="pointer" select="1" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Dynamic part -->
 				<!-- Global options -->
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Global options'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.structDefinition">
 					<xsl:with-param name="variableName" select="'options'" />
 					<xsl:with-param name="content">
@@ -159,25 +159,25 @@
 				</xsl:call-template>
 				<!-- Subcommands (if any) -->
 				<xsl:if test="$programNode/prg:subcommands[prg:subcommand/prg:options]">
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:call-template name="c.inlineComment">
 						<xsl:with-param name="content" select="'Subcommands'" />
 					</xsl:call-template>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:call-template name="c.structDefinition">
 						<xsl:with-param name="variableName" select="'subcommands'" />
 						<xsl:with-param name="variableNameStyle" select="'none'" />
 						<xsl:with-param name="content">
 							<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand[prg:options]">
 								<xsl:call-template name="prg.c.parser.subcommandResultDefinition" />
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 							</xsl:for-each>
 						</xsl:with-param>
 					</xsl:call-template>
 				</xsl:if>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>typedef struct </xsl:text>
 		<xsl:value-of select="concat('_', $structName)" />
 		<xsl:text> </xsl:text>
@@ -207,7 +207,7 @@
 			</xsl:with-param>
 			<xsl:with-param name="content">
 				<xsl:text>nsxml_program_result_cleanup(result);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.option_resultFunctionCall">
 					<xsl:with-param name="programNode" select="$programNode" />
 					<xsl:with-param name="functionName" select="'nsxml_option_result_cleanup'" />
@@ -340,40 +340,40 @@
 				<xsl:text> *m = result-&gt;messages[</xsl:text>
 				<xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error" />
 				<xsl:text>];</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>int use_prefix = 1;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.while">
 					<xsl:with-param name="condition" select="'m'" />
 					<xsl:with-param name="do">
 						<xsl:text>size_t len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</xsl:text>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:text>fprintf(stream, "%s%s", ((use_prefix &amp;&amp; line_prefix) ? line_prefix : ""), m-&gt;message);</xsl:text>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:text>use_prefix = (len &amp;&amp; (m-&gt;message[len - 1] == '\n'));</xsl:text>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:text>m = m-&gt;next_message;</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.if">
 					<xsl:with-param name="condition" select="'!use_prefix'" />
 					<xsl:with-param name="then">
 						<xsl:text>fprintf(stream, "%s", "\n");</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>m = result-&gt;messages[</xsl:text>
 				<xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_fatal_error" />
 				<xsl:text>];</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.if">
 					<xsl:with-param name="condition" select="'m'" />
 					<xsl:with-param name="then">
 						<xsl:text>size_t len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</xsl:text>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:text>fprintf(stream, "%s%s", ((line_prefix) ? line_prefix : ""), m-&gt;message);</xsl:text>
-						<xsl:call-template name="endl" />
+						<xsl:value-of select="$str.endl" />
 						<xsl:call-template name="c.if">
 							<xsl:with-param name="condition">
 								<xsl:text>m-&gt;message[len - 1] != '\n'</xsl:text>

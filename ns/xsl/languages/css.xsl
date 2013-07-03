@@ -30,9 +30,9 @@
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:value-of select="normalize-space($content)" />
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:if>
@@ -43,7 +43,7 @@
 		<xsl:param name="name" />
 		<xsl:param name="content" />
 		<xsl:value-of select="normalize-space($name)" />
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="css.block">
 			<xsl:with-param name="content" select="normalize-space($content)" />
 		</xsl:call-template>

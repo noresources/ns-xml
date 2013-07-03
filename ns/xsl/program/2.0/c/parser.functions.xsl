@@ -104,7 +104,7 @@
 					<xsl:call-template name="prg.cliOptionName" />
 				</xsl:with-param>
 			</xsl:call-template>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$stateVariableName" />
 			<xsl:text>-&gt;option_name_bindings[</xsl:text>
 			<xsl:value-of select="$bindingIndex" />
@@ -116,7 +116,7 @@
 			<xsl:text>-&gt;names, </xsl:text>
 			<xsl:value-of select="$nameIndex" />
 			<xsl:text>);</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$stateVariableName" />
 			<xsl:text>-&gt;option_name_bindings[</xsl:text>
 			<xsl:value-of select="$bindingIndex" />
@@ -125,7 +125,7 @@
 			<xsl:text>].info_ref = </xsl:text>
 			<xsl:value-of select="$infoRef" />
 			<xsl:text>;</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>dummy_ptr = </xsl:text>
 			<xsl:choose>
 				<xsl:when test="$optionNode/prg:databinding/prg:variable">
@@ -155,14 +155,14 @@
 					<xsl:text>];</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$stateVariableName" />
 			<xsl:text>-&gt;option_name_bindings[</xsl:text>
 			<xsl:value-of select="$bindingIndex" />
 			<xsl:text>][</xsl:text>
 			<xsl:value-of select="$index" />
 			<xsl:text>].result_ref = (struct nsxml_option_result *)dummy_ptr;</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<!-- Level -->
 			<xsl:value-of select="$stateVariableName" />
 			<xsl:text>-&gt;option_name_bindings[</xsl:text>
@@ -172,7 +172,7 @@
 			<xsl:text>].level = </xsl:text>
 			<xsl:value-of select="$level" />
 			<xsl:text>;</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$stateVariableName" />
 			<xsl:text>-&gt;option_name_bindings[</xsl:text>
 			<xsl:value-of select="$bindingIndex" />
@@ -194,7 +194,7 @@
 						<xsl:with-param name="levelCount" select="$level" />
 						<xsl:with-param name="bindingIndex" select="$bindingIndex" />
 						<xsl:with-param name="variableBase">
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:value-of select="$stateVariableName" />
 							<xsl:text>-&gt;option_name_bindings[</xsl:text>
 							<xsl:value-of select="$bindingIndex" />
@@ -205,7 +205,7 @@
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:for-each>
 	</xsl:template>
 
@@ -218,7 +218,7 @@
 		<xsl:param name="levelCount" />
 		<xsl:param name="variableBase" />
 		<xsl:param name="bindingIndex" />
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>dummy_ptr = </xsl:text>
 		<xsl:choose>
 			<xsl:when test="$parentOptionNode/prg:databinding/prg:variable">
@@ -276,19 +276,19 @@
 		<xsl:text>.names, </xsl:text>
 		<xsl:value-of select="$position" />
 		<xsl:text>);</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:value-of select="$bindingBase" />
 		<xsl:text>info_ref = &amp;</xsl:text>
 		<xsl:value-of select="$infoBase" />
 		<xsl:text>;</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:value-of select="$bindingBase" />
 		<xsl:text>subcommand_index = </xsl:text>
 		<xsl:value-of select="$subcommandIndex" />
 		<xsl:text>;</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>++binding_index;</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 	<xsl:template name="prg.c.parser.option_resultFunctionCall">
@@ -326,7 +326,7 @@
 			<xsl:text>-&gt;options.</xsl:text>
 			<xsl:value-of select="$memberName" />
 			<xsl:text>);</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:for-each>
 		<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
 			<xsl:variable name="subcommandName">
@@ -359,7 +359,7 @@
 				<xsl:text>.</xsl:text>
 				<xsl:value-of select="$memberName" />
 				<xsl:text>);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:for-each>
 		</xsl:for-each>
 	</xsl:template>
@@ -392,7 +392,7 @@
 				</xsl:variable>
 				<!-- Declarations -->
 				<xsl:text>void *dummy_ptr = NULL;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.structVariableDeclaration">
 					<xsl:with-param name="name" select="$stateStructName" />
 					<xsl:with-param name="pointer" select="true()" />
@@ -401,7 +401,7 @@
 						<xsl:text>nsxml_parser_state_new((const struct nsxml_program_info*)info, argc, argv, start_index)</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.variableDeclaration">
 					<xsl:with-param name="name" select="$prg.c.parser.resultVariableName" />
 					<xsl:with-param name="type" select="$resultStructName" />
@@ -415,7 +415,7 @@
 						<xsl:text>))</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:variable name="programOptionBindingCount" select="count($programNode/prg:options//prg:names/*)" />
 				<xsl:variable name="programBindingCount" select="count($programNode/prg:subcommands/prg:subcommand) + 1" />
 				<xsl:text>size_t option_name_binding_counts[] = {</xsl:text>
@@ -425,20 +425,20 @@
 					<xsl:value-of select="count(./prg:options//prg:names/*)" />
 				</xsl:for-each>
 				<xsl:text>};</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>void *result_ptr = </xsl:text>
 				<xsl:value-of select="$resultVariableName" />
 				<xsl:text>;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Parser state'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$stateVariableName" />
 				<xsl:text>-&gt;anonymous_option_result_count = </xsl:text>
 				<xsl:value-of select="$anonymousValueCount" />
 				<xsl:text>;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:if test="$anonymousValueCount &gt; 0">
 					<xsl:call-template name="c.inlineComment">
 						<xsl:with-param name="content" select="'Anonymous options'" />
@@ -446,12 +446,12 @@
 					<xsl:call-template name="c.block">
 						<xsl:with-param name="content">
 							<xsl:text>void *anonymous_result_ptr = NULL;</xsl:text>
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:value-of select="$stateVariableName" />
 							<xsl:text>-&gt;anonymous_option_results = (struct nsxml_option_result **)malloc(sizeof(struct nsxml_option_result*) * </xsl:text>
 							<xsl:value-of select="$anonymousValueCount" />
 							<xsl:text>);</xsl:text>
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:for-each select="$programNode//prg:options/*[not(prg:databinding/prg:variable)]">
 								<xsl:call-template name="c.inlineComment">
 									<xsl:with-param name="content">
@@ -462,7 +462,7 @@
 										<xsl:apply-templates select="prg:names[prg:long|prg:short][1]" />
 									</xsl:with-param>
 								</xsl:call-template>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 								<xsl:variable name="itemType">
 									<xsl:call-template name="prg.c.parser.itemTypeName">
 										<xsl:with-param name="itemNode" select="." />
@@ -478,45 +478,45 @@
 								<xsl:text>anonymous_result_ptr = malloc(sizeof(struct nsxml_</xsl:text>
 								<xsl:value-of select="$itemType" />
 								<xsl:text>_option_result));</xsl:text>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 								<xsl:value-of select="$var" />
 								<xsl:text> = (struct nsxml_option_result *)anonymous_result_ptr;</xsl:text>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 								<xsl:text>nsxml_</xsl:text>
 								<xsl:value-of select="$itemType" />
 								<xsl:text>_option_result_init((struct nsxml_</xsl:text>
 								<xsl:value-of select="$itemType" />
 								<xsl:text>_option_result *)anonymous_result_ptr);</xsl:text>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 							</xsl:for-each>
 						</xsl:with-param>
 					</xsl:call-template>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Parser result'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>nsxml_program_result_init(</xsl:text>
 				<xsl:value-of select="$prg.c.parser.resultVariableName" />
 				<xsl:text>);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.option_resultFunctionCall">
 					<xsl:with-param name="programNode" select="$programNode" />
 					<xsl:with-param name="perOptionType" select="true()" />
 					<xsl:with-param name="functionName" select="'nsxml_(itemType)_option_result_init'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="c.inlineComment">
 					<xsl:with-param name="content" select="'Link option names, info and result variable'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>nsxml_parser_state_allocate_name_bindings(</xsl:text>
 				<xsl:value-of select="$stateVariableName" />
 				<xsl:text>, </xsl:text>
 				<xsl:value-of select="$programBindingCount" />
 				<xsl:text>, option_name_binding_counts);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Global option names -->
 				<xsl:call-template name="prg.c.parser.stateBindings">
 					<xsl:with-param name="programNode" select="$programNode" />
@@ -525,7 +525,7 @@
 					<xsl:with-param name="resultVariableName" select="$prg.c.parser.resultVariableName" />
 					<xsl:with-param name="bindingIndex" select="0" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Subcommand option names -->
 				<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand[prg:options]">
 					<!-- options -->
@@ -536,25 +536,25 @@
 						<xsl:with-param name="resultVariableName" select="$prg.c.parser.resultVariableName" />
 						<xsl:with-param name="bindingIndex" select="position()" />
 					</xsl:call-template>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:for-each>
 				<!-- Initialize subcommand name bindings -->
 				<xsl:variable name="subcommandNameCount" select="count($programNode/prg:subcommands/*/prg:name) + count($programNode/prg:subcommands/*/prg:aliases/prg:alias)" />
 				<xsl:text>state-&gt;subcommand_name_binding_count = </xsl:text>
 				<xsl:value-of select="$subcommandNameCount" />
 				<xsl:text>;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>state-&gt;subcommand_name_bindings = (struct nsxml_subcommand_name_binding *)malloc(sizeof(struct nsxml_subcommand_name_binding) * state-&gt;subcommand_name_binding_count);</xsl:text>
 				<xsl:if test="$programNode/prg:subcommands/prg:subcommand">
 					<xsl:call-template name="c.block">
 						<xsl:with-param name="content">
 							<xsl:text>int binding_index = 0;</xsl:text>
-							<xsl:call-template name="endl" />
+							<xsl:value-of select="$str.endl" />
 							<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
 								<xsl:call-template name="c.inlineComment">
 									<xsl:with-param name="content" select="./prg:name" />
 								</xsl:call-template>
-								<xsl:call-template name="endl" />
+								<xsl:value-of select="$str.endl" />
 								<xsl:variable name="subcommandIndex" select="position()" />
 								<xsl:variable name="bindingBase" select="'state-&gt;subcommand_name_bindings[binding_index].'" />
 								<xsl:variable name="infoBase">
@@ -580,7 +580,7 @@
 							</xsl:for-each>
 						</xsl:with-param>
 					</xsl:call-template>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 				<!-- Call the generic parser -->
 				<xsl:text>nsxml_parse_core(</xsl:text>
@@ -589,11 +589,11 @@
 				<xsl:value-of select="$prg.c.parser.resultVariableName" />
 				<xsl:text>_ptr</xsl:text>
 				<xsl:text>);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>nsxml_parser_state_free(</xsl:text>
 				<xsl:value-of select="$stateVariableName" />
 				<xsl:text>);</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>return </xsl:text>
 				<xsl:value-of select="$prg.c.parser.resultVariableName" />
 				<xsl:text>;</xsl:text>
@@ -614,9 +614,9 @@
 				<xsl:text>void *</xsl:text>
 				<xsl:value-of select="$prg.c.parser.resultVariableName" />
 				<xsl:text>_ptr = result;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>const void *info_ptr = info;</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>nsxml_usage(stream, (const struct nsxml_program_info *)info_ptr, (struct nsxml_program_result *)result_ptr, format, wrap);</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>

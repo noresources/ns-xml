@@ -885,17 +885,17 @@
 
 		<xsl:if test="$prg.debug">
 			<xsl:comment>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>Ref size: </xsl:text>
 				<xsl:value-of select="$width" />
 				<xsl:text>x</xsl:text>
 				<xsl:value-of select="$height" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>Used size: </xsl:text>
 				<xsl:value-of select="$width" />
 				<xsl:text>x</xsl:text>
 				<xsl:value-of select="$debugHeight" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:comment>
 		</xsl:if>
 
@@ -1088,13 +1088,13 @@
 		<xsl:processing-instruction name="xml-stylesheet">
 			<xsl:text>type="text/css" href="chrome://global/skin/"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:comment>
 			<xsl:text> Generation options</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:if test="$prg.debug">
 				<xsl:text> - Debug mode</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 		</xsl:comment>
 		<xsl:processing-instruction name="xml-stylesheet">
@@ -1104,7 +1104,7 @@
 			<xsl:value-of select="$prg.xul.appName" />
 			<xsl:text>.css"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:processing-instruction name="xul-overlay">
 			<xsl:text>href="chrome://</xsl:text>
 			<xsl:value-of select="$prg.xul.appName" />
@@ -1112,7 +1112,7 @@
 			<xsl:value-of select="$prg.xul.appName" />
 			<xsl:text>-overlay.xul"</xsl:text>
 		</xsl:processing-instruction>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:apply-templates select="prg:program" />
 	</xsl:template>
 
@@ -1212,22 +1212,22 @@
 
 			<xsl:if test="$prg.debug">
 				<xsl:comment>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:text>Schema ui size: </xsl:text>
 					<xsl:value-of select="./prg:ui/prg:window/@width" />
 					<xsl:text>x</xsl:text>
 					<xsl:value-of select="./prg:ui/prg:window/@height" />
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:text>Parameters ui size: </xsl:text>
 					<xsl:value-of select="$prg.xul.windowWidth" />
 					<xsl:text>x</xsl:text>
 					<xsl:value-of select="$prg.xul.windowHeight" />
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 					<xsl:text>Used size: </xsl:text>
 					<xsl:value-of select="$width" />
 					<xsl:text>x</xsl:text>
 					<xsl:value-of select="$height" />
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:comment>
 			</xsl:if>
 

@@ -110,20 +110,20 @@ function MainWindow(app)
 		<xsl:text>}</xsl:text>
 		<xsl:if test="position() != last()">
 			<xsl:text>,</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:for-each><![CDATA[
 		}]]><xsl:if test="/prg:program/prg:subcommands">
 		<xsl:text>,</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:if>
 		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<xsl:text>		"</xsl:text>
 			<xsl:apply-templates select="prg:name" />
 			<xsl:text>":</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		{</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:for-each select="prg:options/* | prg:options//prg:options/*">
 				<xsl:text>			"</xsl:text>
 				<xsl:call-template name="prg.optionId" />
@@ -132,14 +132,14 @@ function MainWindow(app)
 				<xsl:text>}</xsl:text>
 				<xsl:if test="position() != last()">
 					<xsl:text>,</xsl:text>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 			</xsl:for-each>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		}</xsl:text>
 			<xsl:if test="position() != last()">
 				<xsl:text>,</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 		</xsl:for-each><![CDATA[
 	};
@@ -157,20 +157,20 @@ function MainWindow(app)
 		<xsl:text>"</xsl:text>
 		<xsl:if test="position() != last()">
 			<xsl:text>,</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:for-each><![CDATA[
 		]]]><xsl:if test="/prg:program/prg:subcommands">
 		<xsl:text>,</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:if>
 		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<xsl:text>		"</xsl:text>
 			<xsl:apply-templates select="prg:name" />
 			<xsl:text>":</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		[</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:for-each select="prg:values/*">
 				<xsl:text>			"</xsl:text>
 				<xsl:call-template name="prg.xul.valueId">
@@ -179,14 +179,14 @@ function MainWindow(app)
 				<xsl:text>"</xsl:text>
 				<xsl:if test="position() != last()">
 					<xsl:text>,</xsl:text>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 			</xsl:for-each>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		]</xsl:text>
 			<xsl:if test="position() != last()">
 				<xsl:text>,</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 		</xsl:for-each><![CDATA[
 	};
@@ -205,20 +205,20 @@ function MainWindow(app)
 		<xsl:text>"</xsl:text>
 		<xsl:if test="position() != last()">
 			<xsl:text>,</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:for-each><![CDATA[
 		}]]><xsl:if test="/prg:program/prg:subcommands">
 		<xsl:text>,</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:if>
 		<xsl:for-each select="/prg:program/prg:subcommands/prg:subcommand">
 			<xsl:text>		"</xsl:text>
 			<xsl:apply-templates select="prg:name" />
 			<xsl:text>":</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		{</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:for-each select="prg:options/*/prg:names/* | prg:options//prg:options/*/prg:names/*">
 				<xsl:text>			"</xsl:text>
 				<xsl:value-of select="." />
@@ -229,14 +229,14 @@ function MainWindow(app)
 				<xsl:text>"</xsl:text>
 				<xsl:if test="position() != last()">
 					<xsl:text>,</xsl:text>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 			</xsl:for-each>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>		}</xsl:text>
 			<xsl:if test="position() != last()">
 				<xsl:text>,</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 		</xsl:for-each><![CDATA[	
 	};

@@ -14,7 +14,7 @@
 	<xsl:template match="/">
 		<xsl:if test="$xbl.css.displayHeader">
 			<xsl:text>@CHARSET "UTF-8";</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 
 		<xsl:for-each select="//xbl:binding">
@@ -38,7 +38,7 @@
 					</xsl:call-template>
 				</xsl:with-param>
 			</xsl:call-template>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:for-each>
 	</xsl:template>
 

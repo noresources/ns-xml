@@ -96,7 +96,7 @@
 		</xsl:for-each>
 		<!-- manually set end-of-row  -->
 		<xsl:text>|</xsl:text>
-		<xsl:call-template name="endl"/>
+		<xsl:value-of select="$str.endl"/>
 	</xsl:template>
 
 	<!--  -->

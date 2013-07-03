@@ -29,7 +29,7 @@
 		<xsl:call-template name="creole.heading">
 			<xsl:with-param name="content" select="normalize-space(prg:name)" />
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="creole.italic">
 			<xsl:with-param name="content" select="normalize-space(prg:documentation/prg:abstract)" />
 		</xsl:call-template>
@@ -41,16 +41,16 @@
 			<xsl:with-param name="title" select="$prg.usage.str.version" />
 			<xsl:with-param name="definition" select="normalize-space(prg:version)" />
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="creole.heading">
 			<xsl:with-param name="level" select="2" />
 			<xsl:with-param name="content" select="$prg.usage.str.usage" />
 		</xsl:call-template>
 		<!-- Inline usage -->
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="creole.pre">
 			<xsl:with-param name="content">
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="normalize-space(prg:name)" />
 				<xsl:if test="prg:subcommands">
 					<xsl:text> </xsl:text>
@@ -77,7 +77,7 @@
 							<xsl:text> </xsl:text>
 						</xsl:with-param>
 					</xsl:call-template>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 			</xsl:with-param>
 		</xsl:call-template>
@@ -86,7 +86,7 @@
 				<xsl:with-param name="level" select="3" />
 				<xsl:with-param name="content" select="$prg.usage.creole.globalOptionsLabel" />
 			</xsl:call-template>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<!-- Global option doc -->
 			<xsl:call-template name="creole.pre">
 				<xsl:with-param name="inline" select="false()" />
@@ -114,7 +114,7 @@
 					<xsl:with-param name="level" select="4" />
 					<xsl:with-param name="content" select="./prg:name" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="creole.italic">
 					<xsl:with-param name="content" select="prg:documentation/prg:abstract" />
 				</xsl:call-template>
@@ -172,15 +172,15 @@
 			<xsl:call-template name="creole.heading">
 				<xsl:with-param name="content" select="'Copyright &amp; Licensing'" />
 			</xsl:call-template>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:if test="prg:copyright">
 				<xsl:call-template name="creole.italic">
 					<xsl:with-param name="content">
 						<xsl:apply-templates select="prg:copyright" />
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 			<xsl:if test="prg:license">
 				<xsl:call-template name="creole.italic">
@@ -188,8 +188,8 @@
 						<xsl:apply-templates select="prg:license" />
 					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 		</xsl:if>
 	</xsl:template>

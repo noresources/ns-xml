@@ -12,9 +12,9 @@
 	</xsl:param>
 	<!-- Horizontal line -->
 	<xsl:param name="creole.line">
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:text>----</xsl:text>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:param>
 	<!-- base for all surrounding-based syntax -->
 	<xsl:template name="creole.surround">
@@ -35,7 +35,7 @@
 		<xsl:param name="repeat" select="1" />
 		<xsl:param name="acceptEmpty" select="false" />
 		<xsl:if test="$acceptEmpty or (string-length($content) &gt; 0)">
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 			<xsl:call-template name="str.repeat">
 				<xsl:with-param name="iterations" select="$repeat" />
 				<xsl:with-param name="text" select="$before" />
@@ -70,15 +70,15 @@
 		<xsl:param name="inline" select="true()" />
 		<xsl:if test="string-length($content) &gt; 0">
 			<xsl:if test="not ($inline)">
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 			<xsl:text>{{{</xsl:text>
 			<xsl:if test="not ($inline)">
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 			<xsl:value-of select="$content" />
 			<xsl:if test="not ($inline)">
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:if>
 			<xsl:text>}}}</xsl:text>
 		</xsl:if>
@@ -100,7 +100,7 @@
 		<xsl:param name="content" select="." />
 		<xsl:param name="level" select="1" />
 		<xsl:param name="addAnchor" select="true()" />
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="str.repeat">
 			<xsl:with-param name="iterations" select="$level" />
 			<xsl:with-param name="text" select="'='" />
@@ -165,7 +165,7 @@
 		<xsl:value-of select="$content" />
 		<xsl:if test="$last">
 			<xsl:text> |</xsl:text>
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:template>
 

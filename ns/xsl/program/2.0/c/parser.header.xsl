@@ -26,95 +26,95 @@
 		<!-- Embed generic header if asked -->
 		<xsl:if test="string-length($prg.c.parser.nsxmlHeaderPath) = 0">
 			<xsl:value-of select="$prg.c.parser.genericHeader" />
-			<xsl:call-template name="endl" />
+			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:call-template name="c.preprocessor.ifndef">
 			<xsl:with-param name="condition" select="$prg.c.parser.header.preprocessorFileDefine" />
 			<xsl:with-param name="then">
 				<xsl:text>#define </xsl:text>
 				<xsl:value-of select="$prg.c.parser.header.preprocessorFileDefine" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:if test="string-length($prg.c.parser.nsxmlHeaderPath) &gt; 0">
 					<!-- include nsxml header (expect the same naming style) -->
 					<xsl:text># include "</xsl:text>
 					<xsl:value-of select="$prg.c.parser.nsxmlHeaderPath" />
 					<xsl:text>"</xsl:text>
-					<xsl:call-template name="endl" />
+					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 				<xsl:text>#if defined(__cplusplus)</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>extern "C" {</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>#endif</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Declare info functions and structs -->
 				<xsl:call-template name="prg.c.parser.programInfoTypedefs" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programInfoInitFunctionDeclaration">
 					<xsl:with-param name="programNode" select="." />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programInfoNewFunctionDeclaration">
 					<xsl:with-param name="programNode" select="." />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programInfoCleanupFunctionDeclaration">
 					<xsl:with-param name="programNode" select="." />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programInfoFreeFunctionDeclaration">
 					<xsl:with-param name="programNode" select="." />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Declare subcommand results -->
 				<!-- 
 				<if test="./prg:subcommands">
 					<for-each select="./prg:subcommands/prg:subcommand[prg:options]">
 						<call-template name="prg.c.parser.subcommandResultDefinition" />
 					</for-each>
-					<call-template name="endl" />
+					<value-of select="$str.endl" />
 				</if>
 				 -->
 				<xsl:call-template name="prg.c.parser.programResultDefinition" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programResultFreeFunctionDeclaration">
 					<xsl:with-param name="programNode" select="." />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programResultErrorCountFunctionDeclaration" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<!-- Result message helper functions -->
 				<xsl:call-template name="prg.c.parser.programResultGetMessageFunctionDeclaration">
 					<xsl:with-param name="type" select="'warning'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programResultGetMessageFunctionDeclaration">
 					<xsl:with-param name="type" select="'error'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programResultGetMessageFunctionDeclaration">
 					<xsl:with-param name="type" select="'fatal_error'" />
 				</xsl:call-template>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.programResultDisplayErrorsFunctionDeclaration" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.usageFunctionDeclaration" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:call-template name="prg.c.parser.parseFunctionDeclaration" />
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>#if defined(__cplusplus)</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>} /*extern "C" */</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 				<xsl:text>#endif</xsl:text>
-				<xsl:call-template name="endl" />
+				<xsl:value-of select="$str.endl" />
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:text> </xsl:text>
 		<xsl:call-template name="c.inlineComment">
 			<xsl:with-param name="content" select="$prg.c.parser.header.preprocessorFileDefine" />
 		</xsl:call-template>
-		<xsl:call-template name="endl" />
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 </xsl:stylesheet>
