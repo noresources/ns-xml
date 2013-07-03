@@ -73,10 +73,13 @@ do
 		ignore="${eclipseProjectRootPath}/${ref}"
 		# Mercurial
 		
-		hgIgnoreRule="regexp:^${ignore}$"
-		if ! grep -E "${ignore}" "${hgIgnoreFile}" 1>/dev/null 2>&1
+		if [ -d "${projectPath}/.hg" ]
 		then
-			echo "${hgIgnoreRule}" >> "${hgIgnoreFile}"
+			hgIgnoreRule="regexp:^${ignore}$"
+			if ! grep -E "${ignore}" "${hgIgnoreFile}" 1>/dev/null 2>&1
+			then
+				echo "${hgIgnoreRule}" >> "${hgIgnoreFile}"
+			fi
 		fi
 	fi
 done
