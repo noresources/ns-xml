@@ -338,13 +338,13 @@
 					<xsl:text>section "</xsl:text>
 					<xsl:apply-templates select="$optionNode/prg:documentation/prg:abstract" />
 					<xsl:text>"</xsl:text>
-					<xsl:call-template name="unixEndl" />
+					<xsl:value-of select="$str.unix.endl" />
 				</xsl:if>
 				<xsl:if test="$optionNode/prg:documentation/prg:details">
 					<xsl:text>text "</xsl:text>
 					<xsl:apply-templates select="$optionNode/prg:documentation/prg:details" />
 					<xsl:text>"</xsl:text>
-					<xsl:call-template name="unixEndl" />
+					<xsl:value-of select="$str.unix.endl" />
 				</xsl:if>
 
 				<xsl:for-each select="$optionNode/prg:options/*">
@@ -355,7 +355,7 @@
 				
 				<xsl:if test="$optionNode/prg:documentation/prg:abstract">
 					<xsl:text>section ""</xsl:text>
-					<xsl:call-template name="unixEndl" />
+					<xsl:value-of select="$str.unix.endl" />
 				</xsl:if>
 			</xsl:otherwise>
 		</xsl:choose>

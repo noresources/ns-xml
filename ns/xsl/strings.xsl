@@ -4,48 +4,28 @@
 
 <!-- String manipulation functions -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	
+
 	<!-- UNIX-style end of line character (LF) -->
 	<xsl:variable name="str.unix.endl">
 		<xsl:value-of select="'&#10;'" />
 	</xsl:variable>
-	
+
 	<!-- MacOS-style end of line character (CR) -->
 	<xsl:variable name="str.mac.endl">
 		<xsl:value-of select="'&#13;'" />
 	</xsl:variable>
-	
+
 	<!-- Windows-style end of line character (CRLF) -->
 	<xsl:variable name="str.windows.endl">
 		<xsl:value-of select="'&#13;&#10;'" />
 	</xsl:variable>
-	
+
 	<!-- Default End-of-line character(s) -->
 	<xsl:param name="str.endl">
 		<xsl:value-of select="$str.unix.endl" />
 	</xsl:param>
-	
+
 	<xsl:param name="str.blanks" select="'&#9; '" />
-	
-	<!-- Add a new line. Deprecated: use str.endl directly -->
-	<xsl:template name="endl">
-		<xsl:value-of select="$str.endl" />
-	</xsl:template>
-
-	<!-- Unix-style end-of-line marker. Deprecated: use str.unix.endl directly -->
-	<xsl:template name="unixEndl">
-		<xsl:value-of select="$str.unix.endl" />
-	</xsl:template>
-
-	<!-- Microsoft Windows end-of-line marker. Deprecated: use str.windows.endl directly -->
-	<xsl:template name="windowsEndl">
-		<xsl:value-of select="$str.windows.endl" />
-	</xsl:template>
-
-	<!-- MacOS end-of-line marker. Deprecated: use str.mac.endl directly -->
-	<xsl:template name="macEndl">
-		<xsl:value-of select="$str.mac.endl" />
-	</xsl:template>
 
 	<!-- Indicates if text contains blank chars -->
 	<xsl:template name="str.isBlank">
@@ -163,14 +143,14 @@
 		<xsl:param name="text" />
 		<!-- Substring to search -->
 		<xsl:param name="needle" />
-		
+
 		<xsl:variable name="needleLength" select="string-length($needle)" />
 		<xsl:variable name="textLength" select="string-length($text)" />
 		<xsl:variable name="end" select="substring($text, (($textLength - $needleLength) + 1))" />
-		
-		<xsl:value-of select="($end = $needle)" />	
+
+		<xsl:value-of select="($end = $needle)" />
 	</xsl:template>
-	
+
 	<!-- Number of occurrence of a given string at the end of another string -->
 	<xsl:template name="str.endsWithCount">
 		<!-- Text -->
@@ -278,7 +258,7 @@
 		<!-- Internal use -->
 		<xsl:param name="_bestValue" select="-1" />
 		<!-- the first 2 characters are always breakable,
-		the others requires a space after -->
+			the others requires a space after -->
 		<xsl:variable name="breakables" select="' &#9;,;:?.!'" />
 		<xsl:variable name="c">
 			<xsl:value-of select="substring($breakables, $_position, 1)" />
@@ -343,9 +323,9 @@
 		<xsl:param name="lineMaxLength" select="80" />
 		<!-- End-of-line string -->
 		<xsl:param name="endlChar" select="$str.endl" />
-		
+
 		<xsl:variable name="hasEndl" select="contains($text, $endlChar)" />
-		
+
 		<!-- Get a line -->
 		<xsl:variable name="item">
 			<xsl:choose>
@@ -357,7 +337,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		
+
 		<!-- Get left blanks -->
 		<xsl:variable name="leftTrimmedItem">
 			<xsl:call-template name="str.trimLeft">
@@ -366,7 +346,7 @@
 		</xsl:variable>
 		<xsl:variable name="leftBlankCount" select="(string-length($item) - string-length($leftTrimmedItem))" />
 		<xsl:variable name="remainingPartPadding" select="substring($item, 1, $leftBlankCount)" />
-		
+
 		<xsl:if test="string-length($item) &gt; 0">
 			<!-- <text>(process: </text><value-of select="$item" /><text> of </text><value-of select="$text" /><text>)</text> -->
 			<xsl:choose>
