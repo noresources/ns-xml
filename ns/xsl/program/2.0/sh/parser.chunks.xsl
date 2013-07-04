@@ -280,6 +280,10 @@
 	<xsl:template name="prg.sh.parser.multiargumentPreprocess">
 		<xsl:param name="optionNode" select="." />
 		<xsl:param name="onError" />
+		
+		<xsl:value-of select="$prg.sh.parser.vName_item" />
+		<xsl:text>=""</xsl:text>
+		<xsl:value-of select="$sh.endl" />
 
 		<xsl:call-template name="sh.if">
 			<xsl:with-param name="condition">
@@ -1063,7 +1067,7 @@
 						<!-- First item -->
 						<xsl:call-template name="sh.if">
 							<xsl:with-param name="condition">
-								<xsl:text>[ -z </xsl:text>
+								<xsl:text>[ ! -z </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
 									<xsl:with-param name="quoted" select="true()" />

@@ -1,0 +1,8 @@
+CLI: "-cabc", "def", "ghi", "--argument-b", "This should be ok"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=This should be ok
+multiargC=abc def ghi
