@@ -16,3 +16,11 @@ run-tests.sh.log
 
 # Generated documentation files
 doc/html
+
+# Other VCS files
+\.hg*
+hg/
+\.bzr*
+bzr/
+\.svn*
+svn/
