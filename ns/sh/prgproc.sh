@@ -387,6 +387,7 @@ parse_process_option()
 			parse_setoptionpresence G_3_output
 			;;
 		param | params)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -394,7 +395,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -426,6 +427,7 @@ parse_process_option()
 			parse_setoptionpresence G_4_param
 			;;
 		stringparam | stringparams)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -433,7 +435,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -642,6 +644,7 @@ parse_process_option()
 			parse_setoptionpresence G_3_output
 			;;
 		p)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -649,7 +652,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -681,6 +684,7 @@ parse_process_option()
 			parse_setoptionpresence G_4_param
 			;;
 		s)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -688,7 +692,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)

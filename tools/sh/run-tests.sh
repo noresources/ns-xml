@@ -246,6 +246,7 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		parsers)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -253,7 +254,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parsers[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
@@ -297,6 +298,7 @@ parse_process_option()
 			parse_setoptionpresence G_1_parsers
 			;;
 		apps)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -304,7 +306,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#apps[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				apps[$(expr ${#apps[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -336,6 +338,7 @@ parse_process_option()
 			parse_setoptionpresence G_2_apps
 			;;
 		tests)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -343,7 +346,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#tests[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				tests[$(expr ${#tests[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -412,6 +415,7 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		p)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -419,7 +423,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parsers[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
 				then
@@ -463,6 +467,7 @@ parse_process_option()
 			parse_setoptionpresence G_1_parsers
 			;;
 		a)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -470,7 +475,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#apps[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				apps[$(expr ${#apps[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
@@ -502,6 +507,7 @@ parse_process_option()
 			parse_setoptionpresence G_2_apps
 			;;
 		t)
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -509,7 +515,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#tests[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				tests[$(expr ${#tests[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)

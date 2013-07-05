@@ -1579,6 +1579,7 @@ parse_process_option()
 			;;
 		resources)
 			# Group checks
+			parser_item=""
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
@@ -1586,7 +1587,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#userDataPaths[*]}
-			if [ -z "${parser_item}" ]
+			if [ ! -z "${parser_item}" ]
 			then
 				if [ ! -e "${parser_item}" ]
 				then
