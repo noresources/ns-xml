@@ -1091,7 +1091,6 @@ scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 creolePath="${projectPath}/doc/wiki/bitbucket"
-githubPath="${projectPath}/doc/wiki/github"
 xslPath="${projectPath}/ns/xsl"
 resourceXslPath="${projectPath}/resources/xsl"
 cwd="$(pwd)"
@@ -1177,7 +1176,7 @@ do
 done
 
 # Set defaults if nothing selected by user
-[ ${#parser_values[*]} -eq 0 ] && parser_values=(creole html xsl github)
+[ ${#parser_values[*]} -eq 0 ] && parser_values=(creole html xsl)
 
 if update_item creole
 then
@@ -1342,8 +1341,11 @@ EOF
 	fi
 fi
 
+<<<<<<< TREE
+=======
 if update_item github
 then
 	"${projectPath}/tools/php/wiki-bitbucket2github.php"
 fi
+>>>>>>> MERGE-SOURCE
 
