@@ -253,8 +253,3 @@ EOF
 	fi
 fi
 
-if update_item github
-then
-	"${projectPath}/tools/php/wiki-bitbucket2github.php"
-fi
-

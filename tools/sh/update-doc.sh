@@ -1341,11 +1341,3 @@ EOF
 	fi
 fi
 
-<<<<<<< TREE
-=======
-if update_item github
-then
-	"${projectPath}/tools/php/wiki-bitbucket2github.php"
-fi
->>>>>>> MERGE-SOURCE
-
