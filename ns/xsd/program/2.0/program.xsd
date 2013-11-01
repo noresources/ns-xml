@@ -433,6 +433,7 @@
 					<element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1"/>
 					<element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0"/>
 				</all>
+				<attribute name="id" type="ID" use="optional"/>
 			</extension>
 		</complexContent>
 	</complexType>
