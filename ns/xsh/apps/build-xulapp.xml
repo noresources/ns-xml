@@ -231,7 +231,7 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
-					<!-- This default value have to match the one in the XSLT stylesheet -->
+					<!-- This default value have to match the one in the XSLT stylesheet and build-xulapp-->
 					<prg:default>1024</prg:default>
 				</prg:argument>
 				<prg:argument>
@@ -249,7 +249,7 @@
 					<prg:type>
 						<prg:number min="50" max="2048" />
 					</prg:type>
-					<!-- This default value have to match the one in the XSLT stylesheet -->
+					<!-- This default value have to match the one in the XSLT stylesheet and build-xulapp-->
 					<prg:default>768</prg:default>
 				</prg:argument>
 				<!-- debugMode -->

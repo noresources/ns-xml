@@ -34,8 +34,9 @@ then
 	macOSXArchitecture="$(uname -m)"
 fi
 
-defaultWindowWidth=${windowWidth}
-defaultWindowHeight=${windowHeight}
+# Default values for windowWidth & windowHeight options
+defaultWindowWidth=1024
+defaultWindowHeight=768
 
 if ! parse "${@}"
 then
