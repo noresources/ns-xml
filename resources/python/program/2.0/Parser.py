@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-""" Copyright © 2013 by Renaud Guillard """
-from twisted.python.reflect import isinst
-""" Distributed under the terms of the MIT License, see LICENSE """
+""" Copyright © 2013 by Renaud Guillard 
+Distributed under the terms of the MIT License, see LICENSE """
 
 # DON'T EDIT THE LINE BELOW
 # XSLT-begin
@@ -1101,7 +1100,6 @@ class Parser(object):
             
         if isinstance(self._state.activeOption.info, SwitchOptionInfo):
             if len(self._state.activeOptionArguments) > 0:
-                markSet = False
                 result._appendMessage(Message.ERROR, 13, Message.ERROR_SWITCH_ARG, self._state.activeOption.name.cliName())
             else:
                 markSet = True

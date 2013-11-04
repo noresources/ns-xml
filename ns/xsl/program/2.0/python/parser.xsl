@@ -1107,7 +1107,6 @@ class Parser(object):
             
         if isinstance(self._state.activeOption.info, SwitchOptionInfo):
             if len(self._state.activeOptionArguments) > 0:
-                markSet = False
                 result._appendMessage(Message.ERROR, 13, Message.ERROR_SWITCH_ARG, self._state.activeOption.name.cliName())
             else:
                 markSet = True
