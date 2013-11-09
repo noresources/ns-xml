@@ -1,0 +1,5 @@
+CLI: "--", "The simple positional argument"
+Value count: 1
+Values: "The simple positional argument"
+Error count: 0
+Subcommand: 

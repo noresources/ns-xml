@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2013 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>pa1</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (Positional arguments)</prg:abstract>
+	</prg:documentation>
+	<prg:values>
+		<prg:value id="value.simple">
+			<prg:documentation>
+				<prg:abstract>A simple positional argument</prg:abstract>
+			</prg:documentation>
+		</prg:value>
+		<prg:value id="value.positiveint">
+			<prg:documentation>
+				<prg:abstract>A positional argument expecting an positive integer value</prg:abstract>
+			</prg:documentation>
+			<prg:type>
+				<prg:number min="1" />
+			</prg:type>
+		</prg:value>
+	</prg:values>
+</prg:program>
