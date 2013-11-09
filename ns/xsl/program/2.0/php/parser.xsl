@@ -2508,8 +2508,7 @@ class Parser
 		$validates = true;
 		foreach ($binding->info->validators as &$validator)
 		{
-			$v = $validator->validate($this->state, $result, $binding, $value);
-			
+			$v = $validator->validate($this->state, $result, $binding, $value);		
 			$validates = ($validates && $v);
 		}
 
@@ -2525,7 +2524,7 @@ class Parser
 			$validates = ($validates && $validator->validate($this->state, $result, $paNumber, $value));
 		}
 
-		return true;
+		return $validates;
 	}
 
 	private function processPositionalArgument(ProgramResult &$result, $value)
@@ -2706,6 +2705,7 @@ class Parser
 				break;
 			}
 
+			$currentPaiValueCount++;
 			$processedValueCount++;
 
 			$paInfo = $root->getPositionalArgument($paInfoIndex);
