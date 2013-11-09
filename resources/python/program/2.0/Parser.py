@@ -543,6 +543,7 @@ class RootItemInfo(OptionContainerOptionInfo):
             
     def appendPositionalArgument(self, info):
         self.positionalArguments.append(info)
+        return info
         
 class SubcommandInfo(RootItemInfo):
     
@@ -1274,6 +1275,8 @@ class Parser(object):
         for value in self._state.values:
             if paInfoIndex >= paInfoCount:
                 break
+            
+            currentPaiValueCount += 1
             processedValueCount += 1
             paInfo = root.positionalArguments[paInfoIndex]
             
@@ -1285,7 +1288,7 @@ class Parser(object):
                 """
                  @todo continue or abort ?
                 """
-                
+            
             if ((paInfo.maxArgumentCount > 0) and (currentPaiValueCount == paInfo.maxArgumentCount)):
                 currentPaiValueCount = 0
                 paInfoIndex += 1

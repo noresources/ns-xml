@@ -465,7 +465,7 @@
 				<xsl:text>1</xsl:text>
 			</xsl:when>
 			<xsl:when test="$positionalArgumentNode/self::prg:other/@max">
-				<!-- @note Note yet supported by schema -->
+				<!-- @note Not yet supported by schema -->
 				<xsl:value-of select="$positionalArgumentNode/@max" />
 			</xsl:when>
 			<xsl:otherwise>
@@ -489,6 +489,11 @@
 		<xsl:text>)</xsl:text>
 		<xsl:text>)</xsl:text>
 		<xsl:value-of select="$str.endl" />
+		<!-- Validators -->
+		<xsl:call-template name="prg.python.validators">
+			<xsl:with-param name="itemNode" select="$positionalArgumentNode" />
+			<xsl:with-param name="itemVariable" select="$paiVariable" />
+		</xsl:call-template>
 	</xsl:template>
 
 	<xsl:template name="prg.python.rootItemInfo">
