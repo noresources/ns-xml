@@ -391,8 +391,10 @@
 					</xsl:call-template>
 				</xsl:variable>
 				<!-- Declarations -->
-				<xsl:text>void *dummy_ptr = NULL;</xsl:text>
-				<xsl:value-of select="$str.endl" />
+				<xsl:if test="$programNode/prg:options">
+					<xsl:text>void *dummy_ptr = NULL;</xsl:text>
+					<xsl:value-of select="$str.endl" />
+				</xsl:if>
 				<xsl:call-template name="c.structVariableDeclaration">
 					<xsl:with-param name="name" select="$stateStructName" />
 					<xsl:with-param name="pointer" select="true()" />

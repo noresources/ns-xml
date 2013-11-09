@@ -2826,9 +2826,6 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		pai = &root->positional_argument_infos[pai_index];
 		++current_pai_value_count;
 		
-		/**
-		 * @todo validates
-		 */
 		if (nsxml_parse_positional_argument_validates(state, result, pai, positional_argument_number, v->string_value))
 		{
 			/*
@@ -2837,7 +2834,6 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 			nsxml_value_append(&result->values, v->type, v->string_value);
 			result->value_count++;
 			++valid_positional_argument_count;
-			++current_pai_value_count;
 		}
 		else
 		{

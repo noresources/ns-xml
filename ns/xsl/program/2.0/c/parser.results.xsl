@@ -144,19 +144,21 @@
 				</xsl:call-template>
 				<xsl:value-of select="$str.endl" />
 				<!-- Dynamic part -->
-				<!-- Global options -->
-				<xsl:call-template name="c.inlineComment">
-					<xsl:with-param name="content" select="'Global options'" />
-				</xsl:call-template>
-				<xsl:value-of select="$str.endl" />
-				<xsl:call-template name="c.structDefinition">
-					<xsl:with-param name="variableName" select="'options'" />
-					<xsl:with-param name="content">
-						<xsl:call-template name="prg.c.parser.optionResultsDeclaration">
-							<xsl:with-param name="rootNode" select="$programNode" />
-						</xsl:call-template>
-					</xsl:with-param>
-				</xsl:call-template>
+				<!-- Global options (if any) -->
+				<xsl:if test="$programNode/prg:options">
+					<xsl:call-template name="c.inlineComment">
+						<xsl:with-param name="content" select="'Global options'" />
+					</xsl:call-template>
+					<xsl:value-of select="$str.endl" />
+					<xsl:call-template name="c.structDefinition">
+						<xsl:with-param name="variableName" select="'options'" />
+						<xsl:with-param name="content">
+							<xsl:call-template name="prg.c.parser.optionResultsDeclaration">
+								<xsl:with-param name="rootNode" select="$programNode" />
+							</xsl:call-template>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
 				<!-- Subcommands (if any) -->
 				<xsl:if test="$programNode/prg:subcommands[prg:subcommand/prg:options]">
 					<xsl:value-of select="$str.endl" />
