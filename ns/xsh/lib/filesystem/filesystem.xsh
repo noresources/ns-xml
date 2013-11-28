@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011-2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
 	<xsh:function name="ns_isdir">
@@ -92,6 +92,35 @@ then
 else
 	#Use key as a suffix
 	mktemp -d --suffix "${key}"
+fi
+]]></xsh:body>
+	</xsh:function>
+	<!-- Support for -s option on Liux -->
+	<xsh:function name="ns_which">
+		<xsh:body><![CDATA[
+if [ "$(uname -s)" == "Darwin" ]
+then
+	which "${@}"
+else
+]]><xsh:local name="silent">false</xsh:local>
+<xsh:local name="args" /><![CDATA[
+	while [ ${#} -gt 0 ]
+	do
+		if [ "${1}" = "-s" ]
+		then 
+			silent=true
+		else
+			args=("${args[@]}" "${1}")
+		fi
+		shift
+	done
+	
+	if ${silent}
+	then
+		which "${args[@]}" 1>/dev/null 2>&1
+	else
+		which "${args[@]}"
+	fi
 fi
 ]]></xsh:body>
 	</xsh:function>
