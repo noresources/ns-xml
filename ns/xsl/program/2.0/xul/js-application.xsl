@@ -79,7 +79,7 @@ Application.prototype.getApplicationPath = function()
 // Return the directory where the application folder (linux) or application bundle (Mac OS X) is located
 Application.prototype.getBundleURI = function()
 {
-	var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'macosx'"><![CDATA[/../..]]></xsl:if><![CDATA[";
+	var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'osx'"><![CDATA[/../..]]></xsl:if><![CDATA[";
 	try
 	{
 		var appUri = this.getApplicationURI();
@@ -114,7 +114,7 @@ Application.prototype.getBundleName = function()
 {
 	try
 	{
-		var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'macosx'"><![CDATA[/..]]></xsl:if><![CDATA[";
+		var relativePath = "..]]><xsl:if test="$prg.xul.platform = 'osx'"><![CDATA[/..]]></xsl:if><![CDATA[";
 		var appUri = this.getApplicationURI();
 		var rootUri = this.ioService.newURI(appUri.resolve(appUri.path + relativePath), null, null);
 		

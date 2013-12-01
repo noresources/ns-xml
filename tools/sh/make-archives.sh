@@ -63,16 +63,16 @@ done << EOF
 $(find "xul/linux" -mindepth 1 -maxdepth 1 -type d) 
 EOF
 
-prg_macosx=("${prg[@]}" \
+prg_osx=("${prg[@]}" \
 	--transform \
-	"s,xul/macosx,ns/xul," \
+	"s,xul/osx,ns/xul," \
 )
 
 while read d
 do
-	prg_macosx=("${prg_macosx[@]}" "${d}")
+	prg_osx=("${prg_osx[@]}" "${d}")
 done << EOF
-$(find "xul/macosx" -mindepth 1 -maxdepth 1 -type d) 
+$(find "xul/osx" -mindepth 1 -maxdepth 1 -type d) 
 EOF
 
 xslt=(\
@@ -99,5 +99,5 @@ make_archive()
 }
 
 make_archive "ns-xml-pidf-linux" "${prg_linux[@]}"
-make_archive "ns-xml-pidf-macosx" "${prg_macosx[@]}"
+make_archive "ns-xml-pidf-osx" "${prg_osx[@]}"
 make_archive "ns-xml-xsltlib" "${xslt[@]}"

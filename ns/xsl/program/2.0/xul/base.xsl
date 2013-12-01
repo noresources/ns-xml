@@ -7,7 +7,7 @@
 
 	<xsl:import href="../base.xsl" />
 
-	<!-- platform name ("linux" or "macosx") -->
+	<!-- platform name ("linux" or "osx") -->
 	<xsl:param name="prg.xul.platform" />
 
 	<xsl:param name="prg.xul.appName">

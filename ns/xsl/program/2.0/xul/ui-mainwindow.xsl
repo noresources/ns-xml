@@ -1150,7 +1150,7 @@
 			</xsl:element>
 
 			<!-- Do not add menubar under Mac OS X (set in hidden window) -->
-			<xsl:if test="$prg.xul.platform != 'macosx'">
+			<xsl:if test="$prg.xul.platform != 'osx'">
 				<xsl:element name="xul:menubar">
 					<xsl:attribute name="id">main-menubar</xsl:attribute>
 				</xsl:element>

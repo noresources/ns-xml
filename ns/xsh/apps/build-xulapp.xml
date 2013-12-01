@@ -193,7 +193,7 @@
 			<prg:select restrict="true">
 				<prg:option>host</prg:option>
 				<prg:option>linux</prg:option>
-				<prg:option>macosx</prg:option>
+				<prg:option>osx</prg:option>
 			</prg:select>
 			<prg:default>host</prg:default>
 		</prg:argument>

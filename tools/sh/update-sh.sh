@@ -120,7 +120,7 @@ do
 		)
 		[ -f "${f%xsh}js" ] && xulOptions=("${xulOptions[@]}" -j "${f%xsh}js")
 		
-		for t in linux macosx
+		for t in linux osx
 		do
 			echo "Build XUL application for ${t}"
 			mkdir -p "${xulOutputPath}/${t}"

@@ -55,17 +55,17 @@
 			<xsl:element name="xul:menubar">
 				<!-- Attach to xulrunner (or firefox) main menubar -->
 				<xsl:attribute name="id">main-menubar</xsl:attribute>
-				<xsl:if test="$prg.xul.platform = 'macosx'">
+				<xsl:if test="$prg.xul.platform = 'osx'">
 					<xsl:attribute name="hidden">true</xsl:attribute>
 				</xsl:if>
 				<xsl:element name="xul:menu">
-					<xsl:if test="$prg.xul.platform = 'macosx'">
+					<xsl:if test="$prg.xul.platform = 'osx'">
 						<xsl:attribute name="id">mac-menu</xsl:attribute>
 					</xsl:if>
 					<xsl:attribute name="label"><xsl:call-template name="prg.programDisplayName" /></xsl:attribute>
 					<xsl:element name="xul:menupopup">
 						<xsl:choose>
-							<xsl:when test="$prg.xul.platform = 'macosx'">
+							<xsl:when test="$prg.xul.platform = 'osx'">
 								<xsl:attribute name="id">menu_MacApplicationPopup</xsl:attribute>
 								<xsl:element name="xul:menuitem">
 									<xsl:attribute name="id">menu_mac_hide_app</xsl:attribute>

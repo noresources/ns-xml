@@ -26,7 +26,7 @@ done
 
 if [ "$(uname)" == "Darwin" ]
 then
-	hostPlatform="macosx"
+	hostPlatform="osx"
 	macOSXVersion="$(sw_vers -productVersion)"
 	macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
 	macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
@@ -96,9 +96,9 @@ fi
 
 # Check required templates
 requiredTemplates="ui-mainwindow js-mainwindow js-application ../get-programinfo"
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
-	requiredTemplates="${requiredTemplates} macosx-plist ui-hiddenwindow"
+	requiredTemplates="${requiredTemplates} osx-plist ui-hiddenwindow"
 fi
 
 for template in ${requiredTemplates}
@@ -132,7 +132,7 @@ outputPathBase="$(basename "${outputPath}")"
 
 if [ "${outputPathBase}" != "${appName}" ] && [ "${outputPathBase}" != "${appDisplayName}" ]
 then
-	if [ "${targetPlatform}" == "macosx" ]
+	if [ "${targetPlatform}" == "osx" ]
 	then
 		outputPath="${outputPath}/${appDisplayName}"
 	else
@@ -141,7 +141,7 @@ then
 fi
 appRootPath="${outputPath}"
 
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
 	outputPath="${outputPath}.app"
 	appRootPath="${outputPath}/Contents/Resources"
@@ -242,7 +242,7 @@ MaxVersion=99.0.0" > "${appIniFile}"
 
 echo "pref(\"toolkit.defaultChromeURI\", \"chrome://${xulAppName}/content/${xulAppName}.xul\");" > "${appPrefFile}"
 
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
 	echo "pref(\"browser.hiddenWindowChromeURL\", \"chrome://${xulAppName}/content/$(basename "${appHiddenWindowXulFile}")\");" >> "${appPrefFile}" 
 fi
@@ -304,7 +304,7 @@ then
 	ns_error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOptions})"
 fi
 
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
 	info " -- Mac OS X hidden window"
 	if ! xsltproc ${xsltOptions} -o "${appHiddenWindowXulFile}" "${programStylesheetPath}/xul/ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
@@ -356,7 +356,7 @@ else
 	[ -r "${userInitializationScriptOutputPath}" ] && rm -f "${userInitializationScriptOutputPath}" 
 fi
 
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
 	info " - Create/Update Mac OS X application bundle structure"
 	# Create structure
@@ -364,7 +364,7 @@ then
 	mkdir -p "${outputPath}/Contents/Resources"
 	
 	info " - Create/Update Mac OS X application property list"
-	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/xul/macosx-plist.xsl" "${xmlProgramDescriptionPath}"  
+	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/xul/osx-plist.xsl" "${xmlProgramDescriptionPath}"  
 	then
 		ns_error "Error while building XUL main window code"
 	fi
@@ -372,7 +372,7 @@ fi
 
 info " - Create/Update application launcher"
 launcherPath=""
-if [ "${targetPlatform}" == "macosx" ]
+if [ "${targetPlatform}" == "osx" ]
 then
 	launcherPath="${outputPath}/Contents/MacOS/xulrunner"
 else
@@ -406,13 +406,13 @@ debug=${debugMode}
 platform="linux"
 if [ "\$(uname)" == "Darwin" ]
 then
-	platform="macosx"
+	platform="osx"
 fi
 
 scriptPath="\$(ns_realpath "\$(dirname "\${0}")")"
 appIniPath="\$(ns_realpath "\${scriptPath}/application.ini")"
 logFile="/tmp/${xulAppName}.log"
-if [ "\${platform}" == "macosx" ]
+if [ "\${platform}" == "osx" ]
 then
 	appIniPath="\$(ns_realpath "\${scriptPath}/../Resources/application.ini")"
 	macOSXArchitecture="\$(uname -m)"
@@ -467,7 +467,7 @@ use_framework()
 use_firefox()
 {
 	debug use_firefox
-	if [ "\${platform}" == "macosx" ]
+	if [ "\${platform}" == "osx" ]
 	then
 		for ff in "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "\${HOME}/Applications/Firefox.app/Contents/MacOS/firefox-bin"
 		do
@@ -510,7 +510,7 @@ use_xulrunner()
 debug "Build platform: \${buildPlatform}"
 debug "Platform: \${platform}"
 debug "Application: \${appIniPath}"
-if [ "\${platform}" == "macosx" ]
+if [ "\${platform}" == "osx" ]
 then
 	use_framework || use_xulrunner || use_firefox
 else

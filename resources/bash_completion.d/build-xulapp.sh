@@ -340,7 +340,7 @@ __build_xulapp_bashcompletion()
 			;;
 		"target-platform" | "target" | "t")
 			COMPREPLY=()
-			for e in "host" "linux" "macosx"
+			for e in "host" "linux" "osx"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
 				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
