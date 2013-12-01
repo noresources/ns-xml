@@ -22,12 +22,12 @@ then
 	exit 0
 fi
 
-chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
+chunk_check_nsxml_ns_path || ns_error "Invalid ns-xml ns folder (${nsPath})"
 programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
 
 xslFile="${nsPath}/xsl/program/${programVersion}/${xslName}.xsl"
 
-[ -f "${xslFile}" ] || error 2 "Unable to find \"${xslFile}\""
+[ -f "${xslFile}" ] || ns_error 2 "Unable to find \"${xslFile}\""
 
 xsltprocCommand[${parser_startindex}]="xsltproc"
 xsltprocCommand[${#xsltprocCommand[*]}]="--xinclude"
@@ -39,7 +39,7 @@ fi
 
 count=${#stringParameters[*]}
 mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
+[ ${mc} -eq 1 ] && ns_error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
 limit=$(expr ${parser_startindex} + ${count})
 for ((i=${parser_startindex};${i}<${limit};i+=2))
 do
@@ -52,7 +52,7 @@ done
 
 count=${#parameters[*]}
 mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
+[ ${mc} -eq 1 ] && ns_error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
 limit=$(expr ${parser_startindex} + ${count})
 for ((i=${parser_startindex};${i}<${limit};i+=2))
 do

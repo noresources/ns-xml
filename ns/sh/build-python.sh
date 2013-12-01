@@ -902,6 +902,25 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
 ns_realpath()
 {
 	local inputPath
@@ -961,25 +980,6 @@ ns_mktempdir()
 		#Use key as a suffix
 		mktemp -d --suffix "${key}"
 	fi
-}
-error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 chunk_check_nsxml_ns_path()
 {
@@ -1120,7 +1120,7 @@ buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
 for x in parser programinfo embed
 do
 	tpl="${buildpythonXsltPath}/${x}.xsl"
-	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+	[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
 buildpythonXsltprocOptions=(--xinclude \
@@ -1156,7 +1156,7 @@ buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
 	"${buildpythonXsltPath}/${buildpythonXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildpythonXsltprocOptions[@]}" || error 2 "Failed to generate python module file"
+xsltproc "${buildpythonXsltprocOptions[@]}" || ns_error 2 "Failed to generate python module file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then
@@ -1166,14 +1166,14 @@ then
 		(echo "${firstLine}" > "${outputScriptFilePath}" \
 		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge Python module file and Python program file"
+		|| ns_error 3 "Failed to merge Python module file and Python program file"
 	else
 		(echo "#!/usr/bin/env python" > "${outputScriptFilePath}" \
 		&& cat "${buildpythonTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge Python module file and Python script file"
+		|| ns_error 3 "Failed to merge Python module file and Python script file"
 	fi
 	
-	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+	chmod 755 "${outputScriptFilePath}" || ns_error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
 fi
 

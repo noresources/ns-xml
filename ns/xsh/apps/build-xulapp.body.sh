@@ -20,7 +20,7 @@ for x in xmllint xsltproc egrep cut expr head tail uuidgen
 do
 	if ! which $x 1>/dev/null 2>&1
 	then
-		error "${x} program not found"
+		ns_error "${x} program not found"
 	fi
 done
 
@@ -59,7 +59,7 @@ fi
 builderFunction="$(echo -n "build_${parser_subcommand}" | sed "s,-,_,g")"
 if [ "$(type -t ${builderFunction})" != "function" ]
 then
-	error "Missing subcommand name"
+	ns_error "Missing subcommand name"
 fi
 
 if [ "${targetPlatform}" == "host" ]
@@ -79,7 +79,7 @@ then
 	
 	if [ ! -d "${nsPath}" ]
 	then
-		error "Invalid ns path \"${nsPath}\""
+		ns_error "Invalid ns path \"${nsPath}\""
 	fi
 	
 	nsPath="$(ns_realpath "${nsPath}")"
@@ -91,7 +91,7 @@ info "Program schema version ${programVersion}"
 
 if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
 then
-	error "Invalid program interface definition schema version"
+	ns_error "Invalid program interface definition schema version"
 fi  
 
 # Check required templates
@@ -106,14 +106,14 @@ do
 	stylesheet="${nsPath}/xsl/program/${programVersion}/xul/${template}.xsl"
 	if [ ! -f "${stylesheet}" ]
 	then
-		error "Missing XSLT stylesheet file \"${stylesheet}\""
+		ns_error "Missing XSLT stylesheet file \"${stylesheet}\""
 	fi
 done
 
 # Validate program scheam
 if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 then
-	error "program ${programVersion} XML schema error - abort"
+	ns_error "program ${programVersion} XML schema error - abort"
 fi
 
 programStylesheetPath="${nsPath}/xsl/program/${programVersion}"
@@ -154,12 +154,12 @@ fi
 preexistantOutputPath=false
 if [ -d "${appRootPath}" ] 
 then
-	(! ${update}) && error " - Folder \"${appRootPath}\" already exists. Set option --update to force update"
-	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && error " - Folder \"${appRootPath}\" exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
+	(! ${update}) && ns_error " - Folder \"${appRootPath}\" already exists. Set option --update to force update"
+	(${update} && [ ! -f "${appRootPath}/application.ini" ]) && ns_error " - Folder \"${appRootPath}\" exists - update option is set, but the folder doesn't seems to be a valid xul application folder"
 	preexistantOutputPath=true
 else
-	mkdir -p "${outputPath}" || error "Unable to create output path \"${outputPath}\""
-	mkdir -p "${appRootPath}" || error "Unable to create application root path \"${appRootPath}\""
+	mkdir -p "${outputPath}" || ns_error "Unable to create output path \"${outputPath}\""
+	mkdir -p "${appRootPath}" || ns_error "Unable to create application root path \"${appRootPath}\""
 fi
 
 outputPath="$(ns_realpath "${outputPath}")"
@@ -186,20 +186,20 @@ then
 	fi
 fi
 
-mkdir -p "${xulScriptBasePath}" || error "Unable to create shell sub directory"
+mkdir -p "${xulScriptBasePath}" || ns_error "Unable to create shell sub directory"
 
 xulScriptBasePath="$(ns_realpath "${xulScriptBasePath}")"
 rebuildScriptFile="${xulScriptBasePath}/_rebuild.sh"
 commandLauncherFile="${xulScriptBasePath}/${xulAppName}"
 commandLauncherFile="$(ns_realpath "${commandLauncherFile}")"
 
-${builderFunction} || error "Failed to build ${commandLauncherFile}"
+${builderFunction} || ns_error "Failed to build ${commandLauncherFile}"
 chmod 755 "${commandLauncherFile}"
 
 info " - Creating XUL application structure"
 for d in "chrome/ns" "chrome/content" "defaults/preferences" "extensions"
 do
-	mkdir -p "${appRootPath}/${d}" || error "Unable to create \"${d}\""
+	mkdir -p "${appRootPath}/${d}" || ns_error "Unable to create \"${d}\""
 done
 
 info " - Copy ns-xml required files"
@@ -295,13 +295,13 @@ fi
 info " -- Main window"
 if ! xsltproc ${xsltOptions} -o "${appMainXulFile}" "${programStylesheetPath}/xul/ui-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL main window layout (${appMainXulFile} - ${xsltOptions})"
+	ns_error "Error while building XUL main window layout (${appMainXulFile} - ${xsltOptions})"
 fi
 
 info " -- Overlay"
 if ! xsltproc ${xsltOptions} -o "${appOverlayXulFile}" "${programStylesheetPath}/xul/ui-overlay.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOptions})"
+	ns_error "Error while building XUL overlay layout (${appOverlayXulFile} - ${xsltOptions})"
 fi
 
 if [ "${targetPlatform}" == "macosx" ]
@@ -309,7 +309,7 @@ then
 	info " -- Mac OS X hidden window"
 	if ! xsltproc ${xsltOptions} -o "${appHiddenWindowXulFile}" "${programStylesheetPath}/xul/ui-hiddenwindow.xsl" "${xmlProgramDescriptionPath}" 
 	then
-		error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOptions})"
+		ns_error "Error while building XUL hidden window layout (${appHiddenWindowXulFile} - ${xsltOptions})"
 	fi 
 fi
 
@@ -329,7 +329,7 @@ do
 		info " -- Adding ${f}"
 		if ! xsltproc ${cssXsltOptions} "${nsPath}/xsl/languages/xbl-css.xsl" "${f}" >> "${appCssFile}"
 		then
-			error "Failed to add CSS binding rules for XBL \"${f}\" (${cssXsltOptions})"
+			ns_error "Failed to add CSS binding rules for XBL \"${f}\" (${cssXsltOptions})"
 		fi
 	done 
 done
@@ -337,12 +337,12 @@ done
 info " - Building Javascript code"
 if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.jsm" "${programStylesheetPath}/xul/js-application.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL application code"
+	ns_error "Error while building XUL application code"
 fi
 
 if ! xsltproc ${xsltOptions} -o "${appRootPath}/chrome/content/${xulAppName}.js" "${programStylesheetPath}/xul/js-mainwindow.xsl" "${xmlProgramDescriptionPath}"  
 then
-	error "Error while building XUL main window code"
+	ns_error "Error while building XUL main window code"
 fi
 
 userInitializationScriptOutputPath="${appRootPath}/chrome/content/${xulAppName}-user.js"
@@ -366,7 +366,7 @@ then
 	info " - Create/Update Mac OS X application property list"
 	if ! xsltproc ${xsltOptions} --stringparam prg.xul.buildID "${appBuildID}" -o "${outputPath}/Contents/Info.plist" "${programStylesheetPath}/xul/macosx-plist.xsl" "${xmlProgramDescriptionPath}"  
 	then
-		error "Error while building XUL main window code"
+		ns_error "Error while building XUL main window code"
 	fi
 fi
 

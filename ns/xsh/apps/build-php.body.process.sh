@@ -4,7 +4,7 @@ buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
 for x in parser programinfo embed
 do
 	tpl="${buildphpXsltPath}/${x}.xsl"
-	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+	[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
 if ${generateBase}
@@ -32,7 +32,7 @@ buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
 	"${buildphpXsltPath}/${buildphpXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildphpXsltprocOptions[@]}" || error 2 "Failed to generate php classes file"
+xsltproc "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then
@@ -42,13 +42,13 @@ then
 		(echo "${firstLine}" > "${outputScriptFilePath}" \
 		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge PHP class file and PHP program file"
+		|| ns_error 3 "Failed to merge PHP class file and PHP program file"
 	else
 		(echo "#!/usr/bin/env php" > "${outputScriptFilePath}" \
 		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge PHP class file and PHP program file"
+		|| ns_error 3 "Failed to merge PHP class file and PHP program file"
 	fi
 	
-	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+	chmod 755 "${outputScriptFilePath}" || ns_error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
 fi

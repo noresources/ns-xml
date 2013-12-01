@@ -798,25 +798,6 @@ parse()
 	return ${parser_errorcount}
 }
 
-error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
-}
 chunk_check_nsxml_ns_path()
 {
 	if [ ! -z "${nsxmlPath}" ]
@@ -1015,6 +996,33 @@ ns_mktempdir()
 		mktemp -d --suffix "${key}"
 	fi
 }
+ns_which()
+{
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		which "${@}"
+	else
+	local silent="false"
+	local args
+	while [ ${#} -gt 0 ]
+		do
+			if [ "${1}" = "-s" ]
+			then 
+				silent=true
+			else
+				args=("${args[@]}" "${1}")
+			fi
+			shift
+		done
+		
+		if ${silent}
+		then
+			which "${args[@]}" 1>/dev/null 2>&1
+		else
+			which "${args[@]}"
+		fi
+	fi
+}
 ns_sed_inplace()
 {
 	local sedCommand
@@ -1136,7 +1144,7 @@ xsltdoc()
 	output="${xsltDocOutputPath}${output}"
 	output="${output%xsl}html"
 	local outputFolder="$(dirname "${output}")"
-	mkdir -p "${outputFolder}" || error 2 "Failed to create ${outputFolder}"
+	mkdir -p "${outputFolder}" || ns_error 2 "Failed to create ${outputFolder}"
 	local cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
 	local title="${output#${xsltDocOutputPath}/}"
 	title="${title%.html}"
@@ -1230,7 +1238,7 @@ then
 		
 		rm -f content.xml
 	else
-		error 2 Failed to unzip doc
+		ns_error 2 Failed to unzip doc
 	fi
 	
 	# Parser pseudo code
@@ -1312,7 +1320,7 @@ defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 if update_item xsl
 then
 	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${projectPath}/doc/html/xsl"
-	mkdir -p "${xsltDocOutputPath}" || error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
+	mkdir -p "${xsltDocOutputPath}" || ns_error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
 	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
 	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 

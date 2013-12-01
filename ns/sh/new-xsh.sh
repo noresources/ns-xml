@@ -538,6 +538,25 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
 ns_realpath()
 {
 	local inputPath
@@ -559,25 +578,6 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${inputPath}"
-}
-error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 chunk_check_nsxml_ns_path()
 {

@@ -4,19 +4,6 @@
 
 <!-- A set of common functions for XSH apps -->
 <xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
-	<xsh:function name="error">
-		<xsh:parameter name="errno" type="numeric">1</xsh:parameter>
-		<xsh:body>
-<xsh:local name="message">${@}</xsh:local><![CDATA[
-if [ -z "${errno##*[!0-9]*}" ]
-then 
-	message="${errno} ${message}"
-	errno=1
-fi
-echo "${message}"
-exit ${errno}
-		]]></xsh:body>
-	</xsh:function>
 	<xsh:function name="chunk_check_nsxml_ns_path">
 		<xsh:body><![CDATA[
 if [ ! -z "${nsxmlPath}" ]

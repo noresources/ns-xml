@@ -770,6 +770,25 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
 ns_realpath()
 {
 	local inputPath
@@ -791,25 +810,6 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${inputPath}"
-}
-error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 chunk_check_nsxml_ns_path()
 {
@@ -912,12 +912,12 @@ then
 	exit 0
 fi
 
-chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
+chunk_check_nsxml_ns_path || ns_error "Invalid ns-xml ns folder (${nsPath})"
 programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
 
 xslFile="${nsPath}/xsl/program/${programVersion}/${xslName}.xsl"
 
-[ -f "${xslFile}" ] || error 2 "Unable to find \"${xslFile}\""
+[ -f "${xslFile}" ] || ns_error 2 "Unable to find \"${xslFile}\""
 
 xsltprocCommand[${parser_startindex}]="xsltproc"
 xsltprocCommand[${#xsltprocCommand[*]}]="--xinclude"
@@ -929,7 +929,7 @@ fi
 
 count=${#stringParameters[*]}
 mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
+[ ${mc} -eq 1 ] && ns_error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
 limit=$(expr ${parser_startindex} + ${count})
 for ((i=${parser_startindex};${i}<${limit};i+=2))
 do
@@ -942,7 +942,7 @@ done
 
 count=${#parameters[*]}
 mc=$(expr ${count} % 2)
-[ ${mc} -eq 1 ] && error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
+[ ${mc} -eq 1 ] && ns_error 2 "Invalid number of arguments for --stringparam. Even value expected, got ${count}"
 limit=$(expr ${parser_startindex} + ${count})
 for ((i=${parser_startindex};${i}<${limit};i+=2))
 do

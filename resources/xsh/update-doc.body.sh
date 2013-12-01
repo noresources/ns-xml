@@ -48,7 +48,7 @@ xsltdoc()
 	output="${xsltDocOutputPath}${output}"
 	output="${output%xsl}html"
 	local outputFolder="$(dirname "${output}")"
-	mkdir -p "${outputFolder}" || error 2 "Failed to create ${outputFolder}"
+	mkdir -p "${outputFolder}" || ns_error 2 "Failed to create ${outputFolder}"
 	local cssPath="$(ns_relativepath "${xsltDocCssFile}" "${outputFolder}")"
 	local title="${output#${xsltDocOutputPath}/}"
 	title="${title%.html}"
@@ -142,7 +142,7 @@ then
 		
 		rm -f content.xml
 	else
-		error 2 Failed to unzip doc
+		ns_error 2 Failed to unzip doc
 	fi
 	
 	# Parser pseudo code
@@ -224,7 +224,7 @@ defaultCssFile="${projectPath}/resources/css/xsl.doc.html.css"
 if update_item xsl
 then
 	[ -z "${xsltDocOutputPath}" ] && xsltDocOutputPath="${projectPath}/doc/html/xsl"
-	mkdir -p "${xsltDocOutputPath}" || error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
+	mkdir -p "${xsltDocOutputPath}" || ns_error 2 "Failed to create XSLT output folder ${xsltDocOutputPath}" 
 	[ -z "${xsltDocCssFile}" ] && xsltDocCssFile="${defaultCssFile}"
 	xsltDocCssFile="$(ns_realpath "${xsltDocCssFile}")"
 	[ "${indexMode}" = "indexModeFile" ] && ${indexCopyInFolders} && indexFile="$(ns_realpath "${indexFile}")" 

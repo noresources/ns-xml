@@ -6,6 +6,8 @@
 		<xi:include href="prgproc.xml"/>
 	</xsh:info>
 	<xsh:functions>
+		<!-- ns_error -->
+		<xi:include href="../lib/base/base.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_error'])"/>
 		<!-- ns_realpath -->
 		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function[@name = 'ns_realpath'])"/>
 		<!-- ns-xml standard function library -->

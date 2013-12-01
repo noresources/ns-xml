@@ -597,6 +597,25 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
 ns_isdir()
 {
 	local inputPath
@@ -720,24 +739,32 @@ ns_mktempdir()
 		mktemp -d --suffix "${key}"
 	fi
 }
-error()
+ns_which()
 {
-	local errno
-	if [ $# -gt 0 ]
+	if [ "$(uname -s)" == "Darwin" ]
 	then
-		errno=${1}
-		shift
+		which "${@}"
 	else
-		errno=1
+	local silent="false"
+	local args
+	while [ ${#} -gt 0 ]
+		do
+			if [ "${1}" = "-s" ]
+			then 
+				silent=true
+			else
+				args=("${args[@]}" "${1}")
+			fi
+			shift
+		done
+		
+		if ${silent}
+		then
+			which "${args[@]}" 1>/dev/null 2>&1
+		else
+			which "${args[@]}"
+		fi
 	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 
 
@@ -1098,7 +1125,7 @@ EOF
 </xsh:code>
 </xsh:program>
 EOF
-		xsltproc --xinclude -o "${xshBodyFile}" "${parserTestsPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${xshBodyFile}"  
+		xsltproc --xinclude -o "${xshBodyFile}" "${parserTestsPathBase}/lib/sh-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${xshBodyFile}"  
 		
 		for s in ${available_shells[@]}
 		do
@@ -1112,7 +1139,7 @@ EOF
 				-o "${shScript}"\
 			)
 			log "Generating ${app} ${s} program (${buildShScriptArgs[@]})"
-			"${projectPath}/ns/sh/build-shellscript.sh" "${buildShScriptArgs[@]}" || error "Failed to create ${shScript}" 
+			"${projectPath}/ns/sh/build-shellscript.sh" "${buildShScriptArgs[@]}" || ns_error "Failed to create ${shScript}" 
 			chmod 755 "${shScript}"
 		done
 		
@@ -1130,14 +1157,14 @@ EOF
 		"${projectPath}/ns/sh/build-python.sh" -b \
 			-x "${xmlDescription}" \
 			-c "TestProgramInfo" \
-			-o "${pyParser}" || error "Failed to generated python module"
+			-o "${pyParser}" || ns_error "Failed to generated python module"
 			
 		log "Create Python program info module"
 		"${projectPath}/ns/sh/build-python.sh" \
 			-i "Parser" \
 			-x "${xmlDescription}" \
 			-c "TestProgramInfo" \
-			-o "${pyInfo}" || error "Failed to generated Python program info module"
+			-o "${pyInfo}" || ns_error "Failed to generated Python program info module"
 			
 		log "Generate python scripts"
 		unset pyPrograms
@@ -1145,7 +1172,7 @@ EOF
 		do
 			pyProgram="${pyProgramBase}${p}.py"
 			pyPrograms=("${pyPrograms[@]}" "${pyProgram}")
-			xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || error "Failed to create ${pyProgram}"
+			xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${pyProgram}"
 			chmod 755 "${pyProgram}"
 		done
 	fi
@@ -1156,19 +1183,19 @@ EOF
 		cProgram="${tmpScriptBasename}-exe"
 		xsltproc --xinclude -o "${cProgram}.c" \
 			"${parserTestsPathBase}/lib/c-unittestprogram.xsl" \
-			"${xmlDescription}" || error "Failed to create ${cProgram} source"
+			"${xmlDescription}" || ns_error "Failed to create ${cProgram} source"
 		
 		log "Create C files"
 		"${projectPath}/ns/sh/build-c.sh" -eu \
 			-x "${xmlDescription}" \
 			-o "$(dirname "${tmpScriptBasename}")" \
 			-f "$(basename "${cParserBase}")" \
-			-p "app" || error "Failed to generated C parser"
+			-p "app" || ns_error "Failed to generated C parser"
 			
 		log "Build C program"
 		gcc -Wall -pedantic -g -O0 \
 		-o "${cProgram}" \
-		"${cProgram}.c" "${cParserBase}.c" || error "Failed to build C program"   
+		"${cProgram}.c" "${cParserBase}.c" || ns_error "Failed to build C program"   
 	fi
 	
 	if ${testPHP}
@@ -1179,12 +1206,12 @@ EOF
 		"${projectPath}/ns/sh/build-php.sh" -e \
 			-x "${xmlDescription}" \
 			-c "TestProgramInfo" \
-			-o "${phpLibrary}" || error "Failed to generated PHP module"
+			-o "${phpLibrary}" || ns_error "Failed to generated PHP module"
 			
 		log "Create program"
 		xsltproc --xinclude -o "${phpProgram}" \
 			"${parserTestsPathBase}/lib/php-unittestprogram.xsl" \
-			"${xmlDescription}" || error "Failed to create ${phpProgram}"
+			"${xmlDescription}" || ns_error "Failed to create ${phpProgram}"
 		chmod 755 "${phpProgram}"
 	fi
 		

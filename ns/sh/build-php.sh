@@ -873,6 +873,25 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then 
+		message="${errno} ${message}"
+		errno=1
+	fi
+	echo "${message}"
+	exit ${errno}
+}
 ns_realpath()
 {
 	local inputPath
@@ -932,25 +951,6 @@ ns_mktempdir()
 		#Use key as a suffix
 		mktemp -d --suffix "${key}"
 	fi
-}
-error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 chunk_check_nsxml_ns_path()
 {
@@ -1091,7 +1091,7 @@ buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
 for x in parser programinfo embed
 do
 	tpl="${buildphpXsltPath}/${x}.xsl"
-	[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+	[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
 if ${generateBase}
@@ -1119,7 +1119,7 @@ buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
 	"${buildphpXsltPath}/${buildphpXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildphpXsltprocOptions[@]}" || error 2 "Failed to generate php classes file"
+xsltproc "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then
@@ -1129,14 +1129,14 @@ then
 		(echo "${firstLine}" > "${outputScriptFilePath}" \
 		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& sed 1d "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge PHP class file and PHP program file"
+		|| ns_error 3 "Failed to merge PHP class file and PHP program file"
 	else
 		(echo "#!/usr/bin/env php" > "${outputScriptFilePath}" \
 		&& cat "${buildphpTemporaryOutput}" >> "${outputScriptFilePath}" \
 		&& cat "${generateMerge}"  >> "${outputScriptFilePath}") \
-		|| error 3 "Failed to merge PHP class file and PHP program file"
+		|| ns_error 3 "Failed to merge PHP class file and PHP program file"
 	fi
 	
-	chmod 755 "${outputScriptFilePath}" || error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
+	chmod 755 "${outputScriptFilePath}" || ns_error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
 fi
 

@@ -27,10 +27,10 @@ transform_php()
 	local input="${1}"
 	local output="${2}"
 	
-	[ -r "${input}" ] || error 1 "Invalid input file \'${input}\'"
+	[ -r "${input}" ] || ns_error 1 "Invalid input file \'${input}\'"
 	
 	local tmpFile="$(ns_mktemp)"
-	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
+	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || ns_error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>

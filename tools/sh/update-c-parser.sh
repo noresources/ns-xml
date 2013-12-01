@@ -380,7 +380,7 @@ parse()
 	return ${parser_errorcount}
 }
 
-error()
+ns_error()
 {
 	local errno
 	if [ $# -gt 0 ]
@@ -522,6 +522,33 @@ ns_mktempdir()
 		mktemp -d --suffix "${key}"
 	fi
 }
+ns_which()
+{
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		which "${@}"
+	else
+	local silent="false"
+	local args
+	while [ ${#} -gt 0 ]
+		do
+			if [ "${1}" = "-s" ]
+			then 
+				silent=true
+			else
+				args=("${args[@]}" "${1}")
+			fi
+			shift
+		done
+		
+		if ${silent}
+		then
+			which "${args[@]}" 1>/dev/null 2>&1
+		else
+			which "${args[@]}"
+		fi
+	fi
+}
 ns_sed_inplace()
 {
 	local sedCommand
@@ -632,7 +659,7 @@ transform_c()
 	local templateName="${3}"
 	
 	local tmpFile="$(ns_mktemp)"
-	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
+	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || ns_error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -697,7 +724,7 @@ create_identifier_variables()
 	local output="${1}"
 	local header="${2}"
 	local tmpFile="$(ns_mktemp)"
-	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
+	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || ns_error 2 "Unable to access to temporary file '${tmpFile}'"
 	
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -758,8 +785,8 @@ cSourcePath="${rootPath}/resources/c/program/${programVersion}"
 cSourceBaseFileName="nsxml_program_parser"
 cXslPath="${xslPath}/program/${programVersion}/c"
 cXslBaseFileName="parser.generic-"
-[ -d "${cSourcePath}" ] || error 1 "Invalid path for C source"
-[ -d "${cXslPath}" ] || error 1 "Invalid path for XSL output"
+[ -d "${cSourcePath}" ] || ns_error 1 "Invalid path for C source"
+[ -d "${cXslPath}" ] || ns_error 1 "Invalid path for XSL output"
 
 # XSLT Variables
 create_identifier_variables "${cXslPath}/${cXslBaseFileName}names.xsl" "${cSourcePath}/${cSourceBaseFileName}.h" 

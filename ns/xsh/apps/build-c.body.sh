@@ -35,7 +35,7 @@ function buildcGenerateBase()
 	for x in parser.generic-header parser.generic-source
 	do
 		local tpl="${buildcXsltPath}/${x}.xsl"
-		[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
 	local fileBase="${outputFileBase}"
@@ -50,7 +50,7 @@ function buildcGenerateBase()
 		# Check existing files
 		for e in h c
 		do
-			[ -f "${outputFileBasePath}.${e}" ] && error 2 "${fileBase}.${e} already exists. Use --overwrite"
+			[ -f "${outputFileBasePath}.${e}" ] && ns_error 2 "${fileBase}.${e} already exists. Use --overwrite"
 		done
 	fi
 	
@@ -62,7 +62,7 @@ function buildcGenerateBase()
 			"${buildcXsltPath}/parser.generic-header.xsl" \
 			"${xmlProgramDescriptionPath}"
 	then
-		error 2 "Failed to generate header file ${outputFileBasePath}.h" 
+		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 	fi
 	
 	if ! xsltproc "${buildcXsltprocParams[@]}" \
@@ -70,7 +70,7 @@ function buildcGenerateBase()
 			"${buildcXsltPath}/parser.generic-source.xsl" \
 			"${xmlProgramDescriptionPath}"
 	then
-		error 2 "Failed to generate source file ${outputFileBasePath}.c" 
+		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 	fi
 }
 
@@ -80,7 +80,7 @@ function buildcGenerate()
 	for x in parser.header parser.source
 	do
 		local tpl="${buildcXsltPath}/${x}.xsl"
-		[ -r "${tpl}" ] || error 2 "Missing XSLT template $(basename "${tpl}")" 
+		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
 	local fileBase="${outputFileBase}"
@@ -95,7 +95,7 @@ function buildcGenerate()
 		# Check existing files
 		for e in h c
 		do
-			[ -f "${outputFileBasePath}.${e}" ] && error 2 "${fileBase}.${e} already exists. Use --overwrite"
+			[ -f "${outputFileBasePath}.${e}" ] && ns_error 2 "${fileBase}.${e} already exists. Use --overwrite"
 		done
 	fi
 	
@@ -112,7 +112,7 @@ function buildcGenerate()
 			"${buildcXsltPath}/parser.header.xsl" \
 			"${xmlProgramDescriptionPath}"
 	then
-		error 2 "Failed to generate header file ${outputFileBasePath}.h" 
+		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 	fi
 	
 	if ! xsltproc "${buildcXsltprocParams[@]}" \
@@ -121,7 +121,7 @@ function buildcGenerate()
 			"${buildcXsltPath}/parser.source.xsl" \
 			"${xmlProgramDescriptionPath}"
 	then
-		error 2 "Failed to generate source file ${outputFileBasePath}.c" 
+		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 	fi
 }
 
@@ -159,11 +159,11 @@ then
 	exit 0
 fi
 
-chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
+chunk_check_nsxml_ns_path || ns_error 1 "Invalid ns-xml ns folder (${nsPath})"
 
 if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 then
-	error 1 "program interface definition schema error - abort"
+	ns_error 1 "program interface definition schema error - abort"
 fi
 
 programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"

@@ -6,8 +6,8 @@
 		<xi:include href="run-tests.xml"/>
 	</xsh:info>
 	<xsh:functions>
+		<xi:include href="../../ns/xsh/lib/base/base.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_error'])"/>
 		<xi:include href="../../ns/xsh/lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)"/>
-		<xi:include href="../../ns/xsh/apps/functions.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'error'])"/>
 	</xsh:functions>
 	<xsh:code>
 		<!-- Include shell script code -->

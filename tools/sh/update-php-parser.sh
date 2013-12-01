@@ -378,7 +378,7 @@ parse()
 	return ${parser_errorcount}
 }
 
-error()
+ns_error()
 {
 	local errno
 	if [ $# -gt 0 ]
@@ -520,6 +520,33 @@ ns_mktempdir()
 		mktemp -d --suffix "${key}"
 	fi
 }
+ns_which()
+{
+	if [ "$(uname -s)" == "Darwin" ]
+	then
+		which "${@}"
+	else
+	local silent="false"
+	local args
+	while [ ${#} -gt 0 ]
+		do
+			if [ "${1}" = "-s" ]
+			then 
+				silent=true
+			else
+				args=("${args[@]}" "${1}")
+			fi
+			shift
+		done
+		
+		if ${silent}
+		then
+			which "${args[@]}" 1>/dev/null 2>&1
+		else
+			which "${args[@]}"
+		fi
+	fi
+}
 ns_sed_inplace()
 {
 	local sedCommand
@@ -596,10 +623,10 @@ transform_php()
 	local input="${1}"
 	local output="${2}"
 	
-	[ -r "${input}" ] || error 1 "Invalid input file \'${input}\'"
+	[ -r "${input}" ] || ns_error 1 "Invalid input file \'${input}\'"
 	
 	local tmpFile="$(ns_mktemp)"
-	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || error 2 "Unable to access to temporary file '${tmpFile}'"
+	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || ns_error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
