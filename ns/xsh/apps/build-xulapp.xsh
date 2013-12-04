@@ -9,6 +9,13 @@
 		<xi:include href="../lib/base/base.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_error'])"/>
 		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_realpath'])" />
 		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_mktemp'])" />
+		<!-- build-c functions -->
+		<!-- 
+		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcPopulateXsltprocParams'])" />
+		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcGenerateBase'])" />
+		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcGenerate'])" />
+		 -->
+		<!-- Other --> 
 		<xsh:function name="log">
 			<xsh:body>echo "${@}" &gt;&gt; "${logFile}"</xsh:body>
 		</xsh:function>

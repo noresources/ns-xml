@@ -2089,6 +2089,124 @@ ns_mktemp()
 		mktemp --suffix "${key}"
 	fi
 }
+buildcPopulateXsltprocParams()
+{
+	# Shared xsltproc options
+	buildcXsltprocParams=(--xinclude)
+	
+	# Prefix
+	if [ ! -z "${prefix}" ]
+	then
+		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
+			--stringparam "prg.c.parser.prefix" "${prefix}")
+	fi
+	
+	if [ "${structNameStyle}" != "none" ]
+	then
+		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
+			"--stringparam" "prg.c.parser.structNamingStyle" "${structNameStyle}")
+	fi
+	
+	if [ "${functionNameStyle}" != "none" ]
+	then
+		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
+			"--stringparam" "prg.c.parser.functionNamingStyle" "${functionNameStyle}")
+	fi
+	
+	if [ "${variableNameStyle}" != "none" ]
+	then
+		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
+		"--stringparam" "prg.c.parser.variableNamingStyle" "${variableNameStyle}")
+	fi
+}
+buildcGenerateBase()
+{
+	local fileBase="${outputFileBase}"
+	local tpl
+	# Check required templates
+	for x in parser.generic-header parser.generic-source
+	do
+		tpl="${buildcXsltPath}/${x}.xsl"
+		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
+	done
+	
+	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline-base"
+	local outputFileBasePath="${outputPath}/${fileBase}"
+	if ! ${outputOverwrite}
+	then
+		# Check existing files
+		for e in h c
+		do
+			[ -f "${outputFileBasePath}.${e}" ] && ns_error 2 "${fileBase}.${e} already exists. Use --overwrite"
+		done
+	fi
+	
+	buildcPopulateXsltprocParams
+	
+	# Header
+	if ! xsltproc "${buildcXsltprocParams[@]}" \
+			--output "${outputFileBasePath}.h" \
+			"${buildcXsltPath}/parser.generic-header.xsl" \
+			"${xmlProgramDescriptionPath}"
+	then
+		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
+	fi
+	
+	if ! xsltproc "${buildcXsltprocParams[@]}" \
+			--output "${outputFileBasePath}.c" \
+			"${buildcXsltPath}/parser.generic-source.xsl" \
+			"${xmlProgramDescriptionPath}"
+	then
+		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
+	fi
+}
+buildcGenerate()
+{
+	local tpl
+	local fileBase="${outputFileBase}"
+	# Check required templates
+	for x in parser.header parser.source
+	do
+		tpl="${buildcXsltPath}/${x}.xsl"
+		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
+	done
+	
+	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline"
+	local outputFileBasePath="${outputPath}/${fileBase}"
+	if ! ${outputOverwrite}
+	then
+		# Check existing files
+		for e in h c
+		do
+			[ -f "${outputFileBasePath}.${e}" ] && ns_error 2 "${fileBase}.${e} already exists. Use --overwrite"
+		done
+	fi
+	
+	buildcPopulateXsltprocParams
+	if ! ${generateEmbedded}
+	then
+		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
+		"--stringparam"	"prg.c.parser.nsxmlHeaderPath" "${generateInclude}")
+	fi
+	
+	# Header
+	if ! xsltproc "${buildcXsltprocParams[@]}" \
+			--output "${outputFileBasePath}.h" \
+			"${buildcXsltPath}/parser.header.xsl" \
+			"${xmlProgramDescriptionPath}"
+	then
+		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
+	fi
+	
+	if ! xsltproc "${buildcXsltprocParams[@]}" \
+			--output "${outputFileBasePath}.c" \
+			--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
+			"${buildcXsltPath}/parser.source.xsl" \
+			"${xmlProgramDescriptionPath}"
+	then
+		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
+	fi
+}
 log()
 {
 	echo "${@}" >> "${logFile}"

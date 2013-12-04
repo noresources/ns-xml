@@ -1235,9 +1235,7 @@ xml_validate()
 	
 	return 0
 }
-
-
-function buildcPopulateXsltprocParams()
+buildcPopulateXsltprocParams()
 {
 	# Shared xsltproc options
 	buildcXsltprocParams=(--xinclude)
@@ -1267,22 +1265,18 @@ function buildcPopulateXsltprocParams()
 		"--stringparam" "prg.c.parser.variableNamingStyle" "${variableNameStyle}")
 	fi
 }
-
-function buildcGenerateBase()
+buildcGenerateBase()
 {
+	local fileBase="${outputFileBase}"
+	local tpl
 	# Check required templates
 	for x in parser.generic-header parser.generic-source
 	do
-		local tpl="${buildcXsltPath}/${x}.xsl"
+		tpl="${buildcXsltPath}/${x}.xsl"
 		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
-	local fileBase="${outputFileBase}"
-	if [ "${fileBase}" = "<auto>" ]
-	then
-		fileBase="cmdline-base"
-	fi
-		
+	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline-base"
 	local outputFileBasePath="${outputPath}/${fileBase}"
 	if ! ${outputOverwrite}
 	then
@@ -1312,22 +1306,18 @@ function buildcGenerateBase()
 		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 	fi
 }
-
-function buildcGenerate()
+buildcGenerate()
 {
+	local tpl
+	local fileBase="${outputFileBase}"
 	# Check required templates
 	for x in parser.header parser.source
 	do
-		local tpl="${buildcXsltPath}/${x}.xsl"
+		tpl="${buildcXsltPath}/${x}.xsl"
 		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
-	local fileBase="${outputFileBase}"
-	if [ "${fileBase}" = "<auto>" ]
-	then
-		fileBase="cmdline"
-	fi
-		
+	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline"
 	local outputFileBasePath="${outputPath}/${fileBase}"
 	if ! ${outputOverwrite}
 	then
@@ -1363,6 +1353,7 @@ function buildcGenerate()
 		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 	fi
 }
+
 
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"

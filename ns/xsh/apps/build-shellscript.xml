@@ -125,8 +125,6 @@
 				<prg:variable>forceInterpreter</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
-				<prg:abstract>
-				</prg:abstract>
 				<prg:details>Force to use the interpreter defined by --interpreter
 					or --interpreter-cmd
 					<prg:endl/>
