@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011-2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified">
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd"/>
@@ -56,6 +56,7 @@
 			<element name="abstract" type="prg:simpleTextType" minOccurs="0"/>
 			<element name="details" type="prg:richTextType" minOccurs="0"/>
 		</all>
+		<attribute ref="xml:base"/>
 	</complexType>
 
 	<complexType name="pathRuleType">
@@ -197,6 +198,7 @@
 			<documentation xml:lang="en">Describes an argument option parameter or a value</documentation>
 		</annotation>
 		<group ref="prg:itemTypeGroup"/>
+		<attribute ref="xml:base"/>
 	</complexType>
 
 	<complexType name="optionUISpecsType">
