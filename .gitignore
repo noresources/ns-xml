@@ -13,6 +13,8 @@ unittests/parsers/apps/*/program.zsh
 unittests/parsers/apps/*/Parser.py
 unittests/parsers/apps/*/ProgramInfo.py
 run-tests.sh.log
+__pycache__
+\.pyc
 
 # Generated documentation files
 doc/html
