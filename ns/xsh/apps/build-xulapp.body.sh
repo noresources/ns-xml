@@ -1,6 +1,6 @@
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
 programVersion="2.0"
 hostPlatform="linux"
 macOSXVersion=""

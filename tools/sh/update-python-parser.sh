@@ -390,11 +390,11 @@ ns_error()
 	fi
 	local message="${@}"
 	if [ -z "${errno##*[!0-9]*}" ]
-	then 
+	then
 		message="${errno} ${message}"
 		errno=1
 	fi
-	echo "${message}"
+	ns_print_error "${message}"
 	exit ${errno}
 }
 ns_isdir()

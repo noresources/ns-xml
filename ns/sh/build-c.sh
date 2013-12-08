@@ -1081,6 +1081,71 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_print_error()
+{
+	local shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+	local errorColor="${NSXML_ERROR_COLOR}"
+	local useColor=false
+	for s in bash zsh ash
+	do
+		if [ "${shell}" = "${s}" ]
+		then
+			useColor=true
+			break
+		fi
+	done
+	if ${useColor} 
+	then
+		[ -z "${errorColor}" ] && errorColor="31" 
+		echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
+	else
+		echo "${@}" 1>&2
+	fi
+}
+ns_error()
+{
+	local errno
+	if [ $# -gt 0 ]
+	then
+		errno=${1}
+		shift
+	else
+		errno=1
+	fi
+	local message="${@}"
+	if [ -z "${errno##*[!0-9]*}" ]
+	then
+		message="${errno} ${message}"
+		errno=1
+	fi
+	ns_print_error "${message}"
+	exit ${errno}
+}
+nsxml_installpath()
+{
+	local subpath="share/ns"
+	for prefix in \
+		"${@}" \
+		"${NSXML_PATH}" \
+		"${HOME}/.local/${subpath}" \
+		"${HOME}/${subpath}" \
+		/usr/${subpath} \
+		/usr/loca/${subpath}l \
+		/opt/${subpath} \
+		/opt/local/${subpath}
+	do
+		if [ ! -z "${prefix}" ] \
+			&& [ -d "${prefix}" ] \
+			&& [ -r "${prefix}/nsxml.plist" ]
+		then
+			echo -n "${prefix}"
+			return 0
+		fi
+	done
+	
+	ns_print_error "nsxml_installpath: Path not found"
+	return 1
+}
 ns_realpath()
 {
 	local inputPath
@@ -1102,25 +1167,6 @@ ns_realpath()
 	
 	cd "${cwd}" 1>/dev/null 2>&1
 	echo "${inputPath}"
-}
-ns_error()
-{
-	local errno
-	if [ $# -gt 0 ]
-	then
-		errno=${1}
-		shift
-	else
-		errno=1
-	fi
-	local message="${@}"
-	if [ -z "${errno##*[!0-9]*}" ]
-	then 
-		message="${errno} ${message}"
-		errno=1
-	fi
-	echo "${message}"
-	exit ${errno}
 }
 ns_mktemp()
 {
@@ -1358,7 +1404,7 @@ buildcGenerate()
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
 programVersion="2.0"
 
 # Check required programs

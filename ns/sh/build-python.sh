@@ -902,6 +902,27 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_print_error()
+{
+	local shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+	local errorColor="${NSXML_ERROR_COLOR}"
+	local useColor=false
+	for s in bash zsh ash
+	do
+		if [ "${shell}" = "${s}" ]
+		then
+			useColor=true
+			break
+		fi
+	done
+	if ${useColor} 
+	then
+		[ -z "${errorColor}" ] && errorColor="31" 
+		echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
+	else
+		echo "${@}" 1>&2
+	fi
+}
 ns_error()
 {
 	local errno
@@ -914,12 +935,37 @@ ns_error()
 	fi
 	local message="${@}"
 	if [ -z "${errno##*[!0-9]*}" ]
-	then 
+	then
 		message="${errno} ${message}"
 		errno=1
 	fi
-	echo "${message}"
+	ns_print_error "${message}"
 	exit ${errno}
+}
+nsxml_installpath()
+{
+	local subpath="share/ns"
+	for prefix in \
+		"${@}" \
+		"${NSXML_PATH}" \
+		"${HOME}/.local/${subpath}" \
+		"${HOME}/${subpath}" \
+		/usr/${subpath} \
+		/usr/loca/${subpath}l \
+		/opt/${subpath} \
+		/opt/local/${subpath}
+	do
+		if [ ! -z "${prefix}" ] \
+			&& [ -d "${prefix}" ] \
+			&& [ -r "${prefix}/nsxml.plist" ]
+		then
+			echo -n "${prefix}"
+			return 0
+		fi
+	done
+	
+	ns_print_error "nsxml_installpath: Path not found"
+	return 1
 }
 ns_realpath()
 {
@@ -1061,8 +1107,7 @@ xml_validate()
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
-rootPath="$(ns_realpath "${scriptPath}/../..")"
+nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
 programVersion="2.0"
  
 # Check required programs

@@ -1,8 +1,7 @@
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
-rootPath="$(ns_realpath "${scriptPath}/../..")"
+nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
 programVersion="2.0"
  
 # Check required programs

@@ -1,7 +1,7 @@
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
+nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
 programVersion="2.0"
 
 # Check required programs
