@@ -107,7 +107,7 @@
 						<prg:variable>prefix</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Program struct &amp; function names prefix</prg:abstract>
+						<prg:abstract>Program struct &amp; function names prefixes</prg:abstract>
 						<prg:details>The default behavior use the program name described in the
 							XML program interface definition file
 						</prg:details>
@@ -139,7 +139,7 @@
 							</prg:databinding>
 							<prg:default>none</prg:default>
 							<prg:documentation>
-								<prg:abstract>struct naming convention</prg:abstract>
+								<prg:abstract>Structs naming convention</prg:abstract>
 								<prg:details>Generate struct names according the given naming convention</prg:details>
 							</prg:documentation>
 							<prg:names>
@@ -159,7 +159,7 @@
 							</prg:databinding>
 							<prg:default>none</prg:default>
 							<prg:documentation>
-								<prg:abstract>struct naming convention</prg:abstract>
+								<prg:abstract>Functions naming convention</prg:abstract>
 								<prg:details>Generate function names according the given naming convention</prg:details>
 							</prg:documentation>
 							<prg:names>
@@ -180,7 +180,7 @@
 							</prg:databinding>
 							<prg:default>none</prg:default>
 							<prg:documentation>
-								<prg:abstract>Variable naming convention</prg:abstract>
+								<prg:abstract>Variables naming convention</prg:abstract>
 								<prg:details>Generate variable and enum names according the given naming convention</prg:details>
 							</prg:documentation>
 							<prg:names>

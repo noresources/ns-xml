@@ -36,7 +36,7 @@ Usage:
           The namimg styles for variables, structs and functions of the program 
           parser pre-generated files must match
       
-      -p, --prefix: Program struct & function names prefix
+      -p, --prefix: Program struct & function names prefixes
         The default behavior use the program name described in the XML program 
         interface definition file
       Naming styles
@@ -48,17 +48,17 @@ Usage:
         Private functions and internal struct members of the ns-xml parser core 
         are not modified
         
-        --struct-style, --struct: struct naming convention
+        --struct-style, --struct: Structs naming convention
           Generate struct names according the given naming convention  
           The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
-        --function-style, --function, --func: struct naming convention
+        --function-style, --function, --func: Functions naming convention
           Generate function names according the given naming convention  
           The argument value have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
-        --variable-style, --variable, --var: Variable naming convention
+        --variable-style, --variable, --var: Variables naming convention
           Generate variable and enum names according the given naming 
           convention  
           The argument value have to be one of the following:  
@@ -1136,7 +1136,7 @@ nsxml_installpath()
 	do
 		if [ ! -z "${prefix}" ] \
 			&& [ -d "${prefix}" ] \
-			&& [ -r "${prefix}/nsxml.plist" ]
+			&& [ -r "${prefix}/ns-xml.plist" ]
 		then
 			echo -n "${prefix}"
 			return 0

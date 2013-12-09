@@ -59,7 +59,7 @@ for prefix in \
 do
 	if [ ! -z "${prefix}" ] \
 		&& [ -d "${prefix}" ] \
-		&& [ -r "${prefix}/nsxml.plist" ]
+		&& [ -r "${prefix}/ns-xml.plist" ]
 	then
 		echo -n "${prefix}"
 		return 0
