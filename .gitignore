@@ -14,10 +14,14 @@ unittests/parsers/apps/*/Parser.py
 unittests/parsers/apps/*/ProgramInfo.py
 run-tests.sh.log
 __pycache__
-\.pyc
+*.pyc
 
-# Generated documentation files
-doc/html
+# Temporary or generated files and folders
+/archives
+/doc/html
+/doc/wiki
+/xul
+/gource-*.mp4
 
 # Other VCS files
 \.hg*
