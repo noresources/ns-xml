@@ -22,9 +22,26 @@ error()
 	exit ${retval}
 }
 
-hgnode=$(hg tip --template "{date|shortdate}-{node|short}")
-echo "${hgnode}"
+# hgnode=$(hg tip --template "{date|shortdate}-{node|short}")
+# echo "${hgnode}"
+gitref=$(git rev-parse --short HEAD)
 
+platform="$(uname -s)"
+
+transforms=(\
+	"s,ns/sh,bin," \
+	"s,resources/bash_completion.d,bash_completion.d," \
+	"s,ns/xbl,share/xbl," \
+	"s,ns/xpcom,share/xpcom," \
+	"s,ns/xsd,share/xsd," \
+	"s,ns/xsl,share/xsl," \
+	"s,ns/ns-xml.plist,share/ns-xml.plist," \
+	"s,xul/linux,bin," \
+	"s,xul/osx,Applications," \
+	"s,resources/sh/,," \
+)
+
+# program interface definition framework
 prg=(\
 	ns/sh/build-c.sh \
 	ns/sh/build-python.sh \
@@ -48,12 +65,9 @@ prg=(\
 	ns/xsl/languages \
 	ns/xsl/program/2.0 \
 	ns/xsl/strings.xsl \
+	ns/ns-xml.plist \
+	resources/sh/install.sh \
 	LICENSE
-)
-
-prg_linux=("${prg[@]}" \
-	--transform \
-	"s,xul/linux,ns/xul," \
 )
 
 while read d
@@ -62,11 +76,6 @@ do
 done << EOF
 $(find "xul/linux" -mindepth 1 -maxdepth 1 -type d) 
 EOF
-
-prg_osx=("${prg[@]}" \
-	--transform \
-	"s,xul/osx,ns/xul," \
-)
 
 while read d
 do
@@ -79,13 +88,14 @@ xslt=(\
 	--transform \
 	's,doc/html/xsl,doc,' \
 	--transform \
-	s,ns/xsl,xsl, \
+	s,ns/xsl,share/xsl, \
 	doc/html/xsl/documents \
 	doc/html/xsl/languages \
 	doc/html/xsl/strings.html \
 	ns/xsl/documents \
 	ns/xsl/languages \
 	ns/xsl/strings.xsl \
+	resources/sh/install.sh \
 	LICENSE
 )
 
@@ -93,11 +103,22 @@ make_archive()
 {
 	local name="${1}"
 	shift
-	
+		
 	mkdir -p "${projectPath}/archives"
-	tar -C "${projectPath}" --transform "s,^,${name}/," -cvzf "archives/${name}-${hgnode}.tgz" "${@}" || error 2
+	tar -C "${projectPath}" \
+		--transform "s,^,${name}/," \
+		-cvzf "archives/${name}-${gitref}.tgz" \
+		"${@}" \
+		"${transformArgs[@]}" \
+	|| error 2
 }
 
-make_archive "ns-xml-pidf-linux" "${prg_linux[@]}"
-make_archive "ns-xml-pidf-osx" "${prg_osx[@]}"
+unset transformArgs
+for t in "${transforms[@]}"
+do
+	transformArgs=("${transformArgs[@]}" --transform "${t}")
+done
+
+[ "${platform}" = "Linux" ] && make_archive "ns-xml-pidf-linux" "${prg[@]}" "${prg_linux[@]}"
+[ "${platform}" = "Darwin" ] && make_archive "ns-xml-pidf-osx" "${prg[@]}" "${prg_osx[@]}"
 make_archive "ns-xml-xsltlib" "${xslt[@]}"
