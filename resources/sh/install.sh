@@ -161,8 +161,10 @@ fi
 echo "  - Add new configuration"
 cat >> "${profileFilePath}" << EOF
 ### [ns-xml:autoconfig $(date +%FT%T)
+# ns-xml prefix path
+export NSXML_PATH="${prefixDirectoryPath}"
 # Executable path
-export PATH="${prefixDirectoryPath}/bin/ns:\${PATH}"
+export PATH="\${NSXML_PATH}/bin/ns:\${PATH}"
 # Bash completion
 shell="\$(readlink /proc/\$\$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
 [ "\${shell}" = "bash" ] && for f in "${completionDirectoryPath}"/*; do . "\${f}"; done
