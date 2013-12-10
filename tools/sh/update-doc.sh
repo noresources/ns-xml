@@ -13,11 +13,12 @@ usage()
 cat << EOFUSAGE
 update-doc: Documentation builder
 Usage: 
-  update-doc [--hg-only --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
+  update-doc [--vcs <...> --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
   With:
     XSLT documentation
-      --hg-only: Generate documentation for XSLT files in the mercurial 
-      repository only
+      --vcs: Generate documentation for versionned XSLT files  
+        The argument value have to be one of the following:  
+          hg or git
       --xsl-output: XSLT output path
       --xsl-css: XSLT CSS file
       --stylesheet-abstract, --abstract: Display XSLT stylesheet abstract
@@ -76,7 +77,6 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 # Switch options
-xsltHgOnly=false
 xsltAbstract=false
 indexModeNone=false
 indexUrlRelativeToRoot=false
@@ -84,6 +84,7 @@ indexCopyInFolders=false
 htmlBodyOnly=false
 displayHelp=false
 # Single argument options
+xsltVersionControlSystem=
 xsltDocOutputPath=
 xsltDocCssFile=
 indexUrl=
@@ -321,16 +322,39 @@ parse_process_option()
 			displayHelp=true
 			parse_setoptionpresence G_4_help
 			;;
-		hg-only)
+		vcs)
 			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_item="${parser_optiontail}"
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = "--" ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=""
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if ! ([ "${parser_item}" = "hg" ] || [ "${parser_item}" = "git" ])
+			then
+				parse_adderror "Invalid value for option \"${parser_option}\""
+				
 				return ${PARSER_ERROR}
 			fi
-			xsltHgOnly=true
-			parse_setoptionpresence G_1_g_1_hg_only;parse_setoptionpresence G_1_g
+			xsltVersionControlSystem="${parser_item}"
+			parse_setoptionpresence G_1_g_1_vcs;parse_setoptionpresence G_1_g
 			;;
 		xsl-output)
 			# Group checks
@@ -1365,16 +1389,27 @@ then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
 	fi
 
-	if ${xsltHgOnly}
+	if [ "${xsltVersionControlSystem}" = "git" ] && [ -d "${projectPath}/.git" ] 
 	then
-		cd "${projectPath}"
+		cd "${projectPath}/ns/xsl"
 		while read f
 		do
 			xsltdoc "${projectPath}/${f}"
 		done << EOF
-		$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+$(git ls-files --full-name | grep -e ".*\.xsl$")
 EOF
-		cd "${cwd}"		
+		cd "${cwd}"
+
+	elif [ "${xsltVersionControlSystem}" = "hg" ] && [ -d "${projectPath}/.hg" ]
+	then 
+		cd "${projectPath}"
+		while read f
+		do
+			xsltdoc "${projectPath}${f}"
+		done << EOF
+$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+EOF
+		cd "${cwd}"
 	else
 		while read f
 		do

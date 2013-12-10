@@ -269,16 +269,27 @@ then
 		xsltprocOptions=("${xsltprocOptions[@]}" "--param" "xsl.doc.html.stylesheetAbstract" "true()")
 	fi
 
-	if ${xsltHgOnly}
+	if [ "${xsltVersionControlSystem}" = "git" ] && [ -d "${projectPath}/.git" ] 
 	then
-		cd "${projectPath}"
+		cd "${projectPath}/ns/xsl"
 		while read f
 		do
 			xsltdoc "${projectPath}/${f}"
 		done << EOF
-		$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+$(git ls-files --full-name | grep -e ".*\.xsl$")
 EOF
-		cd "${cwd}"		
+		cd "${cwd}"
+
+	elif [ "${xsltVersionControlSystem}" = "hg" ] && [ -d "${projectPath}/.hg" ]
+	then 
+		cd "${projectPath}"
+		while read f
+		do
+			xsltdoc "${projectPath}${f}"
+		done << EOF
+$(hg st -macn  --include "glob:${xslPath}/**.xsl")
+EOF
+		cd "${cwd}"
 	else
 		while read f
 		do
