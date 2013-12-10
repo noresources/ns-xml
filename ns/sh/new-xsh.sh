@@ -758,8 +758,7 @@ done
 
 cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- {} -->
-<sh:program xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
+<sh:program interpreterType="bash" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<sh:info>
 		<xi:include href="${xshName}.xml" />
 	</sh:info>
@@ -867,7 +866,7 @@ if ! parse "\${@}"
 then
 	if \${displayHelp}
 	then
-		usage
+		usage "${parser_subcommand}"
 		exit 0
 	fi
 	
@@ -877,7 +876,7 @@ fi
 
 if \${displayHelp}
 then
-	usage
+	usage "${parser_subcommand}"
 	exit 0
 fi
 
