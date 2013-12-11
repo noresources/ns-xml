@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- {} -->
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>xsltdeps</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:copyright>Copyright © 2013 by Renaud Guillard (dev@nore.fr)</prg:copyright>
+	<prg:documentation>
+		<prg:abstract>List file dependencies of the given XSLT files</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:group type="exclusive">
+			<prg:documentation>
+				<prg:abstract>Path presentation</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>absolutePath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Print absolute paths</prg:abstract>
+						<prg:details>Print absolute path for all dependencies found rather than the relative path
+							to the current working directory
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>absolute</prg:long>
+						<prg:short>a</prg:short>
+					</prg:names>
+				</prg:switch>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>relativePath</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Print result file paths relative to the given path</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>relative</prg:long>
+						<prg:short>r</prg:short>
+					</prg:names>
+					<prg:type>
+						<prg:path exist="true">
+							<prg:kinds>
+								<prg:folder></prg:folder>
+							</prg:kinds>
+						</prg:path>
+					</prg:type>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>addInputFiles</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Add input files in result</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>add-input</prg:long>
+				<prg:short>i</prg:short>
+			</prg:names>
+		</prg:switch>
+		<!-- Help -->
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+		<!-- Debug -->
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
+	</prg:options>
+	<prg:values>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>XSLT files</prg:abstract>
+			</prg:documentation>
+			<prg:type>
+				<prg:path exist="true">
+					<prg:kinds>
+						<prg:file />
+					</prg:kinds>
+					<prg:patterns>
+						<prg:pattern>
+							<prg:name>XSLT file</prg:name>
+							<prg:rules>
+								<prg:rule>
+									<prg:endWith>.xsl</prg:endWith>
+								</prg:rule>
+							</prg:rules>
+						</prg:pattern>
+					</prg:patterns>
+				</prg:path>
+			</prg:type>
+		</prg:other>
+	</prg:values>
+</prg:program>
