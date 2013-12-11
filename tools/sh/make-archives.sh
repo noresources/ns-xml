@@ -61,14 +61,18 @@ prg=(\
 	ns/xpcom \
 	ns/xsd/program/2.0 \
 	ns/xsd/www.w3.org/XML/1998/namespace.xsd \
-	ns/xsl/documents/gengetopts-base.xsl \
-	ns/xsl/languages \
-	ns/xsl/program/2.0 \
-	ns/xsl/strings.xsl \
 	ns/ns-xml.plist \
 	resources/sh/install.sh \
 	LICENSE
 )
+
+while read f
+do
+	prg=("${prg[@]}" "${f}")
+done << EOF
+$(find "${projectPath}/ns/xsl/program" -name "*.xsl" \
+	| xargs "${projectPath}/ns/sh/xsltdeps.sh" --relative "${projectPath}" --add-input --)
+EOF
 
 while read d
 do
