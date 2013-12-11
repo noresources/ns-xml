@@ -4,7 +4,7 @@
 
 <!-- Transform documents based on the xsh XML schema (http://xsd.nore.fr/xsh)
 	to UNIX shell script code -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsh="http://xsd.nore.fr/xsh" xmlns:bash="http://xsd.nore.fr/bash">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<xsl:output method="text" encoding="utf-8" />
 
@@ -372,7 +372,7 @@
 			</xsl:choose>
 		</xsl:variable>
 
-		<xsl:apply-templates select="xsh:function|bash:function">
+		<xsl:apply-templates select="xsh:function">
 			<xsl:with-param name="interpreter" select="$vInterpreter" />
 		</xsl:apply-templates>
 	</xsl:template>

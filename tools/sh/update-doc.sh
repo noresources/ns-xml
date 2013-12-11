@@ -1116,8 +1116,6 @@ filesystempath_to_nmepath()
 	output="${outputBasePath}/${output}"
 	echo "${output}"
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
@@ -1419,4 +1417,3 @@ EOF
 EOF
 	fi
 fi
-

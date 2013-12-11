@@ -5,7 +5,7 @@
 <!-- Build a shell script by combining program option parsing & usage from
 	the XML program interface definition schema and shell code and functions
 	from the XSH schema (hhe old bash scheam is still supported) -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:bash="http://xsd.nore.fr/bash" xmlns:xsh="http://xsd.nore.fr/xsh">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<xsl:import href="../../languages/bash.xsl" />
 	<xsl:import href="../../languages/xsh.xsl" />
@@ -231,7 +231,7 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<xsl:template match="/bash:program|/xsh:program">
+	<xsl:template match="/xsh:program">
 
 		<xsl:variable name="defaultInterpreterCommand" select="normalize-space($xsh.defaultInterpreterCommand)" />
 		<xsl:variable name="defaultInterpreterType" select="normalize-space($xsh.defaultInterpreterType)" />
@@ -289,10 +289,10 @@
 		<xsl:value-of select="$sh.endl" />
 
 		<xsl:choose>
-			<xsl:when test="./bash:info|./xsh:info">
-				<xsl:if test="./bash:info/prg:program|./xsh:info/prg:program">
+			<xsl:when test="./xsh:info">
+				<xsl:if test="/prg:program|./xsh:info/prg:program">
 
-					<xsl:variable name="programNode" select="./bash:info/prg:program|./xsh:info/prg:program" />
+					<xsl:variable name="programNode" select="./xsh:info/prg:program" />
 
 					<xsl:if test="$programNode[prg:author|prg:version|prg:license|prg:copyright|prg:documentation/prg:abstract]">
 						<xsl:call-template name="sh.comment">
@@ -354,9 +354,7 @@
 				</xsl:if>
 			</xsl:when>
 		</xsl:choose>
-		<xsl:apply-templates select="./bash:functions" />
 		<xsl:apply-templates select="./xsh:functions" />
-		<xsl:apply-templates select="./bash:code" />
 		<xsl:apply-templates select="./xsh:code" />
 	</xsl:template>
 

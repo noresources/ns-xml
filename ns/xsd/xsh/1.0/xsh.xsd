@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh"
-	xmlns:bash="http://xsd.nore.fr/bash">
+<schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<import namespace="http://xsd.nore.fr/program" schemaLocation="../../program/2.0/program.xsd" />
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
-
-	<!-- temp -->
-	<import namespace="http://xsd.nore.fr/bash" schemaLocation="../../bash.xsd" />
 
 	<annotation>
 		<documentation xml:lang="en">XML-based UNIX shell script program and/or functions definition</documentation>
@@ -153,7 +149,6 @@
 	<group name="functionsElementsGroup">
 		<choice>
 			<element ref="xsh:function" minOccurs="0" maxOccurs="unbounded" />
-			<element ref="bash:function" minOccurs="0" maxOccurs="unbounded" />
 		</choice>
 	</group>
 

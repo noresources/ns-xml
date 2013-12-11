@@ -766,8 +766,6 @@ ns_which()
 		fi
 	fi
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
@@ -1530,4 +1528,3 @@ done
 ${testC} && ${testValgrind} && (${keepTemporaryFiles} || rm -f "${valgrindOutputXslFile}")
 
 exit $(find "${parserTestsPathBase}" -name "*.result-*" | wc -l)
-

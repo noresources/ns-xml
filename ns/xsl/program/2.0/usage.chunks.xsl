@@ -6,12 +6,14 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:import href="base.xsl" />
 	<xsl:import href="usage.strings.xsl" />
+	
 	<!-- String representing an indentation level -->
 	<xsl:param name="prg.usage.indentChar" select="'&#9;'" />
 	<!-- Indicates if documentation text have to be wrapped -->
 	<xsl:param name="prg.usage.wrap" select="true()" />
 	<!-- Maximum text line length (for text wrapping) -->
 	<xsl:param name="prg.usage.lineMaxLength" select="80" />
+	
 	<!-- Literal representation of an option argument/value type -->
 	<xsl:template name="prg.usage.typeDisplay">
 		<!-- type Node -->

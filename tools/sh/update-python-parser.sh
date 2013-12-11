@@ -592,8 +592,6 @@ ns_sed_inplace()
 		shift
 	done
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -676,4 +674,3 @@ pythonSourceFilePath="${rootPath}/resources/python/program/${programVersion}/Par
 pythonXslFilePath="${xslPath}/program/${programVersion}/python/parser.xsl"
 
 transform_python "${pythonSourceFilePath}" "${pythonXslFilePath}"
-

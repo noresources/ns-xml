@@ -592,8 +592,6 @@ ns_sed_inplace()
 		shift
 	done
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 rootPath="$(ns_realpath "${scriptPath}/../..")"
@@ -686,4 +684,3 @@ phpSourceFilePath="${rootPath}/resources/php/program/${programVersion}/Parser.ph
 phpXslFilePath="${xslPath}/program/${programVersion}/php/parser.xsl"
 
 transform_php "${phpSourceFilePath}" "${phpXslFilePath}"
-

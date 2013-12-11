@@ -49,8 +49,7 @@ With:
     -i, --interpreter: Default shell interpreter type
       The interpreter family to use if the XSH file does not define one.
         Attention: This parameter is only available for XSH file using the 
-        XSH XML schema (http://xsd.nore.fr/xsh). The old 
-        http://xsd.nore.fr/bash XSD schema is not supported.  
+        XSH XML schema (http://xsd.nore.fr/xsh)  
       The argument can be:  
         bash, zsh or ksh
     -I, --interpreter-cmd: Default shell interpreter invocation directive
@@ -2399,7 +2398,6 @@ xml_validate()
 	
 	return 0
 }
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
@@ -2920,4 +2918,3 @@ else
 fi
 EOF
 chmod 755 "${launcherPath}"
-

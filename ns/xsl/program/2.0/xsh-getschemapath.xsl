@@ -2,7 +2,7 @@
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:bash="http://xsd.nore.fr/bash" xmlns:xsh="http://xsd.nore.fr/xsh">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<xsl:output method="text" encoding="utf-8" />
 

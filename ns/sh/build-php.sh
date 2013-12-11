@@ -1073,8 +1073,6 @@ xml_validate()
 	
 	return 0
 }
-
-
 # Global variables
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -1184,4 +1182,3 @@ then
 	
 	chmod 755 "${outputScriptFilePath}" || ns_error 4 "Failed to set exeutable flag on ${outputScriptFilePath}" 
 fi
-

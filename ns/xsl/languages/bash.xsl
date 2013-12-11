@@ -3,7 +3,7 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Transform document based on the bash XML schema to shell script code -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sh="http://xsd.nore.fr/bash">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sh="http://xsd.nore.fr/xsh">
 
 	<xsl:output method="text" encoding="utf-8" />
 

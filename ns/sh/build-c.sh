@@ -1399,8 +1399,6 @@ buildcGenerate()
 		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 	fi
 }
-
-
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
@@ -1456,4 +1454,3 @@ else
 fi
 
 exit 0
-

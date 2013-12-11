@@ -82,9 +82,7 @@
 							one.
 							<prg:block>Attention: This parameter is only available for XSH
 								file using the
-								XSH XML schema (http://xsd.nore.fr/xsh). The old
-								http://xsd.nore.fr/bash XSD schema is not
-								supported.
+								XSH XML schema (http://xsd.nore.fr/xsh)
 							</prg:block>
 						</prg:details>
 					</prg:documentation>
