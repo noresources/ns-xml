@@ -740,7 +740,11 @@ if ${addInputFiles}
 then
 	for f in "${parser_values[@]}"
 	do
-		dependencies=("${dependencies[@]}" "$(ns_realpath "${f}")")	
+		f="$(ns_realpath "${f}")"
+		if ! ns_array_contains "${f}" "${dependencies[@]}"
+		then
+			dependencies=("${dependencies[@]}" "${f}")
+		fi	
 	done
 fi
 
