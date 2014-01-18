@@ -549,12 +549,6 @@ ns_which()
 }
 ns_sed_inplace()
 {
-	local sedCommand
-	if [ $# -gt 0 ]
-	then
-		sedCommand="${1}"
-		shift
-	fi
 	# sedForm
 	# 1: modern linux => (g)sed --in-place
 	# 2: Mac OS X 10.5-10.8 - => sed -i ""
@@ -579,18 +573,13 @@ ns_sed_inplace()
 		fi	
 	fi
 	
-	while [ $# -gt 0 ]
-	do	
-		if [ ${sedForm} -eq 1 ]
-		then
-			"${sedBin}" --in-place "${sedCommand}" "${1}"
-		elif [ ${sedForm} -eq 2 ]
-		then
-			"${sedBin}" -i "" "${sedCommand}" "${1}"
-		fi
-		
-		shift
-	done
+	if [ ${sedForm} -eq 1 ]
+	then
+		"${sedBin}" --in-place "${@}"
+	elif [ ${sedForm} -eq 2 ]
+	then
+		"${sedBin}" -i ""  "${@}"
+	fi
 }
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
@@ -628,7 +617,7 @@ transform_php()
 
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © $(date +%Y) by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- PHP Source code in customizable XSLT form -->

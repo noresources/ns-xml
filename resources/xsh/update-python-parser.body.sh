@@ -34,7 +34,7 @@ transform_python()
 
 	cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © $(date +%Y) by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013-$(date +%Y) by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Python Source code in customizable XSLT form -->

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2013 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013-2014 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Python Source code in customizable XSLT form -->
