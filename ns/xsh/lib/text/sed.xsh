@@ -5,7 +5,6 @@
 	<!-- in place file text replacement using sed -->
 	<!-- Take care of sed version (at least on Mac OS X 10.5) -->
 	<xsh:function name="ns_sed_inplace">
-		<xsh:parameter name="sedCommand" />
 		<xsh:body><![CDATA[
 # sedForm
 # 1: modern linux => (g)sed --in-place
@@ -31,18 +30,13 @@ then
 	fi	
 fi
 
-while [ $# -gt 0 ]
-do	
-	if [ ${sedForm} -eq 1 ]
-	then
-		"${sedBin}" --in-place "${sedCommand}" "${1}"
-	elif [ ${sedForm} -eq 2 ]
-	then
-		"${sedBin}" -i "" "${sedCommand}" "${1}"
-	fi
-	
-	shift
-done
+if [ ${sedForm} -eq 1 ]
+then
+	"${sedBin}" --in-place "${@}"
+elif [ ${sedForm} -eq 2 ]
+then
+	"${sedBin}" -i ""  "${@}"
+fi
 ]]></xsh:body>
 	</xsh:function>
 </xsh:functions>
