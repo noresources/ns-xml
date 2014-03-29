@@ -26,6 +26,7 @@
 	</xsl:param>
 
 	<xsl:param name="str.blanks" select="'&#9; '" />
+	<!-- Space and tabulation -->
 
 	<!-- Indicates if text contains blank chars -->
 	<xsl:template name="str.isBlank">
@@ -191,18 +192,27 @@
 		<xsl:param name="replace" />
 		<!-- Replacement string -->
 		<xsl:param name="by" />
+
 		<xsl:choose>
-			<xsl:when test="contains($text, $replace)">
-				<xsl:value-of select="substring-before($text,$replace)" />
-				<xsl:value-of select="$by" />
-				<xsl:call-template name="str.replaceAll">
-					<xsl:with-param name="text" select="substring-after($text,$replace)" />
-					<xsl:with-param name="replace" select="$replace" />
-					<xsl:with-param name="by" select="$by" />
-				</xsl:call-template>
+			<xsl:when test="string-length($replace) = 0">
+				<xsl:value-of select="$text" />
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="$text" />
+				<xsl:choose>
+					<xsl:when test="contains($text, $replace)">
+						<xsl:value-of select="substring-before($text, $replace)" />
+						<xsl:value-of select="$by" />
+
+						<xsl:call-template name="str.replaceAll">
+							<xsl:with-param name="text" select="substring-after($text, $replace)" />
+							<xsl:with-param name="replace" select="$replace" />
+							<xsl:with-param name="by" select="$by" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$text" />
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
