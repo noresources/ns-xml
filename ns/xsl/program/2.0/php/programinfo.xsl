@@ -12,7 +12,7 @@
 
 	<!-- If empty, use <appname>ProgramInfo -->
 	<xsl:param name="prg.php.programinfo.classname" select="''" />
-	
+
 	<!-- Generate a unique variable name from item info -->
 	<xsl:template name="prg.php.tempVarName">
 		<xsl:param name="itemNode" select="." />
@@ -35,11 +35,28 @@
 	<!-- Create an array of values -->
 	<xsl:template name="prg.php.valueArray">
 		<xsl:param name="rootNode" />
+		<xsl:param name="evaluate" select="false()" />
+
+		<xsl:variable name="quoteChar">
+			<xsl:choose>
+				<xsl:when test="$evaluate">
+					<xsl:value-of select="'&quot;'" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select='"&apos;"' />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
 		<xsl:text>array(</xsl:text>
 		<xsl:for-each select="$rootNode/*">
-			<xsl:text>"</xsl:text>
-			<xsl:apply-templates select="." />
-			<xsl:text>"</xsl:text>
+			<xsl:value-of select="$quoteChar" />
+			<xsl:call-template name="php.escapeLiteral">
+				<xsl:with-param name="value" select="." />
+				<xsl:with-param name="quoteChar" select="$quoteChar" />
+				<xsl:with-param name="evaluate" select="$evaluate" />
+			</xsl:call-template>
+			<xsl:value-of select="$quoteChar" />
 			<xsl:if test="position() != last()">
 				<xsl:text>, </xsl:text>
 			</xsl:if>
@@ -140,9 +157,9 @@
 
 		<xsl:if test="$optionNode/prg:default">
 			<xsl:value-of select="$optionVariable" />
-			<xsl:text>->defaultValue = "</xsl:text>
+			<xsl:text>->defaultValue = '</xsl:text>
 			<xsl:apply-templates select="$optionNode/prg:default" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 
@@ -226,7 +243,9 @@
 				<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
 				<xsl:text>"</xsl:text>
 			</xsl:when>
-			<xsl:otherwise><xsl:text>null</xsl:text></xsl:otherwise>
+			<xsl:otherwise>
+				<xsl:text>null</xsl:text>
+			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:text>, </xsl:text>
 		<xsl:call-template name="prg.php.base.classname">
@@ -411,7 +430,7 @@
 				</xsl:call-template>
 			</xsl:when>
 		</xsl:choose>
-		
+
 		<xsl:if test="$optionNode/prg:documentation/prg:abstract">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$optionVariable" />
@@ -498,7 +517,7 @@
 	<xsl:template name="prg.php.rootItemInfo">
 		<xsl:param name="rootNode" select="." />
 		<xsl:param name="rootVariable" select="'$this'" />
-		
+
 		<xsl:if test="$rootNode/prg:documentation/prg:abstract">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$rootVariable" />
@@ -527,7 +546,7 @@
 				<xsl:with-param name="parentVariable" select="$rootVariable" />
 			</xsl:call-template>
 		</xsl:for-each>
-		
+
 	</xsl:template>
 
 	<xsl:template match="prg:subcommand">
@@ -570,15 +589,15 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:call-template name="code.identifierNamingStyle">
-					<xsl:with-param name="identifier">
-						<xsl:apply-templates select="./prg:name" />
-					</xsl:with-param>
-				</xsl:call-template>
-				<xsl:text>ProgramInfo</xsl:text>
+						<xsl:with-param name="identifier">
+							<xsl:apply-templates select="./prg:name" />
+						</xsl:with-param>
+					</xsl:call-template>
+					<xsl:text>ProgramInfo</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		
+
 		<xsl:call-template name="php.class">
 			<xsl:with-param name="name" select="$classname" />
 			<xsl:with-param name="extends">
@@ -608,7 +627,7 @@
 	<xsl:template match="prg:variable|prg:short|prg:long">
 		<xsl:value-of select="normalize-space(.)" />
 	</xsl:template>
-		
+
 	<xsl:template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
 		<xsl:call-template name="str.replaceAll">
 			<xsl:with-param name="text">
@@ -636,7 +655,13 @@
 			<xsl:with-param name="prependedText" select="'\t'" />
 		</xsl:call-template>
 	</xsl:template>
-	
+
+	<xsl:template match="prg:default|prg:select/prg:option">
+		<xsl:call-template name="php.escapeLiteral">
+			<xsl:with-param name="value" select="." />
+		</xsl:call-template>
+	</xsl:template>
+
 	<xsl:template name="prg.php.programinfo.output">
 		<xsl:param name="rootNode" select="/" />
 		<xsl:choose>
@@ -653,15 +678,15 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
+
 	<xsl:template match="/">
 		<xsl:if test="$prg.php.phpmarkers">
 			<xsl:text>&lt;?php</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
-		
+
 		<xsl:call-template name="prg.php.programinfo.output" />
-		
+
 		<xsl:if test="$prg.php.phpmarkers">
 			<xsl:text>?&gt;</xsl:text>
 			<xsl:value-of select="$str.endl" />

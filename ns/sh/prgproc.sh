@@ -10,7 +10,7 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 prgproc: Process a program interface XML definition with one of the available XSLT stylesheets
 Usage: 
   prgproc [-x <path>] -t <...> [-o <path>] [-p <...  [ ... ]>] [-s <...  [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
@@ -19,7 +19,7 @@ Usage:
       If the program description file is provided, the xml file will be 
       validated before any XSLT processing
     -t, --xslt, --xsl: XSL transformation to apply  
-      The argument value have to be one of the following:  
+      The argument have to be one of the following:  
         bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
     -o, --output: Output file
       If no output file is provided, the transformation result will be sent to 
@@ -46,10 +46,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -297,7 +297,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -336,9 +336,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "bashcompletion" ] || [ "${parser_item}" = "c-gengetopt" ] || [ "${parser_item}" = "docbook-usage" ] || [ "${parser_item}" = "wikicreole-usage" ])
+			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -369,7 +369,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "w"
 			then
@@ -387,11 +387,11 @@ parse_process_option()
 			parse_setoptionpresence G_3_output
 			;;
 		param | params)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
@@ -427,11 +427,11 @@ parse_process_option()
 			parse_setoptionpresence G_4_param
 			;;
 		stringparam | stringparams)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
@@ -470,7 +470,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -499,7 +499,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_6_g_1_ns_xml_path;parse_setoptionpresence G_6_g
@@ -509,7 +509,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
@@ -554,7 +554,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -593,9 +593,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "bashcompletion" ] || [ "${parser_item}" = "c-gengetopt" ] || [ "${parser_item}" = "docbook-usage" ] || [ "${parser_item}" = "wikicreole-usage" ])
+			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -626,7 +626,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "w"
 			then
@@ -644,11 +644,11 @@ parse_process_option()
 			parse_setoptionpresence G_3_output
 			;;
 		p)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
@@ -684,11 +684,11 @@ parse_process_option()
 			parse_setoptionpresence G_4_param
 			;;
 		s)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}

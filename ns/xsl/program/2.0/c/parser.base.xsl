@@ -147,6 +147,12 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<xsl:template match="prg:default|prg:select/prg:option">
+		<xsl:call-template name="c.escapeLiteral">
+			<xsl:with-param name="value" select="." />
+		</xsl:call-template>
+	</xsl:template>
+
 	<xsl:template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
 		<xsl:call-template name="str.replaceAll">
 			<xsl:with-param name="text">

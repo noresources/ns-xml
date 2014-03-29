@@ -119,7 +119,7 @@
 						</xsl:with-param>
 					</xsl:call-template>
 				</xsl:if>
-				<xsl:text>cat &lt;&lt; EOFUSAGE</xsl:text>
+				<xsl:text>cat &lt;&lt; 'EOFUSAGE'</xsl:text>
 				<xsl:value-of select="$sh.endl" />
 				<xsl:value-of select="normalize-space($programNode/prg:name)" />
 				<xsl:text>: </xsl:text>

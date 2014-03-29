@@ -11,7 +11,7 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
   build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [(-i <...> | -I <...>)] [--force-interpreter] [--help] -o <path>
@@ -36,11 +36,11 @@ Usage:
         The interpreter family to use if the XSH file does not define one.
           Attention: This parameter is only available for XSH file using the 
           XSH XML schema (http://xsd.nore.fr/xsh)  
-        The argument can be:  
+        The argument can be one the following :  
           bash, zsh or ksh
       -I, --interpreter-cmd: Default shell interpreter invocation directive
         This value if used if the XSH file does not define one  
-        The argument can be:  
+        The argument can be one the following :  
           /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
     
     --force-interpreter: 
@@ -63,10 +63,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -311,7 +311,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -350,7 +350,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -371,7 +371,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
@@ -381,7 +381,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			forceInterpreter=true
@@ -391,7 +391,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			prefixSubcommandBoundVariableName=true
@@ -401,7 +401,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
@@ -411,7 +411,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -439,7 +439,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
 			parse_setoptionpresence G_10_output
@@ -467,7 +467,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_1_g_1_ns_xml_path;parse_setoptionpresence G_1_g
@@ -477,7 +477,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
@@ -509,7 +509,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -536,7 +536,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterType="${parser_item}"
 			defaultInterpreter="defaultInterpreterType"
@@ -568,7 +568,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -595,7 +595,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"
@@ -640,7 +640,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -679,7 +679,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -730,7 +730,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
 			parse_setoptionpresence G_10_output
@@ -761,7 +761,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -788,7 +788,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterType="${parser_item}"
 			defaultInterpreter="defaultInterpreterType"
@@ -820,7 +820,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -847,7 +847,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"

@@ -10,7 +10,7 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 build-c: Create a customized Command line argument parser in C
 Usage: 
   build-c [[-S] -x <path>] [([-be] -i <path>) -p <...> --struct-style <...> --function-style <...> --variable-style <...>] [[-u] -o <path> -f <...>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
@@ -50,18 +50,18 @@ Usage:
         
         --struct-style, --struct: Structs naming convention
           Generate struct names according the given naming convention  
-          The argument value have to be one of the following:  
+          The argument have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
         --function-style, --function, --func: Functions naming convention
           Generate function names according the given naming convention  
-          The argument value have to be one of the following:  
+          The argument have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
         --variable-style, --variable, --var: Variables naming convention
           Generate variable and enum names according the given naming 
           convention  
-          The argument value have to be one of the following:  
+          The argument have to be one of the following:  
             underscore, camelCase, CamelCase or none
           Default value: none
       
@@ -90,10 +90,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -220,7 +220,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			structNameStyle="none"
+			structNameStyle='none'
 			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
@@ -230,7 +230,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			functionNameStyle="none"
+			functionNameStyle='none'
 			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
@@ -240,7 +240,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			variableNameStyle="none"
+			variableNameStyle='none'
 			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
 		fi
 	fi
@@ -250,7 +250,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			outputFileBase="<auto>"
+			outputFileBase='<auto>'
 			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
 		fi
 	fi
@@ -364,7 +364,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -393,7 +393,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -415,7 +415,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
@@ -432,7 +432,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			generateBaseOnly=true
@@ -450,7 +450,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			generateEmbedded=true
@@ -483,7 +483,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -510,7 +510,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -551,7 +551,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
 			parse_setoptionpresence G_2_g_2_prefix;parse_setoptionpresence G_2_g
@@ -579,9 +579,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -613,9 +613,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -647,9 +647,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "underscore" ] || [ "${parser_item}" = "camelCase" ] || [ "${parser_item}" = "CamelCase" ] || [ "${parser_item}" = "none" ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -681,7 +681,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -721,7 +721,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
 			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
@@ -731,7 +731,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			outputOverwrite=true
@@ -760,7 +760,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_4_g_1_ns_xml_path;parse_setoptionpresence G_4_g
@@ -770,7 +770,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
@@ -816,7 +816,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -888,7 +888,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -915,7 +915,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -956,7 +956,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
 			parse_setoptionpresence G_2_g_2_prefix;parse_setoptionpresence G_2_g
@@ -984,7 +984,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1024,7 +1024,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
 			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g

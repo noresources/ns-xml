@@ -1,0 +1,6 @@
+CLI: "--argument-esc1", "Anothter 'string' with single quotes"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+argumentEsc1=Anothter 'string' with single quotes

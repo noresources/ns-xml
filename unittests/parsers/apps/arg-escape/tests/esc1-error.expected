@@ -1,0 +1,6 @@
+CLI: "--argument-esc1", "This 'string' is not "the good one"."
+Value count: 0
+Values: 
+Error count: 1
+Subcommand: 
+argumentEsc1=$this

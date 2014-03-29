@@ -641,6 +641,12 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<xsl:template match="prg:default|prg:select/prg:option">
+		<xsl:call-template name="python.escapeLiteral">
+			<xsl:with-param name="value" select="." />
+		</xsl:call-template>
+	</xsl:template>
+
 	<!-- Generate the ProgramInfo derivated class based on program interface XML definition -->
 	<xsl:template name="prg.python.programinfo.output">
 		<xsl:param name="rootNode" select="/" />

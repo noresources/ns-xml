@@ -50,11 +50,11 @@ With:
       The interpreter family to use if the XSH file does not define one.
         Attention: This parameter is only available for XSH file using the 
         XSH XML schema (http://xsd.nore.fr/xsh)  
-      The argument can be:  
+      The argument can be one the following :  
         bash, zsh or ksh
     -I, --interpreter-cmd: Default shell interpreter invocation directive
       This value if used if the XSH file does not define one  
-      The argument can be:  
+      The argument can be one the following :  
         /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
 EOFSCUSAGE
 ;;
@@ -70,7 +70,7 @@ EOFSCUSAGE
 esac
 return 0
 fi
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 build-xulapp: Build (or update) a XUL application launcher
 Usage: 
   build-xulapp <subcommand [subcommand option(s)]> [-uS] [--help] -o <path> [-x <path>] [-t <...>] [[-d] -W <number> -H <number>] [-j <path> --resources <path [ ... ]>] [[-n] --ns-xml-path <path> --ns-xml-path-relative]
@@ -90,7 +90,7 @@ Usage:
       Location of the XML program description file. Expect a valid XML file 
       following the http://xsd.nore.fr/program schema
     -t, --target-platform, --target: Target platform  
-      The argument value have to be one of the following:  
+      The argument have to be one of the following:  
         host, linux or osx
       Default value: host
     -u, --update: Update application if folder already exists
@@ -137,10 +137,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=true
 PARSER_OK=0
 PARSER_ERROR=1
@@ -274,7 +274,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			targetPlatform="host"
+			targetPlatform='host'
 			parse_setoptionpresence G_4_target_platform
 		fi
 	fi
@@ -284,7 +284,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			windowWidth="1024"
+			windowWidth='1024'
 			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
 		fi
 	fi
@@ -294,7 +294,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			windowHeight="768"
+			windowHeight='768'
 			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
 		fi
 	fi
@@ -427,7 +427,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -472,7 +472,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_1_python_2_classname
@@ -515,7 +515,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -560,7 +560,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_1_python_2_classname
@@ -605,7 +605,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -650,7 +650,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_parserNamespace="${parser_item}"
 				parse_setoptionpresence SC_2_php_2_parser_namespace
@@ -677,7 +677,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programNamespace="${parser_item}"
 				parse_setoptionpresence SC_2_php_3_program_namespace
@@ -704,7 +704,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_2_php_4_classname
@@ -747,7 +747,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -792,7 +792,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_2_php_4_classname
@@ -837,7 +837,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -858,7 +858,7 @@ parse_process_subcommand_option()
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-					parser_optiontail=""
+					parser_optiontail=''
 					return ${PARSER_SC_ERROR}
 				fi
 				xsh_prefixSubcommandBoundVariableName=true
@@ -890,7 +890,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_subindex=0
-					parser_optiontail=""
+					parser_optiontail=''
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -917,7 +917,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
@@ -949,7 +949,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_subindex=0
-					parser_optiontail=""
+					parser_optiontail=''
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -976,7 +976,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
@@ -1020,7 +1020,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -1067,7 +1067,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_subindex=0
-					parser_optiontail=""
+					parser_optiontail=''
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -1094,7 +1094,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
@@ -1126,7 +1126,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_subindex=0
-					parser_optiontail=""
+					parser_optiontail=''
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -1153,7 +1153,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
@@ -1199,7 +1199,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_4_command_1_command
@@ -1242,7 +1242,7 @@ parse_process_subcommand_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_4_command_1_command
@@ -1298,7 +1298,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -1326,7 +1326,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1365,7 +1365,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1404,9 +1404,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "osx" ])
+			if ! ([ "${parser_item}" = 'host' ] || [ "${parser_item}" = 'linux' ] || [ "${parser_item}" = 'osx' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -1419,7 +1419,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			update=true
@@ -1429,7 +1429,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
@@ -1458,7 +1458,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1503,7 +1503,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1530,7 +1530,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
@@ -1559,7 +1559,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1578,11 +1578,11 @@ parse_process_option()
 			;;
 		resources)
 			# Group checks
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#userDataPaths[*]}
@@ -1664,7 +1664,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_9_g_1_ns_xml_path;parse_setoptionpresence G_9_g
@@ -1674,7 +1674,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
@@ -1685,7 +1685,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			addNsXml=true
@@ -1730,7 +1730,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1769,7 +1769,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1808,9 +1808,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "host" ] || [ "${parser_item}" = "linux" ] || [ "${parser_item}" = "osx" ])
+			if ! ([ "${parser_item}" = 'host' ] || [ "${parser_item}" = 'linux' ] || [ "${parser_item}" = 'osx' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -1850,7 +1850,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1895,7 +1895,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1945,7 +1945,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then

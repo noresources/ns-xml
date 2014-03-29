@@ -4,16 +4,17 @@
 
 <!-- Program usage text chunks -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
+	<xsl:import href="../../languages/shellscript.xsl" />
 	<xsl:import href="base.xsl" />
 	<xsl:import href="usage.strings.xsl" />
-	
+
 	<!-- String representing an indentation level -->
 	<xsl:param name="prg.usage.indentChar" select="'&#9;'" />
 	<!-- Indicates if documentation text have to be wrapped -->
 	<xsl:param name="prg.usage.wrap" select="true()" />
 	<!-- Maximum text line length (for text wrapping) -->
 	<xsl:param name="prg.usage.lineMaxLength" select="80" />
-	
+
 	<!-- Literal representation of an option argument/value type -->
 	<xsl:template name="prg.usage.typeDisplay">
 		<!-- type Node -->
@@ -68,19 +69,17 @@
 				<xsl:with-param name="optionNode" select="$optionNode" />
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="preIndentLength"
-			select="string-length($prg.usage.indentChar) * ($level + 3)" />
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar) * ($level + 3)" />
 		<xsl:call-template name="str.prependLine">
 			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
 			<xsl:with-param name="wrap" select="$wrap" />
-			<xsl:with-param name="lineMaxLength"
-				select="$prg.usage.lineMaxLength - $preIndentLength" />
+			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 			<xsl:with-param name="text">
 				<xsl:choose>
 					<xsl:when test="$mode = 'inline'">
 						<xsl:value-of select="$str.endl" />
 						<xsl:for-each select="$optionNode/prg:option">
-							<xsl:value-of select="normalize-space(.)" />
+							<xsl:value-of select="." />
 							<xsl:choose>
 								<xsl:when test="position() = (last() - 1)">
 									<xsl:text> </xsl:text>
@@ -212,10 +211,12 @@
 			<xsl:value-of select="$str.endl" />
 			<xsl:choose>
 				<xsl:when test="$optionNode/prg:select/@restrict">
-					<xsl:text>The argument value have to be one of the following:</xsl:text>
+					<xsl:value-of select="$prg.usage.str.argumentValueSelectRestricted" />
+					<xsl:text>:</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:text>The argument can be:</xsl:text>
+					<xsl:value-of select="$prg.usage.str.argumentValueSelect" />
+					<xsl:text>:</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:call-template name="prg.usage.selectValueList">
@@ -227,7 +228,7 @@
 		</xsl:if>
 		<xsl:if test="$optionNode/prg:default">
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>Default value: </xsl:text>
+			<xsl:value-of select="$prg.usage.str.defaultValue" />
 			<xsl:value-of select="$optionNode/prg:default" />
 		</xsl:if>
 		<xsl:if test="$optionNode/@min">
@@ -434,7 +435,7 @@
 		<!-- prg:values node -->
 		<xsl:param name="valuesNode" select="." />
 		<!-- Element separator string -->
-		<xsl:param name="separator" select="' '"/>
+		<xsl:param name="separator" select="' '" />
 
 		<xsl:for-each select="$valuesNode/*">
 			<xsl:choose>

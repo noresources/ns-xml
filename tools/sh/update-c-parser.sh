@@ -10,7 +10,7 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 update-doc: Rebuild C Parser XSLT from C source code
 Usage: 
   update-doc [--help] [-v <...>]
@@ -28,10 +28,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -142,7 +142,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			programVersion="2.0"
+			programVersion='2.0'
 			parse_setoptionpresence G_2_version
 		fi
 	fi
@@ -256,7 +256,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -284,7 +284,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programVersion="${parser_item}"
 			parse_setoptionpresence G_2_version
@@ -328,7 +328,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programVersion="${parser_item}"
 			parse_setoptionpresence G_2_version

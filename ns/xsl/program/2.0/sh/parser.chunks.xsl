@@ -150,9 +150,9 @@
 						</xsl:with-param>
 						<xsl:with-param name="then">
 							<xsl:apply-templates select="prg:databinding/prg:variable" />
-							<xsl:text>="</xsl:text>
+							<xsl:text>='</xsl:text>
 							<xsl:apply-templates select="prg:default" />
-							<xsl:text>"</xsl:text>
+							<xsl:text>'</xsl:text>
 							<xsl:value-of select="$sh.endl" />
 							<xsl:call-template name="prg.sh.parser.groupSetVars">
 								<xsl:with-param name="optionNode" select="." />
@@ -271,7 +271,7 @@
 		<xsl:text>=0</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 
 		<xsl:value-of select="$sh.endl" />
 		<xsl:call-template name="prg.sh.parser.unescapeValue" />
@@ -282,7 +282,7 @@
 		<xsl:param name="onError" />
 		
 		<xsl:value-of select="$prg.sh.parser.vName_item" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 
 		<xsl:call-template name="sh.if">
@@ -309,7 +309,7 @@
 		<xsl:text>=0</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 
 		<xsl:value-of select="$sh.endl" />
 		<xsl:call-template name="prg.sh.parser.unescapeValue" />
@@ -344,7 +344,7 @@
 								<xsl:text>\""</xsl:text>
 								<xsl:value-of select="$sh.endl" />
 								<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
-								<xsl:text>=""</xsl:text>
+								<xsl:text>=''</xsl:text>
 								<xsl:if test="$onError">
 									<xsl:value-of select="$sh.endl" />
 									<xsl:value-of select="$onError" />
@@ -433,9 +433,9 @@
 						</xsl:if>
 						<xsl:text>[ "</xsl:text>
 						<xsl:value-of select="$value" />
-						<xsl:text>" = "</xsl:text>
-						<xsl:value-of select="." />
-						<xsl:text>" ]</xsl:text>
+						<xsl:text>" = '</xsl:text>
+						<xsl:apply-templates select="." />
+						<xsl:text>' ]</xsl:text>
 					</xsl:for-each>
 					<xsl:text>)</xsl:text>
 				</xsl:with-param>
@@ -1684,16 +1684,16 @@
 		<xsl:text>=0</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_item" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_option" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_subcommand" />
-		<xsl:text>=""</xsl:text>
+		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_subcommand_expected" />
 		<xsl:text>=</xsl:text>

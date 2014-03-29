@@ -24,7 +24,7 @@ __prgproc_getoptionname()
 __prgproc_getfindpermoptions()
 {
 	local access="${1}"
-	local res=""
+	local res=''
 	while [ ! -z "${access}" ]
 	do
 		res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"
@@ -45,7 +45,7 @@ __prgproc_appendfsitems()
 	if [ "${current:$(expr ${currentLength} - 1)}" == "/" ]
 	then
 		d="${current%/}"
-		b=""
+		b=''
 	else
 		d="$(dirname "${current}")"
 		b="$(basename "${current}")"

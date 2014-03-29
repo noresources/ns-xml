@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app5</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application - Escaping special characters &amp; constant values</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:argument id="prg.unittest.option.argumentEsc1">
+			<prg:databinding>
+				<prg:variable>argumentEsc1</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Argument with optional values and default values that contains nasty characters</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>argument-esc1</prg:long>
+			</prg:names>
+			<prg:select restrict="true">
+				<prg:option>A basic string</prg:option>
+				<prg:option>A string "with double quotes"</prg:option>
+				<prg:option>Anothter 'string' with single quotes</prg:option>
+				<prg:option>$variableName</prg:option>
+				<prg:option>$this</prg:option>
+				<prg:option>${anotherVariableName}</prg:option>
+			</prg:select>
+			<prg:default>$this</prg:default>
+		</prg:argument>
+	</prg:options>
+	<prg:values>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>Anything</prg:abstract>
+			</prg:documentation>
+		</prg:other>
+	</prg:values>
+</prg:program>

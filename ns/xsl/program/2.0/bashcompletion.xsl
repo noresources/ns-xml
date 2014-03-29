@@ -154,7 +154,7 @@
 					<xsl:with-param name="then">
 						<xsl:text>d="${current%/}"</xsl:text>
 						<xsl:value-of select="$str.unix.endl" />
-						<xsl:text>b=""</xsl:text>
+						<xsl:text>b=''</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="else">
 						<xsl:text>d="$(dirname "${current}")"</xsl:text>
@@ -262,7 +262,7 @@
 			<xsl:with-param name="content">
 				<xsl:text>local access="${1}"</xsl:text>
 				<xsl:value-of select="$str.unix.endl" />
-				<xsl:text>local res=""</xsl:text>
+				<xsl:text>local res=''</xsl:text>
 				<xsl:value-of select="$str.unix.endl" />
 				<xsl:call-template name="sh.while">
 					<xsl:with-param name="condition">

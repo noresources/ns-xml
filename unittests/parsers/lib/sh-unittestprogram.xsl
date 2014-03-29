@@ -38,6 +38,7 @@ i=1
 for argv in "${@}"
 do
 	[ "${argv}" = "__msg__" ] && displayErrors=true
+	[ "${argv}" = "__help__" ] && usage "${@}"
 	[ ${i} -gt 1 ] && echo -n ", "
 	echo -n "\"${argv}\""
 	i=$(expr ${i} + 1)

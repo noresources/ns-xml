@@ -16,8 +16,8 @@
 	<xsl:variable name="prg.usage.str.programOptions" select="'Program options'" />
 	<xsl:variable name="prg.usage.str.subcommands" select="'Subcommands'" />
 	<xsl:variable name="prg.usage.str.subcommandOptions" select="'Subcommand options'" />
-	<xsl:variable name="prg.usage.str.argumentValueSelect" select="'The argument value can be one the following: '" />
-	<xsl:variable name="prg.usage.str.argumentValueSelectRestricted" select="'The argument can be one the following: '" />
+	<xsl:variable name="prg.usage.str.argumentValueSelect" select="'The argument can be one the following '" />
+	<xsl:variable name="prg.usage.str.argumentValueSelectRestricted" select="'The argument have to be one of the following'" />
 	<xsl:variable name="prg.usage.str.defaultValue" select="'Default value: '" />
 	<xsl:variable name="prg.usage.str.minArgumentCount" select="'Minimal number of argument: '" />
 	<xsl:variable name="prg.usage.str.maxArgumentCount" select="'Maximum number of argument: '" />

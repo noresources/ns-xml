@@ -9,13 +9,13 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 run-tests: Run ns-xml unittests
 Usage: 
   run-tests [-T] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>] [--help]
   With:
     -p, --parsers: Parser to test  
-      The argument value have to be one of the following:  
+      The argument have to be one of the following:  
         c, php, python or sh
     -a, --apps: Test groups to run
     -t, --tests: Test id(s) to run
@@ -32,10 +32,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -246,17 +246,17 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		parsers)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parsers[*]}
 			if [ ! -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -278,7 +278,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -298,11 +298,11 @@ parse_process_option()
 			parse_setoptionpresence G_1_parsers
 			;;
 		apps)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#apps[*]}
@@ -338,11 +338,11 @@ parse_process_option()
 			parse_setoptionpresence G_2_apps
 			;;
 		tests)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#tests[*]}
@@ -381,7 +381,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			keepTemporaryFiles=true
@@ -391,7 +391,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -415,17 +415,17 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		p)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parsers[*]}
 			if [ ! -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -447,7 +447,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = "c" ] || [ "${parser_item}" = "php" ] || [ "${parser_item}" = "python" ] || [ "${parser_item}" = "sh" ])
+				if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -467,11 +467,11 @@ parse_process_option()
 			parse_setoptionpresence G_1_parsers
 			;;
 		a)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#apps[*]}
@@ -507,11 +507,11 @@ parse_process_option()
 			parse_setoptionpresence G_2_apps
 			;;
 		t)
-			parser_item=""
+			parser_item=''
 			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#tests[*]}

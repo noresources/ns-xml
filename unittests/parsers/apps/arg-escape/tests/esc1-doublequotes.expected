@@ -1,0 +1,6 @@
+CLI: "--argument-esc1", "A string "with double quotes""
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+argumentEsc1=A string "with double quotes"

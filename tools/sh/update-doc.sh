@@ -10,14 +10,14 @@
 # Program help
 usage()
 {
-cat << EOFUSAGE
+cat << 'EOFUSAGE'
 update-doc: Documentation builder
 Usage: 
   update-doc [--vcs <...> --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
   With:
     XSLT documentation
       --vcs: Generate documentation for versionned XSLT files  
-        The argument value have to be one of the following:  
+        The argument have to be one of the following:  
           hg or git
       --xsl-output: XSLT output path
       --xsl-css: XSLT CSS file
@@ -57,10 +57,10 @@ parser_itemcount=${#parser_input[*]}
 parser_startindex=0
 parser_index=0
 parser_subindex=0
-parser_item=""
-parser_option=""
-parser_optiontail=""
-parser_subcommand=""
+parser_item=''
+parser_option=''
+parser_optiontail=''
+parser_subcommand=''
 parser_subcommand_expected=false
 PARSER_OK=0
 PARSER_ERROR=1
@@ -188,7 +188,7 @@ parse_setdefaultarguments()
 		
 		if ${parser_set_default}
 		then
-			indexFileOutputName="index.php"
+			indexFileOutputName='index.php'
 			indexMode="indexModeFile"
 			parse_setoptionpresence G_1_g_5_g_3_g_2_index_name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
 		fi
@@ -199,7 +199,7 @@ parse_setdefaultarguments()
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			nmeEasyLink="$.html"
+			nmeEasyLink='$.html'
 			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
 		fi
 	fi
@@ -316,7 +316,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
@@ -345,9 +345,9 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = "hg" ] || [ "${parser_item}" = "git" ])
+			if ! ([ "${parser_item}" = 'hg' ] || [ "${parser_item}" = 'git' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -379,7 +379,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -419,7 +419,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -441,7 +441,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			xsltAbstract=true
@@ -458,7 +458,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			indexModeNone=true
@@ -491,7 +491,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -518,7 +518,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexUrl="${parser_item}"
 			indexMode="indexModeUrl"
@@ -535,7 +535,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			indexUrlRelativeToRoot=true
@@ -568,7 +568,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -595,7 +595,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -645,7 +645,7 @@ parse_process_option()
 				fi
 				
 				parser_subindex=0
-				parser_optiontail=""
+				parser_optiontail=''
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				
 				return ${PARSER_ERROR}
@@ -672,7 +672,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			indexFileOutputName="${parser_item}"
 			indexMode="indexModeFile"
@@ -689,7 +689,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			indexCopyInFolders=true
@@ -719,7 +719,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "w"
 			then
@@ -759,7 +759,7 @@ parse_process_option()
 			fi
 			
 			parser_subindex=0
-			parser_optiontail=""
+			parser_optiontail=''
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nmeEasyLink="${parser_item}"
 			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
@@ -769,7 +769,7 @@ parse_process_option()
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
-				parser_optiontail=""
+				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
 			htmlBodyOnly=true
