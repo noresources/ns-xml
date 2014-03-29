@@ -22,6 +22,70 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<!-- Escape a string literal -->
+	<xsl:template name="php.escapeLiteral">
+		<xsl:param name="value" />
+		<!-- Value to escape. Assumes the given parameter does not already contains any escaped character -->
+		<xsl:param name="quoteChar" select='"&apos;"' />
+		<!-- Enclosing quotes character -->
+		<xsl:param name="evaluate" select="false()" />
+		<!-- When the quote character is the double quote, the '$' character will be evaluated.
+			This parameter allow to disable this behavior -->
+
+		<xsl:choose>
+			<xsl:when test="$quoteChar = '&quot;'">
+				<!-- Backslash and '"' have to be escaped -->
+				<xsl:choose>
+					<xsl:when test="not($evaluate)">
+						<!-- '$' have to be escaped -->
+						<xsl:call-template name="str.replaceAll">
+							<xsl:with-param name="replace" select="'$'" />
+							<xsl:with-param name="by" select="'\$'" />
+							<xsl:with-param name="text">
+								<xsl:call-template name="str.replaceAll">
+									<xsl:with-param name="replace" select='$quoteChar' />
+									<xsl:with-param name="by" select="concat('\', $quoteChar)" />
+									<xsl:with-param name="text">
+										<xsl:call-template name="str.replaceAll">
+											<xsl:with-param name="replace" select="'\'" />
+											<xsl:with-param name="by" select="'\\'" />
+											<xsl:with-param name="text" select="$value" />
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<!-- Don't escape '$' -->
+						<xsl:call-template name="str.replaceAll">
+							<xsl:with-param name="replace" select='$quoteChar' />
+							<xsl:with-param name="by" select="concat('\', $quoteChar)" />
+							<xsl:with-param name="text">
+								<xsl:call-template name="str.replaceAll">
+									<xsl:with-param name="replace" select="'\'" />
+									<xsl:with-param name="by" select="'\\'" />
+									<xsl:with-param name="text" select="$value" />
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test='$quoteChar = "&apos;"'>
+				<!-- Escape "'" -->
+				<xsl:call-template name="str.replaceAll">
+					<xsl:with-param name="replace" select='$quoteChar' />
+					<xsl:with-param name="by" select="concat('\', $quoteChar)" />
+					<xsl:with-param name="text" select="$value" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$value" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<!-- PHP code block -->
 	<xsl:template name="php.block">
 		<xsl:param name="indent" select="true()" />

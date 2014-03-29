@@ -9,10 +9,11 @@
 	<xsl:param name="c.indentifierNamingStyle" select="'none'" />
 	<!-- Naming convention for structs -->
 	<xsl:param name="c.structNamingStyle" select="'none'" />
-	
+
 	<!-- C-style comment -->
+
 	<xsl:template name="c.comment">
-		<!-- Comment content -->
+		-		<!-- Comment content -->
 		<xsl:param name="content" />
 		<!-- Indicates if the comment should be displayed on one line -->
 		<xsl:param name="inline" select="false()" />
@@ -156,17 +157,17 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<!-- Attempt to transform a name to fit C identifier name restriction (no 
+	<!-- Attempt to transform a name to fit C identifier name restriction (no
 		spaces, etc) -->
 	<xsl:template name="c.validIdentifierName">
 		<xsl:param name="name" />
-		
+
 		<xsl:variable name="tname2">
 			<xsl:call-template name="cede.validIdentifierName">
 				<xsl:with-param name="name" select="$name" />
 			</xsl:call-template>
 		</xsl:variable>
-		
+
 		<xsl:choose>
 			<!-- @todo other C keywords -->
 			<xsl:when test="($tname2 = 'extern') or ($tname2 = 'static') or ($tname2 = 'switch')">
@@ -187,7 +188,7 @@
 		<xsl:param name="pointer" select="0" />
 		<!-- Variable name -->
 		<xsl:param name="name" />
-		<!-- Name suffix. Untransformed text to append after the name. Should be 
+		<!-- Name suffix. Untransformed text to append after the name. Should be
 			used for array specification -->
 		<xsl:param name="nameSuffix" />
 		<!-- Variable value -->
@@ -220,7 +221,7 @@
 		<xsl:param name="pointer" select="0" />
 		<!-- Variable name -->
 		<xsl:param name="name" />
-		<!-- Name suffix. Untransformed text to append after the name. Should be 
+		<!-- Name suffix. Untransformed text to append after the name. Should be
 			used for array specification -->
 		<xsl:param name="nameSuffix" />
 		<!-- Variable value -->
@@ -246,7 +247,7 @@
 		<xsl:param name="pointer" select="0" />
 		<!-- Variable name -->
 		<xsl:param name="name" />
-		<!-- Variable Name suffix. Untransformed text to append after the name. 
+		<!-- Variable Name suffix. Untransformed text to append after the name.
 			Should be used for array specification -->
 		<xsl:param name="nameSuffix" />
 		<!-- Variable value -->
@@ -260,6 +261,16 @@
 			<xsl:with-param name="nameSuffix" select="$nameSuffix" />
 			<xsl:with-param name="value" select="$value" />
 			<xsl:with-param name="nameStyle" select="$nameStyle" />
+		</xsl:call-template>
+	</xsl:template>
+
+	<xsl:template name="c.escapeLiteral">
+		<xsl:param name="value" />
+
+		<xsl:call-template name="str.replaceAll">
+			<xsl:with-param name="replace" select="'&quot;'" />
+			<xsl:with-param name="by" select="concat('\', '&quot;')" />
+			<xsl:with-param name="text" select="$value" />
 		</xsl:call-template>
 	</xsl:template>
 
@@ -304,7 +315,7 @@
 		<xsl:param name="nameStyle" select="$c.structNamingStyle" />
 		<!-- Optional variable nmae -->
 		<xsl:param name="variableName" />
-		<!-- Variable name suffix. Untransformed text to append after the name. 
+		<!-- Variable name suffix. Untransformed text to append after the name.
 			Should be used for array specification -->
 		<xsl:param name="variableNameSuffix" />
 		<!-- Variable name style -->

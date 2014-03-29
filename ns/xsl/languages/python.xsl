@@ -143,4 +143,14 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<xsl:template name="python.escapeLiteral">
+		<xsl:param name="value" />
+		
+		<xsl:call-template name="str.replaceAll">
+			<xsl:with-param name="replace" select="'&quot;'" />
+			<xsl:with-param name="by" select="concat('\', '&quot;')" />
+			<xsl:with-param name="text" select="$value" />
+		</xsl:call-template>
+	</xsl:template>
+	
 </xsl:stylesheet>

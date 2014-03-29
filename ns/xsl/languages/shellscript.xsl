@@ -103,7 +103,7 @@
 		</xsl:if>
 	</xsl:template>
 
-	<!-- Attempt to transform a string into a valid identifier name (variable, 
+	<!-- Attempt to transform a string into a valid identifier name (variable,
 		function) -->
 	<xsl:template name="sh.validIdentifierName">
 		<xsl:param name="name" />
@@ -116,13 +116,13 @@
 	<xsl:template name="sh.var">
 		<!-- Variable nmme -->
 		<xsl:param name="name" />
-		<!-- Treat the variable as an array and retrieve the $index element (not 
+		<!-- Treat the variable as an array and retrieve the $index element (not
 			compatible with all shells) -->
 		<xsl:param name="index" />
-		<!-- Retrieve a substring of the variable content starting at offset $start 
+		<!-- Retrieve a substring of the variable content starting at offset $start
 			(not compatible with all shells) -->
 		<xsl:param name="start" />
-		<!-- Retrieve a substring of $lenght character of the variable content 
+		<!-- Retrieve a substring of $lenght character of the variable content
 			(not compatible with all shells) -->
 		<xsl:param name="length" />
 		<!-- Add quotes around -->
@@ -209,7 +209,7 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<!-- Create the expression to retrieve an array element count (not compatible 
+	<!-- Create the expression to retrieve an array element count (not compatible
 		with all shells) -->
 	<xsl:template name="sh.arrayLength">
 		<!-- Variable name -->
@@ -562,6 +562,76 @@
 				<xsl:text>;;</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
+	</xsl:template>
+
+	<!-- Escape a string literal -->
+	<xsl:template name="sh.escapeLiteral">
+		<xsl:param name="value" />
+		<!-- Value to escape. Assumes the given parameter does not already contains any escaped character -->
+		<xsl:param name="quoteChar" select='"&apos;"' />
+		<!-- Enclosing quotes character -->
+		<xsl:param name="evaluate" select="false()" />
+		<!-- When the quote character is the double quote, the '$' character will be evaluated.
+			This parameter allow to disable this behavior -->
+
+		<xsl:choose>
+			<xsl:when test="$quoteChar = '&quot;'">
+				<!-- Backslash and '"' have to be escaped -->
+				<xsl:choose>
+					<xsl:when test="not($evaluate)">
+						<!-- '$' have to be escaped -->
+						<xsl:call-template name="str.replaceAll">
+							<xsl:with-param name="replace" select="'$'" />
+							<xsl:with-param name="by" select="'\$'" />
+							<xsl:with-param name="text">
+								<xsl:call-template name="str.replaceAll">
+									<xsl:with-param name="replace" select='$quoteChar' />
+									<xsl:with-param name="by" select="concat('\', $quoteChar)" />
+									<xsl:with-param name="text">
+										<xsl:call-template name="str.replaceAll">
+											<xsl:with-param name="replace" select="'\'" />
+											<xsl:with-param name="by" select="'\\'" />
+											<xsl:with-param name="text" select="$value" />
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<!-- Don't escape '$' -->
+						<xsl:call-template name="str.replaceAll">
+							<xsl:with-param name="replace" select='$quoteChar' />
+							<xsl:with-param name="by" select="concat('\', $quoteChar)" />
+							<xsl:with-param name="text">
+								<xsl:call-template name="str.replaceAll">
+									<xsl:with-param name="replace" select="'\'" />
+									<xsl:with-param name="by" select="'\\'" />
+									<xsl:with-param name="text" select="$value" />
+								</xsl:call-template>
+							</xsl:with-param>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test='$quoteChar = "&apos;"'>
+				<!-- Escape "'" using quotation switching -->
+				<xsl:call-template name="str.replaceAll">
+					<xsl:with-param name="replace" select='$quoteChar' />
+					<xsl:with-param name="by">
+						<xsl:value-of select='"&apos;"' />
+						<xsl:value-of select="'&quot;'" />
+						<xsl:value-of select='"&apos;"' />
+						<xsl:value-of select="'&quot;'" />
+						<xsl:value-of select='"&apos;"' />
+					</xsl:with-param>
+					<xsl:with-param name="text" select="$value" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$value" />
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<!-- Code chunks -->
