@@ -27,7 +27,7 @@ Usage:
     Generation options
       Generation mode
         Select what to generate
-        
+      
         -b, --base: Generate ns-xml parser base module only
         -i, --info: Generate program info module
           The given argument must be the name of the the Parser base module 

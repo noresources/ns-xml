@@ -29,13 +29,13 @@ Usage:
         URL
           --index-url: Index URL
           --relative-index-url: Index URL is relative to root
-        
+      
         File
           --index: Index page source file path
           --index-name: Index page output file name  
             Default value: index.php
           --copy-anywhere: Copy index file in all directories
-        
+      
       
     
     HTML documentation options

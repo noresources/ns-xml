@@ -28,6 +28,10 @@
 	<xsl:param name="str.blanks" select="'&#9; '" />
 	<!-- Space and tabulation -->
 
+	<!-- Breakable characters. The first 2 characters are always breakable,
+		the others requires a space after -->
+	<xsl:variable name="str.breakables" select="' &#9;,;:?.!'" />
+
 	<!-- Indicates if text contains blank chars -->
 	<xsl:template name="str.isBlank">
 		<!-- Text to check -->
@@ -55,11 +59,15 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<!-- Indicates if a characted is a blank character -->
+	<!-- Indicates if a character is a blank character -->
+	<!-- Output 1 if the character is a blank character, O otherwise -->
 	<xsl:template name="str.isBlankChar">
 		<!-- Characted to test -->
 		<xsl:param name="char" select="substring(., 1, 1)" />
+
+		<!-- Private parameter -->
 		<xsl:param name="_position" select="1" />
+
 		<xsl:variable name="c" select="substring($char, 1, 1)" />
 		<xsl:choose>
 			<xsl:when test="contains($str.blanks, $c)">
@@ -259,31 +267,106 @@
 		<xsl:value-of select="substring-after(name($node), ':' )" />
 	</xsl:template>
 
-	<!-- Find the last breakable character index -->
-	<xsl:template name="str.lastBreakableCharacterPosition">
+	<xsl:template name="str.firstBreakableCharacterPosition">
 		<!-- Text to process -->
 		<xsl:param name="text" select="." />
+		<!-- Don't consider character before -->
+		<xsl:param name="startOffset" select="0" />
 		<!-- Internal use -->
 		<xsl:param name="_position" select="1" />
 		<!-- Internal use -->
-		<xsl:param name="_bestValue" select="-1" />
-		<!-- the first 2 characters are always breakable,
-			the others requires a space after -->
-		<xsl:variable name="breakables" select="' &#9;,;:?.!'" />
-		<xsl:variable name="c">
-			<xsl:value-of select="substring($breakables, $_position, 1)" />
+		<xsl:param name="_bestValue" select="string-length($text) + 1" />
+
+		<xsl:variable name="needle">
+			<xsl:value-of select="substring($str.breakables, $_position, 1)" />
 			<xsl:if test="$_position &gt; 2">
 				<xsl:value-of select="' '" />
 			</xsl:if>
 		</xsl:variable>
+
+		<xsl:variable name="haystack" select="substring($text, 1 + $startOffset)" />
+
 		<xsl:choose>
-			<xsl:when test="(string-length($text) &gt; 0) and (string-length($c) = 1)">
+			<xsl:when test="string-length($haystack) = 0">
+				<xsl:value-of select="string-length($text) + 1" />
+			</xsl:when>
+			<xsl:when test="(string-length($needle) = 1)">
 				<xsl:choose>
-					<xsl:when test="contains($text, $c)">
+					<xsl:when test="contains($haystack, $needle)">
+						<xsl:variable name="sub" select="substring-before($haystack, $needle)" />
+						<xsl:variable name="subIndex" select="string-length($sub)" />
+						<xsl:variable name="newBest">
+							<xsl:choose>
+								<xsl:when test="$subIndex &lt; $_bestValue">
+									<xsl:value-of select="$subIndex" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$_bestValue" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+						<xsl:call-template name="str.firstBreakableCharacterPosition">
+							<xsl:with-param name="text" select="$text" />
+							<xsl:with-param name="_position" select="$_position + 1" />
+							<xsl:with-param name="_bestValue" select="$newBest" />
+							<xsl:with-param name="startOffset" select="$startOffset" />
+						</xsl:call-template>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="str.firstBreakableCharacterPosition">
+							<xsl:with-param name="text" select="$text" />
+							<xsl:with-param name="_position" select="$_position + 1" />
+							<xsl:with-param name="_bestValue" select="$_bestValue" />
+							<xsl:with-param name="startOffset" select="$startOffset" />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="$_bestValue &gt;= 0">
+						<xsl:value-of select="$_bestValue + 1 + $startOffset" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="string-length($text) + 1" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+
+	</xsl:template>
+
+	<!-- Find the last breakable character index -->
+	<xsl:template name="str.lastBreakableCharacterPosition">
+		<!-- Text to process -->
+		<xsl:param name="text" select="." />
+		<!-- Don't consider character before -->
+		<xsl:param name="startOffset" select="0" />
+		<!-- Internal use -->
+		<xsl:param name="_position" select="1" />
+		<!-- Internal use -->
+		<xsl:param name="_bestValue" select="-1" />
+
+		<xsl:variable name="needle">
+			<xsl:value-of select="substring($str.breakables, $_position, 1)" />
+			<xsl:if test="$_position &gt; 2">
+				<xsl:value-of select="' '" />
+			</xsl:if>
+		</xsl:variable>
+
+		<xsl:variable name="haystack" select="substring($text, 1 + $startOffset)" />
+
+		<xsl:choose>
+			<xsl:when test="string-length($haystack) = 0">
+				<xsl:value-of select="string-length($text) + 1" />
+			</xsl:when>
+			<xsl:when test="(string-length($needle) = 1)">
+				<xsl:choose>
+					<xsl:when test="contains($haystack, $needle)">
 						<xsl:variable name="sub">
 							<xsl:call-template name="str.substringBeforeLast">
-								<xsl:with-param name="text" select="$text" />
-								<xsl:with-param name="delimiter" select="$c" />
+								<xsl:with-param name="text" select="$haystack" />
+								<xsl:with-param name="delimiter" select="$needle" />
 							</xsl:call-template>
 						</xsl:variable>
 						<xsl:variable name="subIndex" select="string-length($sub)" />
@@ -301,6 +384,7 @@
 							<xsl:with-param name="text" select="$text" />
 							<xsl:with-param name="_position" select="$_position + 1" />
 							<xsl:with-param name="_bestValue" select="$newBest" />
+							<xsl:with-param name="startOffset" select="$startOffset" />
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:otherwise>
@@ -308,6 +392,7 @@
 							<xsl:with-param name="text" select="$text" />
 							<xsl:with-param name="_position" select="$_position + 1" />
 							<xsl:with-param name="_bestValue" select="$_bestValue" />
+							<xsl:with-param name="startOffset" select="$startOffset" />
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
@@ -315,7 +400,7 @@
 			<xsl:otherwise>
 				<xsl:choose>
 					<xsl:when test="$_bestValue &gt;= 0">
-						<xsl:value-of select="$_bestValue + 1" />
+						<xsl:value-of select="$_bestValue + 1 + $startOffset" />
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="string-length($text) + 1" />
@@ -333,6 +418,8 @@
 		<xsl:param name="lineMaxLength" select="80" />
 		<!-- End-of-line string -->
 		<xsl:param name="endlChar" select="$str.endl" />
+		<!-- Force line break even if no breakable character was found -->
+		<xsl:param name="forceBreak" select="true()" />
 
 		<xsl:variable name="hasEndl" select="contains($text, $endlChar)" />
 
@@ -355,10 +442,9 @@
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="leftBlankCount" select="(string-length($item) - string-length($leftTrimmedItem))" />
-		<xsl:variable name="remainingPartPadding" select="substring($item, 1, $leftBlankCount)" />
+		<xsl:variable name="itemIndentation" select="substring($item, 1, $leftBlankCount)" />
 
-		<xsl:if test="string-length($item) &gt; 0">
-			<!-- <text>(process: </text><value-of select="$item" /><text> of </text><value-of select="$text" /><text>)</text> -->
+		<xsl:if test="(string-length($item) - $leftBlankCount) &gt; 0">
 			<xsl:choose>
 				<xsl:when test="string-length($item) &gt; $lineMaxLength">
 					<!-- Text chunk before line length limit -->
@@ -367,59 +453,97 @@
 					<xsl:variable name="breakPosition">
 						<xsl:call-template name="str.lastBreakableCharacterPosition">
 							<xsl:with-param name="text" select="$splititem" />
+							<xsl:with-param name="startOffset" select="$leftBlankCount" />
 						</xsl:call-template>
 					</xsl:variable>
-					<xsl:variable name="b" select="substring($splititem, $breakPosition, 1)" />
+					<xsl:variable name="before" select="substring($splititem, $breakPosition, 1)" />
 					<xsl:variable name="isBlank">
 						<xsl:choose>
-							<xsl:when test="string-length($b) &gt; 0">
+							<xsl:when test="string-length($before) &gt; 0">
 								<xsl:call-template name="str.isBlankChar">
-									<xsl:with-param name="char" select="$b" />
+									<xsl:with-param name="char" select="$before" />
 								</xsl:call-template>
 							</xsl:when>
-						</xsl:choose>
-					</xsl:variable>
-					<xsl:variable name="len">
-						<xsl:choose>
-							<xsl:when test="$breakPosition &gt; $lineMaxLength">
-								<xsl:value-of select="$lineMaxLength" />
-							</xsl:when>
 							<xsl:otherwise>
-								<xsl:value-of select="$breakPosition" />
+								<xsl:value-of select="0" />
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:variable>
-					<!-- Text chunk before breakable -->
-					<xsl:variable name="part">
-						<xsl:choose>
-							<xsl:when test="($breakPosition = 1) and ($isBlank &gt; 0)">
-								<xsl:value-of select="substring($item, 2, $len - 1)" />
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="substring($item, 1, $len)" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:variable>
-					<xsl:if test="string-length($part) &gt; 0">
-						<xsl:value-of select="$part" />
-						<xsl:value-of select="$endlChar" />
-					</xsl:if>
-					<xsl:variable name="remaining" select="concat($remainingPartPadding, substring($item, $len + 1))" />
-					<!-- remaining part -->
-					<xsl:if test="string-length($remaining) &gt; 0">
-						<!-- <text>(remain: </text><value-of select="$remaining" /><text>)</text> -->
-						<xsl:call-template name="str.wrap">
-							<xsl:with-param name="text" select="$remaining" />
-							<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
-							<xsl:with-param name="endlChar" select="$endlChar" />
-						</xsl:call-template>
-					</xsl:if>
+					<xsl:choose>
+						<xsl:when test="($breakPosition &lt;= $lineMaxLength) or $forceBreak">
+							<xsl:variable name="len">
+								<xsl:choose>
+									<xsl:when test="$breakPosition &gt; $lineMaxLength">
+										<xsl:value-of select="$lineMaxLength" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$breakPosition" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							<!-- Text chunk before breakable -->
+							<xsl:variable name="part">
+								<xsl:choose>
+									<xsl:when test="($breakPosition = 1) and ($isBlank &gt; 0)">
+										<xsl:value-of select="substring($item, 2, $len - 1)" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="substring($item, 1, $len)" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							<xsl:if test="string-length($part) &gt; 0">
+								<xsl:value-of select="$part" />
+								<xsl:value-of select="$endlChar" />
+							</xsl:if>
+							<xsl:variable name="remaining" select="concat($itemIndentation, substring($item, $len + 1))" />
+							<!-- remaining part -->
+							<xsl:if test="string-length($remaining) &gt; 0">
+								<xsl:call-template name="str.wrap">
+									<xsl:with-param name="text" select="$remaining" />
+									<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
+									<xsl:with-param name="endlChar" select="$endlChar" />
+									<xsl:with-param name="forceBreak" select="$forceBreak" />
+								</xsl:call-template>
+							</xsl:if>
+						</xsl:when>
+						<xsl:otherwise>
+							<!-- break at first breakable character
+								after linemaxlength and wrap remaining text
+							-->
+							<xsl:variable name="breakPosition2">
+								<xsl:call-template name="str.firstBreakableCharacterPosition">
+									<xsl:with-param name="text" select="$item" />
+									<xsl:with-param name="startOffset" select="$lineMaxLength + 1" />
+								</xsl:call-template>
+							</xsl:variable>
+							<xsl:choose>
+								<xsl:when test="$breakPosition2 &lt; string-length($item)">
+									<xsl:value-of select="substring($item, 1, $breakPosition2)" />
+									<xsl:value-of select="$endlChar" />
+									<xsl:variable name="remaining" select="concat($itemIndentation, substring($item, $breakPosition2 + 1))" />
+									<xsl:if test="string-length($remaining) &gt; 0">
+										<xsl:call-template name="str.wrap">
+											<xsl:with-param name="text" select="$remaining" />
+											<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
+											<xsl:with-param name="endlChar" select="$endlChar" />
+											<xsl:with-param name="forceBreak" select="$forceBreak" />
+										</xsl:call-template>
+									</xsl:if>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$item" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="$item" />
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:if>
+
 		<!-- other lines -->
 		<xsl:if test="$hasEndl = true()">
 			<xsl:value-of select="$endlChar" />
@@ -430,6 +554,7 @@
 					<xsl:with-param name="text" select="$otherLines" />
 					<xsl:with-param name="lineMaxLength" select="$lineMaxLength" />
 					<xsl:with-param name="endlChar" select="$endlChar" />
+					<xsl:with-param name="forceBreak" select="$forceBreak" />
 				</xsl:call-template>
 			</xsl:if>
 		</xsl:if>
@@ -444,6 +569,7 @@
 		</xsl:param>
 		<xsl:param name="endlChar" select="$str.endl" />
 		<xsl:param name="wrap" select="false()" />
+		<xsl:param name="forceBreak" select="true()" />
 		<xsl:param name="lineMaxLength" select="80" />
 		<xsl:variable name="fullPrependedText">
 			<xsl:call-template name="str.repeat">
@@ -459,6 +585,7 @@
 						<xsl:with-param name="text" select="$text" />
 						<xsl:with-param name="endlChar" select="$endlChar" />
 						<xsl:with-param name="lineMaxLength" select="$realLineMaxLength" />
+						<xsl:with-param name="forceBreak" select="$forceBreak" />
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>

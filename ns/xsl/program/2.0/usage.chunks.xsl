@@ -73,6 +73,7 @@
 		<xsl:call-template name="str.prependLine">
 			<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
 			<xsl:with-param name="wrap" select="$wrap" />
+			<xsl:with-param name="forceBreak" select="false()" />
 			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 			<xsl:with-param name="text">
 				<xsl:choose>
@@ -179,6 +180,7 @@
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="forceBreak" select="false()" />
 				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 			</xsl:call-template>
 		</xsl:if>
@@ -269,6 +271,7 @@
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="forceBreak" select="false()" />
 				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 			</xsl:call-template>
 		</xsl:if>
@@ -284,6 +287,7 @@
 					<xsl:value-of select="$argumentValueDesc" />
 				</xsl:with-param>
 				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="forceBreak" select="false()" />
 				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - (string-length($prg.usage.indentChar) * 2)" />
 			</xsl:call-template>
 		</xsl:if>
@@ -368,6 +372,7 @@
 				</xsl:call-template>
 			</xsl:with-param>
 			<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+			<xsl:with-param name="forceBreak" select="false()" />
 			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 		</xsl:call-template>
 		<xsl:value-of select="$str.endl" />
@@ -529,6 +534,7 @@
 				<xsl:apply-templates />
 			</xsl:with-param>
 			<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+			<xsl:with-param name="forceBreak" select="false()" />
 			<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength" />
 		</xsl:call-template>
 	</xsl:template>

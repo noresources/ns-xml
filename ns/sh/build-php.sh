@@ -27,7 +27,7 @@ Usage:
     Generation options
       Generation mode
         Select what to generate
-        
+      
         -b, --base: Generate ns-xml parser base classes only
         -i, --info: Generate program info class
         -e, --embed: Generate parser base class and program info in a single 

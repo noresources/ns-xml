@@ -27,7 +27,7 @@ Usage:
     Generation options
       Generation mode
         Select what to generate
-        
+      
         -b, --base: Generate ns-xml utility and parser core
         -e, --embed: Generate program parser and embed generic utility and 
         parser core
@@ -47,7 +47,7 @@ Usage:
           struct nsxml_struct_name;
         Private functions and internal struct members of the ns-xml parser core 
         are not modified
-        
+      
         --struct-style, --struct: Structs naming convention
           Generate struct names according the given naming convention  
           The argument have to be one of the following:  

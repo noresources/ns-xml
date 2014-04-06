@@ -440,10 +440,10 @@ int nsxml_item_name_snprintf(const struct nsxml_item_name *names, char **output,
 	}
 	
 	text_buffer_length += ((value_count - 2) * 2) /* ', ' */
-						  + (value_count * 2) /* quetes around strings */
-						  + 4 /* ' or ' */
-						  + 2; /* \n and \0 */
-						  
+	                      + (value_count * 2) /* quetes around strings */
+	                      + 4 /* ' or ' */
+	                      + 2; /* \n and \0 */
+	                      
 	if (prefix_text)
 	{
 		text_buffer_length += strlen(prefix_text);
@@ -542,21 +542,21 @@ int nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_pars
 	if (item->item_type == nsxml_item_type_option)
 	{
 		nsxml_program_result_add_messagef(result,
-										  nsxml_message_type_error,
-										  nsxml_message_error_invalid_option_argument,
-										  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
-										  state->active_option_cli_name,
-										  output);
+		                                  nsxml_message_type_error,
+		                                  nsxml_message_error_invalid_option_argument,
+		                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
+		                                  state->active_option_cli_name,
+		                                  output);
 	}
 	else
 	{
 	
 		nsxml_program_result_add_messagef(result,
-										  nsxml_message_type_error,
-										  nsxml_message_error_invalid_option_argument,
-										  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
-										  item->item.positional_argument_number, output);
-										  
+		                                  nsxml_message_type_error,
+		                                  nsxml_message_error_invalid_option_argument,
+		                                  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
+		                                  item->item.positional_argument_number, output);
+		                                  
 	}
 	
 	free(output);
@@ -786,17 +786,17 @@ int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_st
 		if (item->item_type == nsxml_item_type_option)
 		{
 			nsxml_program_result_add_messagef(result,
-											  nsxml_message_type_error,
-											  nsxml_message_error_invalid_option_argument,
-											  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
-											  state->active_option_cli_name, output);
+			                                  nsxml_message_type_error,
+			                                  nsxml_message_error_invalid_option_argument,
+			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n",
+			                                  state->active_option_cli_name, output);
 		}
 		else
 		{
 			nsxml_program_result_add_messagef(result, nsxml_message_type_error,
-											  nsxml_message_error_invalid_pa_argument,
-											  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
-											  item->item.positional_argument_number, output);
+			                                  nsxml_message_error_invalid_pa_argument,
+			                                  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n",
+			                                  item->item.positional_argument_number, output);
 		}
 		
 		free(output);
@@ -2491,9 +2491,9 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 	if (state->state_flags & nsxml_parser_state_option_unexpected)
 	{
 		nsxml_program_result_add_messagef(result,
-										  nsxml_message_type_error,
-										  nsxml_message_error_unexpected_option,
-										  "Unexpected option %s\n", state->active_option_cli_name);
+		                                  nsxml_message_type_error,
+		                                  nsxml_message_error_unexpected_option,
+		                                  "Unexpected option %s\n", state->active_option_cli_name);
 	}
 	
 	if (state->active_option->info_ref->option_type == nsxml_option_type_switch)
@@ -2501,9 +2501,9 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 		if (state->active_option_argc > 0)
 		{
 			nsxml_program_result_add_messagef(result,
-											  nsxml_message_type_error,
-											  nsxml_message_error_option_argument_not_allowed,
-											  "Option %s does not allow an argument\n", state->active_option_cli_name);
+			                                  nsxml_message_type_error,
+			                                  nsxml_message_error_option_argument_not_allowed,
+			                                  "Option %s does not allow an argument\n", state->active_option_cli_name);
 		}
 		else
 		{
@@ -2532,9 +2532,9 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 		else
 		{
 			nsxml_program_result_add_messagef(result,
-											  nsxml_message_type_error,
-											  nsxml_message_error_missing_option_argument,
-											  "Missing argument for option %s\n", state->active_option_cli_name);
+			                                  nsxml_message_type_error,
+			                                  nsxml_message_error_missing_option_argument,
+			                                  "Missing argument for option %s\n", state->active_option_cli_name);
 		}
 	}
 	else if (state->active_option->info_ref->option_type == nsxml_option_type_multiargument)
@@ -2576,9 +2576,9 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 		else
 		{
 			nsxml_program_result_add_messagef(result,
-											  nsxml_message_type_error,
-											  nsxml_message_error_missing_option_argument,
-											  "Missing argument for option %s\n", state->active_option_cli_name);
+			                                  nsxml_message_type_error,
+			                                  nsxml_message_error_missing_option_argument,
+			                                  "Missing argument for option %s\n", state->active_option_cli_name);
 		}
 	}
 	
@@ -2746,9 +2746,9 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct n
 				if ((res->is_set == 1) && ((mi->min_argument > 0) && (res->argument_count < mi->min_argument)))
 				{
 					nsxml_program_result_add_messagef(result,
-													  nsxml_message_type_error,
-													  nsxml_message_error_not_enough_arguments,
-													  "At least %d arguments required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
+					                                  nsxml_message_type_error,
+					                                  nsxml_message_error_not_enough_arguments,
+					                                  "At least %d arguments required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
 					nsxml_parse_mark_option(state, result, binding, 0);
 					++mark_change_count;
 				}
@@ -2792,16 +2792,16 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		if (state->subcommand_index > 0)
 		{
 			nsxml_program_result_add_message(result,
-											 nsxml_message_type_error,
-											 nsxml_message_error_subcommand_pa_not_allowed,
-											 "Subcommand does not accept positional arguments\n");
+			                                 nsxml_message_type_error,
+			                                 nsxml_message_error_subcommand_pa_not_allowed,
+			                                 "Subcommand does not accept positional arguments\n");
 		}
 		else
 		{
 			nsxml_program_result_add_message(result,
-											 nsxml_message_type_error,
-											 nsxml_message_error_program_pa_not_allowed,
-											 "Program does not accept positional arguments\n");
+			                                 nsxml_message_type_error,
+			                                 nsxml_message_error_program_pa_not_allowed,
+			                                 "Program does not accept positional arguments\n");
 		}
 		
 		return valid_positional_argument_count;
@@ -2848,9 +2848,9 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 		 * @todo warning or error ?
 		 */
 		nsxml_program_result_add_message(result,
-										 nsxml_message_type_error,
-										 nsxml_message_error_too_many_pa,
-										 "Too many positional arguments\n");
+		                                 nsxml_message_type_error,
+		                                 nsxml_message_error_too_many_pa,
+		                                 "Too many positional arguments\n");
 	}
 	else if (pai_index < root->positional_argument_info_count)
 	{
@@ -2862,9 +2862,9 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 			if (root->positional_argument_infos[i].positional_argument_flags & nsxml_positional_argument_required)
 			{
 				nsxml_program_result_add_messagef(result,
-												  nsxml_message_type_error,
-												  nsxml_message_error_missing_required_pa,
-												  "Required positional argument %d is missing\n", i);
+				                                  nsxml_message_type_error,
+				                                  nsxml_message_error_missing_required_pa,
+				                                  "Required positional argument %d is missing\n", i);
 			}
 		}
 	}
@@ -2933,9 +2933,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 					if (state->active_option_argc == 0)
 					{
 						nsxml_program_result_add_message(result,
-														 nsxml_message_type_warning,
-														 nsxml_message_warning_ignore_endofarguments,
-														 "Ignore end-of-argument marker\n");
+						                                 nsxml_message_type_warning,
+						                                 nsxml_message_warning_ignore_endofarguments,
+						                                 "Ignore end-of-argument marker\n");
 						nsxml_parse_append_option_argument(state, result, state->argv[a]);
 					}
 					else
@@ -3026,9 +3026,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 			else
 			{
 				nsxml_program_result_add_messagef(result,
-												  nsxml_message_type_fatal_error,
-												  nsxml_message_fatal_error_unknown_option,
-												  NSXML_FATALERROR_UNKNOWN_OPTION_MSGF "\n", state->active_option_cli_name);
+				                                  nsxml_message_type_fatal_error,
+				                                  nsxml_message_fatal_error_unknown_option,
+				                                  NSXML_FATALERROR_UNKNOWN_OPTION_MSGF "\n", state->active_option_cli_name);
 				state->state_flags |= nsxml_parser_state_abort;
 				state->active_option_cli_name[0] = '\0';
 				state->active_option_name = NULL;
@@ -3080,9 +3080,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 				else
 				{
 					nsxml_program_result_add_messagef(result,
-													  nsxml_message_type_fatal_error,
-													  nsxml_message_fatal_error_unknown_option,
-													  "Unknown option %s\n", state->active_option_cli_name);
+					                                  nsxml_message_type_fatal_error,
+					                                  nsxml_message_fatal_error_unknown_option,
+					                                  "Unknown option %s\n", state->active_option_cli_name);
 					state->state_flags |= nsxml_parser_state_abort;
 					state->active_option_cli_name[0] = '\0';
 					state->active_option_name = NULL;
@@ -3182,9 +3182,9 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 					 * @todo special case for groups
 					 */
 					nsxml_program_result_add_messagef(result,
-													  nsxml_message_type_error,
-													  nsxml_message_error_missing_required_option,
-													  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
+					                                  nsxml_message_type_error,
+					                                  nsxml_message_error_missing_required_option,
+					                                  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
 				}
 			}
 		}

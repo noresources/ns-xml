@@ -284,9 +284,9 @@ enum nsxml_value_validator_flags
 	nsxml_value_validator_path_type_folder = (1 << 7), /**!< nsxml_value_validator_path_type_folder */
 	nsxml_value_validator_path_type_symlink = (1 << 8),/**!< nsxml_value_validator_path_type_symlink */
 	nsxml_value_validator_path_type_all =              /**!< nsxml_value_validator_path_type_all */
-		(nsxml_value_validator_path_type_file
-		 | nsxml_value_validator_path_type_folder
-		 | nsxml_value_validator_path_type_symlink),
+	    (nsxml_value_validator_path_type_file
+	     | nsxml_value_validator_path_type_folder
+	     | nsxml_value_validator_path_type_symlink),
 	nsxml_value_validator_enum_strict = (1 << 9)       /**!< nsxml_value_validator_enum_strict */
 };
 
