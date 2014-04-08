@@ -5,3 +5,4 @@ Error count: 0
 Subcommand: 
 switchA=True
 argumentB=
+switchB=False

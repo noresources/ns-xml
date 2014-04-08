@@ -189,23 +189,34 @@
 
 	<xsl:template name="prg.sh.parser.argumentPreprocess">
 		<xsl:param name="optionNode" select="." />
+		<xsl:param name="shortOption" select="false()" />
 		<xsl:param name="onError" />
 
 		<xsl:call-template name="sh.if">
 			<xsl:with-param name="condition">
-				<xsl:text>[ ! -z </xsl:text>
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-					<xsl:with-param name="quoted" select="true()" />
-				</xsl:call-template>
-				<xsl:text> ]</xsl:text>
+				<xsl:choose>
+					<xsl:when test="$shortOption">
+						<xsl:text>[ ! -z "</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
+							<xsl:with-param name="quoted" select="false()" />
+						</xsl:call-template>
+						<xsl:text>" ]</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_optionhastail" />
+							<xsl:with-param name="quoted" select="false()" />
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:with-param>
 			<xsl:with-param name="then">
 				<xsl:value-of select="$prg.sh.parser.vName_item" />
 				<xsl:text>=</xsl:text>
 				<xsl:call-template name="sh.var">
 					<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="quoted" select="false()" />
 				</xsl:call-template>
 			</xsl:with-param>
 			<xsl:with-param name="else">
@@ -245,7 +256,7 @@
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
 							<xsl:with-param name="quoted" select="true()" />
 						</xsl:call-template>
-						<xsl:text> = "--" ]</xsl:text>
+						<xsl:text> = '--' ]</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="then">
 						<xsl:value-of select="$prg.sh.parser.fName_adderror" />
@@ -272,34 +283,35 @@
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
 		<xsl:text>=''</xsl:text>
-
 		<xsl:value-of select="$sh.endl" />
+		<xsl:value-of select="$prg.sh.parser.vName_optionhastail" />
+		<xsl:text>=false</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+
 		<xsl:call-template name="prg.sh.parser.unescapeValue" />
 	</xsl:template>
 
 	<xsl:template name="prg.sh.parser.multiargumentPreprocess">
 		<xsl:param name="optionNode" select="." />
 		<xsl:param name="onError" />
-		
+
 		<xsl:value-of select="$prg.sh.parser.vName_item" />
 		<xsl:text>=''</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 
 		<xsl:call-template name="sh.if">
 			<xsl:with-param name="condition">
-				<xsl:text>[ ! -z </xsl:text>
 				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_optionhastail" />
+					<xsl:with-param name="quoted" select="false()" />
 				</xsl:call-template>
-				<xsl:text> ]</xsl:text>
 			</xsl:with-param>
 			<xsl:with-param name="then">
 				<xsl:value-of select="$prg.sh.parser.vName_item" />
 				<xsl:text>=</xsl:text>
 				<xsl:call-template name="sh.var">
 					<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="quoted" select="false()" />
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
@@ -310,10 +322,12 @@
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
 		<xsl:text>=''</xsl:text>
-
 		<xsl:value-of select="$sh.endl" />
-		<xsl:call-template name="prg.sh.parser.unescapeValue" />
+		<xsl:value-of select="$prg.sh.parser.vName_optionhastail" />
+		<xsl:text>=false</xsl:text>
+		<xsl:value-of select="$sh.endl" />
 
+		<xsl:call-template name="prg.sh.parser.unescapeValue" />
 	</xsl:template>
 
 	<xsl:template name="prg.sh.parser.optionSetValue">
@@ -328,7 +342,11 @@
 					<xsl:if test="not ($shortOption)">
 						<xsl:call-template name="sh.if">
 							<xsl:with-param name="condition">
-								<xsl:text>[ ! -z </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_optionhastail" />
+									<xsl:with-param name="quoted" select="false()" />
+								</xsl:call-template>
+								<xsl:text> &amp;&amp; [ ! -z </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
 									<xsl:with-param name="quoted" select="true()" />
@@ -336,12 +354,13 @@
 								<xsl:text> ]</xsl:text>
 							</xsl:with-param>
 							<xsl:with-param name="then">
+								<xsl:text></xsl:text>
 								<xsl:value-of select="$prg.sh.parser.fName_adderror" />
-								<xsl:text> "Unexpected argument (ignored) for option \"</xsl:text>
+								<xsl:text> "Option --</xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
 								</xsl:call-template>
-								<xsl:text>\""</xsl:text>
+								<xsl:text> does not allow an argument"</xsl:text>
 								<xsl:value-of select="$sh.endl" />
 								<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
 								<xsl:text>=''</xsl:text>
@@ -461,6 +480,8 @@
 		<xsl:param name="optionNode" select="." />
 		<!-- Additional things to do when checks fail -->
 		<xsl:param name="onError" />
+		<!-- Option name type -->
+		<xsl:param name="shortOption" select="false()" />
 		<!-- Disable default processing -->
 		<xsl:param name="process" select="true()" />
 		<!-- Internal use -->
@@ -553,6 +574,7 @@
 									<xsl:call-template name="prg.sh.parser.argumentPreprocess">
 										<xsl:with-param name="onError" select="$onError" />
 										<xsl:with-param name="optionNode" select="$originalOptionNode" />
+										<xsl:with-param name="shortOption" select="$shortOption" />
 									</xsl:call-template>
 									<xsl:value-of select="$sh.endl" />
 								</xsl:when>
@@ -562,6 +584,7 @@
 									<xsl:call-template name="prg.sh.parser.argumentPreprocess">
 										<xsl:with-param name="onError" select="$onError" />
 										<xsl:with-param name="optionNode" select="$originalOptionNode" />
+										<xsl:with-param name="shortOption" select="$shortOption" />
 									</xsl:call-template>
 									<xsl:value-of select="$sh.endl" />
 								</xsl:when>
@@ -648,7 +671,7 @@
 				</xsl:if>
 			</xsl:with-param>
 		</xsl:call-template>
-		
+
 	</xsl:template>
 
 	<xsl:template name="prg.sh.parser.existingCommandCheck">
@@ -831,10 +854,10 @@
 
 		<!-- <call-template name="sh.comment">
 			<with-param name="content">
-				<text>Value type check</text>
+			<text>Value type check</text>
 			</with-param>
-		</call-template>
-		<value-of select="$sh.endl" /> -->
+			</call-template>
+			<value-of select="$sh.endl" /> -->
 
 		<xsl:choose>
 			<xsl:when test="$node/prg:type/prg:number">
@@ -1015,12 +1038,14 @@
 				<xsl:call-template name="prg.sh.parser.groupCheck">
 					<xsl:with-param name="optionNode" select="$optionNode" />
 					<xsl:with-param name="onError" select="$onError" />
+					<xsl:with-param name="shortOption" select="$shortOption" />
 				</xsl:call-template>
 
 				<xsl:choose>
 					<xsl:when test="$optionNode/self::prg:argument">
 						<xsl:call-template name="prg.sh.parser.argumentPreprocess">
 							<xsl:with-param name="onError" select="$onError" />
+							<xsl:with-param name="shortOption" select="$shortOption" />
 						</xsl:call-template>
 						<xsl:value-of select="$sh.endl" />
 						<xsl:call-template name="prg.sh.parser.optionValueTypeCheck">
@@ -1156,7 +1181,7 @@
 									<xsl:with-param name="name" select="$nextitem" />
 									<xsl:with-param name="quoted" select="true()" />
 								</xsl:call-template>
-								<xsl:text> != "--" ] &amp;&amp; [ </xsl:text>
+								<xsl:text> != '--' ] &amp;&amp; [ </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
 								</xsl:call-template>
@@ -1506,7 +1531,7 @@
 			<xsl:with-param name="quoted" select="true()" />
 			<xsl:with-param name="length" select="2" />
 		</xsl:call-template>
-		<xsl:text> = "--" ] </xsl:text>
+		<xsl:text> = '--' ] </xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:text>then</xsl:text>
 		<xsl:call-template name="code.block">
@@ -1520,6 +1545,9 @@
 					<xsl:with-param name="start" select="2" />
 				</xsl:call-template>
 				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$prg.sh.parser.vName_optionhastail" />
+				<xsl:text>=false</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 
 				<!-- check option="value" form -->
 				<xsl:call-template name="sh.if">
@@ -1529,10 +1557,13 @@
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
 							<xsl:with-param name="quoted" select="true()" />
 						</xsl:call-template>
-						<xsl:text> | grep "=" </xsl:text>
+						<xsl:text> | grep '=' </xsl:text>
 						<xsl:call-template name="sh.chunk.nullRedirection" />
 					</xsl:with-param>
 					<xsl:with-param name="then">
+						<xsl:value-of select="$prg.sh.parser.vName_optionhastail" />
+						<xsl:text>=true</xsl:text>
+						<xsl:value-of select="$sh.endl" />
 						<!-- split item between "=" -->
 						<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
 						<xsl:text>=</xsl:text>

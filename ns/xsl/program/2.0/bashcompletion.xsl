@@ -218,7 +218,7 @@
 				<xsl:value-of select="$str.unix.endl" />
 				<xsl:call-template name="sh.if">
 					<xsl:with-param name="condition">
-						<xsl:text>[ "${arg}"  = "--" ]</xsl:text>
+						<xsl:text>[ "${arg}"  = '--' ]</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="then">
 						<xsl:text># End of options marker</xsl:text>

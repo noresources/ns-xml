@@ -624,7 +624,7 @@
 
 	<xsl:template name="prg.sh.parser.numberLesserEqualCheckFunction">
 		<xsl:param name="interpreter" />
-		
+
 		<xsl:call-template name="sh.functionDefinition">
 			<xsl:with-param name="name">
 				<xsl:value-of select="$prg.sh.parser.fName_numberLesserEqualcheck" />
@@ -645,7 +645,7 @@
 				<xsl:call-template name="sh.chunk.nullRedirection" />
 				<xsl:text> &amp;&amp; hasBC=true</xsl:text>
 				<xsl:value-of select="$sh.endl" />
-				
+
 				<xsl:call-template name="sh.if">
 					<xsl:with-param name="condition">
 						<xsl:call-template name="sh.var">
@@ -674,7 +674,7 @@
 						</xsl:call-template>
 						<xsl:value-of select="$sh.endl" />
 						<xsl:text>[ "${a_dec}" = "${1}" ] &amp;&amp; a_dec="0"</xsl:text>
-						
+
 						<xsl:value-of select="$sh.endl" />
 						<xsl:call-template name="sh.local">
 							<xsl:with-param name="interpreter" select="$interpreter" />
@@ -694,7 +694,7 @@
 						<xsl:value-of select="$sh.endl" />
 						<xsl:text>[ "${b_dec}" = "${2}" ] &amp;&amp; b_dec="0"</xsl:text>
 						<xsl:value-of select="$sh.endl" />
-						
+
 						<xsl:text>[ ${a_int} -lt ${b_int} ] &amp;&amp; return 0</xsl:text>
 						<xsl:value-of select="$sh.endl" />
 						<xsl:text>[ ${a_int} -gt ${b_int} ] &amp;&amp; return 1</xsl:text>
@@ -704,7 +704,7 @@
 						<xsl:text>([ ${a_int} -lt 0 ] &amp;&amp; [ ${b_dec} -gt ${a_dec} ]) &amp;&amp; return 1</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-			
+
 				<xsl:text>return 0</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
@@ -962,7 +962,7 @@
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
 							<xsl:with-param name="quoted" select="true()" />
 						</xsl:call-template>
-						<xsl:text> = "--" ]</xsl:text>
+						<xsl:text> = '--' ]</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="then">
 						<xsl:text>return </xsl:text>
@@ -1003,7 +1003,7 @@
 													</xsl:call-template>
 												</xsl:if>
 
-											<!-- short option -->
+												<!-- short option -->
 												<xsl:if test="./prg:options//prg:names/prg:short">
 													<xsl:call-template name="prg.sh.parser.shortOptionNameElif">
 														<xsl:with-param name="optionsNode" select="./prg:options" />
@@ -1090,7 +1090,7 @@
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
 							<xsl:with-param name="quoted" select="true()" />
 						</xsl:call-template>
-						<xsl:text> != "--" ]</xsl:text>
+						<xsl:text> != '--' ]</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="then">
 						<xsl:if test="$prg.debug">
@@ -1205,7 +1205,7 @@
 					<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
 					<xsl:with-param name="quoted" select="true()" />
 				</xsl:call-template>
-				<xsl:text> = "--" ]</xsl:text>
+				<xsl:text> = '--' ]</xsl:text>
 				<xsl:value-of select="$sh.endl" />
 				<xsl:text>then</xsl:text>
 				<xsl:call-template name="code.block">
@@ -1407,7 +1407,7 @@
 								<xsl:text>[ -z </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-									<xsl:with-param name="quoted" select="true()" />
+									<xsl:with-param name="quoted" select="false()" />
 								</xsl:call-template>
 								<xsl:text> ]</xsl:text>
 							</xsl:with-param>
@@ -1512,25 +1512,25 @@
 				<xsl:value-of select="$sh.endl" />
 
 				<!-- ???
-				<call-template name="sh.if">
+					<call-template name="sh.if">
 					<with-param name="condition">
-						<text>[ </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$errorCount" />
-						</call-template>
-						<text> -eq 1 ] &amp;&amp; [ -z </text>
-						<call-template name="sh.var">
-							<with-param name="name" select="$prg.sh.parser.vName_errors" />
-							<with-param name="quoted" select="true()" />
-						</call-template>
-						<text> ]</text>
+					<text>[ </text>
+					<call-template name="sh.var">
+					<with-param name="name" select="$errorCount" />
+					</call-template>
+					<text> -eq 1 ] &amp;&amp; [ -z </text>
+					<call-template name="sh.var">
+					<with-param name="name" select="$prg.sh.parser.vName_errors" />
+					<with-param name="quoted" select="true()" />
+					</call-template>
+					<text> ]</text>
 					</with-param>
 					<with-param name="then">
-						<value-of select="$errorCount" />
-						<text>=0</text>
+					<value-of select="$errorCount" />
+					<text>=0</text>
 					</with-param>
-				</call-template>
-				 -->
+					</call-template>
+				-->
 
 				<xsl:text>return </xsl:text>
 				<xsl:call-template name="sh.var">

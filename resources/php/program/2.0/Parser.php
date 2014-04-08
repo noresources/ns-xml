@@ -2211,7 +2211,8 @@ class Parser
 				$cliName = $arg;
 				$name = substr($arg, 2);
 				$tail = "";
-				if (preg_match("/(.+?)=(.*)/", $name, $matches))
+				$hasTail = (preg_match("/(.+?)=(.*)/", $name, $matches) == 1);
+				if ($hasTail)
 				{
 					$name = $matches[1];
 					$cliName = "--" . $name;
@@ -2227,7 +2228,7 @@ class Parser
 						$s->stateFlags |= ParserState::UNEXPECTEDOPTION;
 					}
 
-					if (strlen($tail) > 0)
+					if ($hasTail)
 					{
 						$s->activeOptionArguments[] = $tail;
 					}
@@ -2399,14 +2400,15 @@ class Parser
 
 		if ($ao->info instanceof SwitchOptionInfo)
 		{
+			$markSet = true;
 			if (count($s->activeOptionArguments) > 0)
 			{
-				$markSet = false;
-				$result->appendMessage(Message::ERROR, 13, Message::ERROR_SWITCH_ARG, $s->activeOption->name->cliName());
-			}
-			else
-			{
-				$markSet = true;
+				if ((count($s->activeOptionArguments) > 1)
+					|| (strlen($s->activeOptionArguments[0]) > 0))
+				{
+					$markSet = false;
+					$result->appendMessage(Message::ERROR, 13, Message::ERROR_SWITCH_ARG, $s->activeOption->name->cliName());
+				}
 			}
 		}
 		else if ($ao->info instanceof ArgumentOptionInfo)

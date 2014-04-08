@@ -1,0 +1,7 @@
+CLI: "--switch-a=", "--", "A switch option name with empty combined argument value is silently ignored"
+Value count: 1
+Values: "A switch option name with empty combined argument value is silently ignored"
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=

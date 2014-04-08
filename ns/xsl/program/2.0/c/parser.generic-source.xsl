@@ -2508,16 +2508,19 @@ void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct ns
 	
 	if (state->active_option->info_ref->option_type == nsxml_option_type_switch)
 	{
+		mark_set = 1;
+		
 		if (state->active_option_argc > 0)
 		{
-			nsxml_program_result_add_messagef(result,
-			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
-			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed"/><![CDATA[,
-			                                  "Option %s does not allow an argument\n", state->active_option_cli_name);
-		}
-		else
-		{
-			mark_set = 1;
+			if ((state->active_option_argc > 1)
+			        || (strlen(state->active_option_argv[0]) > 0))
+			{
+				mark_set = 0;
+				nsxml_program_result_add_messagef(result,
+				                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
+				                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_option_argument_not_allowed"/><![CDATA[,
+				                                  "Option %s does not allow an argument\n", state->active_option_cli_name);
+			}
 		}
 	}
 	else if (state->active_option->info_ref->option_type == nsxml_option_type_argument)
@@ -3006,11 +3009,6 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 				size_t arg_length = strlen(state->argv[a]);
 				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![CDATA[(state->active_option_cli_name, NSXML_OPTION_NAME_BUFFER_LENGTH, state->argv[a], (arg_length - tail_length));
 				++tail;
-				
-				if (*tail == '\0')
-				{
-					tail = NULL;
-				}
 			}
 			else
 			{

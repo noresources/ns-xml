@@ -5,6 +5,7 @@ Error count: 0
 Subcommand: sub
 switchA=False
 argumentB=
+switchB=False
 sub_argumentD=
 sub_switchE=False
 sub_switchA2=True

@@ -12,6 +12,18 @@
 		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
 		<!-- argument-b -->
 		<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+		<prg:switch>
+			<prg:databinding>
+				<prg:variable>switchB</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A non-shadowed global switch</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>switch-b</prg:long>
+				<prg:short>B</prg:short>
+			</prg:names>
+		</prg:switch>
 	</prg:options>
 	<prg:subcommands>
 		<prg:subcommand>
@@ -21,7 +33,6 @@
 				<prg:alias>subcommand-alias</prg:alias>
 			</prg:aliases>
 			<prg:options>
-
 				<prg:argument id="prg.unittest.option.argumentD">
 					<prg:databinding>
 						<prg:variable>argumentD</prg:variable>

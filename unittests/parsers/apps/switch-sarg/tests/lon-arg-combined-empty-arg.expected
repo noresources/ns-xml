@@ -1,0 +1,7 @@
+CLI: "--argument-b=", "--", "Event empty combined argument are accepted"
+Value count: 1
+Values: "Event empty combined argument are accepted"
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=

@@ -99,6 +99,15 @@
 		</xsl:call-template>
 	</xsl:variable>
 	
+	<xsl:variable name="prg.sh.parser.vName_optionhastail">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>optionhastail</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
 	<xsl:variable name="prg.sh.parser.vName_ma_local_count">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">

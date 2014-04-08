@@ -1000,8 +1000,10 @@ class Parser(object):
                 cliName = arg
                 name = arg[2:len(arg)]
                 tail = ""
+                hasTail = False
                 equalSignIndex = name.find("=");
                 if equalSignIndex >= 0:
+                    hasTail = True
                     tail = name[(equalSignIndex + 1):len(name)]
                     name = name[0:equalSignIndex]
                     cliName = "--" + name
@@ -1010,7 +1012,7 @@ class Parser(object):
                 if (self._state.activeOption != None):
                     if not self._optionExpected(self._state.activeOption):
                         self._state.stateFlags |= ParserState.UNEXPECTEDOPTION
-                    if len(tail) > 0:
+                    if hasTail:
                         self._state.activeOptionArguments.append(tail)
                 else:
                     result._appendMessage(Message.FATALERROR, 1, Message.FATALERROR_UNKNOWN_OPTION, cliName)
@@ -1107,10 +1109,11 @@ class Parser(object):
             result._appendMessage(Message.ERROR, 12, Message.ERROR_UNEXPECTED_OPTION, self._state.activeOption.name.cliName())
             
         if isinstance(self._state.activeOption.info, SwitchOptionInfo):
+            markSet = True
             if len(self._state.activeOptionArguments) > 0:
-                result._appendMessage(Message.ERROR, 13, Message.ERROR_SWITCH_ARG, self._state.activeOption.name.cliName())
-            else:
-                markSet = True
+                if len(self._state.activeOptionArguments) > 1 or len(self._state.activeOptionArguments[0]) > 0:
+                    markSet = False
+                    result._appendMessage(Message.ERROR, 13, Message.ERROR_SWITCH_ARG, self._state.activeOption.name.cliName())
         elif isinstance(self._state.activeOption.info, ArgumentOptionInfo):
             if len(self._state.activeOptionArguments) > 0:
                 value = self._state.activeOptionArguments[0]

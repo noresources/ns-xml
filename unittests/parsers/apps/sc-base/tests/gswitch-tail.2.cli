@@ -1,0 +1,1 @@
+sc --switch-b=ignored "This is an error"
