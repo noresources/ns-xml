@@ -232,7 +232,7 @@ parse_addvalue()
 parse_process_subcommand_option()
 {
 	parser_item="${parser_input[${parser_index}]}"
-	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
+	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = '--' ]
 	then
 		return ${PARSER_SC_SKIP}
 	fi
@@ -241,7 +241,7 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
+	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != '--' ]
 	then
 		parse_process_subcommand_option && return ${PARSER_OK}
 		[ ${parser_index} -ge ${parser_itemcount} ] && return ${PARSER_OK}
@@ -251,7 +251,7 @@ parse_process_option()
 	
 	[ -z "${parser_item}" ] && return ${PARSER_OK}
 	
-	if [ "${parser_item}" = "--" ]
+	if [ "${parser_item}" = '--' ]
 	then
 		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
 		do
@@ -265,20 +265,22 @@ parse_process_option()
 	elif [ "${parser_item:0:2}" = "\-" ]
 	then
 		parse_addvalue "${parser_item:1}"
-	elif [ "${parser_item:0:2}" = "--" ] 
+	elif [ "${parser_item:0:2}" = '--' ] 
 	then
 		parser_option="${parser_item:2}"
-		if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+		parser_optionhastail=false
+		if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 		then
+			parser_optionhastail=true
 			parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 			parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 		fi
 		
 		case "${parser_option}" in
 		xml-description)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -288,7 +290,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -298,6 +300,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -315,9 +318,9 @@ parse_process_option()
 			parse_setoptionpresence G_1_xml_description
 			;;
 		xslt | xsl)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -327,7 +330,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -337,6 +340,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
@@ -348,9 +352,9 @@ parse_process_option()
 			parse_setoptionpresence G_2_xslt
 			;;
 		output)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -360,7 +364,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -370,6 +374,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "w"
 			then
@@ -388,10 +393,11 @@ parse_process_option()
 			;;
 		param | params)
 			parser_item=''
-			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
+			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
@@ -403,7 +409,7 @@ parse_process_option()
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != '--' ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
@@ -428,10 +434,11 @@ parse_process_option()
 			;;
 		stringparam | stringparams)
 			parser_item=''
-			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
+			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
@@ -443,7 +450,7 @@ parse_process_option()
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != '--' ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
@@ -467,9 +474,9 @@ parse_process_option()
 			parse_setoptionpresence G_5_stringparam
 			;;
 		help)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -478,9 +485,9 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -490,7 +497,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -500,15 +507,16 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_6_g_1_ns_xml_path;parse_setoptionpresence G_6_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -535,7 +543,7 @@ parse_process_option()
 		x)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -545,7 +553,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -555,6 +563,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -574,7 +583,7 @@ parse_process_option()
 		t)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -584,7 +593,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -594,6 +603,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
@@ -607,7 +617,7 @@ parse_process_option()
 		o)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -617,7 +627,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -627,6 +637,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! parse_pathaccesscheck "${parser_item}" "w"
 			then
@@ -645,10 +656,11 @@ parse_process_option()
 			;;
 		p)
 			parser_item=''
-			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
+			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
@@ -660,7 +672,7 @@ parse_process_option()
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != '--' ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
@@ -685,10 +697,11 @@ parse_process_option()
 			;;
 		s)
 			parser_item=''
-			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
+			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
@@ -700,7 +713,7 @@ parse_process_option()
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != '--' ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
@@ -748,7 +761,7 @@ parse()
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option
-		if [ -z "${parser_optiontail}" ]
+		if [ -z ${parser_optiontail} ]
 		then
 			parser_index=$(expr ${parser_index} + 1)
 			parser_subindex=0

@@ -388,27 +388,29 @@ parse_addvalue()
 parse_process_subcommand_option()
 {
 	parser_item="${parser_input[${parser_index}]}"
-	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = "--" ]
+	if [ -z "${parser_item}" ] || [ "${parser_item:0:1}" != "-" ] || [ "${parser_item}" = '--' ]
 	then
 		return ${PARSER_SC_SKIP}
 	fi
 	
 	case "${parser_subcommand}" in
 	python)
-		if [ "${parser_item:0:2}" = "--" ] 
+		if [ "${parser_item:0:2}" = '--' ] 
 		then
 			parser_option="${parser_item:2}"
-			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			parser_optionhastail=false
+			if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 			then
+				parser_optionhastail=true
 				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 			fi
 			
 			case "${parser_option}" in
 			script)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -418,7 +420,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -428,6 +430,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -451,9 +454,9 @@ parse_process_subcommand_option()
 				parse_setoptionpresence SC_1_python_1_script
 				;;
 			classname)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -463,7 +466,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -473,6 +476,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_1_python_2_classname
@@ -496,7 +500,7 @@ parse_process_subcommand_option()
 			s)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -506,7 +510,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -516,6 +520,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -541,7 +546,7 @@ parse_process_subcommand_option()
 			c)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -551,7 +556,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -561,6 +566,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				python_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_1_python_2_classname
@@ -573,20 +579,22 @@ parse_process_subcommand_option()
 		fi
 		;;
 	php)
-		if [ "${parser_item:0:2}" = "--" ] 
+		if [ "${parser_item:0:2}" = '--' ] 
 		then
 			parser_option="${parser_item:2}"
-			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			parser_optionhastail=false
+			if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 			then
+				parser_optionhastail=true
 				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 			fi
 			
 			case "${parser_option}" in
 			script)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -596,7 +604,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -606,6 +614,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -629,9 +638,9 @@ parse_process_subcommand_option()
 				parse_setoptionpresence SC_2_php_1_script
 				;;
 			parser-namespace | parser-ns)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -641,7 +650,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -651,14 +660,15 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_parserNamespace="${parser_item}"
 				parse_setoptionpresence SC_2_php_2_parser_namespace
 				;;
 			program-namespace | program-ns | prg-ns)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -668,7 +678,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -678,14 +688,15 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programNamespace="${parser_item}"
 				parse_setoptionpresence SC_2_php_3_program_namespace
 				;;
 			classname)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -695,7 +706,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -705,6 +716,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_2_php_4_classname
@@ -728,7 +740,7 @@ parse_process_subcommand_option()
 			s)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -738,7 +750,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -748,6 +760,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -773,7 +786,7 @@ parse_process_subcommand_option()
 			c)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -783,7 +796,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -793,6 +806,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				php_programInfoClassname="${parser_item}"
 				parse_setoptionpresence SC_2_php_4_classname
@@ -805,20 +819,22 @@ parse_process_subcommand_option()
 		fi
 		;;
 	xsh)
-		if [ "${parser_item:0:2}" = "--" ] 
+		if [ "${parser_item:0:2}" = '--' ] 
 		then
 			parser_option="${parser_item:2}"
-			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			parser_optionhastail=false
+			if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 			then
+				parser_optionhastail=true
 				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 			fi
 			
 			case "${parser_option}" in
 			shell)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -828,7 +844,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -838,6 +854,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -855,9 +872,9 @@ parse_process_subcommand_option()
 				parse_setoptionpresence SC_3_xsh_1_shell
 				;;
 			prefix-sc-variables)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 				then
-					parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+					parse_adderror "Option --${parser_option} does not allow an argument"
 					parser_optiontail=''
 					return ${PARSER_SC_ERROR}
 				fi
@@ -869,9 +886,9 @@ parse_process_subcommand_option()
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if [ ! -z "${parser_optiontail}" ]
+					if ${parser_optionhastail}
 					then
-						parser_item="${parser_optiontail}"
+						parser_item=${parser_optiontail}
 					else
 						parser_index=$(expr ${parser_index} + 1)
 						if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -881,7 +898,7 @@ parse_process_subcommand_option()
 						fi
 						
 						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
+						if [ "${parser_item}" = '--' ]
 						then
 							parse_adderror "End of option marker found - Argument expected"
 							parser_index=$(expr ${parser_index} - 1)
@@ -891,14 +908,15 @@ parse_process_subcommand_option()
 					
 					parser_subindex=0
 					parser_optiontail=''
+					parser_optionhastail=false
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
 				fi
 				
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -908,7 +926,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -918,6 +936,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
@@ -928,9 +947,9 @@ parse_process_subcommand_option()
 				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
 				then
 					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if [ ! -z "${parser_optiontail}" ]
+					if ${parser_optionhastail}
 					then
-						parser_item="${parser_optiontail}"
+						parser_item=${parser_optiontail}
 					else
 						parser_index=$(expr ${parser_index} + 1)
 						if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -940,7 +959,7 @@ parse_process_subcommand_option()
 						fi
 						
 						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
+						if [ "${parser_item}" = '--' ]
 						then
 							parse_adderror "End of option marker found - Argument expected"
 							parser_index=$(expr ${parser_index} - 1)
@@ -950,14 +969,15 @@ parse_process_subcommand_option()
 					
 					parser_subindex=0
 					parser_optiontail=''
+					parser_optionhastail=false
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
 				fi
 				
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -967,7 +987,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -977,6 +997,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
@@ -1001,7 +1022,7 @@ parse_process_subcommand_option()
 			s)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1011,7 +1032,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -1021,6 +1042,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				if [ ! -e "${parser_item}" ]
 				then
@@ -1048,7 +1070,7 @@ parse_process_subcommand_option()
 					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
-						parser_item="${parser_optiontail}"
+						parser_item=${parser_optiontail}
 					else
 						parser_index=$(expr ${parser_index} + 1)
 						if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1058,7 +1080,7 @@ parse_process_subcommand_option()
 						fi
 						
 						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
+						if [ "${parser_item}" = '--' ]
 						then
 							parse_adderror "End of option marker found - Argument expected"
 							parser_index=$(expr ${parser_index} - 1)
@@ -1068,6 +1090,7 @@ parse_process_subcommand_option()
 					
 					parser_subindex=0
 					parser_optiontail=''
+					parser_optionhastail=false
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -1075,7 +1098,7 @@ parse_process_subcommand_option()
 				
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1085,7 +1108,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -1095,6 +1118,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterType="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterType"
@@ -1107,7 +1131,7 @@ parse_process_subcommand_option()
 					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
 					if [ ! -z "${parser_optiontail}" ]
 					then
-						parser_item="${parser_optiontail}"
+						parser_item=${parser_optiontail}
 					else
 						parser_index=$(expr ${parser_index} + 1)
 						if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1117,7 +1141,7 @@ parse_process_subcommand_option()
 						fi
 						
 						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = "--" ]
+						if [ "${parser_item}" = '--' ]
 						then
 							parse_adderror "End of option marker found - Argument expected"
 							parser_index=$(expr ${parser_index} - 1)
@@ -1127,6 +1151,7 @@ parse_process_subcommand_option()
 					
 					parser_subindex=0
 					parser_optiontail=''
+					parser_optionhastail=false
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 					
 					return ${PARSER_SC_ERROR}
@@ -1134,7 +1159,7 @@ parse_process_subcommand_option()
 				
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1144,7 +1169,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -1154,6 +1179,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				xsh_defaultInterpreterCommand="${parser_item}"
 				xsh_defaultInterpreter="defaultInterpreterCommand"
@@ -1167,20 +1193,22 @@ parse_process_subcommand_option()
 		fi
 		;;
 	command)
-		if [ "${parser_item:0:2}" = "--" ] 
+		if [ "${parser_item:0:2}" = '--' ] 
 		then
 			parser_option="${parser_item:2}"
-			if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+			parser_optionhastail=false
+			if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 			then
+				parser_optionhastail=true
 				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 			fi
 			
 			case "${parser_option}" in
 			command | cmd)
-				if [ ! -z "${parser_optiontail}" ]
+				if ${parser_optionhastail}
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1190,7 +1218,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -1200,6 +1228,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_4_command_1_command
@@ -1223,7 +1252,7 @@ parse_process_subcommand_option()
 			c)
 				if [ ! -z "${parser_optiontail}" ]
 				then
-					parser_item="${parser_optiontail}"
+					parser_item=${parser_optiontail}
 				else
 					parser_index=$(expr ${parser_index} + 1)
 					if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1233,7 +1262,7 @@ parse_process_subcommand_option()
 					fi
 					
 					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = "--" ]
+					if [ "${parser_item}" = '--' ]
 					then
 						parse_adderror "End of option marker found - Argument expected"
 						parser_index=$(expr ${parser_index} - 1)
@@ -1243,6 +1272,7 @@ parse_process_subcommand_option()
 				
 				parser_subindex=0
 				parser_optiontail=''
+				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 				command_existingCommandPath="${parser_item}"
 				parse_setoptionpresence SC_4_command_1_command
@@ -1260,7 +1290,7 @@ parse_process_subcommand_option()
 }
 parse_process_option()
 {
-	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != "--" ]
+	if [ ! -z "${parser_subcommand}" ] && [ "${parser_item}" != '--' ]
 	then
 		parse_process_subcommand_option && return ${PARSER_OK}
 		[ ${parser_index} -ge ${parser_itemcount} ] && return ${PARSER_OK}
@@ -1270,7 +1300,7 @@ parse_process_option()
 	
 	[ -z "${parser_item}" ] && return ${PARSER_OK}
 	
-	if [ "${parser_item}" = "--" ]
+	if [ "${parser_item}" = '--' ]
 	then
 		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
 		do
@@ -1284,20 +1314,22 @@ parse_process_option()
 	elif [ "${parser_item:0:2}" = "\-" ]
 	then
 		parse_addvalue "${parser_item:1}"
-	elif [ "${parser_item:0:2}" = "--" ] 
+	elif [ "${parser_item:0:2}" = '--' ] 
 	then
 		parser_option="${parser_item:2}"
-		if echo "${parser_option}" | grep "=" 1>/dev/null 2>&1
+		parser_optionhastail=false
+		if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
 		then
+			parser_optionhastail=true
 			parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
 			parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
 		fi
 		
 		case "${parser_option}" in
 		help)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1305,9 +1337,9 @@ parse_process_option()
 			parse_setoptionpresence G_1_help
 			;;
 		output)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1317,7 +1349,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1327,6 +1359,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1344,9 +1377,9 @@ parse_process_option()
 			parse_setoptionpresence G_2_output
 			;;
 		xml-description)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1356,7 +1389,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1366,6 +1399,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1383,9 +1417,9 @@ parse_process_option()
 			parse_setoptionpresence G_3_xml_description
 			;;
 		target-platform | target)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1395,7 +1429,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1405,6 +1439,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = 'host' ] || [ "${parser_item}" = 'linux' ] || [ "${parser_item}" = 'osx' ])
 			then
@@ -1416,9 +1451,9 @@ parse_process_option()
 			parse_setoptionpresence G_4_target_platform
 			;;
 		update)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1426,9 +1461,9 @@ parse_process_option()
 			parse_setoptionpresence G_5_update
 			;;
 		skip-validation | no-validation)
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1437,9 +1472,9 @@ parse_process_option()
 			;;
 		window-width)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1449,7 +1484,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1459,6 +1494,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1482,9 +1518,9 @@ parse_process_option()
 			;;
 		window-height)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1494,7 +1530,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1504,6 +1540,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1527,9 +1564,9 @@ parse_process_option()
 			;;
 		debug)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1538,9 +1575,9 @@ parse_process_option()
 			;;
 		init-script)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1550,7 +1587,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1560,6 +1597,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1579,10 +1617,11 @@ parse_process_option()
 		resources)
 			# Group checks
 			parser_item=''
-			[ ! -z "${parser_optiontail}" ] && parser_item="${parser_optiontail}"
+			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#userDataPaths[*]}
@@ -1606,7 +1645,7 @@ parse_process_option()
 			fi
 			
 			local parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
-			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != "--" ] && [ ${parser_index} -lt ${parser_itemcount} ]
+			while [ ! -z "${parser_nextitem}" ] && [ "${parser_nextitem}" != '--' ] && [ ${parser_index} -lt ${parser_itemcount} ]
 			do
 				if [ ${parser_ma_local_count} -gt 0 ] && [ "${parser_nextitem:0:1}" = "-" ]
 				then
@@ -1643,9 +1682,9 @@ parse_process_option()
 			;;
 		ns-xml-path)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail}
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1655,7 +1694,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1665,15 +1704,16 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
 			parse_setoptionpresence G_9_g_1_ns_xml_path;parse_setoptionpresence G_9_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1682,9 +1722,9 @@ parse_process_option()
 			;;
 		ns | ns-xml-add)
 			# Group checks
-			if [ ! -z "${parser_optiontail}" ]
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
-				parse_adderror "Unexpected argument (ignored) for option \"${parser_option}\""
+				parse_adderror "Option --${parser_option} does not allow an argument"
 				parser_optiontail=''
 				return ${PARSER_ERROR}
 			fi
@@ -1711,7 +1751,7 @@ parse_process_option()
 		o)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1721,7 +1761,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1731,6 +1771,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1750,7 +1791,7 @@ parse_process_option()
 		x)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1760,7 +1801,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1770,6 +1811,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -1789,7 +1831,7 @@ parse_process_option()
 		t)
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1799,7 +1841,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1809,6 +1851,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! ([ "${parser_item}" = 'host' ] || [ "${parser_item}" = 'linux' ] || [ "${parser_item}" = 'osx' ])
 			then
@@ -1831,7 +1874,7 @@ parse_process_option()
 			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1841,7 +1884,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1851,6 +1894,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1876,7 +1920,7 @@ parse_process_option()
 			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1886,7 +1930,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1896,6 +1940,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if ! echo -n "${parser_item}" | grep -E "\-?[0-9]+(\.[0-9]+)*" 1>/dev/null 2>&1
 			then
@@ -1926,7 +1971,7 @@ parse_process_option()
 			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
-				parser_item="${parser_optiontail}"
+				parser_item=${parser_optiontail}
 			else
 				parser_index=$(expr ${parser_index} + 1)
 				if [ ${parser_index} -ge ${parser_itemcount} ]
@@ -1936,7 +1981,7 @@ parse_process_option()
 				fi
 				
 				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = "--" ]
+				if [ "${parser_item}" = '--' ]
 				then
 					parse_adderror "End of option marker found - Argument expected"
 					parser_index=$(expr ${parser_index} - 1)
@@ -1946,6 +1991,7 @@ parse_process_option()
 			
 			parser_subindex=0
 			parser_optiontail=''
+			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			if [ ! -e "${parser_item}" ]
 			then
@@ -2006,7 +2052,7 @@ parse()
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option
-		if [ -z "${parser_optiontail}" ]
+		if [ -z ${parser_optiontail} ]
 		then
 			parser_index=$(expr ${parser_index} + 1)
 			parser_subindex=0

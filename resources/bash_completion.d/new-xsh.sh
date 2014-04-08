@@ -1,7 +1,7 @@
 __new_xsh_getoptionname()
 {
 	local arg="${1}"
-	if [ "${arg}" = "--" ]
+	if [ "${arg}" = '--' ]
 	then
 		# End of options marker
 		return 0
