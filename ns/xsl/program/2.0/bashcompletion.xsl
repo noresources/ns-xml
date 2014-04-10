@@ -298,17 +298,22 @@
 				<xsl:with-param name="in">
 					<xsl:call-template name="sh.caseblock">
 						<xsl:with-param name="case">
-							<xsl:call-template name="prg.bash.completion.itemList">
-								<xsl:with-param name="path" select="$path/prg:names/prg:long" />
-								<xsl:with-param name="quoted" select="true()" />
-								<xsl:with-param name="separator">
+							<xsl:if test="$path/prg:names/prg:long">
+								<xsl:call-template name="prg.bash.completion.itemList">
+									<xsl:with-param name="path" select="$path/prg:names/prg:long" />
+									<xsl:with-param name="quoted" select="true()" />
+									<xsl:with-param name="separator">
+										<xsl:text> | </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:if test="$path/prg:names/prg:short">
 									<xsl:text> | </xsl:text>
-								</xsl:with-param>
-							</xsl:call-template>
+								</xsl:if>
+							</xsl:if>
 							<xsl:call-template name="prg.bash.completion.itemList">
 								<xsl:with-param name="path" select="$path/prg:names/prg:short" />
 								<xsl:with-param name="quoted" select="true()" />
-								<xsl:with-param name="prepend">
+								<xsl:with-param name="separator">
 									<xsl:text> | </xsl:text>
 								</xsl:with-param>
 								<xsl:with-param name="separator" />
@@ -344,17 +349,22 @@
 				<xsl:for-each select="$path">
 					<xsl:call-template name="sh.caseblock">
 						<xsl:with-param name="case">
-							<xsl:call-template name="prg.bash.completion.itemList">
-								<xsl:with-param name="path" select="./prg:names/prg:long" />
-								<xsl:with-param name="quoted" select="true()" />
-								<xsl:with-param name="separator">
+							<xsl:if test="./prg:names/prg:long">
+								<xsl:call-template name="prg.bash.completion.itemList">
+									<xsl:with-param name="path" select="./prg:names/prg:long" />
+									<xsl:with-param name="quoted" select="true()" />
+									<xsl:with-param name="separator">
+										<xsl:text> | </xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
+								<xsl:if test="./prg:names/prg:short">
 									<xsl:text> | </xsl:text>
-								</xsl:with-param>
-							</xsl:call-template>
+								</xsl:if>
+							</xsl:if>
 							<xsl:call-template name="prg.bash.completion.itemList">
 								<xsl:with-param name="path" select="./prg:names/prg:short" />
 								<xsl:with-param name="quoted" select="true()" />
-								<xsl:with-param name="prepend">
+								<xsl:with-param name="separator">
 									<xsl:text> | </xsl:text>
 								</xsl:with-param>
 								<xsl:with-param name="separator" />
