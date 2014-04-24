@@ -172,7 +172,7 @@ class OptionNameList extends ArrayObject
 			{
 				return $v;
 			}
-			elseif (($type == OptionName::LONG) && $v->isLong())
+			elseif (($type == OptionName::LONG) && !$v->isShort())
 			{
 				return $v;
 			}
@@ -696,6 +696,29 @@ class OptionInfo extends ItemInfo
 		}
 	}
 
+	public function getKey()
+	{
+		$key = get_class($this);
+		if ($this->parent)
+		{
+			$index = 0;
+			foreach ($this->parent->getOptions() as $o)
+			{
+				if ($o == $this)
+				{
+					$key .= $index;
+					break;
+				}
+	
+				$index++;
+			}
+	
+			$key = $this->parent->getKey() . $key;
+		}
+	
+		return $key;
+	}
+	
 	/**
 	 * @var OptionNameList
 	 */
@@ -1960,6 +1983,7 @@ class ParserState
 	 * @var array
 	 */
 	public $optionNameBindings;
+	public $optionGroupBindings;
 
 	public $subcommandNameBindings;
 
@@ -1976,6 +2000,7 @@ class ParserState
 	public function __construct(ProgramInfo &$programInfo)
 	{
 		$this->optionNameBindings = array();
+		$this->optionGroupBindings = array();
 		$this->subcommandNameBindings = array();
 		$this->activeOption = null;
 		$this->activeOptionArguments = array();
@@ -1983,6 +2008,7 @@ class ParserState
 		$this->anonymousOptionResults = array();
 
 		$this->optionNameBindings[0] = array();
+		$this->optionGroupBindings[0] = array();
 		$n = null;
 		foreach ($programInfo->getOptions() as $o)
 		{
@@ -1993,6 +2019,7 @@ class ParserState
 		foreach ($programInfo->subcommands as &$s)
 		{
 			$this->optionNameBindings[$scIndex] = array();
+			$this->optionGroupBindings[$scIndex] = array();
 			foreach ($s->getOptions() as $o)
 			{
 				$this->initializeStateData($n, $o, $scIndex);
@@ -2086,6 +2113,19 @@ class ParserState
 
 		if ($option instanceof GroupOptionInfo)
 		{
+			// Add a dummy name
+			$key = $option->getKey();
+			if (!$rootItemResult)
+			{
+				$n = new OptionName('');
+				$this->optionGroupBindings[$groupIndex][$key] = new OptionNameBinding($n, $option);
+			}
+			else // just (re)bind result
+			{
+				$this->optionGroupBindings[$groupIndex][$key]->result = $result;
+				$this->optionGroupBindings[$groupIndex][$key]->parentResults = $resultTree;
+			}
+			
 			foreach ($option->getOptions() as $suboption)
 			{
 				$parentResults = array();
@@ -2311,6 +2351,34 @@ class Parser
 		}
 		while ($changeCount > 0);
 
+		foreach ($s->optionGroupBindings as $g => &$bindings)
+		{
+			if (($g > 0) && ($g != $s->activeSubcommandIndex))
+			{
+				continue;
+			}
+			
+			$binding = null;
+				
+			foreach ($bindings as $n => &$binding)
+			{
+				if (($binding->info->optionFlags & ItemInfo::REQUIRED)
+					&& !($binding->result->isSet))
+				{
+					$nameList = $binding->info->getOptionNameListString();
+				
+					if ($binding->info->groupType == GroupOptionInfo::TYPE_EXCLUSIVE)
+					{
+						$result->appendMessage(Message::ERROR, 6, Message::ERROR_REQUIRED_XGROUP, $nameList);
+					}
+					else
+					{
+						$result->appendMessage(Message::ERROR, 5, Message::ERROR_REQUIRED_GROUP, $nameList);
+					}
+				}
+			}
+		}
+		
 		foreach ($s->optionNameBindings as $g => &$bindings)
 		{
 			if (($g > 0) && ($g != $s->activeSubcommandIndex))
@@ -2332,23 +2400,7 @@ class Parser
 				if (($binding->info->optionFlags & ItemInfo::REQUIRED)
 						&& !($binding->result->isSet))
 				{
-					if ($binding->info instanceof GroupOptionInfo)
-					{
-						$nameList = $binding->info->getOptionNameListString();
-						
-						if ($binding->info->groupType == GroupOptionInfo::TYPE_EXCLUSIVE)
-						{
-							$result->appendMessage(Message::ERROR, 6, Message::ERROR_REQUIRED_XGROUP, $nameList);
-						}
-						else
-						{
-							$result->appendMessage(Message::ERROR, 5, Message::ERROR_REQUIRED_GROUP, $nameList);
-						}
-					}
-					else
-					{
-						$result->appendMessage(Message::ERROR, 4, Message::ERROR_REQUIRED_OPTION, $binding->name->cliName());
-					}
+					$result->appendMessage(Message::ERROR, 4, Message::ERROR_REQUIRED_OPTION, $binding->name->cliName());
 				}
 			}
 		}
