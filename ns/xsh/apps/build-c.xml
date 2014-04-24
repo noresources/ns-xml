@@ -209,6 +209,7 @@
 					<prg:databinding>
 						<prg:variable>outputPath</prg:variable>
 					</prg:databinding>
+					<prg:default>.</prg:default>
 					<prg:documentation>
 						<prg:abstract>Output folder path for the generated files</prg:abstract>
 					</prg:documentation>

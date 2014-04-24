@@ -67,7 +67,8 @@ Usage:
       
     
     Output location
-      -o, --output: Output folder path for the generated files
+      -o, --output: Output folder path for the generated files  
+        Default value: .
       -f, --file-base, --file: Output file base name
         C Header file extension (.h) and C Source code extension (.c) are 
         automatically appended to the name  
@@ -242,6 +243,16 @@ parse_setdefaultarguments()
 		then
 			variableNameStyle='none'
 			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+		fi
+	fi
+	# outputPath
+	if [ -z "${outputPath}" ]
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			outputPath='.'
+			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
 		fi
 	fi
 	# outputFileBase
@@ -1354,21 +1365,18 @@ buildcGenerateBase()
 	buildcPopulateXsltprocParams
 	
 	# Header
-	if ! xsltproc "${buildcXsltprocParams[@]}" \
-			--output "${outputFileBasePath}.h" \
-			"${buildcXsltPath}/parser.generic-header.xsl" \
-			"${xmlProgramDescriptionPath}"
-	then
-		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
-	fi
+	xsltproc "${buildcXsltprocParams[@]}" \
+		--output "${outputFileBasePath}.h" \
+		"${buildcXsltPath}/parser.generic-header.xsl" \
+		"${xmlProgramDescriptionPath}" \
+	|| ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 	
-	if ! xsltproc "${buildcXsltprocParams[@]}" \
-			--output "${outputFileBasePath}.c" \
-			"${buildcXsltPath}/parser.generic-source.xsl" \
-			"${xmlProgramDescriptionPath}"
-	then
-		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
-	fi
+	xsltproc "${buildcXsltprocParams[@]}" \
+		--output "${outputFileBasePath}.c" \
+		--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
+		"${buildcXsltPath}/parser.generic-source.xsl" \
+		"${xmlProgramDescriptionPath}" \
+	|| ns_error 2 "Failed to generate source file ${outputFileBasePath}.c"
 }
 buildcGenerate()
 {
@@ -1400,22 +1408,18 @@ buildcGenerate()
 	fi
 	
 	# Header
-	if ! xsltproc "${buildcXsltprocParams[@]}" \
-			--output "${outputFileBasePath}.h" \
-			"${buildcXsltPath}/parser.header.xsl" \
-			"${xmlProgramDescriptionPath}"
-	then
-		ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
-	fi
+	xsltproc "${buildcXsltprocParams[@]}" \
+		--output "${outputFileBasePath}.h" \
+		"${buildcXsltPath}/parser.header.xsl" \
+		"${xmlProgramDescriptionPath}" \
+	|| ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 	
-	if ! xsltproc "${buildcXsltprocParams[@]}" \
-			--output "${outputFileBasePath}.c" \
-			--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
-			"${buildcXsltPath}/parser.source.xsl" \
-			"${xmlProgramDescriptionPath}"
-	then
-		ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
-	fi
+	xsltproc "${buildcXsltprocParams[@]}" \
+		--output "${outputFileBasePath}.c" \
+		--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
+		"${buildcXsltPath}/parser.source.xsl" \
+		"${xmlProgramDescriptionPath}" \
+	|| ns_error 2 "Failed to generate source file ${outputFileBasePath}.c"
 }
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"

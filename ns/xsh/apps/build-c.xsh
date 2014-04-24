@@ -69,21 +69,18 @@ fi
 buildcPopulateXsltprocParams
 
 # Header
-if ! xsltproc "${buildcXsltprocParams[@]}" \
-		--output "${outputFileBasePath}.h" \
-		"${buildcXsltPath}/parser.generic-header.xsl" \
-		"${xmlProgramDescriptionPath}"
-then
-	ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
-fi
+xsltproc "${buildcXsltprocParams[@]}" \
+	--output "${outputFileBasePath}.h" \
+	"${buildcXsltPath}/parser.generic-header.xsl" \
+	"${xmlProgramDescriptionPath}" \
+|| ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 
-if ! xsltproc "${buildcXsltprocParams[@]}" \
-		--output "${outputFileBasePath}.c" \
-		"${buildcXsltPath}/parser.generic-source.xsl" \
-		"${xmlProgramDescriptionPath}"
-then
-	ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
-fi
+xsltproc "${buildcXsltprocParams[@]}" \
+	--output "${outputFileBasePath}.c" \
+	--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
+	"${buildcXsltPath}/parser.generic-source.xsl" \
+	"${xmlProgramDescriptionPath}" \
+|| ns_error 2 "Failed to generate source file ${outputFileBasePath}.c"
 ]]></xsh:body>
 		</xsh:function>
 		<xsh:function name="buildcGenerate">
@@ -118,22 +115,18 @@ then
 fi
 
 # Header
-if ! xsltproc "${buildcXsltprocParams[@]}" \
-		--output "${outputFileBasePath}.h" \
-		"${buildcXsltPath}/parser.header.xsl" \
-		"${xmlProgramDescriptionPath}"
-then
-	ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
-fi
+xsltproc "${buildcXsltprocParams[@]}" \
+	--output "${outputFileBasePath}.h" \
+	"${buildcXsltPath}/parser.header.xsl" \
+	"${xmlProgramDescriptionPath}" \
+|| ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 
-if ! xsltproc "${buildcXsltprocParams[@]}" \
-		--output "${outputFileBasePath}.c" \
-		--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
-		"${buildcXsltPath}/parser.source.xsl" \
-		"${xmlProgramDescriptionPath}"
-then
-	ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
-fi
+xsltproc "${buildcXsltprocParams[@]}" \
+	--output "${outputFileBasePath}.c" \
+	--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
+	"${buildcXsltPath}/parser.source.xsl" \
+	"${xmlProgramDescriptionPath}" \
+|| ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
 ]]></xsh:body></xsh:function>
 	</xsh:functions>
 	<xsh:code>
