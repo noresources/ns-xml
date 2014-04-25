@@ -384,6 +384,27 @@ parse()
 	return ${parser_errorcount}
 }
 
+ns_print_error()
+{
+	local shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+	local errorColor="${NSXML_ERROR_COLOR}"
+	local useColor=false
+	for s in bash zsh ash
+	do
+		if [ "${shell}" = "${s}" ]
+		then
+			useColor=true
+			break
+		fi
+	done
+	if ${useColor} 
+	then
+		[ -z "${errorColor}" ] && errorColor="31" 
+		echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
+	else
+		echo "${@}" 1>&2
+	fi
+}
 ns_error()
 {
 	local errno
