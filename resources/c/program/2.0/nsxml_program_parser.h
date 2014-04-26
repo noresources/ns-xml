@@ -261,7 +261,7 @@ const char *nsxml_item_name_get(const struct nsxml_item_name *list, int item_ind
 struct nsxml_value_validator;
 struct nsxml_parser_state;
 struct nsxml_program_result;
-struct nsxml_option_name_binding;
+struct nsxml_option_binding;
 struct nsxml_option_info;
 struct nsxml_validated_item;
 
@@ -517,10 +517,10 @@ typedef struct _nsxml_value nsxml_value;
 
 /* Parser internal state *************************/
 
-struct nsxml_option_name_binding
+struct nsxml_option_binding
 {
 	/**
-	 * Option name (short or long)
+	 * Option name (short, long or NULL for group options)
 	 */
 	const char *name_ref;
 	/**
@@ -557,17 +557,17 @@ struct nsxml_parser_state
 	const struct nsxml_program_info *program_info_ref;
 	
 	/** Number of option name binding arrays */
-	size_t option_name_binding_group_count;
+	size_t option_binding_group_count;
 	
 	/** Per-group option name binding counts */
-	size_t *option_name_binding_counts;
+	size_t *option_binding_counts;
 	
 	/**
 	 * Array of name binding groups
 	 * First index: array of bindings for program options
 	 * Other: array of bindings for each subcommand options
 	 */
-	struct nsxml_option_name_binding **option_name_bindings;
+	struct nsxml_option_binding **option_bindings;
 	
 	size_t subcommand_name_binding_count;
 	
@@ -598,7 +598,7 @@ struct nsxml_parser_state
 	/** Active option info */
 	
 	/** Option currently processed */
-	struct nsxml_option_name_binding *active_option;
+	struct nsxml_option_binding *active_option;
 	
 	/**
 	 * Number of argument processed for the current option
@@ -633,7 +633,7 @@ struct nsxml_parser_state
  */
 struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char **argv, int start_index);
 
-void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state, size_t option_name_binding_group_count, size_t *option_name_binding_counts);
+void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state, size_t option_binding_group_count, size_t *option_binding_counts);
 
 /**
  * Destroy the given parser state and set the pointer to NULL

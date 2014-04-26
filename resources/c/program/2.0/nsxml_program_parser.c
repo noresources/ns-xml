@@ -511,7 +511,7 @@ struct nsxml_validated_item
 		/**
 		 * Option info
 		 */
-		struct nsxml_option_name_binding *binding;
+		struct nsxml_option_binding *binding;
 		
 		/**
 		 * Positional argument number [1-n]
@@ -1242,9 +1242,9 @@ struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_inf
 	
 	/** Program info */
 	state->program_info_ref = info;
-	state->option_name_binding_group_count = 0;
-	state->option_name_binding_counts = NULL;
-	state->option_name_bindings = NULL;
+	state->option_binding_group_count = 0;
+	state->option_binding_counts = NULL;
+	state->option_bindings = NULL;
 	
 	state->subcommand_name_binding_count = 0;
 	state->subcommand_name_bindings = NULL;
@@ -1277,30 +1277,30 @@ struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_inf
 	return state;
 }
 
-void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state, size_t option_name_binding_group_count, size_t *option_name_binding_counts)
+void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state, size_t option_binding_group_count, size_t *option_binding_counts)
 {
 	size_t i, j;
-	state->option_name_binding_group_count = option_name_binding_group_count;
-	state->option_name_binding_counts = (size_t *) malloc(sizeof(size_t) * option_name_binding_group_count);
-	state->option_name_bindings = (struct nsxml_option_name_binding **) malloc(sizeof(struct nsxml_option_name_binding *) * option_name_binding_group_count);
+	state->option_binding_group_count = option_binding_group_count;
+	state->option_binding_counts = (size_t *) malloc(sizeof(size_t) * option_binding_group_count);
+	state->option_bindings = (struct nsxml_option_binding **) malloc(sizeof(struct nsxml_option_binding *) * option_binding_group_count);
 	
-	for (i = 0; i < option_name_binding_group_count; ++i)
+	for (i = 0; i < option_binding_group_count; ++i)
 	{
-		state->option_name_binding_counts[i] = option_name_binding_counts[i];
+		state->option_binding_counts[i] = option_binding_counts[i];
 		
-		if (option_name_binding_counts[i] == 0)
+		if (option_binding_counts[i] == 0)
 		{
-			state->option_name_bindings[i] = NULL;
+			state->option_bindings[i] = NULL;
 		}
 		else
 		{
-			state->option_name_bindings[i] = (struct nsxml_option_name_binding *) malloc(sizeof(struct nsxml_option_name_binding) * option_name_binding_counts[i]);
+			state->option_bindings[i] = (struct nsxml_option_binding *) malloc(sizeof(struct nsxml_option_binding) * option_binding_counts[i]);
 			
-			for (j = 0; j < option_name_binding_counts[i]; ++j)
+			for (j = 0; j < option_binding_counts[i]; ++j)
 			{
-				state->option_name_bindings[i][j].name_ref = NULL;
-				state->option_name_bindings[i][j].info_ref = NULL;
-				state->option_name_bindings[i][j].result_ref = NULL;
+				state->option_bindings[i][j].name_ref = NULL;
+				state->option_bindings[i][j].info_ref = NULL;
+				state->option_bindings[i][j].result_ref = NULL;
 			}
 		}
 	}
@@ -1310,18 +1310,18 @@ void nsxml_parser_state_free(struct nsxml_parser_state *state)
 {
 	size_t g, o;
 	
-	for (g = 0; g < state->option_name_binding_group_count; ++g)
+	for (g = 0; g < state->option_binding_group_count; ++g)
 	{
-		for (o = 0; o < state->option_name_binding_counts[g]; ++o)
+		for (o = 0; o < state->option_binding_counts[g]; ++o)
 		{
-			free(state->option_name_bindings[g][o].parent_tree_refs);
+			free(state->option_bindings[g][o].parent_tree_refs);
 		}
 		
-		free(state->option_name_bindings[g]);
+		free(state->option_bindings[g]);
 	}
 	
-	free(state->option_name_binding_counts);
-	free(state->option_name_bindings);
+	free(state->option_binding_counts);
+	free(state->option_bindings);
 	free(state->active_option_argv);
 	free(state->subcommand_name_bindings);
 	
@@ -2052,7 +2052,7 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 	struct nsxml_value_validator *v;
 	char *text_ptr;
 	struct nsxml_validated_item validated_item;
-	struct nsxml_option_name_binding validated_option_binding;
+	struct nsxml_option_binding validated_option_binding;
 	
 	validated_item.item_type = nsxml_item_type_option;
 	validated_item.item.binding = &validated_option_binding;
@@ -2290,12 +2290,12 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 
 /* Hidden API declarations */
 
-struct nsxml_option_name_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index);
-struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name);
+struct nsxml_option_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index);
+struct nsxml_option_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name);
 int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
 int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, int positional_argument_number, const char *value);
-int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option);
-void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, int is_set);
+int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_binding *option);
+void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_binding *option, int is_set);
 void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct nsxml_program_result *result);
 int nsxml_parse_active_option_accepts_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result);
 void nsxml_parse_append_option_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
@@ -2305,28 +2305,35 @@ size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
 
 /* Definitions */
 
-struct nsxml_option_name_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)
+struct nsxml_option_binding *nsxml_parse_find_option_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)
 {
 	size_t o;
 	
-	for (o = 0; o < state->option_name_binding_counts[group_index]; ++o)
+	for (o = 0; o < state->option_binding_counts[group_index]; ++o)
 	{
-		if (strcmp(state->option_name_bindings[group_index][o].name_ref, name) == 0)
+		const char *n = state->option_bindings[group_index][o].name_ref;
+		
+		if (n == NULL)
+		{
+			continue;
+		}
+		
+		if (strcmp(n, name) == 0)
 		{
 #if NSXML_DEBUG
 			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Found name %s\n", name);
 #endif /* NSXML_DEBUG */
 			
-			return &state->option_name_bindings[group_index][o];
+			return &state->option_bindings[group_index][o];
 		}
 	}
 	
 	return NULL;
 }
 
-struct nsxml_option_name_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name)
+struct nsxml_option_binding *nsxml_parse_find_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name)
 {
-	struct nsxml_option_name_binding *option = NULL;
+	struct nsxml_option_binding *option = NULL;
 	
 	if (state->subcommand_index > 0)
 	{
@@ -2391,7 +2398,7 @@ int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, 
 	return validates;
 }
 
-int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_name_binding *option)
+int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_binding *option)
 {
 	int a;
 	
@@ -2424,7 +2431,7 @@ int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_p
 	return 1;
 }
 
-void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_name_binding *option, int is_set)
+void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_binding *option, int is_set)
 {
 	int p;
 	const struct nsxml_option_info *info = option->info_ref;
@@ -2694,13 +2701,13 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct n
 	 * Post check min_argument in multi-argument
 	 * Cleanup values for unset options
 	 */
-	for (g = 0; g < state->option_name_binding_group_count; ++g)
+	for (g = 0; g < state->option_binding_group_count; ++g)
 	{
 		const struct nsxml_option_info *info = NULL;
 		
-		for (o = 0; o < state->option_name_binding_counts[g]; ++o)
+		for (o = 0; o < state->option_binding_counts[g]; ++o)
 		{
-			struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
+			struct nsxml_option_binding *binding = &state->option_bindings[g][o];
 			const struct nsxml_option_info *i = binding->info_ref;
 			
 			if (i == info) /* same option, different names */
@@ -3155,16 +3162,16 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	{
 		const struct nsxml_option_info *last_info = NULL;
 		
-		for (g = 0; g < state->option_name_binding_group_count; ++g)
+		for (g = 0; g < state->option_binding_group_count; ++g)
 		{
 			if ((g > 0) && ((int)g != state->subcommand_index))
 			{
 				continue;
 			}
 			
-			for (o = 0; o < state->option_name_binding_counts[g]; ++o)
+			for (o = 0; o < state->option_binding_counts[g]; ++o)
 			{
-				struct nsxml_option_name_binding *binding = &state->option_name_bindings[g][o];
+				struct nsxml_option_binding *binding = &state->option_bindings[g][o];
 				const struct nsxml_option_info *i = binding->info_ref;
 				
 				if (last_info && (last_info == i))
@@ -3176,13 +3183,23 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 				
 				if ((i->option_flags & nsxml_option_flag_required) && (binding->result_ref->is_set == 0))
 				{
-					/**
-					 * @todo special case for groups
-					 */
-					nsxml_program_result_add_messagef(result,
-					                                  nsxml_message_type_error,
-					                                  nsxml_message_error_missing_required_option,
-					                                  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
+					if (i->option_type == nsxml_option_type_group)
+					{
+						/**
+						 * @todo special case for groups
+						 */
+						nsxml_program_result_add_messagef(result,
+						                                  nsxml_message_type_error,
+						                                  nsxml_message_error_missing_required_option,
+						                                  "Missing required option group\n");
+					}
+					else
+					{
+						nsxml_program_result_add_messagef(result,
+						                                  nsxml_message_type_error,
+						                                  nsxml_message_error_missing_required_option,
+						                                  "Missing required option %s%s\n", (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
+					}
 				}
 			}
 		}

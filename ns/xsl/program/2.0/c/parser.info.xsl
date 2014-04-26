@@ -351,7 +351,7 @@
 		<xsl:text>;</xsl:text>
 	</xsl:template>
 
-	<!--  -->
+	<!-- -->
 	<xsl:template name="prg.c.parser.argumentOptionItemInfoInit">
 		<xsl:param name="optionNode" />
 		<xsl:param name="optionInfoVariable" />
@@ -401,7 +401,7 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<!--  -->
+	<!-- -->
 	<xsl:template name="prg.c.parser.multiargumentOptionItemInfoInit">
 		<xsl:param name="optionNode" />
 		<xsl:param name="optionInfoVariable" />
@@ -462,7 +462,7 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<!--  -->
+	<!-- -->
 	<xsl:template name="prg.c.parser.group_optionItemInfoInit">
 		<xsl:param name="optionNode" />
 		<xsl:param name="optionInfoVariable" />
@@ -516,7 +516,7 @@
 		<xsl:text>);</xsl:text>
 	</xsl:template>
 
-	<!--  -->
+	<!-- -->
 	<xsl:template name="prg.c.parser.rootItemInfoInit">
 		<xsl:param name="rootNode" />
 		<xsl:param name="variable" />
@@ -767,7 +767,7 @@
 		</xsl:if>
 	</xsl:template>
 
-	<!--  -->
+	<!-- -->
 	<xsl:template name="prg.c.parser.subcommandInfoInit">
 		<xsl:param name="subcommandNode" select="." />
 		<xsl:param name="variable" />
