@@ -22,6 +22,8 @@ __pycache__
 /doc/wiki
 /xul
 /gource-*.mp4
+.~lock*
+.settings
 
 # Other VCS files
 \.hg*
