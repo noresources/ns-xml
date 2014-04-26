@@ -1,0 +1,11 @@
+CLI: "--multi", "Mark group R", "as set", "--", "So we will get only one error"
+Value count: 1
+Values: "So we will get only one error"
+Error count: 1
+Subcommand: 
+groupQ=
+switchA=False
+argumentB=
+groupR=multiargC
+multiargC=Mark group R as set
+argumentD=

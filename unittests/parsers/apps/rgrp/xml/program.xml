@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app4</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (group with required property)</prg:abstract>
+	</prg:documentation>
+	<!--
+		- group J
+		- a (switch)
+		- b (sarg)
+		- xgroup k
+		- c (marg)
+		- d (arg)
+		- xgroup L
+		- group M
+		- e (switch)
+		- f (arg)
+
+		- xgroup N
+		- g (arg + restricted)
+		- h (marg)
+		- xgroup O
+		- F (arg + default)
+		- p (arg number)
+	-->
+	<prg:options>
+		<!-- Required group -->
+		<prg:group id="prg.unittest.option.groupQ" required="true">
+			<prg:databinding>
+				<prg:variable>groupQ</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A simple required group</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<!-- Switch A -->
+				<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:switch[@id = 'prg.unittest.option.switchA'])" />
+				<!-- Argument B -->
+				<xi:include href="../../switch-sarg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentB'])" />
+			</prg:options>
+		</prg:group>
+
+		<!-- Required Exclusive group -->
+		<prg:group id="prg.unittest.option.groupR" type="exclusive" required="true">
+			<prg:databinding>
+				<prg:variable>groupR</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A required and exclusive group</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<!-- Multi argument C -->
+				<xi:include href="../../marg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiargC'])" />
+				<!-- Argument D -->
+				<xi:include href="../../sc-base/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:argument[@id = 'prg.unittest.option.argumentD'])" />
+			</prg:options>
+		</prg:group>
+	</prg:options>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

@@ -1,0 +1,11 @@
+CLI: "--multi", "Mark group R", "as set", "--switch-a", "--argument-b", "And group Q twice", "--", "This is a valid command line"
+Value count: 1
+Values: "This is a valid command line"
+Error count: 0
+Subcommand: 
+groupQ=
+switchA=True
+argumentB=And group Q twice
+groupR=multiargC
+multiargC=Mark group R as set
+argumentD=

@@ -1,0 +1,11 @@
+CLI: "--", "Both", "groups", "should", "raise", "an", "error"
+Value count: 6
+Values: "Both", "groups", "should", "raise", "an", "error"
+Error count: 2
+Subcommand: 
+groupQ=
+switchA=False
+argumentB=
+groupR=
+multiargC=
+argumentD=
