@@ -73,10 +73,10 @@ class OptionName
 	{
 		if ($this->isShort())
 		{
-			return "-" . $this->m_name;
+			return '-' . $this->m_name;
 		}
 		
-		return "--" . $this->m_name;
+		return '--' . $this->m_name;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class OptionNameList extends ArrayObject
 		
 		$this->uksort(array (
 				get_class($this),
-				"keySort" 
+				'keySort' 
 		));
 	}
 
@@ -128,7 +128,7 @@ class OptionNameList extends ArrayObject
 		parent::offsetSet($k, $v);
 		$this->uksort(array (
 				get_class($this),
-				"keySort" 
+				'keySort' 
 		));
 	}
 
@@ -158,7 +158,7 @@ class OptionNameList extends ArrayObject
 	{
 		return array_filter($this->getArrayCopy(), array (
 				get_class($this),
-				"filterShort" 
+				'filterShort' 
 		));
 	}
 
@@ -170,7 +170,7 @@ class OptionNameList extends ArrayObject
 	{
 		return array_filter($this->getArrayCopy(), array (
 				get_class($this),
-				"filterLong" 
+				'filterLong' 
 		));
 	}
 
@@ -256,7 +256,7 @@ class Text
 	 * @param string $separator Value separator
 	 * @param string $lastSeparator Separator between the penultimate and last values
 	 */
-	public static function implode($list, $separator = ", ", $lastSeparator = " or ")
+	public static function implode($list, $separator = ', ', $lastSeparator = ' or ')
 	{
 		$c = count($list);
 		
@@ -295,7 +295,7 @@ class TextWrap
 	 */
 	public $indentString;
 
-	public function __construct($length = 80, $indent = "  ", $eolString = "\n")
+	public function __construct($length = 80, $indent = '  ', $eolString = "\n")
 	{
 		$this->lineLength = $length;
 		$this->endOfLineString = $eolString;
@@ -312,8 +312,8 @@ class TextWrap
 	{
 		$indentation = str_repeat($this->indentString, $level);
 		
-		$firstIndent = $indentation . (($mode & self::OFFSET_FIRST) ? $this->indentString : "");
-		$otherIndent = $indentation . (($mode & self::OFFSET_OTHER) ? $this->indentString : "");
+		$firstIndent = $indentation . (($mode & self::OFFSET_FIRST) ? $this->indentString : '');
+		$otherIndent = $indentation . (($mode & self::OFFSET_OTHER) ? $this->indentString : '');
 		
 		$text = $firstIndent . $text;
 		
@@ -469,7 +469,7 @@ class PathValueValidator extends ValueValidator
 
 	public function usage(UsageFormat &$usage)
 	{
-		$text = "";
+		$text = '';
 		$eol = $usage->textWrap->endOfLineString;
 		
 		$types = ($this->flags & self::TYPE_ALL);
@@ -477,9 +477,9 @@ class PathValueValidator extends ValueValidator
 		if (!(($types == 0) || ($types == self::TYPE_ALL)))
 		{
 			$types = array (
-					self::TYPE_FILE => "file",
-					self::TYPE_FOLDER => "folder",
-					self::TYPE_SYMLINK => "symbolic link" 
+					self::TYPE_FILE => 'file',
+					self::TYPE_FOLDER => 'folder',
+					self::TYPE_SYMLINK => 'symbolic link' 
 			);
 			$names = array ();
 			
@@ -491,17 +491,17 @@ class PathValueValidator extends ValueValidator
 				}
 			}
 			
-			$text .= "Expected file type" . ((count($names) > 1) ? "s" : "") . ": ";
-			$text .= Text::implode($names, ", ", " or ");
+			$text .= 'Expected file type' . ((count($names) > 1) ? 's' : '') . ': ';
+			$text .= Text::implode($names, ', ', ' or ');
 		}
 		
 		$access = ($this->flags & (self::ACCESS_READ | self::ACCESS_WRITE | self::ACCESS_EXECUTE));
 		if ($access)
 		{
 			$access = array (
-					self::ACCESS_READ => "readable",
-					self::ACCESS_WRITE => "writable",
-					self::ACCESS_EXECUTE => "executable" 
+					self::ACCESS_READ => 'readable',
+					self::ACCESS_WRITE => 'writable',
+					self::ACCESS_EXECUTE => 'executable' 
 			);
 			$names = array ();
 			foreach ($access as $a => $name)
@@ -512,7 +512,7 @@ class PathValueValidator extends ValueValidator
 				}
 			}
 			
-			$text .= (strlen($text) ? $eol : "") . "Path argument must be " . Text::implode($names, ", ", " and ");
+			$text .= (strlen($text) ? $eol : '') . 'Path argument must be ' . Text::implode($names, ', ', ' and ');
 		}
 		
 		return $text;
@@ -566,21 +566,21 @@ class NumberValueValidator extends ValueValidator
 
 	public function usage(UsageFormat &$usage)
 	{
-		$text = "Argument value must be a number";
+		$text = 'Argument value must be a number';
 		if ($this->minValue !== null)
 		{
 			if ($this->maxValue !== null)
 			{
-				$text .= " between " . $this->minValue . " and " . $this->maxValue;
+				$text .= ' between ' . $this->minValue . ' and ' . $this->maxValue;
 			}
 			else
 			{
-				$text .= " greater or equal than " . $this->minValue;
+				$text .= ' greater or equal than ' . $this->minValue;
 			}
 		}
 		else
 		{
-			$text .= " lesser or equal than " . $this->maxValue;
+			$text .= ' lesser or equal than ' . $this->maxValue;
 		}
 		
 		return $text;
@@ -626,7 +626,7 @@ class EnumerationValueValidator extends ValueValidator
 
 	public function usage(UsageFormat &$usage)
 	{
-		return "Argument value " . (($this->flags & self::RESTRICT) ? "must" : "can") . " be " . Text::implode($this->values, ", ", " or ");
+		return 'Argument value ' . (($this->flags & self::RESTRICT) ? 'must' : 'can') . ' be ' . Text::implode($this->values, ', ', ' or ');
 	}
 
 	private $values;
@@ -797,16 +797,16 @@ class ArgumentType
 		switch ($type)
 		{
 			case self::EXISTINGCOMMAND:
-				return "cmd";
+				return 'cmd';
 			case self::HOSTNAME:
-				return "host";
+				return 'host';
 			case self::PATH:
-				return "path";
+				return 'path';
 			case self::NUMBER:
-				return "number";
+				return 'number';
 		}
 		
-		return "?";
+		return '?';
 	}
 }
 
@@ -908,7 +908,7 @@ class OptionContainerOptionInfo extends OptionInfo
 		{
 			if ($option instanceof GroupOptionInfo)
 			{
-				$names [] = "(" . $option->getOptionNameListString() . ")";
+				$names [] = '(' . $option->getOptionNameListString() . ')';
 			}
 			else
 			{
@@ -916,7 +916,7 @@ class OptionContainerOptionInfo extends OptionInfo
 			}
 		}
 		
-		return Text::implode($names, ", ", " or ");
+		return Text::implode($names, ', ', ' or ');
 	}
 
 	public static function sortSwitchFirst($a, $b)
@@ -951,13 +951,13 @@ class OptionContainerOptionInfo extends OptionInfo
 
 	protected function optionShortUsage($usage)
 	{
-		$text = "";
+		$text = '';
 		
 		// switch with short names, then others
 		$list = $this->flattenOptionTree();
 		usort($list, array (
 				get_class(),
-				"sortRequiredOptionFirst" 
+				'sortRequiredOptionFirst' 
 		));
 		$groups = array (
 				array (),
@@ -976,8 +976,8 @@ class OptionContainerOptionInfo extends OptionInfo
 				if ($first)
 				{
 					$groups [1] [] = array (
-							"option" => $option,
-							"name" => $first 
+							'option' => $option,
+							'name' => $first 
 					);
 				}
 			}
@@ -986,31 +986,31 @@ class OptionContainerOptionInfo extends OptionInfo
 		if (count($groups [0]))
 		{
 			natsort($groups [0]);
-			$text .= "-" . implode("", $groups [0]);
+			$text .= '-' . implode('', $groups [0]);
 		}
 		
 		foreach ($groups [1] as &$other)
 		{
-			$option = $other ["option"];
-			$name = $other ["name"];
+			$option = $other ['option'];
+			$name = $other ['name'];
 			$required = ($option->optionFlags & ItemInfo::REQUIRED);
 			$optionText = $name->cliName();
 			
 			if ($option instanceof ArgumentOptionInfo)
 			{
-				$optionText .= "=<" . ArgumentType::usageName($option->argumentType) . ">";
+				$optionText .= '=<' . ArgumentType::usageName($option->argumentType) . '>';
 			}
 			elseif ($option instanceof MultiArgumentOptionInfo)
 			{
-				$optionText .= "=<" . ArgumentType::usageName($option->argumentsType) . " ...>";
+				$optionText .= '=<' . ArgumentType::usageName($option->argumentsType) . ' ...>';
 			}
 			
 			if (!$required && strlen($optionText))
 			{
-				$optionText = "[" . $optionText . "]";
+				$optionText = '[' . $optionText . ']';
 			}
 			
-			$text .= ((strlen($text) && strlen($optionText)) ? " " : "") . $optionText;
+			$text .= ((strlen($text) && strlen($optionText)) ? ' ' : '') . $optionText;
 		}
 		
 		return $text;
@@ -1018,12 +1018,12 @@ class OptionContainerOptionInfo extends OptionInfo
 
 	protected function optionUsage($usage, $level = 0)
 	{
-		$text = "";
+		$text = '';
 		$eol = $usage->textWrap->endOfLineString;
 		
 		foreach ($this->options as &$o)
 		{
-			$subtext = "";
+			$subtext = '';
 			if (!($o instanceof GroupOptionInfo))
 			{
 				$names = array ();
@@ -1033,22 +1033,22 @@ class OptionContainerOptionInfo extends OptionInfo
 					$names [] = $name->cliName();
 				}
 				
-				$subtext = implode(", ", $names);
+				$subtext = implode(', ', $names);
 			}
 			
 			if (($usage->format & UsageFormat::ABSTRACT_TEXT) && strlen($o->abstract))
 			{
-				$subtext .= (strlen($subtext) ? ": " : "") . $o->abstract;
+				$subtext .= (strlen($subtext) ? ': ' : '') . $o->abstract;
 			}
 			
 			if (($usage->format & UsageFormat::DETAILED_TEXT) && strlen($o->details))
 			{
-				$subtext .= (strlen($subtext) ? $eol : "") . $o->details;
+				$subtext .= (strlen($subtext) ? $eol : '') . $o->details;
 			}
 			
 			if ($o instanceof GroupOptionInfo)
 			{
-				$subtext .= (strlen($subtext) ? $eol : "") . $o->optionUsage($usage, $level + 1);
+				$subtext .= (strlen($subtext) ? $eol : '') . $o->optionUsage($usage, $level + 1);
 				if (strlen($subtext))
 				{
 					$text .= $subtext . $eol;
@@ -1061,7 +1061,7 @@ class OptionContainerOptionInfo extends OptionInfo
 					$vtext = $v->usage($usage);
 					if (strlen($vtext))
 					{
-						$subtext .= (strlen($subtext) ? $eol : "") . $vtext;
+						$subtext .= (strlen($subtext) ? $eol : '') . $vtext;
 					}
 				}
 				
@@ -1260,7 +1260,7 @@ class ProgramInfo extends RootItemInfo
 
 	public function usage($usage = null, $subcommandName = null)
 	{
-		$text = "Usage: " . $this->name;
+		$text = 'Usage: ' . $this->name;
 		
 		$usage = ($usage) ? $usage : new UsageFormat();
 		$eol = $usage->textWrap->endOfLineString;
@@ -1270,10 +1270,10 @@ class ProgramInfo extends RootItemInfo
 		
 		if ($subcommand)
 		{
-			$text .= " " . $subcommand->name;
+			$text .= ' ' . $subcommand->name;
 		}
 		
-		$text .= " " . $root->optionShortUsage($usage);
+		$text .= ' ' . $root->optionShortUsage($usage);
 		
 		$text = $usage->textWrap->wrap($text, TextWrap::OFFSET_OTHER, 0) . $eol;
 		
@@ -1338,6 +1338,7 @@ class ProgramInfo extends RootItemInfo
 		/**
 		 *
 		 * @todo
+		 *
 		 *
 		 *
 		 *
@@ -1435,7 +1436,7 @@ class ArgumentOptionResult extends OptionResult
 	 */
 	public function __toString()
 	{
-		return $this->isSet ? $this->argument : "";
+		return $this->isSet ? $this->argument : '';
 	}
 
 	/**
@@ -1562,7 +1563,7 @@ class GroupOptionResult extends OptionResult
 	 */
 	public function __toString()
 	{
-		return ($this->isSet) ? $this->selectedOptionName : "";
+		return ($this->isSet) ? $this->selectedOptionName : '';
 	}
 
 	/**
@@ -1629,35 +1630,35 @@ class Message
 	{
 		return $this->message;
 	}
-	const FATALERROR_UNKNOWN_OPTION = "Unknown option %s";
+	const FATALERROR_UNKNOWN_OPTION = 'Unknown option %s';
 	
 	/* 1 */
-	const ERROR_INVALID_OPTION_VALUE = "Invalid value for option %s. %s";
+	const ERROR_INVALID_OPTION_VALUE = 'Invalid value for option %s. %s';
 	/* 2 */
-	const ERROR_INVALID_POSARG_VALUE = "Invalid value for positional argument %d. %s";
+	const ERROR_INVALID_POSARG_VALUE = 'Invalid value for positional argument %d. %s';
 	/* 3 */
-	const ERROR_MISSING_ARG = "Missing argument for option %s";
+	const ERROR_MISSING_ARG = 'Missing argument for option %s';
 	/* 4 */
-	const ERROR_REQUIRED_OPTION = "Missing required option %s";
+	const ERROR_REQUIRED_OPTION = 'Missing required option %s';
 	/* 5 */
-	const ERROR_REQUIRED_GROUP = "At least one of the following options have to be set: %s";
+	const ERROR_REQUIRED_GROUP = 'At least one of the following options have to be set: %s';
 	/* 6 */
-	const ERROR_REQUIRED_XGROUP = "One of the following options have to be set: %s";
+	const ERROR_REQUIRED_XGROUP = 'One of the following options have to be set: %s';
 	/* 7 */
-	const ERROR_REQUIRED_POSARG = "Required positional argument %d is missing";
+	const ERROR_REQUIRED_POSARG = 'Required positional argument %d is missing';
 	/* 8 */
-	const ERROR_PROGRAM_POSARG = "Program does not accept positional arguments";
+	const ERROR_PROGRAM_POSARG = 'Program does not accept positional arguments';
 	/* 9 */
-	const ERROR_SUBCMD_POSARG = "Subcommand %s does not accept positional arguments";
+	const ERROR_SUBCMD_POSARG = 'Subcommand %s does not accept positional arguments';
 	/* 10 */
-	const ERROR_TOOMANY_POSARG = "Too many positional arguments";
+	const ERROR_TOOMANY_POSARG = 'Too many positional arguments';
 	/* 11 */
-	const ERROR_MISSING_MARG = "At least %d argument(s) required for %s option, got %d";
+	const ERROR_MISSING_MARG = 'At least %d argument(s) required for %s option, got %d';
 	/* 12 */
-	const ERROR_UNEXPECTED_OPTION = "Unexpected option %s";
+	const ERROR_UNEXPECTED_OPTION = 'Unexpected option %s';
 	/* 13 */
-	const ERROR_SWITCH_ARG = "Option %s does not allow an argument";
-	const WARNING_IGNORE_EOA = "Ignore end-of-argument marker";
+	const ERROR_SWITCH_ARG = 'Option %s does not allow an argument';
+	const WARNING_IGNORE_EOA = 'Ignore end-of-argument marker';
 }
 
 /**
@@ -1684,7 +1685,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 			return $this->options [$variableName];
 		}
 		
-		throw new InvalidArgumentException("Invalid option key '" . $variableName . "'");
+		throw new InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
 	}
 
 	/**
@@ -1722,7 +1723,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 			return $o->value($args);
 		}
 		
-		throw new InvalidArgumentException("Invalid option key '" . $variableName . "'");
+		throw new InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
 	}
 
 	/**
@@ -1735,7 +1736,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 	{
 		if ($this->offsetExists($variableName))
 		{
-			throw new InvalidArgumentException($variableName . " already exists");
+			throw new InvalidArgumentException($variableName . ' already exists');
 		}
 		
 		if (!(is_object($result) && ($result instanceof OptionResult)))
@@ -1997,6 +1998,7 @@ class ProgramResult extends RootItemResult implements Iterator
 	 * $type, $code, $format , .
 	 *
 	 *
+	 *
 	 * ..
 	 */
 	{
@@ -2004,7 +2006,7 @@ class ProgramResult extends RootItemResult implements Iterator
 		$type = array_shift($args);
 		$code = intval(array_shift($args));
 		
-		$this->messages [] = new Message($type, $code, call_user_func_array("sprintf", $args));
+		$this->messages [] = new Message($type, $code, call_user_func_array('sprintf', $args));
 	}
 
 	/**
@@ -2163,8 +2165,8 @@ class ParserState
 			}
 			
 			$this->subcommandNameBindings [$s->name] = array (
-					"subcommandIndex" => $scIndex,
-					"subcommand" => $s 
+					'subcommandIndex' => $scIndex,
+					'subcommand' => $s 
 			);
 			
 			$scIndex++;
@@ -2210,7 +2212,7 @@ class ParserState
 
 	private function createResult(RootItemResult &$rootItemResult, OptionInfo &$option)
 	{
-		$resultClassName = preg_replace(",(.+?)Info,", "\\1Result", get_class($option));
+		$resultClassName = preg_replace(',(.+?)Info,', '\\1Result', get_class($option));
 		$result = new $resultClassName();
 		
 		if (is_string($option->variableName) && strlen($option->variableName))
@@ -2313,32 +2315,25 @@ class Parser
 		{
 			$arg = $argv [$s->argIndex];
 			
-			//print ("[process " . $arg . "]\n");
-			
-
 			if ($s->activeOption)
 			{
 				if (!$this->activeOptionAcceptsArguments())
 				{
-					//print ("[no more arg]\n");
 					$this->unsetActiveOption($result);
 				}
 			}
 			
 			if ($s->stateFlags & ParserState::ENDOFOPTIONS)
 			{
-				//print ("[eoo:1]\n");
 				$this->processPositionalArgument($result, $arg);
 			}
-			elseif ($arg == "--")
+			elseif ($arg == '--')
 			{
-				//print ("[eoo2]\n");
 				$s->stateFlags |= ParserState::ENDOFOPTIONS;
 				$this->unsetActiveOption($result);
 			}
-			elseif ($arg == "-")
+			elseif ($arg == '-')
 			{
-				//print ("[eoa]\n");
 				if ($s->activeOption)
 				{
 					if ($s->activeOption->info instanceof MultiArgumentOptionInfo)
@@ -2363,9 +2358,8 @@ class Parser
 					$this->processPositionalArgument($result, $arg);
 				}
 			}
-			elseif (substr($arg, 0, 2) == "\\-")
+			elseif (substr($arg, 0, 2) == '\\-')
 			{
-				//print ("[protected]\n");
 				$arg = substr($arg, 1);
 				if ($s->activeOption)
 				{
@@ -2378,12 +2372,10 @@ class Parser
 			}
 			elseif ($s->activeOption && (count($s->activeOptionArguments) == 0))
 			{
-				//print ("[first-arg]\n");
 				$s->activeOptionArguments [] = $arg;
 			}
-			elseif (substr($arg, 0, 2) == "--")
+			elseif (substr($arg, 0, 2) == '--')
 			{
-				//print ("[long]\n");
 				if ($s->activeOption)
 				{
 					$this->unsetActiveOption($result);
@@ -2392,12 +2384,12 @@ class Parser
 				$matches = array ();
 				$cliName = $arg;
 				$name = substr($arg, 2);
-				$tail = "";
-				$hasTail = (preg_match("/(.+?)=(.*)/", $name, $matches) == 1);
+				$tail = '';
+				$hasTail = (preg_match('/(.+?)=(.*)/', $name, $matches) == 1);
 				if ($hasTail)
 				{
 					$name = $matches [1];
-					$cliName = "--" . $name;
+					$cliName = '--' . $name;
 					$tail = $matches [2];
 				}
 				
@@ -2422,9 +2414,8 @@ class Parser
 					break;
 				}
 			}
-			elseif (substr($arg, 0, 1) == "-")
+			elseif (substr($arg, 0, 1) == '-')
 			{
-				//print ("[short]\n");
 				$arg = substr($arg, 1);
 				while (strlen($arg) > 0)
 				{
@@ -2434,7 +2425,7 @@ class Parser
 					}
 					
 					$name = substr($arg, 0, 1);
-					$cliName = "-" . $name;
+					$cliName = '-' . $name;
 					$arg = substr($arg, 1);
 					
 					$s->activeOption = $this->findOptionByName($name);
@@ -2466,12 +2457,10 @@ class Parser
 			}
 			else if ($s->activeOption)
 			{
-				//print ("[other-arg]\n");
 				$s->activeOptionArguments [] = $arg;
 			}
 			else
 			{
-				//print ("[positional-arg]\n");
 				$this->processPositionalArgument($result, $arg);
 			}
 			
@@ -2483,7 +2472,6 @@ class Parser
 			$s->argIndex++;
 		}
 		
-		//print ("[end-parse]\n");
 		$this->unsetActiveOption($result);
 		
 		$changeCount = 0;
@@ -2583,9 +2571,6 @@ class Parser
 			return;
 		}
 		
-		//print ("[unset " . $ao->name->cliName() . "]\n");
-		
-
 		if ($s->stateFlags & ParserState::UNEXPECTEDOPTION)
 		{
 			$result->appendMessage(Message::ERROR, 12, Message::ERROR_UNEXPECTED_OPTION, $s->activeOption->name->cliName());
@@ -2625,14 +2610,12 @@ class Parser
 		}
 		else if ($ao->info instanceof MultiArgumentOptionInfo)
 		{
-			//print ("[unset mao ".count($s->activeOptionArguments)."]\n");
 			if (count($s->activeOptionArguments) > 0)
 			{
 				foreach ($s->activeOptionArguments as $i => $value)
 				{
 					if (!($s->stateFlags & ParserState::UNEXPECTEDOPTION) && $this->validateOptionArgument($result, $s->activeOption, $value))
 					{
-						//print ("[unset mao : ".$value."]\n");
 						$markSet = true;
 						$ao->result->arguments [] = $value;
 					}
@@ -2683,7 +2666,7 @@ class Parser
 				}
 			}
 			
-			assert(($parentResult->isSet >= 0)); // "This should not happen"
+			assert(($parentResult->isSet >= 0)); // *This should not happen*
 			
 
 			if ($parentResult->isSet == 0)
@@ -2731,16 +2714,16 @@ class Parser
 			{
 				if ($name == $value)
 				{
-					$this->state->activeSubcommandIndex = $binding ["subcommandIndex"];
+					$this->state->activeSubcommandIndex = $binding ['subcommandIndex'];
 					$result->setActiveSubcommand($name);
 					return;
 				}
 				
-				foreach ($binding ["subcommand"]->aliases as $alias)
+				foreach ($binding ['subcommand']->aliases as $alias)
 				{
 					if ($alias == $value)
 					{
-						$this->state->activeSubcommandIndex = $binding ["subcommandIndex"];
+						$this->state->activeSubcommandIndex = $binding ['subcommandIndex'];
 						$result->setActiveSubcommand($name);
 						return;
 					}

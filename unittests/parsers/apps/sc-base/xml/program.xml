@@ -64,7 +64,6 @@
 					</prg:names>
 					<prg:ui mode="disabled" />
 				</prg:switch>
-
 			</prg:options>
 			<prg:values>
 				<prg:other />
