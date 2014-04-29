@@ -1,0 +1,5 @@
+CLI: "Program does not allow positional arguments", "should be reported once"
+Value count: 0
+Values: 
+Error count: 1
+Subcommand: 

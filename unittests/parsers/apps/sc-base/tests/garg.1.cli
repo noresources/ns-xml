@@ -1,0 +1,1 @@
+sc --argument-b 'And its value' -- "This should be ok"

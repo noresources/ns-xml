@@ -1,0 +1,8 @@
+CLI: "empty", "--argument-b", "And its value"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: empty
+switchA=False
+argumentB=And its value
+switchB=False

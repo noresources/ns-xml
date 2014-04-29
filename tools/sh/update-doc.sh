@@ -810,6 +810,7 @@ parse_process_option()
 parse()
 {
 	parser_aborted=false
+	parser_isfirstpositionalargument=true
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option

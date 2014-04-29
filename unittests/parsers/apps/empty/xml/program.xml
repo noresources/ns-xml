@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2014 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app2</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>A program without any command line specification</prg:abstract>
+		<prg:details>
+			This is a non-sense to write such a program definition (except to get the 'include' ability of xsh programs)
+			<prg:endl />
+			This test will check behavior related to unallowed positional arguments
+		</prg:details>
+	</prg:documentation>
+</prg:program>

@@ -1,0 +1,8 @@
+CLI: "empty", "--switch-a", "Subcommand positional argument are not accepted", "--argument-b", "And its value", "This should fail"
+Value count: 0
+Values: 
+Error count: 1
+Subcommand: empty
+switchA=True
+argumentB=And its value
+switchB=False

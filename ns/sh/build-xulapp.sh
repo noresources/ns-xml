@@ -357,24 +357,34 @@ parse_addvalue()
 	shift
 	if [ -z "${parser_subcommand}" ]
 	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed"
+		${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Program does not accept positional arguments'
+		
+		parser_isfirstpositionalargument=false
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
 		python)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand python"
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand python does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
 			return ${PARSER_ERROR}
 			;;
 		php)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand php"
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand php does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
 			return ${PARSER_ERROR}
 			;;
 		xsh)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand xsh"
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand xsh does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
 			return ${PARSER_ERROR}
 			;;
 		command)
-			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed in subcommand command"
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand command does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
 			return ${PARSER_ERROR}
 			;;
 		*)
@@ -1284,6 +1294,9 @@ parse_process_subcommand_option()
 			esac
 		fi
 		;;
+	*)
+		return ${PARSER_SC_SKIP}
+		;;
 	
 	esac
 	return ${PARSER_SC_OK}
@@ -2049,6 +2062,7 @@ parse_process_option()
 parse()
 {
 	parser_aborted=false
+	parser_isfirstpositionalargument=true
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option

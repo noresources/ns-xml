@@ -806,11 +806,23 @@
 								</xsl:call-template>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:call-template name="prg.sh.parser.addGlobalError">
-									<xsl:with-param name="value">
-										<xsl:text>"Positional argument not allowed"</xsl:text>
+								<xsl:call-template name="sh.if">
+									<xsl:with-param name="condition">
+										<xsl:call-template name="sh.var">
+											<xsl:with-param name="name" select="$prg.sh.parser.vName_isfirstpositionalargument" />
+										</xsl:call-template>
+									</xsl:with-param>
+									<xsl:with-param name="then">
+										<xsl:call-template name="prg.sh.parser.addGlobalError">
+											<xsl:with-param name="value">
+												<xsl:text>'Program does not accept positional arguments'</xsl:text>
+											</xsl:with-param>
+										</xsl:call-template>
 									</xsl:with-param>
 								</xsl:call-template>
+								<xsl:value-of select="$sh.endl" />
+								<xsl:value-of select="$prg.sh.parser.vName_isfirstpositionalargument" />
+								<xsl:text>=false</xsl:text>
 								<xsl:value-of select="$sh.endl" />
 								<xsl:text>return </xsl:text>
 								<xsl:value-of select="$prg.sh.parser.var_ERROR" />
@@ -838,13 +850,25 @@
 													</xsl:call-template>
 												</xsl:when>
 												<xsl:otherwise>
-													<xsl:call-template name="prg.sh.parser.addGlobalError">
-														<xsl:with-param name="value">
-															<xsl:text>"Positional argument not allowed in subcommand </xsl:text>
-															<xsl:value-of select="./prg:name" />
-															<xsl:text>"</xsl:text>
+													<xsl:call-template name="sh.if">
+														<xsl:with-param name="condition">
+															<xsl:call-template name="sh.var">
+																<xsl:with-param name="name" select="$prg.sh.parser.vName_isfirstpositionalargument" />
+															</xsl:call-template>
+														</xsl:with-param>
+														<xsl:with-param name="then">
+															<xsl:call-template name="prg.sh.parser.addGlobalError">
+																<xsl:with-param name="value">
+																	<xsl:text>'Subcommand </xsl:text>
+																	<xsl:apply-templates select="./prg:name" />
+																	<xsl:text> does not accept positional arguments'</xsl:text>
+																</xsl:with-param>
+															</xsl:call-template>
 														</xsl:with-param>
 													</xsl:call-template>
+													<xsl:value-of select="$sh.endl" />
+													<xsl:value-of select="$prg.sh.parser.vName_isfirstpositionalargument" />
+													<xsl:text>=false</xsl:text>
 													<xsl:value-of select="$sh.endl" />
 													<xsl:text>return </xsl:text>
 													<xsl:value-of select="$prg.sh.parser.var_ERROR" />
@@ -1028,6 +1052,16 @@
 										</xsl:call-template>
 									</xsl:if>
 								</xsl:for-each>
+								<!-- For subcommands without options -->
+								<xsl:call-template name="sh.caseblock">
+									<xsl:with-param name="case" select="'*'" />
+									<xsl:with-param name="content">
+										<xsl:text>return </xsl:text>
+										<xsl:call-template name="sh.var">
+											<xsl:with-param name="name" select="$prg.sh.parser.vName_SC_SKIP" />
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
 						<xsl:value-of select="$sh.endl" />
@@ -1381,6 +1415,9 @@
 			<xsl:with-param name="content">
 				<xsl:value-of select="$prg.sh.parser.vName_aborted" />
 				<xsl:text>=false</xsl:text>
+				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$prg.sh.parser.vName_isfirstpositionalargument" />
+				<xsl:text>=true</xsl:text>
 				<xsl:value-of select="$sh.endl" />
 
 				<xsl:call-template name="sh.while">

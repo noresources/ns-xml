@@ -313,7 +313,9 @@ parse_addvalue()
 	shift
 	if [ -z "${parser_subcommand}" ]
 	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Positional argument not allowed"
+		${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Program does not accept positional arguments'
+		
+		parser_isfirstpositionalargument=false
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
@@ -1085,6 +1087,7 @@ parse_process_option()
 parse()
 {
 	parser_aborted=false
+	parser_isfirstpositionalargument=true
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option

@@ -1,0 +1,1 @@
+empty --switch-a 'Subcommand positional argument are not accepted' --argument-b 'And its value' "This should fail"

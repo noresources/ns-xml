@@ -72,6 +72,18 @@
 		<prg:subcommand>
 			<prg:name>empty</prg:name>
 		</prg:subcommand>
+		<prg:subcommand>
+			<prg:documentation>
+				<prg:abstract>A subcommand with positional arguments only</prg:abstract>
+			</prg:documentation>
+			<prg:name>values</prg:name>
+			<prg:values>
+				<prg:value>
+				</prg:value>
+				<prg:other>
+				</prg:other>
+			</prg:values>
+		</prg:subcommand>
 	</prg:subcommands>
 	<prg:values>
 		<prg:other />
