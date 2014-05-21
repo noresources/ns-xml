@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app4</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (@required attribute)</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:argument required="true" id="prg.unittest.option.required.rargumentA">
+			<prg:databinding>
+				<prg:variable>rargumentA</prg:variable>
+			</prg:databinding>
+			<prg:names>
+				<prg:long>argument-A</prg:long>
+				<prg:short>A</prg:short>
+			</prg:names>
+		</prg:argument>
+		<prg:group id="prg.unittest.option.groupS">
+			<prg:databinding>
+				<prg:variable>groupS</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A normal group</prg:abstract>
+				<prg:details>Required options in this group will be required in any case</prg:details>
+			</prg:documentation>
+			<prg:options>
+				<prg:argument required="true" id="prg.unittest.option.required.argumentC">
+					<prg:databinding>
+						<prg:variable>argumentC</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>A required option in a normal group has no particular meaning compare to
+							required options in the program 'root'
+						</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>argument-C</prg:long>
+						<prg:short>C</prg:short>
+					</prg:names>
+				</prg:argument>
+			</prg:options>
+		</prg:group>
+		<prg:group type="exclusive" id="prg.unittest.option.groupT">
+			<prg:databinding>
+				<prg:variable>groupT</prg:variable>
+			</prg:databinding>
+			<prg:options>
+				<prg:group id="prg.unittest.option.groupTa">
+					<!-- This group does not have variable name -->
+					<prg:options>
+						<prg:switch id="prg.unittest.option.switchD">
+							<prg:databinding>
+								<prg:variable>switchB</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>This one is NOT required</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>switch-D</prg:long>
+								<prg:short>D</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:argument id="prg.unittest.option.argumentE">
+							<prg:databinding>
+								<prg:variable>argumentE</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>e</prg:short>
+							</prg:names>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+				<prg:group id="prg.unittest.option.groupTb">
+					<prg:documentation>
+						<prg:abstract>A sub group of groupT with a required option</prg:abstract>
+						<prg:details>If --switch-i is set, --argument-F have to be set too</prg:details>
+					</prg:documentation>
+					<prg:options>
+						<prg:switch>
+							<prg:databinding>
+								<prg:variable>switchI</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:long>switch-i</prg:long>
+								<prg:short>i</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:argument required="true" id="prg.unittest.option.rargumentF">
+							<prg:databinding>
+								<prg:variable>rargumentF</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>The @required attribute will be ignored if the exclusive group
+									was 'activated' by another option (or not activated at all)
+								</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:long>argument-F</prg:long>
+								<prg:short>F</prg:short>
+							</prg:names>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+				<!-- multi argument C -->
+				<xi:include href="../../marg/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:multiargument[@id = 'prg.unittest.option.multiargC'])" />
+			</prg:options>
+		</prg:group>
+		<prg:group id="prg.unittest.option.groupU">
+			<prg:databinding>
+				<prg:variable>groupU</prg:variable>
+			</prg:databinding>
+			<prg:options>
+				<prg:group type="exclusive" id="prg.unittest.option.groupV">
+					<prg:databinding>
+						<prg:variable>groupV</prg:variable>
+					</prg:databinding>
+					<prg:options>
+						<prg:argument id="prg.unittest.option.argumentF">
+							<prg:databinding>
+								<prg:variable>argumentF</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:long>argument-f</prg:long>
+							</prg:names>
+						</prg:argument>
+						<prg:multiargument required="true" id="prg.unittest.option.multiargG">
+							<prg:databinding>
+								<prg:variable>multiargG</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>G</prg:short>
+							</prg:names>
+						</prg:multiargument>
+						<prg:switch id="prg.unittest.option.switchH">
+							<prg:databinding>
+								<prg:variable>switchH</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:long>switch-h</prg:long>
+								<prg:short>h</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:group id="prg.unittest.option.groupX">
+							<prg:options>
+								<xi:include href="../../sarg-validators/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'prg.unittest.option.argumentNumber'])" />
+								<xi:include href="../../sarg-validators/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'prg.unittest.option.argumentNumberPositive'])" />
+							</prg:options>
+						</prg:group>
+					</prg:options>
+				</prg:group>
+				<!-- Required group -->
+				<xi:include href="../../rgrp/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'prg.unittest.option.groupQ'])" />
+			</prg:options>
+		</prg:group>
+	</prg:options>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

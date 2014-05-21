@@ -1,0 +1,24 @@
+CLI: "-A", "Same as postproc-required-in-xgrp.1.cli", "-C", "but the --multi option", "--multi", "will", "activate", "-b", "the xgroup"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+rargumentA=Same as postproc-required-in-xgrp.1.cli
+groupS=
+argumentC=but the --multi option
+groupT=multiargC
+switchB=False
+argumentE=
+switchI=False
+rargumentF=
+multiargC=will activate
+groupU=
+groupV=
+argumentF=
+multiargG=
+switchH=False
+argumentNumber=
+argumentNumberPositive=
+groupQ=
+switchA=False
+argumentB=the xgroup

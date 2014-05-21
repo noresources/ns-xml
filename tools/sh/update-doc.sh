@@ -1292,11 +1292,16 @@ then
 			# Transform tab into {{{2 spaces}}
 			# Add \\ at end of lines
 			cat "${part}" \
-			| sed -E 's,(^[ 	]*)(procedure|if|then|else|else if|while|for|break|end if|end while|end for|do|return)( |$),\1**\2**\3,g' \
+			| sed -E 's,(^[ 	]*)(if|then|else|else if|end if)( |$),\1**\2**\3,g' \
+			| sed -E 's,(^[ 	]*)(while|do|end while|for|end for|break|continue)( |$),\1**\2**\3,g' \
+			| sed -E 's,(^[ 	]*)(return|set)( |$),\1**\2**\3,g' \
 			| sed -E 's,(^|	| )(and|or|not)( |$),\1**\2**\3,g' \
-			| sed -E 's,(false|true|null),**\1**,g' \
+			| sed -E 's,(false|true|null),//\1//,g' \
+			| sed -E 's,^(procedure), **\1**,g' \
 			| sed -E 's,[	],{{{  }}},g' \
-			| sed 's,[ ]*$,\\\\,g' >> "${parserPseudocodeOutput}"  
+			| sed -E 's,}{3}\{{3},,g' \
+			| sed 's,[ ]*$,\\\\,g' \
+			>> "${parserPseudocodeOutput}"  
 		else
 			cat "${part}" >> "${parserPseudocodeOutput}"
 		fi

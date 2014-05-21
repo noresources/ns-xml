@@ -942,15 +942,16 @@ class ParserState(object):
         if rootItemResult != None:
             result = self.createResult(rootItemResult, option)
 
+        optionKey = option.getKey()
         for k, n in option.names:
+            nameKey = optionKey + '/' + k
             if rootItemResult == None:
-                self.optionNameBindings[groupIndex][k] = OptionBinding(n, option, None)
+                self.optionNameBindings[groupIndex][nameKey] = OptionBinding(n, option, None)
             else:
-                self.optionNameBindings[groupIndex][k].result = result
-                self.optionNameBindings[groupIndex][k].parentResults = list(resultTree)
+                self.optionNameBindings[groupIndex][nameKey].result = result
+                self.optionNameBindings[groupIndex][nameKey].parentResults = list(resultTree)
 
         if isinstance(option, GroupOptionInfo):
-            optionKey = option.getKey()
             if rootItemResult == None:
                 self.optionGroupBindings[groupIndex][optionKey] = OptionBinding(None, option, None)
             else:
@@ -1085,18 +1086,22 @@ class Parser(object):
                 continue
 
             binding = None
-
-            for n, b in bindings.items():
+            nameKeys = bindings.keys()
+            nameKeys = sorted(nameKeys)
+            for nameKey in nameKeys:
+                b = bindings[nameKey]
                 if (binding != None) and (binding.info == b.info):
                     continue
                 binding = b
+                if ((not binding.result.isSet) and self._optionRequired(binding)):
+                    result._appendMessage(Message.ERROR, 4, Message.ERROR_REQUIRED_OPTION, binding.name.cliName())
 
         for g, bindings in enumerate(self._state.optionGroupBindings):
             if (g > 0) and (g != self._state.activeSubcommandIndex):
                 continue
 
             for n, binding  in bindings.items():
-                if (binding.info.optionFlags & ItemInfo.REQUIRED) and (not binding.result.isSet):
+                if ((not binding.result.isSet) and self._optionRequired(binding)):
                     nameList = binding.info.getOptionNameListString()
                     if binding.info.groupType == GroupOptionInfo.TYPE_EXCLUSIVE:
                         result._appendMessage(Message.ERROR, 6, Message.ERROR_REQUIRED_XGROUP, nameList)
@@ -1171,8 +1176,6 @@ class Parser(object):
         childInfo = binding.info
         parentInfo = childInfo.parent;
 
-        # print "mark option ", binding.name, " ", len(binding.parentResults), " parents"
-
         for parentResult in binding.parentResults:
             if value:
                 parentResult.isSet += 1
@@ -1208,7 +1211,6 @@ class Parser(object):
 
     def _processPositionalArgument(self, result, value):
         if (not self._state.stateFlags & ParserState.ENDOFOPTIONS) and (self._state.activeSubcommandIndex == 0) and (len(self._state.values) == 0):
-            # print "search subcommand (", value, ")"
             for name, binding in self._state.subcommandNameBindings.items():
                 if name == value:
                     self._state.activeSubcommandIndex = binding["subcommandIndex"]
@@ -1228,12 +1230,12 @@ class Parser(object):
     def _findOptionByName(self, name):
         s = self._state
         if self._state.activeSubcommandIndex > 0:
-            for n, binding in self._state.optionNameBindings[self._state.activeSubcommandIndex].items():
-                if name == n:
+            for nk, binding in self._state.optionNameBindings[self._state.activeSubcommandIndex].items():
+                if name == binding.name.name:
                     return binding
 
-        for n, binding in self._state.optionNameBindings[0].items():
-            if name == n:
+        for nk, binding in self._state.optionNameBindings[0].items():
+            if name == binding.name.name:
                 return binding
 
         return None
@@ -1253,6 +1255,23 @@ class Parser(object):
 
         return True
 
+    def _optionRequired(self, binding):
+        if not (binding.info.optionFlags & ItemInfo.REQUIRED):
+            return False
+
+        parentInfo = binding.info.parent
+        previousResult = binding.result
+
+        for i, parentResult in enumerate(binding.parentResults):
+            if parentInfo.groupType == GroupOptionInfo.TYPE_EXCLUSIVE:
+                if (not parentResult.isSet) or (parentResult.selectedOption != previousResult):
+                    return False
+
+            parentInfo = parentInfo.parent
+            previousResult = parentResult
+
+        return True
+
     def _postProcessOptions(self, result):
         current = None
         changeCount = 0
@@ -1266,7 +1285,6 @@ class Parser(object):
                         if (current.info.defaultValue != None) and self._optionExpected(current):
                             current.result.argument = current.info.defaultValue
                             self._markOption(result, current, True)
-                            # print "set default of ", current.name.cliName()
                             changeCount += 1
                         else:
                             current.result.argument = None
@@ -1275,7 +1293,6 @@ class Parser(object):
                     if current.result.isSet and (current.info.minArgumentCount > 0) and (c < current.info.minArgumentCount):
                         result._appendMessage(Message.ERROR, 11, Message.ERROR_MISSING_MARG, current.info.minArgumentCount, current.name.cliName(), c)
                         self._markOption(result, current, False)
-                        # print "minmax rule unset ", current.name.cliName()
                         changeCount += 1
 
                         if not current.result.isSet:

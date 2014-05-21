@@ -1,0 +1,24 @@
+CLI: "-A", "The bare minimum", "-C", "to avoid", "-b", "required rule errors"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+rargumentA=The bare minimum
+groupS=
+argumentC=to avoid
+groupT=
+switchB=False
+argumentE=
+switchI=False
+rargumentF=
+multiargC=
+groupU=
+groupV=
+argumentF=
+multiargG=
+switchH=False
+argumentNumber=
+argumentNumberPositive=
+groupQ=
+switchA=False
+argumentB=required rule errors

@@ -8,7 +8,7 @@
 		<prg:abstract>Test application (group with required property)</prg:abstract>
 	</prg:documentation>
 	<!--
-		- group J
+		- required group Q
 		- a (switch)
 		- b (sarg)
 		- xgroup k

@@ -1342,6 +1342,7 @@ class ProgramInfo extends RootItemInfo
 		 *
 		 *
 		 *
+		 *
 		 */
 		return true;
 	}
@@ -2492,7 +2493,7 @@ class Parser
 			
 			foreach ($bindings as $n => &$binding)
 			{
-				if (($binding->info->optionFlags & ItemInfo::REQUIRED) && !($binding->result->isSet))
+				if (!($binding->result->isSet) && $this->optionRequired($binding))
 				{
 					$nameList = $binding->info->getOptionNameListString();
 					
@@ -2526,7 +2527,7 @@ class Parser
 				
 				$binding = $b;
 				
-				if (($binding->info->optionFlags & ItemInfo::REQUIRED) && !($binding->result->isSet))
+				if (!($binding->result->isSet) && $this->optionRequired($binding))
 				{
 					$result->appendMessage(Message::ERROR, 4, Message::ERROR_REQUIRED_OPTION, $binding->name->cliName());
 				}
@@ -2649,7 +2650,7 @@ class Parser
 		$binding->result->isSet = $value;
 		
 		// Update option tree
-		$childResult = $binding->result;
+		$previousResult = $binding->result;
 		$childInfo = $binding->info;
 		$parentInfo = $childInfo->parent;
 		
@@ -2661,7 +2662,7 @@ class Parser
 			{
 				if ($value)
 				{
-					$parentResult->selectedOption = $childResult;
+					$parentResult->selectedOption = $previousResult;
 					$parentResult->selectedOptionName = $childInfo->variableName;
 				}
 			}
@@ -2677,7 +2678,7 @@ class Parser
 			
 			$childInfo = $childInfo->parent;
 			$parentInfo = $parentInfo->parent;
-			$childResult = $parentResult;
+			$previousResult = $parentResult;
 		}
 	}
 
@@ -2782,6 +2783,33 @@ class Parser
 		return true;
 	}
 
+	private function optionRequired(OptionNameBinding &$binding)
+	{
+		if (!($binding->info->optionFlags & ItemInfo::REQUIRED))
+		{
+			return false;
+		}
+		
+		$previousResult = $binding->result;
+		$parentInfo = $binding->info->parent;
+		
+		foreach ($binding->parentResults as &$parentResult)
+		{
+			if ($parentInfo->groupType == GroupOptionInfo::TYPE_EXCLUSIVE)
+			{
+				if (!$parentResult->isSet || ($parentResult->selectedOption != $previousResult))
+				{
+					return false;
+				}
+			}
+			
+			$parentInfo = $parentInfo->parent;
+			$previousResult = $parentResult;
+		}
+
+		return true;
+	}
+	
 	/**
 	 *
 	 * @return integer Number of changes

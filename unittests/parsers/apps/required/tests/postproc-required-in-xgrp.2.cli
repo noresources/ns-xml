@@ -1,0 +1,1 @@
+-A "Same as postproc-required-in-xgrp.1.cli" -C "but the --multi option" --multi will activate -b 'the xgroup'

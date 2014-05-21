@@ -1,0 +1,24 @@
+CLI: "-i", "-A", "--switch-i is set.", "-C", "So,", "--argument-F", "have to", "-b", "be set too"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+rargumentA=--switch-i is set.
+groupS=
+argumentC=So,
+groupT=
+switchB=False
+argumentE=
+switchI=True
+rargumentF=have to
+multiargC=
+groupU=
+groupV=
+argumentF=
+multiargG=
+switchH=False
+argumentNumber=
+argumentNumberPositive=
+groupQ=
+switchA=False
+argumentB=be set too

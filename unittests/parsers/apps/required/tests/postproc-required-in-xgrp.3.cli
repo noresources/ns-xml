@@ -1,0 +1,1 @@
+-i -A "--switch-i is set" -C "so --argument-F" -b 'have to be set too'
