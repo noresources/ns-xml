@@ -1728,19 +1728,52 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
 	int printed = 0;
+#	define message_format_buffer_length 64
+	char message_format[message_format_buffer_length];
 	
 	if ((nvalidator->validator.flags & min_and_max) == min_and_max)
 	{
-		printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be between %.2f and %.2f", (double) nvalidator->min_value, (double) nvalidator->max_value);
+		if (nvalidator->decimal_count > 0)
+		{
+			snprintf(message_format, message_format_buffer_length, "Argument value must be between %%.%df and %%.%df", (int) nvalidator->decimal_count, (int) nvalidator->decimal_count);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
+		}
+		else
+		{
+			strncpy(message_format, "Argument value must be between %d and %d", message_format_buffer_length);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
+		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmin)
 	{
-		printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be lesser or equal to %.2f", (double) nvalidator->min_value);
+		if (nvalidator->decimal_count > 0)
+		{
+			snprintf(message_format, message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (double) nvalidator->min_value);
+		}
+		else
+		{
+			strncpy(message_format, "Argument value must be lesser or equal %d", message_format_buffer_length);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (int) nvalidator->min_value);
+		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmax)
 	{
+		if (nvalidator->decimal_count > 0)
+		{
+			snprintf(message_format, message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (double) nvalidator->max_value);
+		}
+		else
+		{
+			strncpy(message_format, "Argument value must be greater or equal %d", message_format_buffer_length);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, message_format, (int) nvalidator->max_value);
+		}
+		
 		printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, "Argument value must be greater or equal to %.2f", (double) nvalidator->max_value);
 	}
+	
+#	undef message_format_buffer_length
 	
 	return printed;
 }

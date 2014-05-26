@@ -295,6 +295,7 @@ struct nsxml_value_validator_number
 	struct nsxml_value_validator validator;
 	float min_value;
 	float max_value;
+	size_t decimal_count;
 };
 int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);

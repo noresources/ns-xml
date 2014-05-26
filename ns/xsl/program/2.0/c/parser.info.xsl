@@ -101,6 +101,17 @@
 			<xsl:value-of select="$str.endl" />
 			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_number, NULL, &amp;nsxml_value_validator_usage_number, validator_flags);</xsl:text>
 			<xsl:value-of select="$str.endl" />
+			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;decimal_count = </xsl:text>
+			<xsl:choose>
+				<xsl:when test="$numberNode/@decimal">
+					<xsl:value-of select="$numberNode/@decimal"></xsl:value-of>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>0</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:text>;</xsl:text>
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;min_value = </xsl:text>
 			<xsl:choose>
 				<xsl:when test="$numberNode/@min">
