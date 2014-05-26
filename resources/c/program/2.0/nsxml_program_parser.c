@@ -2179,6 +2179,12 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
 			nsxml_util_text_wrap_fprintf(stream, *text_buffer_ptr, wrap, level + 1);
 		}
+		
+		if (a->default_value && (*a->default_value != '\0'))
+		{
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Default value: %s\n", a->default_value);
+			nsxml_util_text_wrap_fprintf(stream, *text_buffer_ptr, wrap, level + 1);
+		}
 	}
 	
 	if (info->option_type == nsxml_option_type_multiargument)

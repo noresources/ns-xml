@@ -2189,6 +2189,12 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprintf"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
+		
+		if (a->default_value && (*a->default_value != '\0'))
+		{
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, "Default value: %s\n", a->default_value);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprintf"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
+		}
 	}
 	
 	if (info->option_type == nsxml_option_type_multiargument)
