@@ -177,9 +177,11 @@
 						<xsl:value-of select="$str.unix.endl" />
 						<xsl:text>local temporaryRepliesArray=(${files})</xsl:text>
 						<xsl:value-of select="$str.unix.endl" />
-						<xsl:call-template name="sh.arrayForEach">
-							<xsl:with-param name="name">
-								<xsl:text>temporaryRepliesArray</xsl:text>
+						<xsl:call-template name="sh.incrementalFor">
+							<xsl:with-param name="limit">
+								<xsl:call-template name="sh.arrayLength">
+									<xsl:with-param name="name" select="'temporaryRepliesArray'" />
+								</xsl:call-template>
 							</xsl:with-param>
 							<xsl:with-param name="do">
 								<xsl:text>local p="${temporaryRepliesArray[$i]}"</xsl:text>

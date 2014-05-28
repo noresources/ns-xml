@@ -331,32 +331,18 @@
 	<xsl:template name="sh.arrayForEach">
 		<!-- Array variable name -->
 		<xsl:param name="name" />
-		<!-- Internal loop index variable name -->
-		<xsl:param name="indexVariableName" select="'i'" />
-		<!-- First index to consider -->
-		<xsl:param name="startIndex" select="0" />
+		<xsl:param name="elementVariableName" select="'i'" />
 		<!-- Code to execute for each element -->
 		<xsl:param name="do" />
-
-		<xsl:variable name="indexVariable">
-			<xsl:call-template name="sh.var">
-				<xsl:with-param name="name" select="$indexVariableName" />
-			</xsl:call-template>
-		</xsl:variable>
-
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="condition">
-				<xsl:text>((</xsl:text>
-				<xsl:value-of select="normalize-space($indexVariableName)" />
-				<xsl:text>=0;</xsl:text>
-				<xsl:value-of select="normalize-space($indexVariable)" />
-				<xsl:text>&lt;</xsl:text>
-				<xsl:call-template name="sh.arrayLength">
+				<xsl:value-of select="normalize-space($elementVariableName)" />
+				<xsl:text> in </xsl:text>
+				<xsl:call-template name="sh.var">
 					<xsl:with-param name="name" select="$name" />
+					<xsl:with-param name="index" select="'@'" />
+					<xsl:with-param name="quoted" select="true()" />
 				</xsl:call-template>
-				<xsl:text>;</xsl:text>
-				<xsl:value-of select="normalize-space($indexVariableName)" />
-				<xsl:text>++))</xsl:text>
 			</xsl:with-param>
 			<xsl:with-param name="do" select="$do" />
 		</xsl:call-template>
@@ -433,7 +419,7 @@
 		<xsl:text>done</xsl:text>
 	</xsl:template>
 
-	<!-- for in n .... m -->
+	<!-- for (i=start;i<stop;i++) -->
 	<xsl:template name="sh.incrementalFor">
 		<xsl:param name="variable">
 			<xsl:text>i</xsl:text>
@@ -495,38 +481,70 @@
 		<xsl:param name="shortForm" select="true()" />
 
 		<xsl:variable name="ncond" select="normalize-space($condition)" />
+		<xsl:variable name="thenLength" select="string-length($then)" />
+		<xsl:variable name="elseLength" select="string-length($else)" />
 
-		<xsl:if test="(string-length($ncond) + string-length($then)) &gt; 0">
-			<xsl:variable name="hasElse" select="$else and (string-length($else) &gt; 0)" />
-			<xsl:variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
+		<xsl:if test="string-length($ncond) &gt; 0">
 			<xsl:variable name="simpleCondition" select="not (contains($ncond, $sh.endl) or contains($ncond, '&amp;&amp;') or contains($ncond, '||'))" />
 			<xsl:choose>
-				<xsl:when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
-					<xsl:value-of select="$ncond" />
-					<xsl:text> &amp;&amp; </xsl:text>
-					<xsl:value-of select="$then" />
+				<xsl:when test="$thenLength &gt; 0">
+					<xsl:variable name="hasElse" select="$else and ($elseLength &gt; 0)" />
+					<xsl:variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
+					<xsl:choose>
+						<xsl:when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
+							<xsl:value-of select="$ncond" />
+							<xsl:text> &amp;&amp; </xsl:text>
+							<xsl:value-of select="$then" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>if </xsl:text>
+							<xsl:value-of select="$ncond" />
+							<xsl:value-of select="$sh.endl" />
+							<xsl:text>then</xsl:text>
+							<xsl:call-template name="sh.block">
+								<xsl:with-param name="indent" select="$indent" />
+								<xsl:with-param name="content" select="$then" />
+							</xsl:call-template>
+							<xsl:if test="$hasElse">
+								<xsl:text>else</xsl:text>
+								<xsl:call-template name="sh.block">
+									<xsl:with-param name="indent" select="$indent" />
+									<xsl:with-param name="content" select="$else" />
+								</xsl:call-template>
+							</xsl:if>
+							<xsl:text>fi</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+
 				</xsl:when>
-				<xsl:otherwise>
-					<xsl:text>if </xsl:text>
-					<xsl:value-of select="$ncond" />
-					<xsl:value-of select="$sh.endl" />
-					<xsl:text>then</xsl:text>
-					<xsl:call-template name="sh.block">
-						<xsl:with-param name="indent" select="$indent" />
-						<xsl:with-param name="content" select="$then" />
-					</xsl:call-template>
-					<xsl:if test="$hasElse">
-						<xsl:text>else</xsl:text>
-						<xsl:call-template name="sh.block">
-							<xsl:with-param name="indent" select="$indent" />
-							<xsl:with-param name="content" select="$else" />
-						</xsl:call-template>
-					</xsl:if>
-					<xsl:text>fi</xsl:text>
-				</xsl:otherwise>
+				<xsl:when test="$elseLength &gt; 0">
+					<xsl:variable name="simpleElse" select="not (contains($else, $sh.endl) or contains($else, '&amp;&amp;') or contains($else, '||'))" />
+
+					<xsl:choose>
+						<xsl:when test="$shortForm and $simpleElse and $simpleCondition">
+							<xsl:value-of select="$ncond" />
+							<xsl:text> || </xsl:text>
+							<xsl:value-of select="$else" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>if </xsl:text>
+							<xsl:text>! (</xsl:text>
+							<xsl:value-of select="$ncond" />
+							<xsl:text>)</xsl:text>
+							<xsl:value-of select="$sh.endl" />
+							<xsl:text>then</xsl:text>
+							<xsl:call-template name="sh.block">
+								<xsl:with-param name="indent" select="$indent" />
+								<xsl:with-param name="content" select="$else" />
+							</xsl:call-template>
+							<xsl:text>fi</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+
+				</xsl:when>
 			</xsl:choose>
+			<xsl:value-of select="$sh.endl" />
 		</xsl:if>
-		<xsl:value-of select="$sh.endl" />
 	</xsl:template>
 
 	<!-- CASE statement -->
