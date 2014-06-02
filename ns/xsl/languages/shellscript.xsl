@@ -331,9 +331,21 @@
 	<xsl:template name="sh.arrayForEach">
 		<!-- Array variable name -->
 		<xsl:param name="name" />
+		<!-- Variable representing the current element -->
 		<xsl:param name="elementVariableName" select="'i'" />
-		<!-- Code to execute for each element -->
+		<!-- UNIX shell interpreter type -->
+		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Declare temporary variable as local variable -->
+		<xsl:param name="declareLocal" select="false()" />
 		<xsl:param name="do" />
+
+		<xsl:if test="$declareLocal">
+			<xsl:call-template name="sh.local">
+				<xsl:with-param name="name" select="$elementVariableName" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+			</xsl:call-template>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="condition">
 				<xsl:value-of select="normalize-space($elementVariableName)" />
@@ -657,6 +669,50 @@
 	<!-- 1>/dev/null 2>&1 -->
 	<xsl:template name="sh.chunk.nullRedirection">
 		<xsl:text>1&gt;/dev/null 2&gt;&amp;1</xsl:text>
+	</xsl:template>
+
+	<!-- Check if a value exists in array elements. -->
+	<xsl:template name="sh.chunk.arrayValueExists">
+		<!-- Array variable name -->
+		<xsl:param name="name" />
+		<!-- Value to check -->
+		<xsl:param name="value" />
+		<!-- UNIX shell interpreter type -->
+		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Declare temporary variable as local variable -->
+		<xsl:param name="declareLocal" select='false()' />
+		<!-- What to do if value exists -->
+		<xsl:param name="onExists" select="'return 0'" />
+		<!-- What to do if value does not exists -->
+		<xsl:param name="otherwise" select="'return 1'" />
+
+		<xsl:variable name="elementVariableName" select="'_e'" />
+
+		<xsl:call-template name="sh.arrayForEach">
+			<xsl:with-param name="name" select="$name" />
+			<xsl:with-param name="elementVariableName" select="$elementVariableName" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="declareLocal" select="$declareLocal" />
+			<xsl:with-param name="do">
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>[ </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$elementVariableName" />
+							<xsl:with-param name="quoted" select="true()" />
+						</xsl:call-template>
+						<xsl:text> = </xsl:text>
+						<xsl:value-of select="$value" />
+						<xsl:text> ]</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="then" select="$onExists" />
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:if test="string-length($otherwise) &gt; 0">
+			<xsl:value-of select="$sh.endl" />
+			<xsl:value-of select="$otherwise" />
+		</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>
