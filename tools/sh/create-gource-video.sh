@@ -45,8 +45,8 @@ parser_index=${parser_startindex}
 
 # Required global options
 # (Subcommand required options will be added later)
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_configuration:--configuration:"
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_configuration:--configuration"
 # Switch options
 displayHelp=false
 # Single argument options
@@ -80,9 +80,9 @@ function parse_addfatalerror
 
 function parse_displayerrors
 {
-	for ((i=${parser_startindex};${i}<${#parser_errors[*]};i++))
+	for error in "${parser_errors[@]}"
 	do
-		echo -e "\t- ${parser_errors[${i}]}"
+		echo -e "\t- ${error}"
 	done
 }
 
@@ -100,33 +100,62 @@ function parse_pathaccesscheck
 	done
 	return 0
 }
+function parse_addrequiredoption
+{
+	typeset var id="${1}"
+	typeset var tail="${2}"
+	typeset var o=
+	for o in "${parser_required[@]}"
+	do
+		typeset var idPart="$(echo "${o}" | cut -f 1 -d":")"
+		[ "${id}" = "${idPart}" ] && return 0
+	done
+	parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="${id}:${tail}"
+}
 function parse_setoptionpresence
 {
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	typeset var _e_found=false
+	typeset var _e=
+	for _e in "${parser_present[@]}"
 	do
-		typeset var idPart="$(echo "${parser_required[${i}]}" | cut -f 1 -d":" )"
-		if [ "${idPart}" = "${1}" ]
+		if [ "${_e}" = "${1}" ]
 		then
-			parser_required[${i}]=""
-			return 0
+			_e_found=true; break
 		fi
 	done
-	return 1
+	if ${_e_found}
+	then
+		return
+	else
+		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	fi
 }
 function parse_checkrequired
 {
 	# First round: set default values
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	typeset var o=
+	for o in "${parser_required[@]}"
 	do
-		typeset var todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
+		typeset var todoPart="$(echo "${o}" | cut -f 3 -d":")"
 		[ -z "${todoPart}" ] || eval "${todoPart}"
 	done
+	[ ${#parser_required[*]} -eq 0 ] && return 0
 	typeset var c=0
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	for o in "${parser_required[@]}"
 	do
-		if [ ! -z "${parser_required[${i}]}" ]
+		typeset var idPart="$(echo "${o}" | cut -f 1 -d":")"
+		typeset var _e_found=false
+		typeset var _e=
+		for _e in "${parser_present[@]}"
+		do
+			if [ "${_e}" = "${idPart}" ]
+			then
+				_e_found=true; break
+			fi
+		done
+		if ! (${_e_found})
 		then
-			typeset var displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
+			typeset var displayPart="$(echo "${o}" | cut -f 2 -d":")"
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
@@ -179,7 +208,7 @@ function parse_enumcheck
 function parse_addvalue
 {
 	typeset var position=${#parser_values[*]}
-	typeset var value
+	typeset var value=
 	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
 	shift
 	if [ -z "${parser_subcommand}" ]
@@ -418,7 +447,7 @@ function parse
 
 function ns_realpath
 {
-	typeset var inputPath
+	typeset var inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -440,13 +469,13 @@ function ns_realpath
 }
 function ns_relativepath
 {
-	typeset var from
+	typeset var from=
 	if [ $# -gt 0 ]
 	then
 		from="${1}"
 		shift
 	fi
-	typeset var base
+	typeset var base=
 	if [ $# -gt 0 ]
 	then
 		base="${1}"
@@ -483,19 +512,19 @@ function ns_relativepath
 }
 function filesystempath_to_nmepath
 {
-	typeset var sourceBasePath
+	typeset var sourceBasePath=
 	if [ $# -gt 0 ]
 	then
 		sourceBasePath="${1}"
 		shift
 	fi
-	typeset var outputBasePath
+	typeset var outputBasePath=
 	if [ $# -gt 0 ]
 	then
 		outputBasePath="${1}"
 		shift
 	fi
-	typeset var path
+	typeset var path=
 	if [ $# -gt 0 ]
 	then
 		path="${1}"

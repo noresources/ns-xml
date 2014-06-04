@@ -33,12 +33,12 @@
 parse "${@}"
 echo -n "CLI: "
 cpt="${#}"
-displayErrors=false
+debugMode=false
 i=1
 for argv in "${@}"
 do
-	[ "${argv}" = "__msg__" ] && displayErrors=true
-	[ "${argv}" = "__help__" ] && usage "${@}"
+	[ "${argv}" = '__msg__' ] && debugMode=true
+	[ "${argv}" = '__help__' ] && usage "${@}"
 	[ ${i} -gt 1 ] && echo -n ", "
 	echo -n "\"${argv}\""
 	i=$(expr ${i} + 1)
@@ -62,7 +62,21 @@ then
 fi
 echo ""
 echo "Error count: ${#parser_errors[*]}"
-${displayErrors} && parse_displayerrors
+if ${debugMode}
+then
+	echo "Errors: "
+	parse_displayerrors
+	echo "Required options: ${#parser_required[*]}"
+	for e in "${parser_required[@]}"
+	do
+		echo " - ${e}"
+	done
+	echo "Present options: ${#parser_present[*]}"
+	for e in "${parser_present[@]}"
+	do
+		echo " - ${e}"
+	done
+fi
 echo "Subcommand: ${parser_subcommand}"
 ]]></text>
 		<!-- Global args -->

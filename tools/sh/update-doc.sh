@@ -121,9 +121,9 @@ parse_addfatalerror()
 
 parse_displayerrors()
 {
-	for ((i=${parser_startindex};${i}<${#parser_errors[*]};i++))
+	for error in "${parser_errors[@]}"
 	do
-		echo -e "\t- ${parser_errors[${i}]}"
+		echo -e "\t- ${error}"
 	done
 }
 
@@ -141,33 +141,62 @@ parse_pathaccesscheck()
 	done
 	return 0
 }
+parse_addrequiredoption()
+{
+	local id="${1}"
+	local tail="${2}"
+	local o=
+	for o in "${parser_required[@]}"
+	do
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		[ "${id}" = "${idPart}" ] && return 0
+	done
+	parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="${id}:${tail}"
+}
 parse_setoptionpresence()
 {
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
 	do
-		local idPart="$(echo "${parser_required[${i}]}" | cut -f 1 -d":" )"
-		if [ "${idPart}" = "${1}" ]
+		if [ "${_e}" = "${1}" ]
 		then
-			parser_required[${i}]=""
-			return 0
+			_e_found=true; break
 		fi
 	done
-	return 1
+	if ${_e_found}
+	then
+		return
+	else
+		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	fi
 }
 parse_checkrequired()
 {
 	# First round: set default values
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local o=
+	for o in "${parser_required[@]}"
 	do
-		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
+		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
 		[ -z "${todoPart}" ] || eval "${todoPart}"
 	done
+	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	for o in "${parser_required[@]}"
 	do
-		if [ ! -z "${parser_required[${i}]}" ]
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		local _e_found=false
+		local _e=
+		for _e in "${parser_present[@]}"
+		do
+			if [ "${_e}" = "${idPart}" ]
+			then
+				_e_found=true; break
+			fi
+		done
+		if ! (${_e_found})
 		then
-			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
+			local displayPart="$(echo "${o}" | cut -f 2 -d":")"
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
@@ -246,7 +275,7 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value
+	local value=
 	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
 	shift
 	if [ -z "${parser_subcommand}" ]
@@ -855,7 +884,7 @@ chunk_check_nsxml_ns_path()
 }
 get_program_version()
 {
-	local file
+	local file=
 	if [ $# -gt 0 ]
 	then
 		file="${1}"
@@ -888,13 +917,13 @@ GETPROGRAMVERSIONXSLEOF
 }
 xml_validate()
 {
-	local schema
+	local schema=
 	if [ $# -gt 0 ]
 	then
 		schema="${1}"
 		shift
 	fi
-	local xml
+	local xml=
 	if [ $# -gt 0 ]
 	then
 		xml="${1}"
@@ -913,7 +942,7 @@ xml_validate()
 }
 ns_isdir()
 {
-	local inputPath
+	local inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -923,7 +952,7 @@ ns_isdir()
 }
 ns_issymlink()
 {
-	local inputPath
+	local inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -933,7 +962,7 @@ ns_issymlink()
 }
 ns_realpath()
 {
-	local inputPath
+	local inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -955,13 +984,13 @@ ns_realpath()
 }
 ns_relativepath()
 {
-	local from
+	local from=
 	if [ $# -gt 0 ]
 	then
 		from="${1}"
 		shift
 	fi
-	local base
+	local base=
 	if [ $# -gt 0 ]
 	then
 		base="${1}"
@@ -998,7 +1027,7 @@ ns_relativepath()
 }
 ns_mktemp()
 {
-	local key
+	local key=
 	if [ $# -gt 0 ]
 	then
 		key="${1}"
@@ -1017,7 +1046,7 @@ ns_mktemp()
 }
 ns_mktempdir()
 {
-	local key
+	local key=
 	if [ $# -gt 0 ]
 	then
 		key="${1}"
@@ -1041,7 +1070,7 @@ ns_which()
 		which "${@}"
 	else
 	local silent="false"
-	local args
+	local args=
 	while [ ${#} -gt 0 ]
 		do
 			if [ "${1}" = "-s" ]
@@ -1097,19 +1126,19 @@ ns_sed_inplace()
 }
 filesystempath_to_nmepath()
 {
-	local sourceBasePath
+	local sourceBasePath=
 	if [ $# -gt 0 ]
 	then
 		sourceBasePath="${1}"
 		shift
 	fi
-	local outputBasePath
+	local outputBasePath=
 	if [ $# -gt 0 ]
 	then
 		outputBasePath="${1}"
 		shift
 	fi
-	local path
+	local path=
 	if [ $# -gt 0 ]
 	then
 		path="${1}"

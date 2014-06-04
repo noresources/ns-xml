@@ -155,8 +155,8 @@ parser_index=${parser_startindex}
 
 # Required global options
 # (Subcommand required options will be added later)
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_output:--output:"
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_output:--output"
 # Switch options
 xsh_prefixSubcommandBoundVariableName=false
 displayHelp=false
@@ -212,9 +212,9 @@ parse_addfatalerror()
 
 parse_displayerrors()
 {
-	for ((i=${parser_startindex};${i}<${#parser_errors[*]};i++))
+	for error in "${parser_errors[@]}"
 	do
-		echo -e "\t- ${parser_errors[${i}]}"
+		echo -e "\t- ${error}"
 	done
 }
 
@@ -232,33 +232,62 @@ parse_pathaccesscheck()
 	done
 	return 0
 }
+parse_addrequiredoption()
+{
+	local id="${1}"
+	local tail="${2}"
+	local o=
+	for o in "${parser_required[@]}"
+	do
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		[ "${id}" = "${idPart}" ] && return 0
+	done
+	parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="${id}:${tail}"
+}
 parse_setoptionpresence()
 {
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
 	do
-		local idPart="$(echo "${parser_required[${i}]}" | cut -f 1 -d":" )"
-		if [ "${idPart}" = "${1}" ]
+		if [ "${_e}" = "${1}" ]
 		then
-			parser_required[${i}]=""
-			return 0
+			_e_found=true; break
 		fi
 	done
-	return 1
+	if ${_e_found}
+	then
+		return
+	else
+		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	fi
 }
 parse_checkrequired()
 {
 	# First round: set default values
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local o=
+	for o in "${parser_required[@]}"
 	do
-		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
+		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
 		[ -z "${todoPart}" ] || eval "${todoPart}"
 	done
+	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	for o in "${parser_required[@]}"
 	do
-		if [ ! -z "${parser_required[${i}]}" ]
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		local _e_found=false
+		local _e=
+		for _e in "${parser_present[@]}"
+		do
+			if [ "${_e}" = "${idPart}" ]
+			then
+				_e_found=true; break
+			fi
+		done
+		if ! (${_e_found})
 		then
-			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
+			local displayPart="$(echo "${o}" | cut -f 2 -d":")"
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
@@ -352,7 +381,7 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value
+	local value=
 	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
 	shift
 	if [ -z "${parser_subcommand}" ]
@@ -2037,17 +2066,21 @@ parse_process_option()
 		case "${parser_item}" in
 		python)
 			parser_subcommand="python"
+			
 			;;
 		php)
 			parser_subcommand="php"
+			
 			;;
 		xsh | sh | shell)
 			parser_subcommand="xsh"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_xsh_1_shell:--shell"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_3_xsh_1_shell:--shell:"
+			
 			;;
 		command | cmd)
 			parser_subcommand="command"
-			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_command_1_command:--command"
+			parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="SC_4_command_1_command:--command:"
+			
 			;;
 		*)
 			parse_addvalue "${parser_item}"
@@ -2111,7 +2144,7 @@ ns_print_error()
 }
 ns_error()
 {
-	local errno
+	local errno=
 	if [ $# -gt 0 ]
 	then
 		errno=${1}
@@ -2155,7 +2188,7 @@ nsxml_installpath()
 }
 ns_realpath()
 {
-	local inputPath
+	local inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -2177,7 +2210,7 @@ ns_realpath()
 }
 ns_mktemp()
 {
-	local key
+	local key=
 	if [ $# -gt 0 ]
 	then
 		key="${1}"
@@ -2285,7 +2318,7 @@ build_xsh()
 	local defaultInterpreterCommand="${xsh_defaultInterpreterCommand}"
 	local defaultInterpreterType="${xsh_defaultInterpreterType}"
 	local forceInterpreter="${xsh_forceInterpreter}"
-	local xshXslTemplatePath
+	local xshXslTemplatePath=
 	local outputScriptFilePath="${commandLauncherFile}"
 	info " - Generate shell file"
 	# Check required XSLT files
@@ -2360,7 +2393,7 @@ local programInfoClassname="${python_programInfoClassname}"
 local outputScriptFilePath="${commandLauncherFile}"
 local generationMode="generateMerge"
 local generateBase="false"
-local generateInfo
+local generateInfo=
 local generateMerge="${python_scriptPath}"
 info " - Generate Python file"
 buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
@@ -2435,13 +2468,13 @@ build_command()
 }
 xml_validate()
 {
-	local schema
+	local schema=
 	if [ $# -gt 0 ]
 	then
 		schema="${1}"
 		shift
 	fi
-	local xml
+	local xml=
 	if [ $# -gt 0 ]
 	then
 		xml="${1}"

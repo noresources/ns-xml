@@ -109,10 +109,10 @@ parser_index=${parser_startindex}
 
 # Required global options
 # (Subcommand required options will be added later)
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description:"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --embed or --include:"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output:"
 
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --embed or --include"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output"
 # Switch options
 skipValidation=false
 generateBaseOnly=false
@@ -159,9 +159,9 @@ parse_addfatalerror()
 
 parse_displayerrors()
 {
-	for ((i=${parser_startindex};${i}<${#parser_errors[*]};i++))
+	for error in "${parser_errors[@]}"
 	do
-		echo -e "\t- ${parser_errors[${i}]}"
+		echo -e "\t- ${error}"
 	done
 }
 
@@ -179,33 +179,62 @@ parse_pathaccesscheck()
 	done
 	return 0
 }
+parse_addrequiredoption()
+{
+	local id="${1}"
+	local tail="${2}"
+	local o=
+	for o in "${parser_required[@]}"
+	do
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		[ "${id}" = "${idPart}" ] && return 0
+	done
+	parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="${id}:${tail}"
+}
 parse_setoptionpresence()
 {
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
 	do
-		local idPart="$(echo "${parser_required[${i}]}" | cut -f 1 -d":" )"
-		if [ "${idPart}" = "${1}" ]
+		if [ "${_e}" = "${1}" ]
 		then
-			parser_required[${i}]=""
-			return 0
+			_e_found=true; break
 		fi
 	done
-	return 1
+	if ${_e_found}
+	then
+		return
+	else
+		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	fi
 }
 parse_checkrequired()
 {
 	# First round: set default values
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	local o=
+	for o in "${parser_required[@]}"
 	do
-		local todoPart="$(echo "${parser_required[${i}]}" | cut -f 3 -d":" )"
+		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
 		[ -z "${todoPart}" ] || eval "${todoPart}"
 	done
+	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
-	for ((i=${parser_startindex};${i}<$(expr ${parser_startindex} + ${#parser_required[*]});i++))
+	for o in "${parser_required[@]}"
 	do
-		if [ ! -z "${parser_required[${i}]}" ]
+		local idPart="$(echo "${o}" | cut -f 1 -d":")"
+		local _e_found=false
+		local _e=
+		for _e in "${parser_present[@]}"
+		do
+			if [ "${_e}" = "${idPart}" ]
+			then
+				_e_found=true; break
+			fi
+		done
+		if ! (${_e_found})
 		then
-			local displayPart="$(echo "${parser_required[${i}]}" | cut -f 2 -d":" )"
+			local displayPart="$(echo "${o}" | cut -f 2 -d":")"
 			parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Missing required option ${displayPart}"
 			c=$(expr ${c} + 1)
 		fi
@@ -222,7 +251,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			structNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 		fi
 	fi
 	# functionNameStyle
@@ -232,7 +263,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			functionNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 		fi
 	fi
 	# variableNameStyle
@@ -242,7 +275,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			variableNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 		fi
 	fi
 	# outputPath
@@ -252,7 +287,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputPath='.'
-			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_output;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 		fi
 	fi
 	# outputFileBase
@@ -262,7 +299,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputFileBase='<auto>'
-			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 		fi
 	fi
 }
@@ -308,7 +347,7 @@ parse_enumcheck()
 parse_addvalue()
 {
 	local position=${#parser_values[*]}
-	local value
+	local value=
 	if [ $# -gt 0 ] && [ ! -z "${1}" ]; then value="${1}"; else return ${PARSER_ERROR}; fi
 	shift
 	if [ -z "${parser_subcommand}" ]
@@ -424,7 +463,9 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;
+			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			parse_setoptionpresence G_1_g
 			;;
 		skip-validation | no-validation)
 			# Group checks
@@ -435,7 +476,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;
+			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			parse_setoptionpresence G_1_g
 			;;
 		base)
 			# Group checks
@@ -453,7 +496,9 @@ parse_process_option()
 			fi
 			generateBaseOnly=true
 			generationMode="generateBaseOnly"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		embed)
 			# Group checks
@@ -471,7 +516,9 @@ parse_process_option()
 			fi
 			generateEmbedded=true
 			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		include)
 			# Group checks
@@ -544,7 +591,9 @@ parse_process_option()
 			
 			generateInclude="${parser_item}"
 			generationMode="generateInclude"
-			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		prefix)
 			# Group checks
@@ -573,7 +622,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_2_g_2_prefix;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_prefix;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		struct-style | struct)
 			# Group checks
@@ -608,7 +659,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			structNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		function-style | function | func)
 			# Group checks
@@ -643,7 +696,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			functionNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		variable-style | variable | var)
 			# Group checks
@@ -678,7 +733,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			variableNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		output)
 			# Group checks
@@ -719,7 +776,9 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_output;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		file-base | file)
 			# Group checks
@@ -748,7 +807,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		overwrite | force)
 			# Group checks
@@ -759,7 +820,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			outputOverwrite=true
-			parse_setoptionpresence G_3_g_3_overwrite;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_3_overwrite;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -857,12 +920,16 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;
+			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;
+			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			parse_setoptionpresence G_1_g
 			;;
 		b)
 			# Group checks
@@ -874,7 +941,9 @@ parse_process_option()
 			
 			generateBaseOnly=true
 			generationMode="generateBaseOnly"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		e)
 			# Group checks
@@ -886,7 +955,9 @@ parse_process_option()
 			
 			generateEmbedded=true
 			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		i)
 			# Group checks
@@ -959,7 +1030,9 @@ parse_process_option()
 			
 			generateInclude="${parser_item}"
 			generationMode="generateInclude"
-			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		p)
 			# Group checks
@@ -988,7 +1061,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_2_g_2_prefix;parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_prefix;
+			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
+			parse_setoptionpresence G_2_g
 			;;
 		o)
 			# Group checks
@@ -1029,7 +1104,9 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_output;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		f)
 			# Group checks
@@ -1058,12 +1135,16 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file_base;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_2_file_base;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		u)
 			# Group checks
 			outputOverwrite=true
-			parse_setoptionpresence G_3_g_3_overwrite;parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_3_overwrite;
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -1136,7 +1217,7 @@ ns_print_error()
 }
 ns_error()
 {
-	local errno
+	local errno=
 	if [ $# -gt 0 ]
 	then
 		errno=${1}
@@ -1180,7 +1261,7 @@ nsxml_installpath()
 }
 ns_realpath()
 {
-	local inputPath
+	local inputPath=
 	if [ $# -gt 0 ]
 	then
 		inputPath="${1}"
@@ -1202,7 +1283,7 @@ ns_realpath()
 }
 ns_mktemp()
 {
-	local key
+	local key=
 	if [ $# -gt 0 ]
 	then
 		key="${1}"
@@ -1221,7 +1302,7 @@ ns_mktemp()
 }
 ns_mktempdir()
 {
-	local key
+	local key=
 	if [ $# -gt 0 ]
 	then
 		key="${1}"
@@ -1257,7 +1338,7 @@ chunk_check_nsxml_ns_path()
 }
 get_program_version()
 {
-	local file
+	local file=
 	if [ $# -gt 0 ]
 	then
 		file="${1}"
@@ -1290,13 +1371,13 @@ GETPROGRAMVERSIONXSLEOF
 }
 xml_validate()
 {
-	local schema
+	local schema=
 	if [ $# -gt 0 ]
 	then
 		schema="${1}"
 		shift
 	fi
-	local xml
+	local xml=
 	if [ $# -gt 0 ]
 	then
 		xml="${1}"
@@ -1346,7 +1427,7 @@ buildcPopulateXsltprocParams()
 buildcGenerateBase()
 {
 	local fileBase="${outputFileBase}"
-	local tpl
+	local tpl=
 	# Check required templates
 	for x in parser.generic-header parser.generic-source
 	do
@@ -1383,7 +1464,7 @@ buildcGenerateBase()
 }
 buildcGenerate()
 {
-	local tpl
+	local tpl=
 	local fileBase="${outputFileBase}"
 	# Check required templates
 	for x in parser.header parser.source
