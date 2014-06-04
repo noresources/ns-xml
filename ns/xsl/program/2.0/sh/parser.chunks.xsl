@@ -80,6 +80,19 @@
 
 		<xsl:variable name="parentNode" select="$optionNode/../.." />
 
+		<xsl:if test="$optionNode/self::prg:group and not($optionNode[@type = 'exclusive'])">
+			<xsl:variable name="newRequiredOptions">
+				<xsl:call-template name="prg.sh.parser.addRequiredOptions">
+					<xsl:with-param name="optionsNode" select="$optionNode/prg:options" />
+					<xsl:with-param name="useFunction" select="true()" />
+					<xsl:with-param name="recursive" select="false()" />
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:if test="string-length($newRequiredOptions) &gt; 0">
+				<xsl:value-of select="$sh.endl" />
+				<xsl:value-of select="$newRequiredOptions" />
+			</xsl:if>
+		</xsl:if>
 		<xsl:value-of select="$prg.sh.parser.fName_setoptionpresence" />
 		<xsl:value-of select="' '" />
 		<xsl:call-template name="prg.optionId">
@@ -1354,6 +1367,118 @@
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
+	</xsl:template>
+
+	<xsl:template name="prg.sh.parser.addRequiredOption">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="useFunction" select="false()" />
+
+		<xsl:variable name="optionId">
+			<xsl:call-template name="prg.optionId">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:variable name="tail">
+			<!-- display name -->
+			<xsl:choose>
+				<xsl:when test="$optionNode/self::prg:group">
+					<xsl:for-each select="$optionNode/prg:options/*">
+						<xsl:call-template name="prg.sh.optionDisplayName">
+							<xsl:with-param name="recursive" select="true()" />
+						</xsl:call-template>
+						<xsl:if test="position() != last()">
+							<xsl:choose>
+								<xsl:when test="position() = (last() - 1)">
+									<xsl:text> or </xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>, </xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:if>
+					</xsl:for-each>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="prg.sh.optionDisplayName">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+			<!-- things to do while setting option presence -->
+			<xsl:if test="$optionNode/self::prg:group and $optionNode[@required = 'true']">
+				<xsl:variable name="defaultOptionId" select="$optionNode/prg:default/@id" />
+				<xsl:variable name="defaultOptionNode" select="$optionNode/prg:options/*[@id = $defaultOptionId]" />
+				<xsl:variable name="groupVariable" select="$optionNode/prg:databinding/prg:variable" />
+				<xsl:variable name="defaultOptionVariable" select="$defaultOptionNode/prg:databinding/prg:variable" />
+
+				<xsl:if test="$groupVariable and $defaultOptionVariable">
+					<xsl:text>:</xsl:text>
+					<xsl:apply-templates select="$groupVariable" />
+					<xsl:text>=</xsl:text>
+					<xsl:apply-templates select="$defaultOptionVariable" />
+					<xsl:if test="$defaultOptionNode/self::prg:switch">
+						<xsl:text>:</xsl:text>
+						<xsl:apply-templates select="$defaultOptionVariable" />
+						<xsl:text>=true</xsl:text>
+					</xsl:if>
+					<!-- recursively set option presence -->
+					<xsl:text>;</xsl:text>
+					<xsl:call-template name="prg.sh.parser.optionSetPresence">
+						<xsl:with-param name="optionNode" select="$defaultOptionNode" />
+					</xsl:call-template>
+				</xsl:if>
+			</xsl:if>
+		</xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="$useFunction">
+				<xsl:value-of select="$prg.sh.parser.fName_addrequiredoption" />
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$optionId" />
+				<xsl:text> '</xsl:text>
+				<xsl:value-of select="$tail" />
+				<xsl:text>:'</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sh.arrayAppend">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_required" />
+					<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
+					<xsl:with-param name="value">
+						<xsl:text>"</xsl:text>
+						<xsl:value-of select="$optionId" />
+						<xsl:text>:</xsl:text>
+						<xsl:value-of select="$tail" />
+						<xsl:text>:"</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:value-of select="$sh.endl" />
+	</xsl:template>
+
+	<xsl:template name="prg.sh.parser.addRequiredOptions">
+		<xsl:param name="optionsNode" />
+		<xsl:param name="useFunction" select="false()" />
+		<xsl:param name="recursive" select="true()" />
+
+		<!-- Required options at this level -->
+		<xsl:for-each select="$optionsNode/*[@required = 'true']">
+			<xsl:call-template name="prg.sh.parser.addRequiredOption">
+				<xsl:with-param name="useFunction" select="$useFunction" />
+			</xsl:call-template>
+		</xsl:for-each>
+
+		<!-- Sub level options -->
+		<xsl:if test="$recursive">
+			<xsl:for-each select="$optionsNode/prg:group[not(@type) or (@type != 'exclusive')]">
+				<xsl:call-template name="prg.sh.parser.addRequiredOptions">
+					<xsl:with-param name="optionsNode" select="./prg:options" />
+					<xsl:with-param name="useFunction" select="$useFunction" />
+				</xsl:call-template>
+			</xsl:for-each>
+		</xsl:if>
 	</xsl:template>
 
 	<!-- Add required option ids to required options array -->
@@ -1374,7 +1499,6 @@
 						</xsl:call-template>
 						<xsl:text>:</xsl:text>
 						<xsl:choose>
-							<!-- @todo -->
 							<xsl:when test="$optionNode/self::prg:group">
 								<xsl:for-each select="$optionNode/prg:options/*">
 									<xsl:call-template name="prg.sh.optionDisplayName">
@@ -1448,10 +1572,6 @@
 		</xsl:param>
 		<xsl:param name="onError" />
 		<!-- Even if a positional argument is invalid, the value is added to the global array -->
-		<!--
-			<text>return </text>
-			<value-of select="$prg.sh.parser.var_ERROR" />
-		-->
 		<xsl:param name="value">
 			<xsl:call-template name="sh.var">
 				<xsl:with-param name="name">
@@ -1798,7 +1918,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:value-of select="$sh.endl" />
-		<xsl:call-template name="prg.sh.parser.optionAddRequired">
+		<xsl:call-template name="prg.sh.parser.addRequiredOptions">
 			<xsl:with-param name="optionsNode" select="$programNode/prg:options" />
 		</xsl:call-template>
 		<xsl:value-of select="$sh.endl" />

@@ -60,7 +60,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- Character index in the processed command line item -->
 	<xsl:variable name="prg.sh.parser.vName_subindex">
 		<xsl:call-template name="prg.prefixedName">
@@ -80,7 +80,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_option">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -89,7 +89,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_optiontail">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -98,7 +98,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_optionhastail">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -107,7 +107,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_isfirstpositionalargument">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -116,7 +116,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_ma_local_count">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -125,7 +125,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_ma_total_count">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -143,7 +143,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.var_subcommand">
 		<xsl:call-template name="sh.var">
 			<xsl:with-param name="name" select="$prg.sh.parser.vName_subcommand" />
@@ -158,7 +158,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_values">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -167,6 +167,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
+
 	<xsl:variable name="prg.sh.parser.vName_required">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -175,7 +176,16 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
+	<xsl:variable name="prg.sh.parser.vName_present">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>present</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+
 	<xsl:variable name="prg.sh.parser.vName_warnings">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -192,7 +202,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_fatalerrors">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -201,7 +211,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_set_default">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -210,7 +220,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_aborted">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -219,7 +229,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-		
+
 	<xsl:variable name="prg.sh.parser.vName_OK">
 		<xsl:call-template name="str.toUpper">
 			<xsl:with-param name="text">
@@ -249,7 +259,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.var_ERROR">
 		<xsl:call-template name="sh.var">
 			<xsl:with-param name="name" select="$prg.sh.parser.vName_ERROR" />
@@ -267,7 +277,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_SC_ERROR">
 		<xsl:call-template name="str.toUpper">
 			<xsl:with-param name="text">
@@ -292,7 +302,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_SC_SKIP">
 		<xsl:call-template name="str.toUpper">
 			<xsl:with-param name="text">
@@ -305,7 +315,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- The main command line parser function -->
 	<xsl:variable name="prg.sh.parser.fName_parse">
 		<xsl:call-template name="prg.prefixedName">
@@ -314,7 +324,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- Check number interval -->
 	<xsl:variable name="prg.sh.parser.fName_numberLesserEqualcheck">
 		<xsl:call-template name="prg.prefixedName">
@@ -324,7 +334,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- Restricted values validator -->
 	<xsl:variable name="prg.sh.parser.fName_enumcheck">
 		<xsl:call-template name="prg.prefixedName">
@@ -334,7 +344,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_addvalue">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -343,7 +353,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_displayerrors">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -352,7 +362,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_setoptionpresence">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -361,6 +371,16 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
+
+	<xsl:variable name="prg.sh.parser.fName_addrequiredoption">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>addrequiredoption</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+
 	<xsl:variable name="prg.sh.parser.fName_checkrequired">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -369,7 +389,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_checkminmax">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -378,7 +398,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- Set default values for single argument options -->
 	<xsl:variable name="prg.sh.parser.fName_setdefaultarguments">
 		<xsl:call-template name="prg.prefixedName">
@@ -388,7 +408,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_addmessage">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -397,7 +417,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_addwarning">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -406,7 +426,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_adderror">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -415,7 +435,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_addfatalerror">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -424,7 +444,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_debug">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -433,7 +453,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_process_subcommand_option">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -442,7 +462,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_process_option">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -451,7 +471,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_pathaccesscheck">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
