@@ -64,7 +64,8 @@
 		<xsl:param name="interpreter" select="sh" />
 		<!-- Variable initial value -->
 		<xsl:param name="value" />
-		<!-- Indicates if the value value have to be quoted -->
+		<!-- Indicates if the value value have to be quoted.
+			Expect a boolean or the special value 'auto' -->
 		<xsl:param name="quoted" select="'auto'" />
 
 		<xsl:variable name="isNumber" select="(string(number($value)) != 'NaN')" />
@@ -72,10 +73,20 @@
 		<xsl:variable name="quoteRequested">
 			<xsl:choose>
 				<xsl:when test="$quoted = 'auto'">
-					<xsl:value-of select="not ($isNumber)" />
+					<xsl:choose>
+						<xsl:when test="$isNumber">
+							<xsl:text>false</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>true</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="not($quoted)">
+					<xsl:text>false</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="$quoted" />
+					<xsl:text>true</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
@@ -91,13 +102,13 @@
 
 		<xsl:value-of select="$name" />
 
+		<xsl:text>=</xsl:text>
 		<xsl:if test="($isNumber or (string-length($value) &gt; 0))">
-			<xsl:text>=</xsl:text>
-			<xsl:if test="$quoteRequested != 'false'">
+			<xsl:if test="$quoteRequested = 'true'">
 				<xsl:text>"</xsl:text>
 			</xsl:if>
 			<xsl:value-of select="$value" />
-			<xsl:if test="$quoteRequested != 'false'">
+			<xsl:if test="$quoteRequested = 'true'">
 				<xsl:text>"</xsl:text>
 			</xsl:if>
 		</xsl:if>
@@ -279,6 +290,18 @@
 		<!-- Name of the index variable used in loop -->
 		<xsl:param name="indexVariableName" select="'i'" />
 		<xsl:param name="append" select="true()" />
+		<!-- UNIX shell interpreter type -->
+		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Declare temporary variable as local variable -->
+		<xsl:param name="declareLocal" select='false()' />
+
+		<xsl:if test="$declareLocal">
+			<xsl:call-template name="sh.local">
+				<xsl:with-param name="name" select="$indexVariable" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+			</xsl:call-template>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
 
 		<xsl:variable name="indexVariable">
 			<xsl:call-template name="sh.var">
@@ -412,10 +435,11 @@
 
 	<!-- For statement -->
 	<xsl:template name="sh.for">
-		<!-- -->
+		<!-- For condition -->
 		<xsl:param name="condition" />
-
+		<!-- -->
 		<xsl:param name="do" />
+		<!-- Indent *do* block -->
 		<xsl:param name="indent" select="true()" />
 
 		<xsl:text>for </xsl:text>
@@ -442,7 +466,19 @@
 		<xsl:param name="increment" select="1" />
 		<xsl:param name="do" />
 		<xsl:param name="indent" select="true()" />
+		<!-- UNIX shell interpreter type -->
+		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Declare temporary variable as local variable -->
+		<xsl:param name="declareLocal" select='false()' />
 
+
+		<xsl:if test="$declareLocal">
+			<xsl:call-template name="sh.local">
+				<xsl:with-param name="name" select="$variable" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+			</xsl:call-template>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="indent" select="$indent" />
 
@@ -501,7 +537,7 @@
 			<xsl:choose>
 				<xsl:when test="$thenLength &gt; 0">
 					<xsl:variable name="hasElse" select="$else and ($elseLength &gt; 0)" />
-					<xsl:variable name="simpleThen" select="not (contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
+					<xsl:variable name="simpleThen" select="not (contains($then, ';') or contains($then, $sh.endl) or contains($then, '&amp;&amp;') or contains($then, '||'))" />
 					<xsl:choose>
 						<xsl:when test="$shortForm and not($hasElse) and $simpleThen and $simpleCondition">
 							<xsl:value-of select="$ncond" />
@@ -530,7 +566,7 @@
 
 				</xsl:when>
 				<xsl:when test="$elseLength &gt; 0">
-					<xsl:variable name="simpleElse" select="not (contains($else, $sh.endl) or contains($else, '&amp;&amp;') or contains($else, '||'))" />
+					<xsl:variable name="simpleElse" select="not (contains($else, ';') or contains($else, $sh.endl) or contains($else, '&amp;&amp;') or contains($else, '||'))" />
 
 					<xsl:choose>
 						<xsl:when test="$shortForm and $simpleElse and $simpleCondition">
@@ -687,6 +723,23 @@
 		<xsl:param name="otherwise" select="'return 1'" />
 
 		<xsl:variable name="elementVariableName" select="'_e'" />
+		<xsl:variable name="foundVariableName" select="concat($elementVariableName, '_found')" />
+
+		<xsl:choose>
+			<xsl:when test="$declareLocal">
+				<xsl:call-template name="sh.local">
+					<xsl:with-param name="name" select="$foundVariableName" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="value" select="'false'" />
+					<xsl:with-param name="quoted" select="false()" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$foundVariableName" />
+				<xsl:text>=false</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:value-of select="$sh.endl" />
 
 		<xsl:call-template name="sh.arrayForEach">
 			<xsl:with-param name="name" select="$name" />
@@ -705,14 +758,23 @@
 						<xsl:value-of select="$value" />
 						<xsl:text> ]</xsl:text>
 					</xsl:with-param>
-					<xsl:with-param name="then" select="$onExists" />
+					<xsl:with-param name="then">
+						<xsl:value-of select="$foundVariableName" />
+						<xsl:text>=true; break</xsl:text>
+					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:if test="string-length($otherwise) &gt; 0">
-			<xsl:value-of select="$sh.endl" />
-			<xsl:value-of select="$otherwise" />
-		</xsl:if>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:call-template name="sh.if">
+			<xsl:with-param name="condition">
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$foundVariableName" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="then" select="$onExists" />
+			<xsl:with-param name="else" select="$otherwise" />
+		</xsl:call-template>
 	</xsl:template>
 
 </xsl:stylesheet>
