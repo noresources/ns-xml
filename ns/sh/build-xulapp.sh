@@ -40,16 +40,14 @@ xsh: Build a XUL application which will run a Shell script defined through the b
 Usage: build-xulapp xsh [-p] -s <path> [(-i <...> | -I <...>)]
 With:
   -s, --shell: XML shell file
-    A XML file following the bash XML schema
+    A XML file following the XML shell script (XSH) schema
     The file may include a program interface XML definition
   -p, --prefix-sc-variables: Prefix subcommand options bound variable names
     This will prefix all subcommand options bound variable name by the 
     subcommand name (sc_varianbleNmae). This avoid variable name aliasing.
   Default interpreter
     -i, --interpreter: Default shell interpreter type
-      The interpreter family to use if the XSH file does not define one.
-        Attention: This parameter is only available for XSH file using the 
-        XSH XML schema (http://xsd.nore.fr/xsh)  
+      The interpreter family to use if the XSH file does not define one.  
       The argument can be one the following :  
         bash, zsh or ksh
     -I, --interpreter-cmd: Default shell interpreter invocation directive

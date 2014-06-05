@@ -3,6 +3,7 @@
 # Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see
 # 		LICENSE
+# 	
 # Author: Renaud Guillard
 # Version: 2.0
 # 
@@ -14,28 +15,21 @@ usage()
 cat << 'EOFUSAGE'
 build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
-  build-shellscript [-Spd] [--ns-xml-path <path> --ns-xml-path-relative] [-x <path>] -s <path> [(-i <...> | -I <...>)] [--force-interpreter] [--help] -o <path>
+  build-shellscript [-Spd] -s <path> [-x <path>] [(-i <...> | -I <...>)] [--force-interpreter] [--help] -o <path> [--ns-xml-path <path> --ns-xml-path-relative]
   With:
-    ns-xml source path options
-      --ns-xml-path: ns-xml source path
-        Location of the ns folder of ns-xml package
-      --ns-xml-path-relative: ns source path is relative this program path
-    
+    -s, --shell: XML shell file
+      A XML file following the XML shell script (XSH) schema
+      The file may include a program interface XML definition
     -x, --xml-description: Program description file
       If the program description file is provided, the xml file will be 
       validated before any XSLT processing
-    -s, --shell: XML shell file
-      A XML file following the bash XML schema
-      The file may include a program interface XML definition
     -S, --skip-validation, --no-validation: Skip XML Schema validations
       The default behavior of the program is to validate the given xml-based 
       file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
       This option will disable schema validations
     Default interpreter
       -i, --interpreter: Default shell interpreter type
-        The interpreter family to use if the XSH file does not define one.
-          Attention: This parameter is only available for XSH file using the 
-          XSH XML schema (http://xsd.nore.fr/xsh)  
+        The interpreter family to use if the XSH file does not define one.  
         The argument can be one the following :  
           bash, zsh or ksh
       -I, --interpreter-cmd: Default shell interpreter invocation directive
@@ -53,6 +47,10 @@ Usage:
     -d, --debug: Generate debug messages in help and command line parsing functions
     --help: Display program usage
     -o, --output: Output file path
+    ns-xml source path options
+      --ns-xml-path: ns-xml source path
+        Location of the ns folder of ns-xml package
+      --ns-xml-path-relative: ns source path is relative this program path
 EOFUSAGE
 }
 
@@ -81,23 +79,23 @@ parser_index=${parser_startindex}
 
 # Required global options
 # (Subcommand required options will be added later)
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_shell:--shell:"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_10_output:--output:"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_shell:--shell:"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_9_output:--output:"
 
 # Switch options
-nsxmlPathRelative=false
 skipValidation=false
 forceInterpreter=false
 prefixSubcommandBoundVariableName=false
 debugMode=false
 displayHelp=false
+nsxmlPathRelative=false
 # Single argument options
-nsxmlPath=
-xmlProgramDescriptionPath=
 xmlShellFileDescriptionPath=
+xmlProgramDescriptionPath=
 defaultInterpreterType=
 defaultInterpreterCommand=
 outputScriptFilePath=
+nsxmlPath=
 
 parse_addwarning()
 {
@@ -322,6 +320,46 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		shell)
+			if ${parser_optionhastail}
+			then
+				parser_item=${parser_optiontail}
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = '--' ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=''
+			parser_optionhastail=false
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if [ ! -e "${parser_item}" ]
+			then
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+			then
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			xmlShellFileDescriptionPath="${parser_item}"
+			parse_setoptionpresence G_1_shell
+			;;
 		xml-description)
 			if ${parser_optionhastail}
 			then
@@ -362,46 +400,6 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_2_xml_description
 			;;
-		shell)
-			if ${parser_optionhastail}
-			then
-				parser_item=${parser_optiontail}
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = '--' ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=''
-			parser_optionhastail=false
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if [ ! -e "${parser_item}" ]
-			then
-				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-			then
-				parse_adderror "Invalid patn type for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			xmlShellFileDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_shell
-			;;
 		skip-validation | no-validation)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -410,7 +408,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_4_skip_validation
+			parse_setoptionpresence G_3_skip_validation
 			;;
 		force-interpreter)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
@@ -420,7 +418,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			forceInterpreter=true
-			parse_setoptionpresence G_6_force_interpreter
+			parse_setoptionpresence G_5_force_interpreter
 			;;
 		prefix-sc-variables)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
@@ -430,7 +428,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_7_prefix_sc_variables
+			parse_setoptionpresence G_6_prefix_sc_variables
 			;;
 		debug)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
@@ -440,7 +438,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_8_debug
+			parse_setoptionpresence G_7_debug
 			;;
 		help)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
@@ -450,7 +448,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_9_help
+			parse_setoptionpresence G_8_help
 			;;
 		output)
 			if ${parser_optionhastail}
@@ -478,47 +476,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_10_output
-			;;
-		ns-xml-path)
-			# Group checks
-			if ${parser_optionhastail}
-			then
-				parser_item=${parser_optiontail}
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = '--' ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=''
-			parser_optionhastail=false
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_ns_xml_path;parse_setoptionpresence G_1_g
-			;;
-		ns-xml-path-relative)
-			# Group checks
-			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Option --${parser_option} does not allow an argument"
-				parser_optiontail=''
-				return ${PARSER_ERROR}
-			fi
-			nsxmlPathRelative=true
-			parse_setoptionpresence G_1_g_2_ns_xml_path_relative;parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_9_output
 			;;
 		interpreter)
 			# Group checks
@@ -579,7 +537,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterType="${parser_item}"
 			defaultInterpreter="defaultInterpreterType"
-			parse_setoptionpresence G_5_g_1_interpreter;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_4_g_1_interpreter;parse_setoptionpresence G_4_g
 			;;
 		interpreter-cmd)
 			# Group checks
@@ -640,7 +598,47 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"
-			parse_setoptionpresence G_5_g_2_interpreter_cmd;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_4_g_2_interpreter_cmd;parse_setoptionpresence G_4_g
+			;;
+		ns-xml-path)
+			# Group checks
+			if ${parser_optionhastail}
+			then
+				parser_item=${parser_optiontail}
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = '--' ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=''
+			parser_optionhastail=false
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			nsxmlPath="${parser_item}"
+			parse_setoptionpresence G_10_g_1_ns_xml_path;parse_setoptionpresence G_10_g
+			;;
+		ns-xml-path-relative)
+			# Group checks
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			nsxmlPathRelative=true
+			parse_setoptionpresence G_10_g_2_ns_xml_path_relative;parse_setoptionpresence G_10_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -659,6 +657,46 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		s)
+			if [ ! -z "${parser_optiontail}" ]
+			then
+				parser_item=${parser_optiontail}
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = '--' ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=''
+			parser_optionhastail=false
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if [ ! -e "${parser_item}" ]
+			then
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+			then
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			xmlShellFileDescriptionPath="${parser_item}"
+			parse_setoptionpresence G_1_shell
+			;;
 		x)
 			if [ ! -z "${parser_optiontail}" ]
 			then
@@ -699,57 +737,17 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			parse_setoptionpresence G_2_xml_description
 			;;
-		s)
-			if [ ! -z "${parser_optiontail}" ]
-			then
-				parser_item=${parser_optiontail}
-			else
-				parser_index=$(expr ${parser_index} + 1)
-				if [ ${parser_index} -ge ${parser_itemcount} ]
-				then
-					parse_adderror "End of input reached - Argument expected"
-					return ${PARSER_ERROR}
-				fi
-				
-				parser_item="${parser_input[${parser_index}]}"
-				if [ "${parser_item}" = '--' ]
-				then
-					parse_adderror "End of option marker found - Argument expected"
-					parser_index=$(expr ${parser_index} - 1)
-					return ${PARSER_ERROR}
-				fi
-			fi
-			
-			parser_subindex=0
-			parser_optiontail=''
-			parser_optionhastail=false
-			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if [ ! -e "${parser_item}" ]
-			then
-				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-			then
-				parse_adderror "Invalid patn type for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			xmlShellFileDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_shell
-			;;
 		S)
 			skipValidation=true
-			parse_setoptionpresence G_4_skip_validation
+			parse_setoptionpresence G_3_skip_validation
 			;;
 		p)
 			prefixSubcommandBoundVariableName=true
-			parse_setoptionpresence G_7_prefix_sc_variables
+			parse_setoptionpresence G_6_prefix_sc_variables
 			;;
 		d)
 			debugMode=true
-			parse_setoptionpresence G_8_debug
+			parse_setoptionpresence G_7_debug
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -777,7 +775,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_10_output
+			parse_setoptionpresence G_9_output
 			;;
 		i)
 			# Group checks
@@ -838,7 +836,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterType="${parser_item}"
 			defaultInterpreter="defaultInterpreterType"
-			parse_setoptionpresence G_5_g_1_interpreter;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_4_g_1_interpreter;parse_setoptionpresence G_4_g
 			;;
 		I)
 			# Group checks
@@ -899,7 +897,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			defaultInterpreterCommand="${parser_item}"
 			defaultInterpreter="defaultInterpreterCommand"
-			parse_setoptionpresence G_5_g_2_interpreter_cmd;parse_setoptionpresence G_5_g
+			parse_setoptionpresence G_4_g_2_interpreter_cmd;parse_setoptionpresence G_4_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""

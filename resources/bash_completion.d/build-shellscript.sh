@@ -79,7 +79,7 @@ __build_shellscript_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--ns-xml-path --ns-xml-path-relative --xml-description --shell --skip-validation --no-validation --interpreter --interpreter-cmd --force-interpreter --prefix-sc-variables --debug --help --output -x -s -S -p -d -o"
+	local globalargs="--shell --xml-description --skip-validation --no-validation --interpreter --interpreter-cmd --force-interpreter --prefix-sc-variables --debug --help --output --ns-xml-path --ns-xml-path-relative -s -x -S -p -d -o"
 	local args="${globalargs}"
 	
 	
@@ -96,18 +96,13 @@ __build_shellscript_bashcompletion()
 	if [ ! -z "${option}" ]
 	then
 		case "${option}" in
-		"ns-xml-path")
-			__build_shellscript_appendfsitems "${current}"  -type d 
+		"shell" | "s")
+			__build_shellscript_appendfsitems "${current}"  -type f 
 			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
 		"xml-description" | "x")
 			__build_shellscript_appendfsitems "${current}"  -name \"*xml\" -o -name \"*XML\" -type f 
-			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
-			
-			;;
-		"shell" | "s")
-			__build_shellscript_appendfsitems "${current}"  -type f 
 			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
@@ -151,6 +146,11 @@ __build_shellscript_bashcompletion()
 			;;
 		"output" | "o")
 			__build_shellscript_appendfsitems "${current}"  -type f 
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
+			
+			;;
+		"ns-xml-path")
+			__build_shellscript_appendfsitems "${current}"  -type d 
 			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
 			
 			;;
