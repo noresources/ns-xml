@@ -79,7 +79,7 @@ __build_c_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--xml-description --skip-validation --no-validation --base --embed --include --prefix --struct-style --struct --function-style --function --func --variable-style --variable --var --output --file-base --file --overwrite --force --ns-xml-path --ns-xml-path-relative --help"
+	local globalargs="--base --schema-version --xml-description --skip-validation --no-validation --embed --include --prefix --struct-style --struct --function-style --function --func --variable-style --variable --var --output --file-base --file --overwrite --force --ns-xml-path --ns-xml-path-relative --help"
 	local args="${globalargs}"
 	
 	
@@ -96,6 +96,16 @@ __build_c_bashcompletion()
 	if [ ! -z "${option}" ]
 	then
 		case "${option}" in
+		"schema-version")
+			COMPREPLY=()
+			for e in "2.0"
+			do
+				local res="$(compgen -W "${e}" -- "${current}")"
+				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
+			done
+			[ ${#COMPREPLY[*]} -gt 0 ] && return 0
+			
+			;;
 		"xml-description" | "x")
 			__build_c_appendfsitems "${current}"  -type f 
 			[ ${#COMPREPLY[*]} -gt 0 ] && return 0

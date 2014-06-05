@@ -16,17 +16,6 @@
 	<prg:options>
 		<prg:group>
 			<prg:documentation>
-				<prg:abstract>Input</prg:abstract>
-			</prg:documentation>
-			<prg:options>
-				<!-- program interface XML definition file -->
-				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])" />
-				<!-- Skip validation -->
-				<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
-			</prg:options>
-		</prg:group>
-		<prg:group>
-			<prg:documentation>
 				<prg:abstract>Generation options</prg:abstract>
 			</prg:documentation>
 			<prg:options>
@@ -39,67 +28,105 @@
 						<prg:details>Select what to generate</prg:details>
 					</prg:documentation>
 					<prg:options>
-						<prg:switch>
+						<prg:group>
 							<prg:databinding>
-								<prg:variable>generateBaseOnly</prg:variable>
+								<prg:variable>generateProgramIndependent</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Generate ns-xml utility and parser core</prg:abstract>
+								<prg:abstract>Generic code</prg:abstract>
 							</prg:documentation>
-							<prg:names>
-								<prg:long>base</prg:long>
-								<prg:short>b</prg:short>
-							</prg:names>
-						</prg:switch>
-						<prg:switch>
+							<prg:options>
+								<prg:switch>
+									<prg:databinding>
+										<prg:variable>generateBaseOnly</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>Generate ns-xml utility and parser core</prg:abstract>
+										<prg:details>The generated code is independent from any program interface definition</prg:details>
+									</prg:documentation>
+									<prg:names>
+										<prg:long>base</prg:long>
+										<prg:short>b</prg:short>
+									</prg:names>
+								</prg:switch>
+								<!-- program schema version -->
+								<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.programSchemaVersion'])" />
+							</prg:options>
+						</prg:group>
+
+						<prg:group>
 							<prg:databinding>
-								<prg:variable>generateEmbedded</prg:variable>
+								<prg:variable>generateProgramDependant</prg:variable>
 							</prg:databinding>
 							<prg:documentation>
-								<prg:abstract>Generate program parser and embed generic utility and parser core</prg:abstract>
+								<prg:abstract>Program specific code</prg:abstract>
 							</prg:documentation>
-							<prg:names>
-								<prg:long>embed</prg:long>
-								<prg:short>e</prg:short>
-							</prg:names>
-						</prg:switch>
-						<prg:argument>
-							<prg:databinding>
-								<prg:variable>generateInclude</prg:variable>
-							</prg:databinding>
-							<prg:documentation>
-								<prg:abstract>Generate program parser and include a pre-genrated utility and parser core</prg:abstract>
-								<prg:details>The namimg styles for variables, structs and functions of the program parser pre-generated files must match
-								</prg:details>
-							</prg:documentation>
-							<prg:names>
-								<prg:long>include</prg:long>
-								<prg:short>i</prg:short>
-							</prg:names>
-							<prg:type>
-								<prg:path exist="true">
-									<prg:kinds>
-										<prg:file />
-									</prg:kinds>
-									<prg:patterns>
-										<prg:pattern>
-											<prg:name>C/C++ Header file</prg:name>
-											<prg:rules>
-												<prg:rule>
-													<prg:endWith>.h</prg:endWith>
-												</prg:rule>
-												<prg:rule>
-													<prg:endWith>.H</prg:endWith>
-												</prg:rule>
-												<prg:rule>
-													<prg:endWith>.hpp</prg:endWith>
-												</prg:rule>
-											</prg:rules>
-										</prg:pattern>
-									</prg:patterns>
-								</prg:path>
-							</prg:type>
-						</prg:argument>
+							<prg:options>
+								<!-- program interface XML definition file -->
+								<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.requiredXmlProgramDescriptionPath'])" />
+								<!-- Skip validation -->
+								<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.skipValidation'])" />
+								<prg:group type="exclusive" required="true">
+									<prg:databinding>
+										<prg:variable>generateProgramDependantMode</prg:variable>
+									</prg:databinding>
+									<prg:documentation>
+										<prg:abstract>File structure scheme</prg:abstract>
+									</prg:documentation>
+									<prg:options>
+										<prg:switch>
+											<prg:databinding>
+												<prg:variable>generateEmbedded</prg:variable>
+											</prg:databinding>
+											<prg:documentation>
+												<prg:abstract>Generate program parser and embed generic utility and parser core</prg:abstract>
+											</prg:documentation>
+											<prg:names>
+												<prg:long>embed</prg:long>
+												<prg:short>e</prg:short>
+											</prg:names>
+										</prg:switch>
+										<prg:argument>
+											<prg:databinding>
+												<prg:variable>generateInclude</prg:variable>
+											</prg:databinding>
+											<prg:documentation>
+												<prg:abstract>Generate program parser and include a pre-genrated utility and parser core</prg:abstract>
+												<prg:details>The namimg styles for variables, structs and functions of the program parser pre-generated files must match
+												</prg:details>
+											</prg:documentation>
+											<prg:names>
+												<prg:long>include</prg:long>
+												<prg:short>i</prg:short>
+											</prg:names>
+											<prg:type>
+												<prg:path exist="true">
+													<prg:kinds>
+														<prg:file />
+													</prg:kinds>
+													<prg:patterns>
+														<prg:pattern>
+															<prg:name>C/C++ Header file</prg:name>
+															<prg:rules>
+																<prg:rule>
+																	<prg:endWith>.h</prg:endWith>
+																</prg:rule>
+																<prg:rule>
+																	<prg:endWith>.H</prg:endWith>
+																</prg:rule>
+																<prg:rule>
+																	<prg:endWith>.hpp</prg:endWith>
+																</prg:rule>
+															</prg:rules>
+														</prg:pattern>
+													</prg:patterns>
+												</prg:path>
+											</prg:type>
+										</prg:argument>
+									</prg:options>
+								</prg:group>
+							</prg:options>
+						</prg:group>
 					</prg:options>
 				</prg:group>
 				<prg:argument>

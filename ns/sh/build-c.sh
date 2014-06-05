@@ -13,28 +13,39 @@ usage()
 cat << 'EOFUSAGE'
 build-c: Create a customized Command line argument parser in C
 Usage: 
-  build-c [[-S] -x <path>] [([-be] -i <path>) -p <...> --struct-style <...> --function-style <...> --variable-style <...>] [[-u] -o <path> -f <...>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
+  build-c [([-b] --schema-version <...> | [-S] -x <path> ([-e] -i <path>)) -p <...> --struct-style <...> --function-style <...> --variable-style <...>] [[-u] -o <path> -f <...>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
   With:
-    Input
-      -x, --xml-description: Program description file
-        If the program description file is provided, the xml file will be 
-        validated before any XSLT processing
-      -S, --skip-validation, --no-validation: Skip XML Schema validations
-        The default behavior of the program is to validate the given xml-based 
-        file(s) against its/their xml schema (http://xsd.nore.fr/program etc.). 
-        This option will disable schema validations
-    
     Generation options
       Generation mode
         Select what to generate
       
-        -b, --base: Generate ns-xml utility and parser core
-        -e, --embed: Generate program parser and embed generic utility and 
-        parser core
-        -i, --include: Generate program parser and include a pre-genrated 
-        utility and parser core
-          The namimg styles for variables, structs and functions of the program 
-          parser pre-generated files must match
+        Generic code
+          -b, --base: Generate ns-xml utility and parser core
+            The generated code is independent from any program interface 
+            definition
+          --schema-version: Program interface definition schema version  
+            The argument have to be one of the following:  
+              2.0
+            Default value: 2.0
+      
+        Program specific code
+          -x, --xml-description: Program description file
+            If the program description file is provided, the xml file will be 
+            validated before any XSLT processing
+          -S, --skip-validation, --no-validation: Skip XML Schema validations
+            The default behavior of the program is to validate the given 
+            xml-based file(s) against its/their xml schema 
+            (http://xsd.nore.fr/program etc.). This option will disable schema 
+            validations
+          File structure scheme
+            -e, --embed: Generate program parser and embed generic utility and 
+            parser core
+            -i, --include: Generate program parser and include a pre-genrated 
+            utility and parser core
+              The namimg styles for variables, structs and functions of the 
+              program parser pre-generated files must match
+      
+      
       
       -p, --prefix: Program struct & function names prefixes
         The default behavior use the program name described in the XML program 
@@ -109,18 +120,18 @@ parser_index=${parser_startindex}
 
 # Required global options
 # (Subcommand required options will be added later)
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_xml_description:--xml-description:"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_g:--base, --embed or --include:"
-parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_3_g_1_output:--output:"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_g:(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):"
+parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_output:--output:"
 
 # Switch options
-skipValidation=false
 generateBaseOnly=false
+skipValidation=false
 generateEmbedded=false
 outputOverwrite=false
 nsxmlPathRelative=false
 displayHelp=false
 # Single argument options
+programSchemaVersion=
 xmlProgramDescriptionPath=
 generateInclude=
 prefix=
@@ -244,6 +255,24 @@ parse_checkrequired()
 parse_setdefaultarguments()
 {
 	local parser_set_default=false
+	# programSchemaVersion
+	if [ -z "${programSchemaVersion}" ]
+	then
+		parser_set_default=true
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
+		then
+			parser_set_default=false
+		fi
+		
+		if ${parser_set_default}
+		then
+			programSchemaVersion='2.0'
+			generationMode="generateProgramIndependent"
+			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+		fi
+	fi
 	# structNameStyle
 	if [ -z "${structNameStyle}" ]
 	then
@@ -251,9 +280,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			structNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 		fi
 	fi
 	# functionNameStyle
@@ -263,9 +292,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			functionNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 		fi
 	fi
 	# variableNameStyle
@@ -275,9 +304,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			variableNameStyle='none'
-			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 		fi
 	fi
 	# outputPath
@@ -287,9 +316,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputPath='.'
-			parse_setoptionpresence G_3_g_1_output;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_1_output;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 		fi
 	fi
 	# outputFileBase
@@ -299,9 +328,9 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputFileBase='<auto>'
-			parse_setoptionpresence G_3_g_2_file_base;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_2_file_base;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 		fi
 	fi
 }
@@ -422,10 +451,61 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_5_help
+			parse_setoptionpresence G_4_help
 			;;
-		xml-description)
+		base)
 			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			generateBaseOnly=true
+			generationMode="generateProgramIndependent"
+			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+			;;
+		schema-version)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if ${parser_optionhastail}
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -450,79 +530,21 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if [ ! -e "${parser_item}" ]
+			if ! ([ "${parser_item}" = '2.0' ])
 			then
-				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				parse_adderror "Invalid value for option \"${parser_option}\""
+				
 				return ${PARSER_ERROR}
 			fi
-			
-			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
-			then
-				parse_adderror "Invalid patn type for option \"${parser_option}\""
-				return ${PARSER_ERROR}
-			fi
-			
-			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			programSchemaVersion="${parser_item}"
+			generationMode="generateProgramIndependent"
+			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
 			parse_setoptionpresence G_1_g
 			;;
-		skip-validation | no-validation)
+		xml-description)
 			# Group checks
-			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Option --${parser_option} does not allow an argument"
-				parser_optiontail=''
-				return ${PARSER_ERROR}
-			fi
-			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
-			;;
-		base)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBaseOnly" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
-			
-			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Option --${parser_option} does not allow an argument"
-				parser_optiontail=''
-				return ${PARSER_ERROR}
-			fi
-			generateBaseOnly=true
-			generationMode="generateBaseOnly"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
-			;;
-		embed)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
-			
-			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
-			then
-				parse_adderror "Option --${parser_option} does not allow an argument"
-				parser_optiontail=''
-				return ${PARSER_ERROR}
-			fi
-			generateEmbedded=true
-			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
-			;;
-		include)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInclude" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				if ${parser_optionhastail}
@@ -589,11 +611,152 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			xmlProgramDescriptionPath="${parser_item}"
+			generationMode="generateProgramDependant"
+			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+			;;
+		skip-validation | no-validation)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			skipValidation=true
+			generationMode="generateProgramDependant"
+			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+			;;
+		embed)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateEmbedded" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			generateEmbedded=true
+			generationMode="generateProgramDependant"
+			generateProgramDependantMode="generateEmbedded"
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+			;;
+		include)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateInclude" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
+				if ${parser_optionhastail}
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
+			if ${parser_optionhastail}
+			then
+				parser_item=${parser_optiontail}
+			else
+				parser_index=$(expr ${parser_index} + 1)
+				if [ ${parser_index} -ge ${parser_itemcount} ]
+				then
+					parse_adderror "End of input reached - Argument expected"
+					return ${PARSER_ERROR}
+				fi
+				
+				parser_item="${parser_input[${parser_index}]}"
+				if [ "${parser_item}" = '--' ]
+				then
+					parse_adderror "End of option marker found - Argument expected"
+					parser_index=$(expr ${parser_index} - 1)
+					return ${PARSER_ERROR}
+				fi
+			fi
+			
+			parser_subindex=0
+			parser_optiontail=''
+			parser_optionhastail=false
+			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			if [ ! -e "${parser_item}" ]
+			then
+				parse_adderror "Invalid path \"${parser_item}\" for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
+			if [ -a "${parser_item}" ] && ! ([ -f "${parser_item}" ])
+			then
+				parse_adderror "Invalid patn type for option \"${parser_option}\""
+				return ${PARSER_ERROR}
+			fi
+			
 			generateInclude="${parser_item}"
-			generationMode="generateInclude"
-			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			generationMode="generateProgramDependant"
+			generateProgramDependantMode="generateInclude"
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		prefix)
 			# Group checks
@@ -622,9 +785,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_2_g_2_prefix;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_2_prefix;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		struct-style | struct)
 			# Group checks
@@ -659,9 +822,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			structNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_1_struct_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		function-style | function | func)
 			# Group checks
@@ -696,9 +859,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			functionNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_2_function_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		variable-style | variable | var)
 			# Group checks
@@ -733,9 +896,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			variableNameStyle="${parser_item}"
-			parse_setoptionpresence G_2_g_3_g_3_variable_style;parse_setoptionpresence G_2_g_3_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		output)
 			# Group checks
@@ -776,9 +939,9 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_1_output;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		file-base | file)
 			# Group checks
@@ -807,9 +970,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file_base;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_2_file_base;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		overwrite | force)
 			# Group checks
@@ -820,9 +983,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			outputOverwrite=true
-			parse_setoptionpresence G_3_g_3_overwrite;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_3_overwrite;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -851,7 +1014,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_4_g_1_ns_xml_path;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_3_g_1_ns_xml_path;parse_setoptionpresence G_3_g
 			;;
 		ns-xml-path-relative)
 			# Group checks
@@ -862,7 +1025,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_4_g_2_ns_xml_path_relative;parse_setoptionpresence G_4_g
+			parse_setoptionpresence G_3_g_2_ns_xml_path_relative;parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -881,8 +1044,53 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		b)
+			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			generateBaseOnly=true
+			generationMode="generateProgramIndependent"
+			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
+			;;
 		x)
 			# Group checks
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				if ${parser_optionhastail}
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				
+				return ${PARSER_ERROR}
+			fi
+			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -920,50 +1128,66 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			generationMode="generateProgramDependant"
+			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
 			parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
-			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
-			;;
-		b)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateBaseOnly" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
 				return ${PARSER_ERROR}
 			fi
 			
-			generateBaseOnly=true
-			generationMode="generateBaseOnly"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			skipValidation=true
+			generationMode="generateProgramDependant"
+			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		e)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateEmbedded" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateEmbedded" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
 				return ${PARSER_ERROR}
 			fi
 			
 			generateEmbedded=true
-			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_2_embed;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			generationMode="generateProgramDependant"
+			generateProgramDependantMode="generateEmbedded"
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		i)
 			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateInclude" ] || [ "${generationMode:0:1}" = "@" ])
+			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
 			then
 				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
+				return ${PARSER_ERROR}
+			fi
+			
+			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateInclude" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
+			then
+				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item=${parser_optiontail}
@@ -1029,10 +1253,14 @@ parse_process_option()
 			fi
 			
 			generateInclude="${parser_item}"
-			generationMode="generateInclude"
-			parse_setoptionpresence G_2_g_1_g_3_include;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			generationMode="generateProgramDependant"
+			generateProgramDependantMode="generateInclude"
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		p)
 			# Group checks
@@ -1061,9 +1289,9 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_2_g_2_prefix;
-			parse_addrequiredoption G_2_g_1_g '--base, --embed or --include:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_1_g_2_prefix;
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			parse_setoptionpresence G_1_g
 			;;
 		o)
 			# Group checks
@@ -1104,9 +1332,9 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_1_output;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		f)
 			# Group checks
@@ -1135,16 +1363,16 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_3_g_2_file_base;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_2_file_base;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		u)
 			# Group checks
 			outputOverwrite=true
-			parse_setoptionpresence G_3_g_3_overwrite;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_2_g_3_overwrite;
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			parse_setoptionpresence G_2_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -1435,7 +1663,7 @@ buildcGenerateBase()
 		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
-	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline-base"
+	[ "${fileBase}" = '<auto>' ] && fileBase='cmdline-base'
 	local outputFileBasePath="${outputPath}/${fileBase}"
 	if ! ${outputOverwrite}
 	then
@@ -1448,18 +1676,29 @@ buildcGenerateBase()
 	
 	buildcPopulateXsltprocParams
 	
+	dummyProgramDefinitionFile="$(ns_mktemp "$(basename "${0}")")"
+	
+	cat > "${dummyProgramDefinitionFile}" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="'${programSchemaVersion}'">
+	<prg:name>generic</prg:name>
+</prg:program>
+EOF
+
+
 	# Header
 	xsltproc "${buildcXsltprocParams[@]}" \
 		--output "${outputFileBasePath}.h" \
 		"${buildcXsltPath}/parser.generic-header.xsl" \
-		"${xmlProgramDescriptionPath}" \
+		"${dummyProgramDefinitionFile}" \
 	|| ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 	
+	# Source
 	xsltproc "${buildcXsltprocParams[@]}" \
 		--output "${outputFileBasePath}.c" \
 		--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
 		"${buildcXsltPath}/parser.generic-source.xsl" \
-		"${xmlProgramDescriptionPath}" \
+		"${dummyProgramDefinitionFile}" \
 	|| ns_error 2 "Failed to generate source file ${outputFileBasePath}.c"
 }
 buildcGenerate()
@@ -1473,7 +1712,7 @@ buildcGenerate()
 		[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 	done
 	
-	[ "${fileBase}" = "<auto>" ] && fileBase="cmdline"
+	[ "${fileBase}" = '<auto>' ] && fileBase='cmdline'
 	local outputFileBasePath="${outputPath}/${fileBase}"
 	if ! ${outputOverwrite}
 	then
@@ -1487,6 +1726,7 @@ buildcGenerate()
 	buildcPopulateXsltprocParams
 	if ! ${generateEmbedded}
 	then
+		# generateInclude
 		buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
 		"--stringparam"	"prg.c.parser.nsxmlHeaderPath" "${generateInclude}")
 	fi
@@ -1509,7 +1749,7 @@ scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
-programVersion="2.0"
+programSchemaVersion="2.0"
 
 # Check required programs
 for x in xmllint xsltproc
@@ -1541,13 +1781,7 @@ fi
 
 chunk_check_nsxml_ns_path || ns_error 1 "Invalid ns-xml ns folder (${nsPath})"
 
-if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
-then
-	ns_error 1 "program interface definition schema error - abort"
-fi
-
-programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
-buildcXsltPath="${nsPath}/xsl/program/${programVersion}/c"
+buildcXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/c"
 buildcXsltprocParams=""
 outputPath="$(ns_realpath "${outputPath}")"
 
@@ -1556,6 +1790,12 @@ if ${generateBaseOnly}
 then
 	buildcGenerateBase
 else
+	programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+	then
+		ns_error 1 "program interface definition schema error - abort"
+	fi
+
 	buildcGenerate
 fi
 

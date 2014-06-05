@@ -43,9 +43,9 @@ fi
 		]]></xsh:body>
 		</xsh:function>
 		<xsh:function name="buildcGenerateBase">
-		<xsh:body>
-		<xsh:local name="fileBase">${outputFileBase}</xsh:local>
-		<xsh:local name="tpl" />
+			<xsh:body>
+				<xsh:local name="fileBase">${outputFileBase}</xsh:local>
+				<xsh:local name="tpl" />
 		<![CDATA[
 # Check required templates
 for x in parser.generic-header parser.generic-source
@@ -54,7 +54,7 @@ do
 	[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
-[ "${fileBase}" = "<auto>" ] && fileBase="cmdline-base"
+[ "${fileBase}" = '<auto>' ] && fileBase='cmdline-base'
 	
 ]]><xsh:local name="outputFileBasePath">${outputPath}/${fileBase}</xsh:local><![CDATA[
 if ! ${outputOverwrite}
@@ -68,25 +68,35 @@ fi
 
 buildcPopulateXsltprocParams
 
+dummyProgramDefinitionFile="$(ns_mktemp "$(basename "${0}")")"
+
+cat > "${dummyProgramDefinitionFile}" << EOF]]></xsh:body><xsh:body indent="no"><![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="'${programSchemaVersion}'">
+	<prg:name>generic</prg:name>
+</prg:program>
+EOF]]></xsh:body>
+			<xsh:body><![CDATA[
 # Header
 xsltproc "${buildcXsltprocParams[@]}" \
 	--output "${outputFileBasePath}.h" \
 	"${buildcXsltPath}/parser.generic-header.xsl" \
-	"${xmlProgramDescriptionPath}" \
+	"${dummyProgramDefinitionFile}" \
 || ns_error 2 "Failed to generate header file ${outputFileBasePath}.h" 
 
+# Source
 xsltproc "${buildcXsltprocParams[@]}" \
 	--output "${outputFileBasePath}.c" \
 	--stringparam "prg.c.parser.header.filePath" "${fileBase}.h" \
 	"${buildcXsltPath}/parser.generic-source.xsl" \
-	"${xmlProgramDescriptionPath}" \
+	"${dummyProgramDefinitionFile}" \
 || ns_error 2 "Failed to generate source file ${outputFileBasePath}.c"
 ]]></xsh:body>
 		</xsh:function>
 		<xsh:function name="buildcGenerate">
-		<xsh:body>
-		<xsh:local name="tpl" />
-		<xsh:local name="fileBase">${outputFileBase}</xsh:local>
+			<xsh:body>
+				<xsh:local name="tpl" />
+				<xsh:local name="fileBase">${outputFileBase}</xsh:local>
 		<![CDATA[
 # Check required templates
 for x in parser.header parser.source
@@ -95,7 +105,7 @@ do
 	[ -r "${tpl}" ] || ns_error 2 "Missing XSLT template $(basename "${tpl}")" 
 done
 
-[ "${fileBase}" = "<auto>" ] && fileBase="cmdline"
+[ "${fileBase}" = '<auto>' ] && fileBase='cmdline'
 ]]><xsh:local name="outputFileBasePath">${outputPath}/${fileBase}</xsh:local><![CDATA[	
 
 if ! ${outputOverwrite}
@@ -110,6 +120,7 @@ fi
 buildcPopulateXsltprocParams
 if ! ${generateEmbedded}
 then
+	# generateInclude
 	buildcXsltprocParams=("${buildcXsltprocParams[@]}" \
 	"--stringparam"	"prg.c.parser.nsxmlHeaderPath" "${generateInclude}")
 fi
@@ -127,7 +138,8 @@ xsltproc "${buildcXsltprocParams[@]}" \
 	"${buildcXsltPath}/parser.source.xsl" \
 	"${xmlProgramDescriptionPath}" \
 || ns_error 2 "Failed to generate source file ${outputFileBasePath}.c" 
-]]></xsh:body></xsh:function>
+]]></xsh:body>
+		</xsh:function>
 	</xsh:functions>
 	<xsh:code>
 		<!-- Include shell script code -->

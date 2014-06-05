@@ -2,7 +2,7 @@ scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
-programVersion="2.0"
+programSchemaVersion="2.0"
 
 # Check required programs
 for x in xmllint xsltproc
@@ -34,13 +34,7 @@ fi
 
 chunk_check_nsxml_ns_path || ns_error 1 "Invalid ns-xml ns folder (${nsPath})"
 
-if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
-then
-	ns_error 1 "program interface definition schema error - abort"
-fi
-
-programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
-buildcXsltPath="${nsPath}/xsl/program/${programVersion}/c"
+buildcXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/c"
 buildcXsltprocParams=""
 outputPath="$(ns_realpath "${outputPath}")"
 
@@ -49,6 +43,12 @@ if ${generateBaseOnly}
 then
 	buildcGenerateBase
 else
+	programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+	then
+		ns_error 1 "program interface definition schema error - abort"
+	fi
+
 	buildcGenerate
 fi
 
