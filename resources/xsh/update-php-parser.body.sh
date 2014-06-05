@@ -86,7 +86,7 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-phpSourceFilePath="${rootPath}/resources/php/program/${programVersion}/Parser.php"
-phpXslFilePath="${xslPath}/program/${programVersion}/php/parser.xsl"
+phpSourceFilePath="${rootPath}/resources/php/program/${programSchemaVersion}/Parser.php"
+phpXslFilePath="${xslPath}/program/${programSchemaVersion}/php/parser.xsl"
 
 transform_php "${phpSourceFilePath}" "${phpXslFilePath}"

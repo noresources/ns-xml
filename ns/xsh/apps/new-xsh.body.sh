@@ -3,7 +3,7 @@ scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
-programVersion="2.0"
+programSchemaVersion="2.0"
 
 tmpPath="/tmp"
 [ ! -z "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && tmpPath="${TMPDIR%/}/"
@@ -41,7 +41,7 @@ then
 fi
 
 #chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
-#programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+#programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
 
 xshFile="${outputPath}/${xshName}.xsh"
 xmlFile="${outputPath}/${xshName}.xml"

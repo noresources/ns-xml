@@ -6,16 +6,11 @@
 		<xi:include href="build-xulapp.xml" />
 	</xsh:info>
 	<xsh:functions>
-		<xi:include href="../lib/base/base.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)"/>
+		<xi:include href="../lib/base/base.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)" />
 		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_realpath'])" />
 		<xi:include href="../lib/filesystem/filesystem.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'ns_mktemp'])" />
 		<!-- build-c functions -->
-		<!-- 
-		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcPopulateXsltprocParams'])" />
-		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcGenerateBase'])" />
-		<xi:include href="build-c.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function[@name = 'buildcGenerate'])" />
-		 -->
-		<!-- Other --> 
+		<!-- Other -->
 		<xsh:function name="log">
 			<xsh:body>echo "${@}" &gt;&gt; "${logFile}"</xsh:body>
 		</xsh:function>
@@ -32,7 +27,7 @@ ${isDebug} && log "${@}"
 exit 1
 		]]></xsh:body>
 		</xsh:function>
-		
+
 		<xsh:function name="build_php">
 			<xsh:body indent="no">
 				<!-- Transfer prefixed global variables -->
@@ -48,7 +43,8 @@ exit 1
 				<xsh:local name="generateMerge">${php_scriptPath}</xsh:local>
 				<![CDATA[
 info " - Generate PHP file"
-]]>	<xi:include href="build-php.body.process.sh" parse="text" /><![CDATA[
+]]>
+				<xi:include href="build-php.body.process.sh" parse="text" /><![CDATA[
 return 0]]></xsh:body>
 		</xsh:function>
 		<xsh:function name="build_xsh">
@@ -67,7 +63,7 @@ return 0]]></xsh:body>
 				<xi:include href="build-shellscript.body.process.sh" parse="text" />
 				<![CDATA[return 0]]></xsh:body>
 		</xsh:function>
-		
+
 		<!-- New python parser -->
 		<xsh:function name="build_python">
 			<xsh:body indent="no">
@@ -82,10 +78,11 @@ return 0]]></xsh:body>
 				<xsh:local name="generateMerge">${python_scriptPath}</xsh:local>
 				<![CDATA[
 info " - Generate Python file"
-]]>	<xi:include href="build-python.body.process.sh" parse="text" /><![CDATA[
+]]>
+				<xi:include href="build-python.body.process.sh" parse="text" /><![CDATA[
 return 0]]></xsh:body>
-		</xsh:function>		
-		
+		</xsh:function>
+
 		<xsh:function name="build_command">
 			<xsh:body><![CDATA[
 info " - Generate command launcher"

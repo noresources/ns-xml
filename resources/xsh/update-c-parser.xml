@@ -15,7 +15,7 @@
 		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
 		<prg:argument>
 			<prg:databinding>
-				<prg:variable>programVersion</prg:variable>
+				<prg:variable>programSchemaVersion</prg:variable>
 			</prg:databinding>
 			<prg:default>2.0</prg:default>
 			<prg:documentation>

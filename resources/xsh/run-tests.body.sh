@@ -42,8 +42,8 @@ log()
 
 parserTestsPathBase="${projectPath}/unittests/parsers"
 tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
-programVersion="2.0"
-xshStylesheet="${projectPath}/ns/xsl/program/${programVersion}/xsh.xsl"
+programSchemaVersion="2.0"
+xshStylesheet="${projectPath}/ns/xsl/program/${programSchemaVersion}/xsh.xsl"
 
 check_zsh()
 {

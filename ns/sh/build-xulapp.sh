@@ -2254,7 +2254,7 @@ local generateBase="false"
 local generateInfo="false"
 local generateMerge="${php_scriptPath}"
 info " - Generate PHP file"
-buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
+buildphpXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/php"
 
 # Check required templates
 for x in parser programinfo embed
@@ -2322,7 +2322,7 @@ build_xsh()
 	local outputScriptFilePath="${commandLauncherFile}"
 	info " - Generate shell file"
 	# Check required XSLT files
-	xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+	xshXslTemplatePath="${nsPath}/xsl/program/${programSchemaVersion}/xsh.xsl"
 	if [ ! -f "${xshXslTemplatePath}" ]
 	then
 	    echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
@@ -2332,7 +2332,7 @@ build_xsh()
 	# Validate against bash or xsh schema
 	if ! ${skipValidation}
 	then
-		shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
+		shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programSchemaVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
 		if ! xml_validate "${nsPath}/xsd/${shSchema}" "${xmlShellFileDescriptionPath}" 
 		then
 			echo "bash schema error - abort"
@@ -2396,7 +2396,7 @@ local generateBase="false"
 local generateInfo=
 local generateMerge="${python_scriptPath}"
 info " - Generate Python file"
-buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
+buildpythonXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/python"
 
 # Check required templates
 for x in parser programinfo embed
@@ -2494,7 +2494,7 @@ xml_validate()
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
-programVersion="2.0"
+programSchemaVersion="2.0"
 hostPlatform="linux"
 macOSXVersion=""
 macOSXFrameworkName="XUL.framework"
@@ -2579,10 +2579,10 @@ then
 fi
 
 # find schema version
-programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
-info "Program schema version ${programVersion}"
+programSchemaVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+info "Program schema version ${programSchemaVersion}"
 
-if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
+if [ ! -f "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" ]
 then
 	ns_error "Invalid program interface definition schema version"
 fi  
@@ -2596,7 +2596,7 @@ fi
 
 for template in ${requiredTemplates}
 do
-	stylesheet="${nsPath}/xsl/program/${programVersion}/xul/${template}.xsl"
+	stylesheet="${nsPath}/xsl/program/${programSchemaVersion}/xul/${template}.xsl"
 	if [ ! -f "${stylesheet}" ]
 	then
 		ns_error "Missing XSLT stylesheet file \"${stylesheet}\""
@@ -2604,12 +2604,12 @@ do
 done
 
 # Validate program scheam
-if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 then
-	ns_error "program ${programVersion} XML schema error - abort"
+	ns_error "program ${programSchemaVersion} XML schema error - abort"
 fi
 
-programStylesheetPath="${nsPath}/xsl/program/${programVersion}"
+programStylesheetPath="${nsPath}/xsl/program/${programSchemaVersion}"
 programInfoStylesheetPath="${programStylesheetPath}/get-programinfo.xsl"
 
 appName="$(xsltproc --xinclude --stringparam name name "${programInfoStylesheetPath}" "${xmlProgramDescriptionPath}")"
@@ -2808,7 +2808,7 @@ fi
 
 info " - Building CSS stylesheet"
 rm -f "${appCssFile}"
-for d in "${nsPath}/xbl" "${nsPath}/xbl/program/${programVersion}"
+for d in "${nsPath}/xbl" "${nsPath}/xbl/program/${programSchemaVersion}"
 do
 	find "${d}" -maxdepth 1 -mindepth 1 -name "*.xbl" | while read f
 	do

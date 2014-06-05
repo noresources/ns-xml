@@ -16,7 +16,7 @@ scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
 resourcesPath="$(ns_realpath "${scriptPath}/../../..")/resources"
 nsPath="$(ns_realpath "${scriptPath}/../../..")/ns"
-programVersion="2.0"
+programSchemaVersion="2.0"
 baseModules=(__init__ Base Info Parser Validators)
  
 # Check required programs
@@ -48,14 +48,14 @@ then
 fi
 
 chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
-programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
 
 pythonScriptPathBase="$(dirname "${pythonScriptPath}")"
 pythonModulePath="${pythonScriptPathBase}/${moduleName}"
 
 [ -d "${pythonModulePath}" ] && ! ${update} && error "${pythonModulePath} already exists - set --update to overwrite"
 
-nsPythonPath="${resourcesPath}/legacy/python/program/${programVersion}"
+nsPythonPath="${resourcesPath}/legacy/python/program/${programSchemaVersion}"
 for m in ${baseModules[*]}
 do
 	nsPythonFile="${nsPythonPath}/${m}.py"	
@@ -70,7 +70,7 @@ do
 done
 
 # Create the Program module
-xslStyleSheetPath="${nsPath}/xsl/legacy/program/${programVersion}"
+xslStyleSheetPath="${nsPath}/xsl/legacy/program/${programSchemaVersion}"
 if ! xsltproc --xinclude -o "${pythonModulePath}/Program.py" "${xslStyleSheetPath}/py/module.xsl" "${xmlProgramDescriptionPath}"
 then
 	error 4 "Failed to create Program module"

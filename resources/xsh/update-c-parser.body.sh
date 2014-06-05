@@ -183,9 +183,9 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-cSourcePath="${rootPath}/resources/c/program/${programVersion}"
+cSourcePath="${rootPath}/resources/c/program/${programSchemaVersion}"
 cSourceBaseFileName="nsxml_program_parser"
-cXslPath="${xslPath}/program/${programVersion}/c"
+cXslPath="${xslPath}/program/${programSchemaVersion}/c"
 cXslBaseFileName="parser.generic-"
 [ -d "${cSourcePath}" ] || ns_error 1 "Invalid path for C source"
 [ -d "${cXslPath}" ] || ns_error 1 "Invalid path for XSL output"

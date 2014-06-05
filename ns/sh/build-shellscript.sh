@@ -1115,7 +1115,7 @@ xml_validate()
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
-programVersion="2.0"
+programSchemaVersion="2.0"
  
 # Check required programs
 for x in xmllint xsltproc egrep cut expr head tail
@@ -1150,16 +1150,16 @@ chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
-	programVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
-	#echo "Program schema version ${programVersion}"
+	programSchemaVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+	#echo "Program schema version ${programSchemaVersion}"
 	
-	if [ ! -f "${nsPath}/xsd/program/${programVersion}/program.xsd" ]
+	if [ ! -f "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" ]
 	then
 		echo "Invalid program interface definition schema version"
 		exit 3
 	fi
 
-	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programVersion}/program.xsd" "${xmlProgramDescriptionPath}"
+	if ! ${skipValidation} && ! xml_validate "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" "${xmlProgramDescriptionPath}"
 	then
 		echo "program interface definition schema error - abort"
 		exit 4
@@ -1167,7 +1167,7 @@ then
 fi
 
 # Check required XSLT files
-xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+xshXslTemplatePath="${nsPath}/xsl/program/${programSchemaVersion}/xsh.xsl"
 if [ ! -f "${xshXslTemplatePath}" ]
 then
     echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
@@ -1177,7 +1177,7 @@ fi
 # Validate against bash or xsh schema
 if ! ${skipValidation}
 then
-	shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
+	shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programSchemaVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
 	if ! xml_validate "${nsPath}/xsd/${shSchema}" "${xmlShellFileDescriptionPath}" 
 	then
 		echo "bash schema error - abort"

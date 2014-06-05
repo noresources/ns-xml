@@ -980,7 +980,7 @@ xml_validate()
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 nsPath="$(ns_realpath "$(nsxml_installpath "${scriptPath}/..")")"
-programVersion="2.0"
+programSchemaVersion="2.0"
 
 if ! parse "${@}"
 then
@@ -1001,9 +1001,9 @@ then
 fi
 
 chunk_check_nsxml_ns_path || ns_error "Invalid ns-xml ns folder (${nsPath})"
-programVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
 
-xslFile="${nsPath}/xsl/program/${programVersion}/${xslName}.xsl"
+xslFile="${nsPath}/xsl/program/${programSchemaVersion}/${xslName}.xsl"
 
 [ -f "${xslFile}" ] || ns_error 2 "Unable to find \"${xslFile}\""
 

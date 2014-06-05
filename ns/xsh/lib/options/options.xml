@@ -16,7 +16,7 @@
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
-	<prg:switch>
+	<prg:switch id="prg.option.displayVersion">
 		<prg:databinding>
 			<prg:variable>displayVersion</prg:variable>
 		</prg:databinding>
@@ -28,4 +28,5 @@
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
+
 </prg:options>

@@ -76,7 +76,7 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-pythonSourceFilePath="${rootPath}/resources/python/program/${programVersion}/Parser.py"
-pythonXslFilePath="${xslPath}/program/${programVersion}/python/parser.xsl"
+pythonSourceFilePath="${rootPath}/resources/python/program/${programSchemaVersion}/Parser.py"
+pythonXslFilePath="${xslPath}/program/${programSchemaVersion}/python/parser.xsl"
 
 transform_python "${pythonSourceFilePath}" "${pythonXslFilePath}"

@@ -1,4 +1,4 @@
-buildphpXsltPath="${nsPath}/xsl/program/${programVersion}/php"
+buildphpXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/php"
 
 # Check required templates
 for x in parser programinfo embed

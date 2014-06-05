@@ -1,4 +1,4 @@
-buildpythonXsltPath="${nsPath}/xsl/program/${programVersion}/python"
+buildpythonXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/python"
 
 # Check required templates
 for x in parser programinfo embed

@@ -36,7 +36,7 @@
 				<prg:type>
 					<prg:path>
 						<prg:kinds>
-							<prg:folder/>
+							<prg:folder />
 						</prg:kinds>
 						<prg:patterns>
 							<prg:pattern>
@@ -86,7 +86,7 @@
 		<prg:type>
 			<prg:path exist="true">
 				<prg:kinds>
-					<prg:file/>
+					<prg:file />
 				</prg:kinds>
 				<prg:patterns restrict="true">
 					<prg:pattern>
@@ -121,7 +121,7 @@
 		<prg:type>
 			<prg:path exist="true">
 				<prg:kinds>
-					<prg:file/>
+					<prg:file />
 				</prg:kinds>
 			</prg:path>
 		</prg:type>
@@ -134,7 +134,8 @@
 			<prg:abstract>Skip XML Schema validations</prg:abstract>
 			<prg:details>The default behavior of the program is to validate the given xml-based file(s) against
 				its/their xml schema (http://xsd.nore.fr/program etc.).
-				This option will disable schema validations
+				This option will disable schema
+				validations
 			</prg:details>
 		</prg:documentation>
 		<prg:names>
@@ -143,4 +144,17 @@
 			<prg:short>S</prg:short>
 		</prg:names>
 	</prg:switch>
+	<prg:argument id="nsxml.option.programSchemaVersion">
+		<prg:databinding><prg:variable>programSchemaVersion</prg:variable></prg:databinding>
+		<prg:default>2.0</prg:default>
+		<prg:documentation>
+			<prg:abstract>Program interface definition schema version</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>schema-version</prg:long>
+		</prg:names>
+		<prg:select restrict="true">
+			<prg:option>2.0</prg:option>
+		</prg:select>
+	</prg:argument>
 </prg:options>

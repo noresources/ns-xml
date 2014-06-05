@@ -1,5 +1,5 @@
 # Check required XSLT files
-xshXslTemplatePath="${nsPath}/xsl/program/${programVersion}/xsh.xsl"
+xshXslTemplatePath="${nsPath}/xsl/program/${programSchemaVersion}/xsh.xsl"
 if [ ! -f "${xshXslTemplatePath}" ]
 then
     echo "Missing XSLT stylesheet file \"${xshXslTemplatePath}\""
@@ -9,7 +9,7 @@ fi
 # Validate against bash or xsh schema
 if ! ${skipValidation}
 then
-	shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
+	shSchema="$(xsltproc --xinclude "${nsPath}/xsl/program/${programSchemaVersion}/xsh-getschemapath.xsl" "${xmlShellFileDescriptionPath}")"
 	if ! xml_validate "${nsPath}/xsd/${shSchema}" "${xmlShellFileDescriptionPath}" 
 	then
 		echo "bash schema error - abort"

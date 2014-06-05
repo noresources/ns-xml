@@ -48,7 +48,7 @@ parser_index=${parser_startindex}
 # Switch options
 displayHelp=false
 # Single argument options
-programVersion=
+programSchemaVersion=
 
 parse_addwarning()
 {
@@ -163,13 +163,13 @@ parse_checkrequired()
 parse_setdefaultarguments()
 {
 	local parser_set_default=false
-	# programVersion
-	if [ -z "${programVersion}" ]
+	# programSchemaVersion
+	if [ -z "${programSchemaVersion}" ]
 	then
 		parser_set_default=true
 		if ${parser_set_default}
 		then
-			programVersion='2.0'
+			programSchemaVersion='2.0'
 			parse_setoptionpresence G_2_version
 		fi
 	fi
@@ -318,7 +318,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			programVersion="${parser_item}"
+			programSchemaVersion="${parser_item}"
 			parse_setoptionpresence G_2_version
 			;;
 		*)
@@ -363,7 +363,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			programVersion="${parser_item}"
+			programSchemaVersion="${parser_item}"
 			parse_setoptionpresence G_2_version
 			;;
 		*)
@@ -726,7 +726,7 @@ EOF
 	mv "${tmpFile}" "${output}"
 }
 
-phpSourceFilePath="${rootPath}/resources/php/program/${programVersion}/Parser.php"
-phpXslFilePath="${xslPath}/program/${programVersion}/php/parser.xsl"
+phpSourceFilePath="${rootPath}/resources/php/program/${programSchemaVersion}/Parser.php"
+phpXslFilePath="${xslPath}/program/${programSchemaVersion}/php/parser.xsl"
 
 transform_php "${phpSourceFilePath}" "${phpXslFilePath}"
