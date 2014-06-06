@@ -273,6 +273,7 @@
 	<!-- Function reelative to option presence requirements -->
 	<xsl:template name="prg.sh.parser.optionSetPresenceFunctions">
 		<xsl:param name="interpreter" />
+		<xsl:param name="programNode" />
 
 		<!-- addrequiredoption(id, parts) -->
 		<xsl:call-template name="sh.functionDefinition">
@@ -365,6 +366,26 @@
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_present" />
 							<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 							<xsl:with-param name="value" select="$valueVariable" />
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="sh.case">
+							<xsl:with-param name="case" select="$valueVariable" />
+							<xsl:with-param name="in">
+								<xsl:for-each select="$programNode//prg:group[not(@type) or (@type != 'exclusive')]">
+									<xsl:call-template name="sh.caseblock">
+										<xsl:with-param name="case">
+											<xsl:call-template name="prg.optionId" />
+										</xsl:with-param>
+										<xsl:with-param name="content">
+											<xsl:call-template name="prg.sh.parser.addRequiredOptions">
+												<xsl:with-param name="optionsNode" select="./prg:options" />
+												<xsl:with-param name="useFunction" select="true()" />
+												<xsl:with-param name="recursive" select="false()" />
+											</xsl:call-template>
+										</xsl:with-param>
+									</xsl:call-template>
+								</xsl:for-each>
+							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:with-param>
 				</xsl:call-template>

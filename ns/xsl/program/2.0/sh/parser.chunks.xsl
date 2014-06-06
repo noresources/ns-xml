@@ -80,19 +80,6 @@
 
 		<xsl:variable name="parentNode" select="$optionNode/../.." />
 
-		<xsl:if test="$optionNode/self::prg:group and not($optionNode[@type = 'exclusive'])">
-			<xsl:variable name="newRequiredOptions">
-				<xsl:call-template name="prg.sh.parser.addRequiredOptions">
-					<xsl:with-param name="optionsNode" select="$optionNode/prg:options" />
-					<xsl:with-param name="useFunction" select="true()" />
-					<xsl:with-param name="recursive" select="false()" />
-				</xsl:call-template>
-			</xsl:variable>
-			<xsl:if test="string-length($newRequiredOptions) &gt; 0">
-				<xsl:value-of select="$sh.endl" />
-				<xsl:value-of select="$newRequiredOptions" />
-			</xsl:if>
-		</xsl:if>
 		<xsl:value-of select="$prg.sh.parser.fName_setoptionpresence" />
 		<xsl:value-of select="' '" />
 		<xsl:call-template name="prg.optionId">
