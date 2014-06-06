@@ -133,7 +133,7 @@
 		<!-- Retrieve a substring of the variable content starting at offset $start
 			(not compatible with all shells) -->
 		<xsl:param name="start" />
-		<!-- Retrieve a substring of $lenght character of the variable content
+		<!-- Retrieve a substring of $length character of the variable content
 			(not compatible with all shells) -->
 		<xsl:param name="length" />
 		<!-- Add quotes around -->
@@ -603,9 +603,31 @@
 		<xsl:param name="in" />
 		<xsl:param name="indent" select="true()" />
 
-		<xsl:text>case "</xsl:text>
+		<xsl:variable name="b" select="substring($case, 1, 1)" />
+		<xsl:variable name="e" select="substring($case, string-length($case), 1)" />
+
+		<xsl:variable name="quote">
+			<xsl:choose>
+				<xsl:when test="($b = '&quot;') and ($e = '&quot;')">
+				</xsl:when>
+				<xsl:when test='($b = "&apos;") and ($e = "&apos;")'>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>autoquote</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+
+		<xsl:text>case </xsl:text>
+		<xsl:if test="$quote ='autoquote'">
+			<xsl:text>"</xsl:text>
+		</xsl:if>
 		<xsl:value-of select="$case" />
-		<xsl:text>" in</xsl:text>
+		<xsl:if test="$quote ='autoquote'">
+			<xsl:text>"</xsl:text>
+		</xsl:if>
+		<xsl:text> in</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$in" />
 		<xsl:value-of select="$sh.endl" />
