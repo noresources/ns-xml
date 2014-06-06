@@ -258,6 +258,15 @@ parse_setoptionpresence()
 		return
 	else
 		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+		case "${1}" in
+		G_7_g)
+			;;
+		G_8_g)
+			;;
+		G_9_g)
+			;;
+		
+		esac
 	fi
 }
 parse_checkrequired()

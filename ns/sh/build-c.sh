@@ -218,6 +218,28 @@ parse_setoptionpresence()
 		return
 	else
 		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+		case "${1}" in
+		G_1_g)
+			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+			
+			;;
+		G_1_g_1_g_1_g)
+			;;
+		G_1_g_1_g_2_g)
+			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+			
+			;;
+		G_1_g_3_g)
+			;;
+		G_2_g)
+			parse_addrequiredoption G_2_g_1_output '--output:'
+			
+			;;
+		G_3_g)
+			;;
+		
+		esac
 	fi
 }
 parse_checkrequired()
@@ -268,9 +290,7 @@ parse_setdefaultarguments()
 		then
 			programSchemaVersion='2.0'
 			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 		fi
 	fi
 	# structNameStyle
@@ -280,9 +300,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			structNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 		fi
 	fi
 	# functionNameStyle
@@ -292,9 +310,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			functionNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 		fi
 	fi
 	# variableNameStyle
@@ -304,9 +320,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			variableNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 		fi
 	fi
 	# outputPath
@@ -316,9 +330,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputPath='.'
-			parse_setoptionpresence G_2_g_1_output;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
 		fi
 	fi
 	# outputFileBase
@@ -328,9 +340,7 @@ parse_setdefaultarguments()
 		if ${parser_set_default}
 		then
 			outputFileBase='<auto>'
-			parse_setoptionpresence G_2_g_2_file_base;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
 		fi
 	fi
 }
@@ -469,9 +479,7 @@ parse_process_option()
 			fi
 			generateBaseOnly=true
 			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		schema-version)
 			# Group checks
@@ -538,9 +546,7 @@ parse_process_option()
 			fi
 			programSchemaVersion="${parser_item}"
 			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		xml-description)
 			# Group checks
@@ -613,12 +619,7 @@ parse_process_option()
 			
 			xmlProgramDescriptionPath="${parser_item}"
 			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		skip-validation | no-validation)
 			# Group checks
@@ -636,12 +637,7 @@ parse_process_option()
 			fi
 			skipValidation=true
 			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		embed)
 			# Group checks
@@ -666,12 +662,7 @@ parse_process_option()
 			generateEmbedded=true
 			generationMode="generateProgramDependant"
 			generateProgramDependantMode="generateEmbedded"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		include)
 			# Group checks
@@ -751,12 +742,7 @@ parse_process_option()
 			generateInclude="${parser_item}"
 			generationMode="generateProgramDependant"
 			generateProgramDependantMode="generateInclude"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		prefix)
 			# Group checks
@@ -785,9 +771,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_1_g_2_prefix;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_prefix;parse_setoptionpresence G_1_g
 			;;
 		struct-style | struct)
 			# Group checks
@@ -822,9 +806,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			structNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		function-style | function | func)
 			# Group checks
@@ -859,9 +841,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			functionNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		variable-style | variable | var)
 			# Group checks
@@ -896,9 +876,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			variableNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
 			;;
 		output)
 			# Group checks
@@ -939,9 +917,7 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_output;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
 			;;
 		file-base | file)
 			# Group checks
@@ -970,9 +946,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_2_g_2_file_base;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
 			;;
 		overwrite | force)
 			# Group checks
@@ -983,9 +957,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			outputOverwrite=true
-			parse_setoptionpresence G_2_g_3_overwrite;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_overwrite;parse_setoptionpresence G_2_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -1054,9 +1026,7 @@ parse_process_option()
 			
 			generateBaseOnly=true
 			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		x)
 			# Group checks
@@ -1129,12 +1099,7 @@ parse_process_option()
 			
 			xmlProgramDescriptionPath="${parser_item}"
 			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
@@ -1146,12 +1111,7 @@ parse_process_option()
 			
 			skipValidation=true
 			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		e)
 			# Group checks
@@ -1170,12 +1130,7 @@ parse_process_option()
 			generateEmbedded=true
 			generationMode="generateProgramDependant"
 			generateProgramDependantMode="generateEmbedded"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		i)
 			# Group checks
@@ -1255,12 +1210,7 @@ parse_process_option()
 			generateInclude="${parser_item}"
 			generationMode="generateProgramDependant"
 			generateProgramDependantMode="generateInclude"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
 			;;
 		p)
 			# Group checks
@@ -1289,9 +1239,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			prefix="${parser_item}"
-			parse_setoptionpresence G_1_g_2_prefix;
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_prefix;parse_setoptionpresence G_1_g
 			;;
 		o)
 			# Group checks
@@ -1332,9 +1280,7 @@ parse_process_option()
 			fi
 			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_output;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
 			;;
 		f)
 			# Group checks
@@ -1363,16 +1309,12 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_2_g_2_file_base;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
 			;;
 		u)
 			# Group checks
 			outputOverwrite=true
-			parse_setoptionpresence G_2_g_3_overwrite;
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_overwrite;parse_setoptionpresence G_2_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""

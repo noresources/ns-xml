@@ -174,6 +174,23 @@ parse_setoptionpresence()
 		return
 	else
 		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+		case "${1}" in
+		G_1_g)
+			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
+			
+			;;
+		G_2_g)
+			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
+			
+			;;
+		G_3_g)
+			parse_addrequiredoption G_3_g_1_output '--output:'
+			
+			;;
+		G_4_g)
+			;;
+		
+		esac
 	fi
 }
 parse_checkrequired()
@@ -370,9 +387,7 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		skip-validation | no-validation)
 			# Group checks
@@ -383,9 +398,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		base)
 			# Group checks
@@ -403,9 +416,7 @@ parse_process_option()
 			fi
 			generateBase=true
 			generationMode="generateBase"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		info)
 			# Group checks
@@ -423,9 +434,7 @@ parse_process_option()
 			fi
 			generateInfo=true
 			generationMode="generateInfo"
-			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		embed)
 			# Group checks
@@ -443,9 +452,7 @@ parse_process_option()
 			fi
 			generateEmbedded=true
 			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		merge)
 			# Group checks
@@ -506,9 +513,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			generateMerge="${parser_item}"
 			generationMode="generateMerge"
-			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		parser-namespace | parser-ns)
 			# Group checks
@@ -537,9 +542,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			parserNamespace="${parser_item}"
-			parse_setoptionpresence G_2_g_2_parser_namespace;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_2_parser_namespace;parse_setoptionpresence G_2_g
 			;;
 		program-namespace | program-ns | prg-ns)
 			# Group checks
@@ -568,9 +571,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programNamespace="${parser_item}"
-			parse_setoptionpresence G_2_g_3_program_namespace;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_3_program_namespace;parse_setoptionpresence G_2_g
 			;;
 		classname)
 			# Group checks
@@ -599,9 +600,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programInfoClassname="${parser_item}"
-			parse_setoptionpresence G_2_g_4_classname;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_4_classname;parse_setoptionpresence G_2_g
 			;;
 		output)
 			# Group checks
@@ -630,9 +629,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
 			;;
 		ns-xml-path)
 			# Group checks
@@ -730,16 +727,12 @@ parse_process_option()
 			fi
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_g_1_xml_description;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_1_xml_description;parse_setoptionpresence G_1_g
 			;;
 		S)
 			# Group checks
 			skipValidation=true
-			parse_setoptionpresence G_1_g_2_skip_validation;
-			parse_addrequiredoption G_1_g_1_xml_description '--xml-description:'
-			parse_setoptionpresence G_1_g
+			parse_setoptionpresence G_1_g_2_skip_validation;parse_setoptionpresence G_1_g
 			;;
 		b)
 			# Group checks
@@ -751,9 +744,7 @@ parse_process_option()
 			
 			generateBase=true
 			generationMode="generateBase"
-			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_1_base;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		i)
 			# Group checks
@@ -765,9 +756,7 @@ parse_process_option()
 			
 			generateInfo=true
 			generationMode="generateInfo"
-			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_2_info;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		e)
 			# Group checks
@@ -779,9 +768,7 @@ parse_process_option()
 			
 			generateEmbedded=true
 			generationMode="generateEmbedded"
-			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_3_embed;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		m)
 			# Group checks
@@ -842,9 +829,7 @@ parse_process_option()
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			generateMerge="${parser_item}"
 			generationMode="generateMerge"
-			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_1_g_4_merge;parse_setoptionpresence G_2_g_1_g;parse_setoptionpresence G_2_g
 			;;
 		c)
 			# Group checks
@@ -873,9 +858,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			programInfoClassname="${parser_item}"
-			parse_setoptionpresence G_2_g_4_classname;
-			parse_addrequiredoption G_2_g_1_g '--base, --info, --embed or --merge:'
-			parse_setoptionpresence G_2_g
+			parse_setoptionpresence G_2_g_4_classname;parse_setoptionpresence G_2_g
 			;;
 		o)
 			# Group checks
@@ -904,9 +887,7 @@ parse_process_option()
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
 			outputScriptFilePath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_output;
-			parse_addrequiredoption G_3_g_1_output '--output:'
-			parse_setoptionpresence G_3_g
+			parse_setoptionpresence G_3_g_1_output;parse_setoptionpresence G_3_g
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
