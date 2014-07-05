@@ -185,7 +185,8 @@ class OptionNameList extends ArrayObject
 	{
 		if ($type == OptionName::ANY)
 		{
-			list ( $k, $v ) = each($this->getArrayCopy());
+			$a = $this->getArrayCopy();
+			list ( $k, $v ) = each($a);
 			return $v;
 		}
 		
