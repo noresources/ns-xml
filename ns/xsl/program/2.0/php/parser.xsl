@@ -1274,7 +1274,18 @@ class ProgramInfo extends RootItemInfo
 		}
 		
 		$text .= ' ' . $root->optionShortUsage($usage);
-		
+		foreach ($root->getPositionalArguments() as $pa)
+		{
+			$abstract = $pa->abstract ? $pa->abstract : '';
+			$e = explode("\n", $abstract);
+			$abstract = $e[0];
+			if ($pa->maxArgumentCount > 1)
+			{
+				$abstract .= ' ...';
+			}
+			$text .= ' [' . $abstract . ']'; 	
+		}
+				
 		$text = $usage->textWrap->wrap($text, TextWrap::OFFSET_OTHER, 0) . $eol;
 		
 		if (($usage->format & UsageFormat::ABSTRACT_TEXT) == UsageFormat::ABSTRACT_TEXT)

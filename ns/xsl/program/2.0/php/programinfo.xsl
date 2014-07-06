@@ -512,6 +512,23 @@
 			<xsl:with-param name="itemVariable" select="$paiVariable" />
 			<xsl:with-param name="itemNode" select="$positionalArgumentNode" />
 		</xsl:call-template>
+
+		<xsl:if test="$positionalArgumentNode/prg:documentation/prg:abstract">
+			<xsl:value-of select="$str.endl" />
+			<xsl:value-of select="$paiVariable" />
+			<xsl:text>->abstract = "</xsl:text>
+			<xsl:apply-templates select="$positionalArgumentNode/prg:documentation/prg:abstract" />
+			<xsl:text>";</xsl:text>
+			<xsl:value-of select="$str.endl" />
+		</xsl:if>
+		<xsl:if test="$positionalArgumentNode/prg:documentation/prg:details">
+			<xsl:value-of select="$str.endl" />
+			<xsl:value-of select="$paiVariable" />
+			<xsl:text>->details = "</xsl:text>
+			<xsl:apply-templates select="$positionalArgumentNode/prg:documentation/prg:details" />
+			<xsl:text>";</xsl:text>
+			<xsl:value-of select="$str.endl" />
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template name="prg.php.rootItemInfo">
