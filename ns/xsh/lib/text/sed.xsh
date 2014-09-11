@@ -11,10 +11,17 @@
 # 2: Mac OS X 10.5-10.8 - => sed -i ""
 # TODO test Mac OS X < 10.5
 ]]><xsh:local name="sedForm" type="numeric">1</xsh:local>
-# Use gsed if available
-<xsh:local name="sedBin">$(which "gsed")</xsh:local><![CDATA[
-[ -z "${sedBin}" ] && sedBin="$(which "sed")"
-[ -z "${sedBin}" ] && return 1
+			# Use gsed if available
+			<xsh:local name="sedBin" /><![CDATA[
+if which 'gsed' 1>/dev/null 2>&1
+then
+	sedBin="$(which 'gsed')"
+elif which 'sed' 1>/dev/null 2>&1
+then
+	sedBin="$(which 'sed')"
+else
+	return 1
+fi
 
 if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
 then
@@ -22,7 +29,7 @@ then
 	if [ ! -z "${macOSXVersion}" ]
 	then
 		]]><xsh:local name="macOSXMajorVersion">$(echo "${macOSXVersion}" | cut -f 1 -d".")</xsh:local>
-		<xsh:local name="macOSXMinorVersion">$(echo "${macOSXVersion}" | cut -f 2 -d".")</xsh:local><![CDATA[
+			<xsh:local name="macOSXMinorVersion">$(echo "${macOSXVersion}" | cut -f 2 -d".")</xsh:local><![CDATA[
 		if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
 		then
 			sedForm=2

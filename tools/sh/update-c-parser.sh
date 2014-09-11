@@ -617,9 +617,16 @@ ns_sed_inplace()
 	# TODO test Mac OS X < 10.5
 	local sedForm=1
 	# Use gsed if available
-	local sedBin="$(which "gsed")"
-	[ -z "${sedBin}" ] && sedBin="$(which "sed")"
-	[ -z "${sedBin}" ] && return 1
+	local sedBin=
+	if which 'gsed' 1>/dev/null 2>&1
+	then
+		sedBin="$(which 'gsed')"
+	elif which 'sed' 1>/dev/null 2>&1
+	then
+		sedBin="$(which 'sed')"
+	else
+		return 1
+	fi
 	
 	if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
 	then
