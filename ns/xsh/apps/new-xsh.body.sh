@@ -163,7 +163,7 @@ if ! parse "\${@}"
 then
 	if \${displayHelp}
 	then
-		usage "${parser_subcommand}"
+		usage "\${parser_subcommand}"
 		exit 0
 	fi
 	
@@ -173,7 +173,7 @@ fi
 
 if \${displayHelp}
 then
-	usage "${parser_subcommand}"
+	usage "\${parser_subcommand}"
 	exit 0
 fi
 
