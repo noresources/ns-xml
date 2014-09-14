@@ -40,6 +40,8 @@ EOFUSAGE
 }
 
 # Program parameter parsing
+parser_program_author="renaud"
+parser_program_version="1.0"
 parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}

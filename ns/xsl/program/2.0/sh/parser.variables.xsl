@@ -6,6 +6,24 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:import href="parser.base.xsl" />
 
+	<xsl:variable name="prg.sh.parser.vName_program_author">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>program_author</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="prg.sh.parser.vName_program_version">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>program_version</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
 	<!-- Name of the used shell interpreter -->
 	<xsl:variable name="prg.sh.parser.vName_shell">
 		<xsl:call-template name="prg.prefixedName">

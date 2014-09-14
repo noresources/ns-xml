@@ -1729,6 +1729,22 @@
 	<xsl:template name="prg.sh.parser.initialize">
 		<xsl:param name="programNode" select="." />
 
+		<!-- Program info -->
+		<xsl:if test="$programNode/prg:author">
+			<xsl:value-of select="$prg.sh.parser.vName_program_author" />
+			<xsl:text>="</xsl:text>
+				<xsl:apply-templates select="$programNode/prg:author" />
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
+		<xsl:if test="$programNode/prg:version">
+			<xsl:value-of select="$prg.sh.parser.vName_program_version" />
+			<xsl:text>="</xsl:text>
+			<xsl:apply-templates select="$programNode/prg:version" />
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
+
 		<xsl:value-of select="$prg.sh.parser.vName_shell" />
 		<xsl:text>="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"</xsl:text>
 		<xsl:value-of select="$sh.endl" />
@@ -1764,7 +1780,6 @@
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_subcommand_expected" />
 		<xsl:text>=</xsl:text>
-
 		<xsl:choose>
 			<xsl:when test="$programNode/prg:subcommands">
 				<xsl:text>true</xsl:text>
