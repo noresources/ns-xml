@@ -111,4 +111,22 @@ else
 fi
 		]]></sh:body>
 	</sh:function>
+	
+	<!-- Concatenate array elements into a single string -->
+	<sh:function name="ns_text_implode">
+		<sh:parameter name="glue" />
+		<sh:parameter name="before" />
+		<sh:parameter name="after" />
+		<sh:body>
+		<sh:local name="stringResult" />
+		<sh:local name="stringElement" />
+		<![CDATA[
+for stringElement in "${@}"
+do
+	[ -z "${stringResult}" ] || stringResult="${stringResult}${glue}"
+	stringResult="${stringResult}${before}${stringElement}${after}"
+done
+echo "${stringResult}"
+]]></sh:body>
+	</sh:function>
 </sh:functions>
