@@ -226,6 +226,12 @@
 	</xsl:template>
 
 	<xsl:template match="xsh:body/xsh:local">
+		<xsl:if test="@indent">
+			<xsl:call-template name="str.repeat">
+				<xsl:with-param name="text" select="$code.indentChar" />
+				<xsl:with-param name="iterations" select="@indent" />
+			</xsl:call-template>
+		</xsl:if>
 		<xsl:call-template name="xsh.functionLocalVariableDefinition">
 			<xsl:with-param name="interpreter">
 				<xsl:call-template name="xsh.getInterpreter">
@@ -233,9 +239,15 @@
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:if test="following-sibling::*[1][text()]">
-			<xsl:if test="string-length(following-sibling) &gt; 0">
-				<xsl:value-of select="$str.unix.endl" />
+		<xsl:if test="following-sibling::text()[1]">
+			<xsl:variable name="followingText" select="normalize-space(following-sibling::text()[1])" />
+			<xsl:if test="string-length($followingText) &gt; 0">
+				<xsl:if test="@indent">
+					<xsl:call-template name="str.repeat">
+						<xsl:with-param name="text" select="$code.indentChar" />
+						<xsl:with-param name="iterations" select="@indent" />
+					</xsl:call-template>
+				</xsl:if>
 			</xsl:if>
 		</xsl:if>
 	</xsl:template>

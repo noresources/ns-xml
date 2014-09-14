@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:xsh="http://xsd.nore.fr/xsh">
+<schema targetNamespace="http://xsd.nore.fr/xsh" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program"
+	xmlns:xsh="http://xsd.nore.fr/xsh">
 
 	<import namespace="http://xsd.nore.fr/program" schemaLocation="../../program/2.0/program.xsd" />
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
@@ -39,6 +40,11 @@
 		</annotation>
 		<attribute name="name" type="string" />
 		<attribute name="type" type="xsh:identifierTypeEnum" use="optional" />
+		<attribute name="indent" type="positiveInteger">
+			<annotation>
+				<documentation xml:lang="en">Number of indent character to prepend</documentation>
+			</annotation>
+		</attribute>
 	</complexType>
 
 	<simpleType name="plainCodeType">
