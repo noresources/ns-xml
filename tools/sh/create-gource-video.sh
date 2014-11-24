@@ -135,6 +135,24 @@ function parse_setoptionpresence
 		esac
 	fi
 }
+function parse_isoptionpresent
+{
+	typeset var _e_found=false
+	typeset var _e=
+	for _e in "${parser_present[@]}"
+	do
+		if [ "${_e}" = "${1}" ]
+		then
+			_e_found=true; break
+		fi
+	done
+	if ${_e_found}
+	then
+		return 0
+	else
+		return 1
+	fi
+}
 function parse_checkrequired
 {
 	# First round: set default values

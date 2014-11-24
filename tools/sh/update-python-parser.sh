@@ -133,6 +133,24 @@ parse_setoptionpresence()
 		esac
 	fi
 }
+parse_isoptionpresent()
+{
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
+	do
+		if [ "${_e}" = "${1}" ]
+		then
+			_e_found=true; break
+		fi
+	done
+	if ${_e_found}
+	then
+		return 0
+	else
+		return 1
+	fi
+}
 parse_checkrequired()
 {
 	# First round: set default values
@@ -169,7 +187,7 @@ parse_setdefaultarguments()
 {
 	local parser_set_default=false
 	# programSchemaVersion
-	if [ -z "${programSchemaVersion}" ]
+	if ! parse_isoptionpresent G_2_version
 	then
 		parser_set_default=true
 		if ${parser_set_default}

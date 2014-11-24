@@ -1,0 +1,10 @@
+CLI: "-F", "--", "We can't set empty value using short name and combined arguments"
+Value count: 1
+Values: "We can't set empty value using short name and combined arguments"
+Error count: 1
+Subcommand: 
+argumentF=
+argumentFdefault=Default value
+argumentG=
+multiArgumentH=
+multiArgumentI=

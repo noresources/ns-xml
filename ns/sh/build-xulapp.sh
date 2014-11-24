@@ -271,6 +271,24 @@ parse_setoptionpresence()
 		esac
 	fi
 }
+parse_isoptionpresent()
+{
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
+	do
+		if [ "${_e}" = "${1}" ]
+		then
+			_e_found=true; break
+		fi
+	done
+	if ${_e_found}
+	then
+		return 0
+	else
+		return 1
+	fi
+}
 parse_checkrequired()
 {
 	# First round: set default values
@@ -307,7 +325,7 @@ parse_setdefaultarguments()
 {
 	local parser_set_default=false
 	# targetPlatform
-	if [ -z "${targetPlatform}" ]
+	if ! parse_isoptionpresent G_4_target_platform
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -317,7 +335,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# windowWidth
-	if [ -z "${windowWidth}" ]
+	if ! parse_isoptionpresent G_7_g_1_window_width
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -327,7 +345,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# windowHeight
-	if [ -z "${windowHeight}" ]
+	if ! parse_isoptionpresent G_7_g_2_window_height
 	then
 		parser_set_default=true
 		if ${parser_set_default}

@@ -338,6 +338,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 
+		<!-- setoptionpresence -->
 		<xsl:call-template name="sh.functionDefinition">
 			<xsl:with-param name="name" select="$prg.sh.parser.fName_setoptionpresence" />
 			<xsl:with-param name="interpreter" select="$interpreter" />
@@ -392,6 +393,29 @@
 			</xsl:with-param>
 		</xsl:call-template>
 
+		<!-- isoptionpresent -->
+		<xsl:call-template name="sh.functionDefinition">
+			<xsl:with-param name="name" select="$prg.sh.parser.fName_isoptionpresent" />
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="content">
+				<xsl:variable name="valueVariable">
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name" select="'1'" />
+						<xsl:with-param name="quoted" select="true()" />
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:call-template name="sh.chunk.arrayValueExists">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_present" />
+					<xsl:with-param name="value" select="$valueVariable" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="declareLocal" select="true()" />
+					<xsl:with-param name="onExists" select="'return 0'" />
+					<xsl:with-param name="otherwise" select="'return 1'" />
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+
+		<!-- checkrequired -->
 		<xsl:call-template name="sh.functionDefinition">
 			<xsl:with-param name="name" select="$prg.sh.parser.fName_checkrequired" />
 			<xsl:with-param name="interpreter" select="$interpreter" />
@@ -1583,27 +1607,6 @@
 					<xsl:with-param name="quoted" select="false()" />
 				</xsl:call-template>
 				<xsl:value-of select="$sh.endl" />
-
-				<!-- ???
-					<call-template name="sh.if">
-					<with-param name="condition">
-					<text>[ </text>
-					<call-template name="sh.var">
-					<with-param name="name" select="$errorCount" />
-					</call-template>
-					<text> -eq 1 ] &amp;&amp; [ -z </text>
-					<call-template name="sh.var">
-					<with-param name="name" select="$prg.sh.parser.vName_errors" />
-					<with-param name="quoted" select="true()" />
-					</call-template>
-					<text> ]</text>
-					</with-param>
-					<with-param name="then">
-					<value-of select="$errorCount" />
-					<text>=0</text>
-					</with-param>
-					</call-template>
-				-->
 
 				<xsl:text>return </xsl:text>
 				<xsl:call-template name="sh.var">

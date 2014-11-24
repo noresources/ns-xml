@@ -1,0 +1,10 @@
+CLI: "-F", "", "--", "Set an empty value to an argument that defines a default value"
+Value count: 1
+Values: "Set an empty value to an argument that defines a default value"
+Error count: 0
+Subcommand: 
+argumentF=
+argumentFdefault=
+argumentG=
+multiArgumentH=
+multiArgumentI=

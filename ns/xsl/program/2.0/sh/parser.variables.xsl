@@ -389,6 +389,15 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
+	
+	<xsl:variable name="prg.sh.parser.fName_isoptionpresent">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
+				<xsl:text>isoptionpresent</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<xsl:variable name="prg.sh.parser.fName_addrequiredoption">
 		<xsl:call-template name="prg.prefixedName">

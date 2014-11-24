@@ -186,6 +186,24 @@ parse_setoptionpresence()
 		esac
 	fi
 }
+parse_isoptionpresent()
+{
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
+	do
+		if [ "${_e}" = "${1}" ]
+		then
+			_e_found=true; break
+		fi
+	done
+	if ${_e_found}
+	then
+		return 0
+	else
+		return 1
+	fi
+}
 parse_checkrequired()
 {
 	# First round: set default values
@@ -222,7 +240,7 @@ parse_setdefaultarguments()
 {
 	local parser_set_default=false
 	# indexFileOutputName
-	if [ -z "${indexFileOutputName}" ]
+	if ! parse_isoptionpresent G_1_g_5_g_3_g_2_index_name
 	then
 		parser_set_default=true
 		if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
@@ -238,7 +256,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# nmeEasyLink
-	if [ -z "${nmeEasyLink}" ]
+	if ! parse_isoptionpresent G_2_g_2_nme_easylink
 	then
 		parser_set_default=true
 		if ${parser_set_default}

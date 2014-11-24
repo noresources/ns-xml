@@ -117,15 +117,15 @@
 			</xsl:call-template>
 			<xsl:value-of select="$sh.endl" />
 
+			<!-- Check if option was set -->
 			<xsl:call-template name="sh.if">
 				<xsl:with-param name="condition">
-					<xsl:text>[ -z "</xsl:text>
-					<xsl:call-template name="sh.var">
-						<xsl:with-param name="name">
-							<xsl:apply-templates select="prg:databinding/prg:variable" />
-						</xsl:with-param>
+					<xsl:text>! </xsl:text>
+					<xsl:value-of select="$prg.sh.parser.fName_isoptionpresent" />
+					<xsl:text> </xsl:text>
+					<xsl:call-template name="prg.optionId">
+						<xsl:with-param name="optionNode" select="." />
 					</xsl:call-template>
-					<xsl:text>" ]</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="then">
 					<xsl:value-of select="$prg.sh.parser.vName_set_default" />
@@ -580,7 +580,9 @@
 								</xsl:when>
 								<xsl:when test="$originalOptionNode/self::prg:multiargument">
 									<xsl:value-of select="$sh.endl" />
-									<!-- Here, the prg.sh.parser.argumentPreprocess suits better than prg.sh.parser.multiargumentPreprocess -->
+									<!-- Here, the prg.sh.parser.argumentPreprocess
+										suits better than prg.sh.parser.multiargumentPreprocess
+									-->
 									<xsl:call-template name="prg.sh.parser.argumentPreprocess">
 										<xsl:with-param name="onError" select="$onError" />
 										<xsl:with-param name="optionNode" select="$originalOptionNode" />
@@ -1733,7 +1735,7 @@
 		<xsl:if test="$programNode/prg:author">
 			<xsl:value-of select="$prg.sh.parser.vName_program_author" />
 			<xsl:text>="</xsl:text>
-				<xsl:apply-templates select="$programNode/prg:author" />
+			<xsl:apply-templates select="$programNode/prg:author" />
 			<xsl:text>"</xsl:text>
 			<xsl:value-of select="$sh.endl" />
 		</xsl:if>

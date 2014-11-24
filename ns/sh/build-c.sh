@@ -244,6 +244,24 @@ parse_setoptionpresence()
 		esac
 	fi
 }
+parse_isoptionpresent()
+{
+	local _e_found=false
+	local _e=
+	for _e in "${parser_present[@]}"
+	do
+		if [ "${_e}" = "${1}" ]
+		then
+			_e_found=true; break
+		fi
+	done
+	if ${_e_found}
+	then
+		return 0
+	else
+		return 1
+	fi
+}
 parse_checkrequired()
 {
 	# First round: set default values
@@ -280,7 +298,7 @@ parse_setdefaultarguments()
 {
 	local parser_set_default=false
 	# programSchemaVersion
-	if [ -z "${programSchemaVersion}" ]
+	if ! parse_isoptionpresent G_1_g_1_g_1_g_2_schema_version
 	then
 		parser_set_default=true
 		if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
@@ -296,7 +314,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# structNameStyle
-	if [ -z "${structNameStyle}" ]
+	if ! parse_isoptionpresent G_1_g_3_g_1_struct_style
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -306,7 +324,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# functionNameStyle
-	if [ -z "${functionNameStyle}" ]
+	if ! parse_isoptionpresent G_1_g_3_g_2_function_style
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -316,7 +334,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# variableNameStyle
-	if [ -z "${variableNameStyle}" ]
+	if ! parse_isoptionpresent G_1_g_3_g_3_variable_style
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -326,7 +344,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# outputPath
-	if [ -z "${outputPath}" ]
+	if ! parse_isoptionpresent G_2_g_1_output
 	then
 		parser_set_default=true
 		if ${parser_set_default}
@@ -336,7 +354,7 @@ parse_setdefaultarguments()
 		fi
 	fi
 	# outputFileBase
-	if [ -z "${outputFileBase}" ]
+	if ! parse_isoptionpresent G_2_g_2_file_base
 	then
 		parser_set_default=true
 		if ${parser_set_default}
