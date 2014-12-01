@@ -127,7 +127,7 @@
 		</xsl:for-each>
 	</xsl:template>
 
-	<!-- Return the number of options in a program or subcommand, including 
+	<!-- Return the number of options in a program or subcommand, including
 		group options -->
 	<xsl:template name="prg.c.parser.rootElementOptionCount">
 		<!-- program or subcommand node -->
@@ -172,10 +172,15 @@
 	</xsl:template>
 
 	<xsl:template match="prg:block">
+		<xsl:variable name="precedingNode" select="./preceding-sibling::*[1]" />
+		<xsl:if test="not($precedingNode[self::prg:endl] | $precedingNode[self::prg:br] | $precedingNode[self::prg:block])">
+			<xsl:text>\n</xsl:text>
+		</xsl:if>
 		<xsl:call-template name="str.prependLine">
 			<xsl:with-param name="text">
 				<xsl:apply-templates />
 			</xsl:with-param>
+			<xsl:with-param name="endlChar" select="'\n'" />
 			<xsl:with-param name="prependedText" select="'\t'" />
 		</xsl:call-template>
 	</xsl:template>
