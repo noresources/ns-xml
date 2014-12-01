@@ -2003,6 +2003,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 	int is_first = 1;
 	size_t i;
 	size_t c = info->option_info_count;
+	size_t pac = info->positional_argument_info_count;
 	const char *n;
 	const struct nsxml_group_option_info *parent = NULL;
 	const void *ptr;
@@ -2042,7 +2043,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 		}
 	}
 	
-	/* Other */
+	/* Other options */
 	for (i = 0; i < c; ++i)
 	{
 		const struct nsxml_option_info *o = info->option_infos[i];
@@ -2084,6 +2085,48 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 		}
 	}
 	
+	/* Positional arguments */
+	if (info_index == -1)
+	{
+		size_t first_line_length;
+		const char *eol;
+		const struct nsxml_positional_argument_info *pai;
+		
+		for (i = 0; i < pac; ++i)
+		{
+			pai = &info->positional_argument_infos[i];
+			first_line_length = 0;
+			
+			fwrite(((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["), 1, 2, stream);
+			
+			if (pai->item_info.abstract)
+			{
+				first_line_length = strlen(pai->item_info.abstract);
+				eol = strchr(pai->item_info.abstract, '\n');
+				
+				if (eol && (eol != pai->item_info.abstract))
+				{
+					first_line_length = (eol - pai->item_info.abstract);
+				}
+			}
+			
+			if (first_line_length > 0)
+			{
+				fwrite(pai->item_info.abstract, 1, first_line_length, stream);
+			}
+			else
+			{
+				fprintf(stream, "arg %d", (int)(i + 1));
+			}
+			
+			if (pai->max_argument != 1)
+			{
+				fwrite(" ...", 1, 4, stream);
+			}
+			
+			fputc(((pai->positional_argument_flags & nsxml_positional_argument_required) ? '>' : ']'), stream);
+		}
+	}
 }
 
 void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *info, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr)
