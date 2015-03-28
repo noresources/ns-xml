@@ -17,7 +17,7 @@
 	<xsh:function name="ns_realpath">
 		<xsh:parameter name="inputPath" />
 		<xsh:body>
-		<xsh:local name="cwd">$(pwd)</xsh:local>
+			<xsh:local name="cwd">$(pwd)</xsh:local>
 		<![CDATA[
 [ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
 while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
@@ -95,33 +95,38 @@ else
 fi
 ]]></xsh:body>
 	</xsh:function>
-	<!-- Support for -s option on Liux -->
+	<!-- Support for -s option on Linux -->
 	<xsh:function name="ns_which">
-		<xsh:body><![CDATA[
-if [ "$(uname -s)" == "Darwin" ]
+		<xsh:body>
+			<xsh:local name="result" type="numeric">1</xsh:local>
+		<![CDATA[
+if [ "$(uname -s)" = 'Darwin' ]
 then
-	which "${@}"
+	which "${@}" && result=0
 else
 ]]><xsh:local name="silent">false</xsh:local>
-<xsh:local name="args" /><![CDATA[
+			<xsh:local name="args" /><![CDATA[
 	while [ ${#} -gt 0 ]
 	do
-		if [ "${1}" = "-s" ]
+		if [ "${1}" = '-s' ]
 		then 
 			silent=true
 		else
-			args=("${args[@]}" "${1}")
+			[ -z "${args}" ] \
+				&& args="${1}" \
+				|| args=("${args[@]}" "${1}")
 		fi
 		shift
 	done
 	
 	if ${silent}
 	then
-		which "${args[@]}" 1>/dev/null 2>&1
+		which "${args[@]}" 1>/dev/null 2>&1 && result=0
 	else
-		which "${args[@]}"
+		which "${args[@]}" && result=0
 	fi
 fi
+return ${result}
 ]]></xsh:body>
 	</xsh:function>
 </xsh:functions>

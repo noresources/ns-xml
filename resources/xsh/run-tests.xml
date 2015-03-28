@@ -9,61 +9,78 @@
 	<prg:documentation>
 		<prg:abstract>Run ns-xml unittests</prg:abstract>
 	</prg:documentation>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:documentation><prg:abstract>XSH function library tests</prg:abstract></prg:documentation>
+			<prg:name>xsh</prg:name>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:documentation>
+				<prg:abstract>Parsers tests</prg:abstract>
+			</prg:documentation>
+			<prg:name>parsers</prg:name>
+			<prg:options>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>parsers</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Parser to test</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>parsers</prg:long>
+						<prg:short>p</prg:short>
+					</prg:names>
+					<prg:select restrict="true">
+						<prg:option>c</prg:option>
+						<prg:option>php</prg:option>
+						<prg:option>python</prg:option>
+						<prg:option>sh</prg:option>
+					</prg:select>
+				</prg:multiargument>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>apps</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Test groups to run</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>apps</prg:long>
+						<prg:short>a</prg:short>
+					</prg:names>
+				</prg:multiargument>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>tests</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Test id(s) to run</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>tests</prg:long>
+						<prg:short>t</prg:short>
+					</prg:names>
+				</prg:multiargument>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>keepTemporaryFiles</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Keep temporary files</prg:abstract>
+						<prg:details>Don't remove temporary files even if test passed</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>temp</prg:long>
+						<prg:short>T</prg:short>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:subcommand>
+
+	</prg:subcommands>
 	<prg:options>
-		<prg:multiargument>
-			<prg:databinding>
-				<prg:variable>parsers</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Parser to test</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>parsers</prg:long>
-				<prg:short>p</prg:short>
-			</prg:names>
-			<prg:select restrict="true">
-				<prg:option>c</prg:option>
-				<prg:option>php</prg:option>
-				<prg:option>python</prg:option>
-				<prg:option>sh</prg:option>
-			</prg:select>
-		</prg:multiargument>
-		<prg:multiargument>
-			<prg:databinding>
-				<prg:variable>apps</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Test groups to run</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>apps</prg:long>
-				<prg:short>a</prg:short>
-			</prg:names>
-		</prg:multiargument>
-		<prg:multiargument>
-			<prg:databinding>
-				<prg:variable>tests</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Test id(s) to run</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>tests</prg:long>
-				<prg:short>t</prg:short>
-			</prg:names>
-		</prg:multiargument>
-		<prg:switch>
-			<prg:databinding><prg:variable>keepTemporaryFiles</prg:variable></prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Keep temporary files</prg:abstract>
-				<prg:details>Don't remove temporary files even if test passed</prg:details>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>temp</prg:long>
-				<prg:short>T</prg:short>
-			</prg:names>
-		</prg:switch>
 		<!-- Help -->
-		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 	</prg:options>
 </prg:program>

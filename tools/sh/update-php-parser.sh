@@ -602,30 +602,34 @@ ns_mktempdir()
 }
 ns_which()
 {
-	if [ "$(uname -s)" == "Darwin" ]
+	local result=1
+	if [ "$(uname -s)" = 'Darwin' ]
 	then
-		which "${@}"
+		which "${@}" && result=0
 	else
 	local silent="false"
 	local args=
 	while [ ${#} -gt 0 ]
 		do
-			if [ "${1}" = "-s" ]
+			if [ "${1}" = '-s' ]
 			then 
 				silent=true
 			else
-				args=("${args[@]}" "${1}")
+				[ -z "${args}" ] \
+					&& args="${1}" \
+					|| args=("${args[@]}" "${1}")
 			fi
 			shift
 		done
 		
 		if ${silent}
 		then
-			which "${args[@]}" 1>/dev/null 2>&1
+			which "${args[@]}" 1>/dev/null 2>&1 && result=0
 		else
-			which "${args[@]}"
+			which "${args[@]}" && result=0
 		fi
 	fi
+	return ${result}
 }
 ns_sed_inplace()
 {
