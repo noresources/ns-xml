@@ -44,7 +44,7 @@
 
 		<xsl:for-each select="//sh:function[substring(@name, 1, string-length($testsuiteFunctionPrefix)) = $testsuiteFunctionPrefix]">
 				<xsl:variable name="testName" select="substring(@name, string-length($testsuiteFunctionPrefix) + 1)" />
-			<xsl:text>printf '%-30s : ' '</xsl:text>
+			<xsl:text>printf '%-40s : ' '</xsl:text>
 			<xsl:value-of select="$testName" />
 			<xsl:text>: '</xsl:text>
 			<xsl:value-of select="$sh.endl" />

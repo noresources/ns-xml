@@ -5,44 +5,46 @@
 	<!-- in place file text replacement using sed -->
 	<!-- Take care of sed version (at least on Mac OS X 10.5) -->
 	<xsh:function name="ns_sed_inplace">
-		<xsh:body><![CDATA[
-# sedForm
-# 1: modern linux => (g)sed --in-place
-# 2: Mac OS X 10.5-10.8 - => sed -i ""
-# TODO test Mac OS X < 10.5
-]]><xsh:local name="sedForm" type="numeric">1</xsh:local>
-			# Use gsed if available
-			<xsh:local name="sedBin" /><![CDATA[
-if which 'gsed' 1>/dev/null 2>&1
+		<xsh:body>
+			<xsh:local name="inplaceOptionForm" /><![CDATA[
+if [ -z "${__ns_sed_inplace_inplaceOptionForm}" ]
 then
-	sedBin="$(which 'gsed')"
-elif which 'sed' 1>/dev/null 2>&1
-then
-	sedBin="$(which 'sed')"
-else
-	return 1
-fi
-
-if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
-then
-	]]><xsh:local name="macOSXVersion">$(sw_vers -productVersion)</xsh:local><![CDATA[
-	if [ ! -z "${macOSXVersion}" ]
+	if [ "$(uname -s)" = 'Darwin' ]
 	then
-		]]><xsh:local name="macOSXMajorVersion">$(echo "${macOSXVersion}" | cut -f 1 -d".")</xsh:local>
-			<xsh:local name="macOSXMinorVersion">$(echo "${macOSXVersion}" | cut -f 2 -d".")</xsh:local><![CDATA[
-		if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
+		if [ "$(which sed 2>/dev/null)" = '/usr/bin/sed' ]
 		then
-			sedForm=2
+			inplaceOptionForm='arg'			
+		fi 
+	fi
+	
+	if [ -z "${inplaceOptionForm}" ]
+	then
+		# Attempt to guess it from help
+		if sed --helo 2>&1 | grep -q '\-i\[SUFFIX\]'
+		then
+			inplaceOptionForm='nested'
+		elif sed --helo 2>&1 | grep -q '\-i extension'
+		then
+			inplaceOptionForm='arg'
+		else
+			inplaceOptionForm='noarg'
 		fi
-	fi	
+	fi
+else
+	inplaceOptionForm="${__ns_sed_inplace_inplaceOptionForm}"
 fi
 
-if [ ${sedForm} -eq 1 ]
+# Store for later use
+__ns_sed_inplace_inplaceOptionForm="${inplaceOptionForm}"
+
+if [ "${inplaceOptionForm}" = 'nested' ]
 then
-	"${sedBin}" --in-place "${@}"
-elif [ ${sedForm} -eq 2 ]
+	sed -i'' "${@}"
+elif [ "${inplaceOptionForm}" = 'arg' ]
 then
-	"${sedBin}" -i ""  "${@}"
+	sed -i '' "${@}"
+else
+	sed -i "${@}"
 fi
 ]]></xsh:body>
 	</xsh:function>

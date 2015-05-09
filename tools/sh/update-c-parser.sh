@@ -635,43 +635,45 @@ ns_which()
 }
 ns_sed_inplace()
 {
-	# sedForm
-	# 1: modern linux => (g)sed --in-place
-	# 2: Mac OS X 10.5-10.8 - => sed -i ""
-	# TODO test Mac OS X < 10.5
-	local sedForm=1
-	# Use gsed if available
-	local sedBin=
-	if which 'gsed' 1>/dev/null 2>&1
+	local inplaceOptionForm=
+	if [ -z "${__ns_sed_inplace_inplaceOptionForm}" ]
 	then
-		sedBin="$(which 'gsed')"
-	elif which 'sed' 1>/dev/null 2>&1
-	then
-		sedBin="$(which 'sed')"
-	else
-		return 1
-	fi
-	
-	if [ "$(uname -s)" == "Darwin" ] && [ "${sedBin}" = "/usr/bin/sed" ]
-	then
-	local macOSXVersion="$(sw_vers -productVersion)"
-	if [ ! -z "${macOSXVersion}" ]
+		if [ "$(uname -s)" = 'Darwin' ]
 		then
-	local macOSXMajorVersion="$(echo "${macOSXVersion}" | cut -f 1 -d".")"
-	local macOSXMinorVersion="$(echo "${macOSXVersion}" | cut -f 2 -d".")"
-	if [ ${macOSXMajorVersion} -eq 10 ] && [ ${macOSXMinorVersion} -ge 5 ]
+			if [ "$(which sed 2>/dev/null)" = '/usr/bin/sed' ]
 			then
-				sedForm=2
+				inplaceOptionForm='arg'			
+			fi 
+		fi
+		
+		if [ -z "${inplaceOptionForm}" ]
+		then
+			# Attempt to guess it from help
+			if sed --helo 2>&1 | grep -q '\-i\[SUFFIX\]'
+			then
+				inplaceOptionForm='nested'
+			elif sed --helo 2>&1 | grep -q '\-i extension'
+			then
+				inplaceOptionForm='arg'
+			else
+				inplaceOptionForm='noarg'
 			fi
-		fi	
+		fi
+	else
+		inplaceOptionForm="${__ns_sed_inplace_inplaceOptionForm}"
 	fi
 	
-	if [ ${sedForm} -eq 1 ]
+	# Store for later use
+	__ns_sed_inplace_inplaceOptionForm="${inplaceOptionForm}"
+	
+	if [ "${inplaceOptionForm}" = 'nested' ]
 	then
-		"${sedBin}" --in-place "${@}"
-	elif [ ${sedForm} -eq 2 ]
+		sed -i'' "${@}"
+	elif [ "${inplaceOptionForm}" = 'arg' ]
 	then
-		"${sedBin}" -i ""  "${@}"
+		sed -i '' "${@}"
+	else
+		sed -i "${@}"
 	fi
 }
 scriptFilePath="$(ns_realpath "${0}")"
