@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr)
 ################################################################################
 # Update ns/sh scripts and completion files

@@ -232,7 +232,7 @@ EOF
 		
 		for p in "${pythonInterpreters[@]}"
 		do
-			pyVersion="$(echo "${p}" | sed -E "s,python(.*),\\1,g")"
+			pyVersion="$(echo "${p}" | sed "s,python\(.*\),\\1,g")"
 			parserNames=("${parserNames[@]}" "py ${pyVersion}")
 			resultLineFormat="${resultLineFormat} %-7s |"
 		done
