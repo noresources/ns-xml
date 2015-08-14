@@ -940,7 +940,7 @@ if ! parse "${@}"
 then
 	if ${displayHelp}
 	then
-		usage
+		usage "${parser_subcommand}"
 		exit 0
 	fi
 	
@@ -950,7 +950,7 @@ fi
 
 if ${displayHelp}
 then
-	usage
+	usage "${parser_subcommand}"
 	exit 0
 fi
 
