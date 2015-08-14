@@ -783,6 +783,97 @@ then
 EOF
 	rm -f "${xshTestProgram}" 
 	exit ${xshTestResult}
+elif [ "${parser_subcommand}" = 'xslt' ]
+then
+	xsltTestsResult=0
+	xsltTestPathBase="${rootPath}/unittests/xslt"
+	unset testList
+	if [ ${#parser_values[@]} -gt 0 ]
+	then
+		for v in "${parser_values[@]}"
+		do
+			if [ -f "${v}" ] && [ "${v%.info}" != "${v}" ]
+			then
+				testList=("${testList[@]}" "${v}")
+			elif [ -f "${xsltTestPathBase}/${v}.info" ]
+			then
+				testList=("${testList[@]}" "${xsltTestPathBase}/${v}.info")
+			else
+				ns_error "Invalid xslt test '${v}'"
+			fi
+		done
+	else
+		while read f
+		do
+			testList=("${testList[@]}" "${f}")
+		done << EOF
+$(find "${xsltTestPathBase}" -name '*.info')
+EOF
+	fi
+		
+	for f in "${testList[@]}"
+	do
+		n="$(basename "${f}" .info)"
+		schemaResult='skipped'
+		transformResult='failed'
+		testResult='passed'
+		
+		transform="$(grep -E '^transform' "${f}" | cut -f 2 -d':' | xargs echo)"
+		schema="$(grep -E '^schema' "${f}" | cut -f 2 -d':' | xargs echo)"
+		xml="${f%.info}.xml"
+		expected="${f%.info}.expected"
+		result="${f%.info}.transformresult"
+		
+		[ -z "${transform}" ] && ns_error "${n}: No XSLT file specified"
+		transform="${rootPath}/${transform}"
+		[ ! -f "${transform}" ] && ns_error "${n}: Invalid XSLT file '${transform}'"
+		
+		[ -f "${xml}" ] || ns_error "${n}: XML file not found"
+		
+		if [ ! -z "${schema}" ]
+		then
+			schema="${rootPath}/${schema}"
+			[ ! -f "${schema}" ] && ns_error "${n}: Invalid schema file '${schema}'"
+		
+			schemaResult='failed'
+			
+			xmllint --xinclude --noout \
+				--schema "${schema}" \
+				"${xml}" \
+				2>"${f%.info}.schemaresult" \
+			&& schemaResult='passed'
+		fi
+		
+		if [ -f "${expected}" ]
+		then
+			xsltproc --xinclude --output "${result}" "${transform}" "${xml}"
+			diff -q "${result}" "${expected}" 1>/dev/null 2>&1 && transformResult='passed'
+		else
+			xsltproc --xinclude --output "${expected}" "${transform}" "${xml}"
+			transformResult='skipped'
+		fi
+		
+		if [ "${schemaResult}" = 'failed' ] || [ "${transformResult}" = 'failed' ]
+		then
+			xsltTestsResult=$(expr ${xsltTestsResult} + 1)
+			testResult='failed'
+		fi
+		
+		resultFormat='%-25.25s | %-6s | %-9s | %-6s |\n'
+		printf "${resultFormat}" "Test" "schema" "transform" "RESULT"
+		printf "${resultFormat}" "${n}" "${schemaResult}" "${transformResult}" "${testResult}" \
+			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
+			| sed "s,failed,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
+		
+	done
+
+	if [ ${xsltTestsResult} -eq 0 ]
+	then
+		find "${xsltTestPathBase}" -name '*.transformresult' -exec rm -f "{}" \;
+		find "${xsltTestPathBase}" -name '*.schemaresult' -exec rm -f "{}" \;
+	fi
+	
+	exit ${xsltTestsResult}
 fi
 	
 exit 0

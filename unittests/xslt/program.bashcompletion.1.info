@@ -1,0 +1,2 @@
+schema: ns/xsd/xsh/1.0/xsh.xsd
+transform: ns/xsl/program/2.0/bashcompletion.xsl

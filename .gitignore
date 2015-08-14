@@ -6,6 +6,8 @@
 *.result-valgrind.xml
 *.result-php
 *.result-python*
+*.transformresult
+*.schemaresult
 unittests/parsers/apps/*/program-*
 unittests/parsers/apps/*/program.bash
 unittests/parsers/apps/*/program.ksh
@@ -24,6 +26,11 @@ __pycache__
 /gource-*.mp4
 .~lock*
 .settings
+
+# IDE project files
+*.project
+*.cproject
+*.settings
 
 # Other VCS files
 \.hg*
