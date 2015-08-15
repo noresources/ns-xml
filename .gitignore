@@ -28,9 +28,10 @@ __pycache__
 .settings
 
 # IDE project files
-*.project
-*.cproject
-*.settings
+\.project
+\.cproject
+\.settings
+\.buildpath
 
 # Other VCS files
 \.hg*

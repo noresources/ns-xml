@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource name="main" version="1.0" xmlns:sql="http://xsd.nore.fr/sql">
+	<!-- Attached file for SQLite, Database for MySQL, Schema for PostgreSQL -->
+	<sql:database name="main">
+		<sql:table name="table">
+			<sql:field name="id" id="main.table.id">
+				<sql:datatype>
+					<sql:numeric autoincrement="yes" />
+				</sql:datatype>
+			</sql:field>
+			<sql:field name="id2">
+				<sql:datatype>
+					<sql:numeric />
+				</sql:datatype>
+			</sql:field>
+			<sql:field name="name">
+				<sql:datatype>
+					<!-- A restricted string  -->
+					<sql:string length="42">
+						<sql:enumeration>
+							<sql:value>foo</sql:value>
+							<sql:value>bar</sql:value>
+						</sql:enumeration>
+					</sql:string>
+				</sql:datatype>
+			</sql:field>
+			<sql:primarykey name="pk">
+				<sql:field name="id" order="ASC" />
+			</sql:primarykey>
+		</sql:table>
+		<sql:table name="table2">
+			<sql:field name="id2" id="main.table.id2">
+				<sql:datatype>
+					<sql:numeric autoincrement="yes" />
+				</sql:datatype>
+			</sql:field>
+			<sql:field name="startDateTime">
+				<sql:datatype>
+					<sql:timestamp mode="datetime" timezone="yes" />
+				</sql:datatype>
+			</sql:field>
+			<sql:field name="endTime">
+				<sql:datatype>
+					<sql:timestamp mode="time"/>
+				</sql:datatype>
+			</sql:field>
+			<sql:field name="name2">
+				<sql:datatype>
+					<!-- A restricted string  -->
+					<sql:string length="56">
+					</sql:string>
+				</sql:datatype>
+			</sql:field>
+			<sql:primarykey name="pk">
+				<sql:field name="id2"/>
+				<sql:field name="name2"/>
+			</sql:primarykey>
+		</sql:table>
+	</sql:database>
+</sql:datasource>

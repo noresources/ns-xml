@@ -1764,6 +1764,9 @@ then
 $(find "${xsltTestPathBase}" -name '*.info')
 EOF
 	fi
+
+	resultFormat='%-25.25s | %-6s | %-9s | %-6s |\n'
+	printf "${resultFormat}" "Test" "schema" "transform" "RESULT"
 		
 	for f in "${testList[@]}"
 	do
@@ -1813,8 +1816,6 @@ EOF
 			testResult='failed'
 		fi
 		
-		resultFormat='%-25.25s | %-6s | %-9s | %-6s |\n'
-		printf "${resultFormat}" "Test" "schema" "transform" "RESULT"
 		printf "${resultFormat}" "${n}" "${schemaResult}" "${transformResult}" "${testResult}" \
 			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
 			| sed "s,failed,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
