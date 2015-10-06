@@ -1738,12 +1738,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	{
 		if (nvalidator->decimal_count > 0)
 		{
-			snprintf(message_format, message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
+			snprintf(message_format, message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->min_value);
 		}
 		else
 		{
-			strncpy(message_format, "Argument value must be lesser or equal %d", message_format_buffer_length);
+			strncpy(message_format, "Argument value must be greater or equal %d", message_format_buffer_length);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->min_value);
 		}
 	}
@@ -1751,16 +1751,14 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	{
 		if (nvalidator->decimal_count > 0)
 		{
-			snprintf(message_format, message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
+			snprintf(message_format, message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->max_value);
 		}
 		else
 		{
-			strncpy(message_format, "Argument value must be greater or equal %d", message_format_buffer_length);
+			strncpy(message_format, "Argument value must be lesser or equal %d", message_format_buffer_length);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->max_value);
 		}
-		
-		printed = nsxml_util_asnprintf(output, output_length, "Argument value must be greater or equal to %.2f", (double) nvalidator->max_value);
 	}
 	
 #	undef message_format_buffer_length
