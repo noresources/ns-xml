@@ -61,6 +61,7 @@ transform_c()
 	local templateName="${3}"
 	
 	local tmpFile="$(ns_mktemp)"
+	
 	([ ! -z "${tmpFile}" ] && [ -w "${tmpFile}" ]) || ns_error 2 "Unable to access to temporary file '${tmpFile}'"
 
 	cat > "${tmpFile}" << EOF
@@ -93,31 +94,40 @@ EOF
 
 EOF
 	
+	local ws='\b'
+	local we='\b'
+	if [ "$(uname -s)" = 'Darwin' ]
+	then
+		ws='[[:<:]]'
+		we='[[:>:]]'
+	fi
+	
 	# Replace hardcoded names by transformable ones
 	for t in "${transformableStructs[@]}"
 	do
-		#echo "Transform struct $t"
-		ns_sed_inplace "s,struct[ \t]\+${t}\([^_]\),struct ]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\1,g" "${tmpFile}"
-		ns_sed_inplace "s,\(typedef struct[ \t]\+[a-zA-Z0-9_-]\+[ \t]\+\)${t};,\\1]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[;,g" "${tmpFile}"
-		ns_sed_inplace "s,\(^\| \|\t\|(\)${t}\([ \t)]\+\),\\1]]><xsl:value-of select=\"\$prg.c.parser.structName.${t}\"/><![CDATA[\\2,g" "${tmpFile}"
+		ns_sed_inplace \
+			's,'${ws}${t}${we}',]]><xsl:value-of select="$prg.c.parser.structName.'${t}'"/><![CDATA[,g' \
+			"${tmpFile}"
 	done
 	
 	for t in "${transformableFunctions[@]}"
 	do
-		#echo "Transform function $t()"
-		ns_sed_inplace "s,${t}[ \t]*(,]]><xsl:value-of select=\"\$prg.c.parser.functionName.${t}\"/><![CDATA[(,g" "${tmpFile}"
+		ns_sed_inplace \
+			's,'${ws}${t}${we}',]]><xsl:value-of select="$prg.c.parser.functionName.'${t}'"/><![CDATA[,g' \
+			"${tmpFile}"
 	done
 	
 	for t in "${transformableEnumPrefixes[@]}"
 	do
-		#echo "Transform enum $t*"
-		ns_sed_inplace "s,${t}\([a-zA-Z0-9_]\+\),]]><xsl:value-of select=\"\$prg.c.parser.variableName.${t}\\1\"/><![CDATA[,g" "${tmpFile}"
+		ns_sed_inplace \
+			's,'${ws}'\('${t}'[a-zA-Z0-9_][a-zA-Z0-9_]*\)'${we}',]]><xsl:value-of select="$prg.c.parser.variableName.\1"/><![CDATA[,g' \
+			"${tmpFile}"
 	done
 	
 	# Include (if source)
-	ns_sed_inplace "s,#include[ \t][ \t]*\"nsxml_program_parser\.h\",#include \"]]><xsl:value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
+	ns_sed_inplace "s,#include[[:space:]][[:space:]]*\"nsxml_program_parser\.h\",#include \"]]><xsl:value-of select=\"\$prg.c.parser.header.filePath\"/><![CDATA[\",g" "${tmpFile}"
 
-	# Finally 
+	# Finally
 	mv "${tmpFile}" "${output}"
 }
 

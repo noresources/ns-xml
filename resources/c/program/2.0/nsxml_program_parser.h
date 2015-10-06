@@ -159,9 +159,9 @@ NSXMLAPI enum nsxml_util_text_indent_mode
  */
 NSXMLAPI enum nsxml_util_text_wrap_eol
 {
-	nsxml_util_text_wrap_eol_cr = 1, /**!< nsxml_util_text_wrap_eol_cr */
-	nsxml_util_text_wrap_eol_lf = 2, /**!< nsxml_util_text_wrap_eol_lf */
-	nsxml_util_text_wrap_eol_crlf = 3/**!< nsxml_util_text_wrap_eol_crlf */
+	nsxml_util_text_wrap_eol_cr = 1, /**!< MacOS < X end-of-line */
+	nsxml_util_text_wrap_eol_lf = 2, /**!< Unix end-of-line */
+	nsxml_util_text_wrap_eol_crlf = 3/**!< Windows end-of-line */
 };
 
 /** Initialize text wrapping option structure */
@@ -190,12 +190,12 @@ NSXMLAPI void nsxml_util_text_wrap_fprintf(FILE *stream, const char *text, const
  */
 NSXMLAPI enum nsxml_message_type
 {
-	nsxml_message_type_debug = 0, /**!< nsxml_message_type_debug */
-	nsxml_message_type_warning, /**!< nsxml_message_type_warning */
-	nsxml_message_type_error, /**!< nsxml_message_type_error */
-	nsxml_message_type_fatal_error,/**!< nsxml_message_type_fatal_error */
+	nsxml_message_type_debug = 0, /**!< Debug messages */
+	nsxml_message_type_warning, /**!< Non-critical problem */
+	nsxml_message_type_error, /**!< Error */
+	nsxml_message_type_fatal_error,/**!< Fatal error */
 	
-	nsxml_message_type_count /**!< nsxml_message_type_count */
+	nsxml_message_type_count
 };
 
 NSXMLAPI enum nsxml_message_warning
@@ -203,9 +203,24 @@ NSXMLAPI enum nsxml_message_warning
 	nsxml_message_warning_ignore_endofarguments = 1
 };
 
+/**
+ * Error list
+ */
 NSXMLAPI enum nsxml_message_error
 {
-	nsxml_message_error_invalid_option_argument = 1, nsxml_message_error_invalid_pa_argument = 2, nsxml_message_error_missing_option_argument = 3, nsxml_message_error_missing_required_option = 4, nsxml_message_error_missing_required_group_option = 5, nsxml_message_error_missing_required_xgroup_option = 6, nsxml_message_error_missing_required_pa = 7, nsxml_message_error_program_pa_not_allowed = 8, nsxml_message_error_subcommand_pa_not_allowed = 9, nsxml_message_error_too_many_pa = 10, nsxml_message_error_not_enough_arguments = 11, nsxml_message_error_unexpected_option = 12, nsxml_message_error_option_argument_not_allowed = 13
+	nsxml_message_error_invalid_option_argument = 1,
+	nsxml_message_error_invalid_pa_argument = 2,
+	nsxml_message_error_missing_option_argument = 3,
+	nsxml_message_error_missing_required_option = 4,
+	nsxml_message_error_missing_required_group_option = 5,
+	nsxml_message_error_missing_required_xgroup_option = 6,
+	nsxml_message_error_missing_required_pa = 7,
+	nsxml_message_error_program_pa_not_allowed = 8,
+	nsxml_message_error_subcommand_pa_not_allowed = 9,
+	nsxml_message_error_too_many_pa = 10,
+	nsxml_message_error_not_enough_arguments = 11,
+	nsxml_message_error_unexpected_option = 12,
+	nsxml_message_error_option_argument_not_allowed = 13
 };
 
 NSXMLAPI enum nsxml_message_fatal_error
@@ -262,17 +277,20 @@ typedef int nsxml_value_validator_usage_callback(const void *self, struct nsxml_
  */
 enum nsxml_value_validator_flags
 {
-	nsxml_value_validator_checkmin = (1 << 0), /**!< nsxml_value_validator_checkmin */
-	nsxml_value_validator_checkmax = (1 << 1), /**!< nsxml_value_validator_checkmax */
-	nsxml_value_validator_path_exists = (1 << 2), /**!< nsxml_value_validator_path_exists */
-	nsxml_value_validator_path_readable = (1 << 3), /**!< nsxml_value_validator_path_readable */
-	nsxml_value_validator_path_writable = (1 << 4), /**!< nsxml_value_validator_path_writable */
-	nsxml_value_validator_path_executable = (1 << 5), /**!< nsxml_value_validator_path_executable */
-	nsxml_value_validator_path_type_file = (1 << 6), /**!< nsxml_value_validator_path_type_file */
-	nsxml_value_validator_path_type_folder = (1 << 7), /**!< nsxml_value_validator_path_type_folder */
-	nsxml_value_validator_path_type_symlink = (1 << 8),/**!< nsxml_value_validator_path_type_symlink */
-	nsxml_value_validator_path_type_all = /**!< nsxml_value_validator_path_type_all */
-	    (nsxml_value_validator_path_type_file | nsxml_value_validator_path_type_folder | nsxml_value_validator_path_type_symlink), nsxml_value_validator_enum_strict = (1 << 9) /**!< nsxml_value_validator_enum_strict */
+	nsxml_value_validator_checkmin = (1 << 0),
+	nsxml_value_validator_checkmax = (1 << 1),
+	nsxml_value_validator_path_exists = (1 << 2),
+	nsxml_value_validator_path_readable = (1 << 3),
+	nsxml_value_validator_path_writable = (1 << 4),
+	nsxml_value_validator_path_executable = (1 << 5),
+	nsxml_value_validator_path_type_file = (1 << 6),
+	nsxml_value_validator_path_type_folder = (1 << 7),
+	nsxml_value_validator_path_type_symlink = (1 << 8),
+	nsxml_value_validator_path_type_all =
+	    (nsxml_value_validator_path_type_file
+	     | nsxml_value_validator_path_type_folder
+	     | nsxml_value_validator_path_type_symlink),
+	nsxml_value_validator_enum_strict = (1 << 9)
 };
 
 struct nsxml_value_validator
@@ -314,9 +332,9 @@ int nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_it
 /** Types of element informations */
 enum nsxml_item_type
 {
-	nsxml_item_type_program = 1, /**!< nsxml_item_type_program */
-	nsxml_item_type_subcommand, /**!< nsxml_item_type_subcommand */
-	nsxml_item_type_option, /**!< nsxml_item_type_option */
+	nsxml_item_type_program = 1, /**!< Main program */
+	nsxml_item_type_subcommand, /**!< Program subcommand */
+	nsxml_item_type_option, /**!< Command line option */
 	nsxml_item_type_positional_argument, /** Positional argument */
 	
 	nsxml_item_type_count
@@ -342,22 +360,22 @@ void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *ab
 /** Option types */
 enum nsxml_option_type
 {
-	nsxml_option_type_switch = 0, /**!< nsxml_option_type_switch */
-	nsxml_option_type_argument, /**!< nsxml_option_type_argument */
-	nsxml_option_type_multiargument,/**!< nsxml_option_type_multiargument */
-	nsxml_option_type_group, /**!< nsxml_option_type_group */
+	nsxml_option_type_switch = 0, /**!< Boolean swith */
+	nsxml_option_type_argument, /**!< Option with a unique argument */
+	nsxml_option_type_multiargument,/**!< Option with one or more arguments */
+	nsxml_option_type_group, /**!< Option group */
 	
-	nsxml_option_type_count /**!< nsxml_option_type_count */
+	nsxml_option_type_count
 };
 
 /** Type of option or positional argument value */
 NSXMLAPI enum nsxml_value_type
 {
-	nsxml_value_type_unset = -1,/**!< nsxml_value_type_unset */
-	nsxml_value_type_null, /**!< nsxml_value_type_null */
-	nsxml_value_type_int, /**!< nsxml_value_type_int */
-	nsxml_value_type_float, /**!< nsxml_value_type_float */
-	nsxml_value_type_string /**!< nsxml_value_type_string */
+	nsxml_value_type_unset = -1,/**!< Undefined value type */
+	nsxml_value_type_null, /**!< Null value */
+	nsxml_value_type_int, /**!< Integer value */
+	nsxml_value_type_float, /**!< Floating point value */
+	nsxml_value_type_string /**!< Text value */
 };
 
 struct nsxml_group_option_info;
@@ -628,9 +646,16 @@ void nsxml_parser_state_free(struct nsxml_parser_state *state);
 
 /* Parser results ********************************/
 
+/**
+ * Result structure types
+ */
 enum nsxml_result_type
 {
-	nsxml_result_type_program, nsxml_result_type_switch, nsxml_result_type_argument, nsxml_result_type_multiargument, nsxml_result_type_group
+	nsxml_result_type_program,
+	nsxml_result_type_switch,
+	nsxml_result_type_argument,
+	nsxml_result_type_multiargument,
+	nsxml_result_type_group
 };
 
 /**

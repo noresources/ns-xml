@@ -47,6 +47,8 @@ do
 	d="$(dirname "${f}")"
 	bn="${b%.xsh}"
 	
+	[ "${d}" = '.AppleDouble' ] && continue
+	
 	if [ ! -f "${fn}.xml" ]
 	then
 		continue
