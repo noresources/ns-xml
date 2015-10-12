@@ -1481,13 +1481,18 @@ ns_mktemp()
 	else
 		key="$(date +%s)"
 	fi
+	local __ns_mktemp=
 	if [ "$(uname -s)" == "Darwin" ]
 	then
 		#Use key as a prefix
 		mktemp -t "${key}"
-	else
-		#Use key as a suffix
+	elif which 'mktemp' 1>/dev/null 2>&1
+	then
+		# Use key as a suffix
 		mktemp --suffix "${key}"
+	else
+	local __ns_mktemp="/tmp/${key}.$(date +%s)-${RANDOM}"
+	touch "${__ns_mktemp}" && echo "${__ns_mktemp}"
 	fi
 }
 ns_mktempdir()
@@ -1504,9 +1509,13 @@ ns_mktempdir()
 	then
 		#Use key as a prefix
 		mktemp -d -t "${key}"
-	else
-		#Use key as a suffix
+	elif which 'mktemp' 1>/dev/null 2>&1
+	then
+		# Use key as a suffix
 		mktemp -d --suffix "${key}"
+	else
+	local __ns_mktempdir="/tmp/${key}.$(date +%s)-${RANDOM}"
+	mkdir -p "${__ns_mktempdir}" && echo "${__ns_mktempdir}"
 	fi
 }
 chunk_check_nsxml_ns_path()
