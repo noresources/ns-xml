@@ -68,18 +68,23 @@ echo "${res}"
 	<xsh:function name="ns_mktemp">
 		<xsh:parameter name="key">$(date +%s)</xsh:parameter>
 		<xsh:body>
-			<xsh:local name='__ns_mktemp' />
 		<![CDATA[
-if [ "$(uname -s)" == "Darwin" ]
+if [ "$(uname -s)" = 'Darwin' ]
 then
 	#Use key as a prefix
 	mktemp -t "${key}"
-elif which 'mktemp' 1>/dev/null 2>&1
+elif which 'mktemp' 1>/dev/null 2>&1 \
+	&& mktemp --suffix "${key}" 1>/dev/null 2>&1
 then
-	# Use key as a suffix
 	mktemp --suffix "${key}"
-else
-	]]><xsh:local name='__ns_mktemp'>/tmp/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
+else]]>
+	<xsh:local name='__ns_mktemp_root' /><![CDATA[
+	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
+	do
+		[ -d "${__ns_mktemp_root}" ] && break
+	done
+	[ -d "${__ns_mktemp_root}" ] || return 1]]>
+	<xsh:local name="__ns_mktemp">/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
 	touch "${__ns_mktemp}" && echo "${__ns_mktemp}"
 fi
 ]]></xsh:body>
@@ -89,16 +94,23 @@ fi
 			$(date +%s)
 		</xsh:parameter>
 		<xsh:body><![CDATA[
-if [ "$(uname -s)" == "Darwin" ]
+if [ "$(uname -s)" = 'Darwin' ]
 then
 	#Use key as a prefix
 	mktemp -d -t "${key}"
-elif which 'mktemp' 1>/dev/null 2>&1
+elif which 'mktemp' 1>/dev/null 2>&1 \
+	&& mktemp -d --suffix "${key}" 1>/dev/null 2>&1
 then
 	# Use key as a suffix
 	mktemp -d --suffix "${key}"
-else
-	]]><xsh:local name='__ns_mktempdir'>/tmp/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
+else]]>
+	<xsh:local name='__ns_mktemp_root' /><![CDATA[
+	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
+	do
+		[ -d "${__ns_mktemp_root}" ] && break
+	done
+	[ -d "${__ns_mktemp_root}" ] || return 1
+	]]><xsh:local name='__ns_mktempdir'>/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
 	mkdir -p "${__ns_mktempdir}" && echo "${__ns_mktempdir}"
 fi
 ]]></xsh:body>
