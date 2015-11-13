@@ -67,8 +67,6 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<!-- /////////////////////////////////////////////////////////////// -->
-
 	<!-- Table primary key constraint -->
 	<!-- Do not write constraints if single column + autoincrement type -->
 	<!-- This constraint is handled separately -->
@@ -99,28 +97,5 @@
 		</xsl:if>
 
 	</xsl:template>
-
-	<!-- /////////////////////////////////////////////////////////////// -->
-
-	<!-- Find a less xpathish solution -->
-	<!-- <xsl:template name="tableReference">
-		<xsl:param name="id" />
-		<xsl:param name="fullName" select="false()" />
-		<xsl:if test="$fullName">
-		<xsl:if test="//sql:table[@id=$id]/../@name">
-		<xsl:call-template name="sql.elementName">
-		<xsl:with-param name="name">
-		<xsl:value-of select="//sql:table[@id=$id]/../@name" />
-		</xsl:with-param>
-		</xsl:call-template>
-		<xsl:text>.</xsl:text>
-		</xsl:if>
-		</xsl:if>
-		<xsl:call-template name="sql.elementName">
-		<xsl:with-param name="name">
-		<xsl:value-of select="//sql:table[@id=$id]/@name" />
-		</xsl:with-param>
-		</xsl:call-template>
-		</xsl:template> -->
 
 </xsl:stylesheet>

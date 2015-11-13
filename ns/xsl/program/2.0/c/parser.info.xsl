@@ -563,7 +563,10 @@
 					<xsl:with-param name="content">
 						<xsl:text>struct nsxml_option_info *o = NULL;</xsl:text>
 						<xsl:value-of select="$str.endl" />
-						<xsl:text>void *o_ptr = NULL;</xsl:text>
+						<xsl:variable name="haveArgOptions" select="count ($rootNode/prg:options//prg:argument | $rootNode/prg:options//prg:multiargument) &gt; 0" />
+						<xsl:if test="$haveArgOptions">
+							<xsl:text>void *o_ptr = NULL;</xsl:text>
+						</xsl:if>
 						<xsl:value-of select="$str.endl" />
 						<xsl:variable name="containerVariable">
 							<xsl:value-of select="$memberSet" />
@@ -596,7 +599,9 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:if test="$haveArgOptions">
+										<xsl:text>o_ptr = o;</xsl:text>
+									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.switch_optionItemInfoInit">
 										<xsl:with-param name="optionNode" select="." />
@@ -615,7 +620,9 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:if test="$haveArgOptions">
+										<xsl:text>o_ptr = o;</xsl:text>
+									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.argumentOptionItemInfoInit">
 										<xsl:with-param name="optionNode" select="." />
@@ -634,7 +641,9 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:if test="$haveArgOptions">
+										<xsl:text>o_ptr = o;</xsl:text>
+									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.multiargumentOptionItemInfoInit">
 										<xsl:with-param name="optionNode" select="." />
@@ -653,7 +662,9 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:text>o_ptr = o;</xsl:text>
+									<xsl:if test="$haveArgOptions">
+										<xsl:text>o_ptr = o;</xsl:text>
+									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.group_optionItemInfoInit">
 										<xsl:with-param name="optionNode" select="." />
@@ -681,7 +692,9 @@
 							<xsl:text>o = info-&gt;rootitem_info.option_infos[</xsl:text>
 							<xsl:value-of select="$optionIndex" />
 							<xsl:text>];</xsl:text>
-							<xsl:text>o_ptr = o;</xsl:text>
+							<xsl:if test="$haveArgOptions">
+								<xsl:text>o_ptr = o;</xsl:text>
+							</xsl:if>
 							<xsl:value-of select="$str.endl" />
 							<xsl:for-each select="$groupNode/prg:options/*">
 								<xsl:text>((struct nsxml_group_option_info *)(o_ptr))-&gt;option_info_refs[</xsl:text>
