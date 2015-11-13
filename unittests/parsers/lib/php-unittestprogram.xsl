@@ -17,11 +17,11 @@
 		<text><![CDATA[
 <?php
 $scriptPath = dirname (realpath(__FILE__));
-require_once ($scriptPath . "/program-lib.php" );
+require_once ($scriptPath . '/program-lib.php' );
 
 function echol ($line)
 {
-	echo ($line . "\n");
+	echo ($line . PHP_EOL);
 }
 
 function echolist ($iterable)
@@ -31,61 +31,67 @@ function echolist ($iterable)
 	{
 		if (!$first)
 		{
-			echo ", ";
+			echo ', ';
 		}
 		$first = false;
-		echo "\"" . $a . "\"";
+		echo '"' . $a . '"';
 	}
 
-	echo "\n";
+	echo (PHP_EOL);
 }
 
 function echovalue($arg)
 {
 	if (is_bool($arg))
 	{
-		echo (($arg) ? "True" : "False");
+		echo (($arg) ? 'True' : 'False');
 	}
 	else if (is_array($arg))
 	{
-		echo implode(" ", $arg);
+		echo implode(' ', $arg);
 	}
 	else
 	{
 		echo $arg;
 	}
-	echo ("\n");
+	echo (PHP_EOL);
 }
 
 $info = new \TestProgramInfo;
 $parser = new \Parser($info);
-$result = $parser->parse($_SERVER["argv"]);
+$result = $parser->parse($_SERVER['argv']);
 
-$args = $_SERVER["argv"];
+$args = $_SERVER['argv'];
 array_shift($args);
 
-echo "CLI: ";
+echo 'CLI: ';
 echolist ($args);
-echol ("Value count: " . $result->valueCount());
-echo ("Values: "); echolist ($result);
+echol ('Value count: ' . $result->valueCount());
+echo ('Values: '); echolist ($result);
 $errors = $result->getMessages(\Message::ERROR);
 $errorCount = count($errors);
-echol ("Error count: " . $errorCount);
+echol ('Error count: ' . $errorCount);
 if ($errorCount > 0)
 {
 	foreach ($args as $arg)
 	{
-		if ($arg == "__msg__")
+		if ($arg == '__msg__')
 		{
-			echol ("Errors");
+			echol ('Errors');
 			foreach ($errors as $e)
 			{
-				echol ("- " . $e);
+				echol ('- ' . $e);
 			}
+		}
+		if ($arg == '__help__')
+		{
+			$usage = new UsageFormat;
+			$usage->format = UsageFormat::DETAILED_TEXT;
+			echo ($info->usage($usage));   
 		}
 	}
 } 
-echol ("Subcommand: " . ($result->subcommandName ? $result->subcommandName : ""));  
+echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : ''));  
 ]]></text>
 		<!-- Global args -->
 		<if test="/prg:program/prg:options">
