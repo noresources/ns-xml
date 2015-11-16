@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>app2</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application ()</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:switch>
+			<prg:databinding><prg:variable>backslashes</prg:variable></prg:databinding>
+			<prg:documentation>
+			<prg:abstract>Baskslashes are \not \welcome here</prg:abstract>
+			<prg:details>Nor in \detailed\ test</prg:details>
+			</prg:documentation>
+			<prg:names><prg:long>backslash</prg:long></prg:names>
+		</prg:switch>
+		<prg:switch>
+			<prg:databinding><prg:variable>quotes</prg:variable></prg:databinding>
+			<prg:documentation>
+			<prg:abstract>
+				This comment contains 'single quotes' AND "double quotes" !
+			</prg:abstract>
+			<prg:details>
+			Detailed description is "double quoted". This should not be a problem
+			</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>quotes</prg:long>
+			</prg:names>
+		</prg:switch>
+	</prg:options>		
+</prg:program>

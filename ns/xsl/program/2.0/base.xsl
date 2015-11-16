@@ -6,10 +6,10 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:import href="../../strings.xsl" />
 	<xsl:import href="../../languages/base.xsl" />
-	
+
 	<xsl:param name="prg.prefix" />
 	<xsl:param name="prg.debug" select="false()" />
-	
+
 	<!-- Strip spaces -->
 	<xsl:template match="prg:short|prg:long|prg:name|prg:abstract|prg:author|prg:copyright|prg:version">
 		<xsl:value-of select="normalize-space(.)" />
@@ -60,11 +60,11 @@
 	<!-- Build a unique option id using the full path of the option from the prg:program node -->
 	<xsl:template name="prg.optionId">
 		<xsl:param name="optionNode" select="." />
-		
+
 		<xsl:variable name="grandParent" select="$optionNode/../.." />
 		<xsl:variable name="isFinal" select="($optionNode/self::prg:program or $optionNode/self::prg:subcommand)" />
 		<xsl:variable name="index" select="count($optionNode/preceding-sibling::*)+1" />
-		
+
 		<!-- Recursive call -->
 		<xsl:choose>
 			<xsl:when test="$isFinal">

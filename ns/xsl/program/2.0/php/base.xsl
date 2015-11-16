@@ -2,7 +2,7 @@
 <!-- Copyright © 2013 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
-<!--  -->
+<!-- -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:output method="text" encoding="utf-8" />
 
@@ -37,5 +37,5 @@
 		</xsl:if>
 		<xsl:value-of select="$classname" />
 	</xsl:template>
-	
+
 </xsl:stylesheet>

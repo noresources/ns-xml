@@ -613,7 +613,7 @@
 		<xsl:value-of select="normalize-space(.)" />
 	</xsl:template>
 
-	<xsl:template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
+	<xsl:template match="prg:abstract | prg:details/text() | prg:block/text()">
 		<xsl:call-template name="str.replaceAll">
 			<xsl:with-param name="text">
 				<xsl:call-template name="str.replaceAll">

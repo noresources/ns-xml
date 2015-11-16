@@ -434,17 +434,17 @@
 		<xsl:if test="$optionNode/prg:documentation/prg:abstract">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$optionVariable" />
-			<xsl:text>->abstract = "</xsl:text>
+			<xsl:text>->abstract = '</xsl:text>
 			<xsl:apply-templates select="$optionNode/prg:documentation/prg:abstract" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:if test="$optionNode/prg:documentation/prg:details">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$optionVariable" />
-			<xsl:text>->details = "</xsl:text>
+			<xsl:text>->details = '</xsl:text>
 			<xsl:apply-templates select="$optionNode/prg:documentation/prg:details" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 
@@ -645,7 +645,7 @@
 		<xsl:value-of select="normalize-space(.)" />
 	</xsl:template>
 
-	<xsl:template match="prg:abstract/text() | prg:details/text() | prg:block/text()">
+	<xsl:template match="prg:abstract | prg:details/text() | prg:block/text()">
 		<xsl:call-template name="str.replaceAll">
 			<xsl:with-param name="text">
 				<xsl:call-template name="str.replaceAll">
@@ -654,8 +654,8 @@
 					<xsl:with-param name="by" select="'\\'" />
 				</xsl:call-template>
 			</xsl:with-param>
-			<xsl:with-param name="replace" select="'&quot;'" />
-			<xsl:with-param name="by" select="'\&quot;'" />
+			<xsl:with-param name="replace" select='"&apos;"' />
+			<xsl:with-param name="by" select='concat("\", "&apos;")' />
 		</xsl:call-template>
 	</xsl:template>
 
