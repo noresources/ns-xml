@@ -771,10 +771,26 @@ then
 	xshTestProgramStylesheet="${xshTestsPathBase}/testprogram.xsl"
 	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
+	c=${#parser_values[@]}
 	while read test
 	do
-		echo $test
-		xsltproc --output "${xshTestProgram}" --xinclude "${xshTestProgramStylesheet}" "${test}" \
+		xshTestBase="$(basename "${test}")"
+		xshTestBase="${xshTestBase%.xsh}"
+		if [ ${c} -gt 0 ]
+		then
+			xshTestFound=false
+			for t in "${parser_values[@]}"
+			do
+				[ "${t}" = "${xshTestBase}" ] && xshTestFound=true && break 
+			done 
+			${xshTestFound} || continue
+		fi
+		echo "${xshTestBase}"
+		xsltproc --output "${xshTestProgram}" \
+				--xinclude \
+				--stringparam out "${xsh_stdout}" \
+				--stringparam err "${xsh_stderr}" \
+				"${xshTestProgramStylesheet}" "${test}" \
 		&& chmod 755 "${xshTestProgram}" \
 		&& "${xshTestProgram}"
 		  

@@ -15,7 +15,12 @@ case "${1}" in
 xsh)
 cat << EOFSCUSAGE
 xsh: XSH function library tests
-Usage: run-tests xsh
+Usage: run-tests xsh [-1 <...>] [-2 <...>] [Tests ...]
+With:
+  -1, --stdout: Standard output for test program  
+    Default value: /dev/null
+  -2, --stderr: Error output for test program  
+    Default value: /dev/null
 EOFSCUSAGE
 ;;
 parsers)
@@ -50,6 +55,7 @@ Usage:
   run-tests <subcommand [subcommand option(s)]> [--help]
   With subcommand:
     xsh: XSH function library tests
+      options: [-1 <...>] [-2 <...>]
     parsers: Parsers tests
       options: [-T] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
     xslt, xsl: XSLT tests
@@ -89,6 +95,9 @@ parser_index=${parser_startindex}
 # Switch options
 parsers_keepTemporaryFiles=false
 displayHelp=false
+# Single argument options
+xsh_stdout=
+xsh_stderr=
 
 parse_addwarning()
 {
@@ -224,8 +233,49 @@ parse_checkrequired()
 parse_setdefaultarguments()
 {
 	local parser_set_default=false
+	# xsh_stdout
+	if ! parse_isoptionpresent SC_1_xsh_1_stdout
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			xsh_stdout='/dev/null'
+			parse_setoptionpresence SC_1_xsh_1_stdout
+		fi
+	fi
+	# xsh_stderr
+	if ! parse_isoptionpresent SC_1_xsh_2_stderr
+	then
+		parser_set_default=true
+		if ${parser_set_default}
+		then
+			xsh_stderr='/dev/null'
+			parse_setoptionpresence SC_1_xsh_2_stderr
+		fi
+	fi
 	case "${parser_subcommand}" in
 	xsh)
+		# xsh_stdout
+		if ! parse_isoptionpresent SC_1_xsh_1_stdout
+		then
+			parser_set_default=true
+			if ${parser_set_default}
+			then
+				xsh_stdout='/dev/null'
+				parse_setoptionpresence SC_1_xsh_1_stdout
+			fi
+		fi
+		# xsh_stderr
+		if ! parse_isoptionpresent SC_1_xsh_2_stderr
+		then
+			parser_set_default=true
+			if ${parser_set_default}
+			then
+				xsh_stderr='/dev/null'
+				parse_setoptionpresence SC_1_xsh_2_stderr
+			fi
+		fi
+		
 		;;
 	parsers)
 		;;
@@ -288,10 +338,11 @@ parse_addvalue()
 	else
 		case "${parser_subcommand}" in
 		xsh)
-			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand xsh does not accept positional arguments'
+			case "${position}" in
+			*)
+				;;
 			
-			parser_isfirstpositionalargument=false
-			return ${PARSER_ERROR}
+			esac
 			;;
 		parsers)
 			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand parsers does not accept positional arguments'
@@ -323,6 +374,154 @@ parse_process_subcommand_option()
 	fi
 	
 	case "${parser_subcommand}" in
+	xsh)
+		if [ "${parser_item:0:2}" = '--' ] 
+		then
+			parser_option="${parser_item:2}"
+			parser_optionhastail=false
+			if echo "${parser_option}" | grep '=' 1>/dev/null 2>&1
+			then
+				parser_optionhastail=true
+				parser_optiontail="$(echo "${parser_option}" | cut -f 2- -d"=")"
+				parser_option="$(echo "${parser_option}" | cut -f 1 -d"=")"
+			fi
+			
+			case "${parser_option}" in
+			stdout)
+				if ${parser_optionhastail}
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_stdout="${parser_item}"
+				parse_setoptionpresence SC_1_xsh_1_stdout
+				;;
+			stderr)
+				if ${parser_optionhastail}
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_stderr="${parser_item}"
+				parse_setoptionpresence SC_1_xsh_2_stderr
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		elif [ "${parser_item:0:1}" = "-" ] && [ ${#parser_item} -gt 1 ]
+		then
+			parser_optiontail="${parser_item:$(expr ${parser_subindex} + 2)}"
+			parser_option="${parser_item:$(expr ${parser_subindex} + 1):1}"
+			if [ -z "${parser_option}" ]
+			then
+				parser_subindex=0
+				return ${PARSER_SC_OK}
+			fi
+			
+			case "${parser_option}" in
+			1)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_stdout="${parser_item}"
+				parse_setoptionpresence SC_1_xsh_1_stdout
+				;;
+			2)
+				if [ ! -z "${parser_optiontail}" ]
+				then
+					parser_item=${parser_optiontail}
+				else
+					parser_index=$(expr ${parser_index} + 1)
+					if [ ${parser_index} -ge ${parser_itemcount} ]
+					then
+						parse_adderror "End of input reached - Argument expected"
+						return ${PARSER_SC_ERROR}
+					fi
+					
+					parser_item="${parser_input[${parser_index}]}"
+					if [ "${parser_item}" = '--' ]
+					then
+						parse_adderror "End of option marker found - Argument expected"
+						parser_index=$(expr ${parser_index} - 1)
+						return ${PARSER_SC_ERROR}
+					fi
+				fi
+				
+				parser_subindex=0
+				parser_optiontail=''
+				parser_optionhastail=false
+				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				xsh_stderr="${parser_item}"
+				parse_setoptionpresence SC_1_xsh_2_stderr
+				;;
+			*)
+				return ${PARSER_SC_SKIP}
+				;;
+			
+			esac
+		fi
+		;;
 	parsers)
 		if [ "${parser_item:0:2}" = '--' ] 
 		then
@@ -820,25 +1019,35 @@ ns_issymlink()
 }
 ns_realpath()
 {
-	local inputPath=
+	local __ns_realpath_in=
 	if [ $# -gt 0 ]
 	then
-		inputPath="${1}"
+		__ns_realpath_in="${1}"
 		shift
 	fi
-	local cwd="$(pwd)"
-	[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
-	while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
+	local __ns_realpath_rl=
+	local __ns_realpath_cwd="$(pwd)"
+	[ -d "${__ns_realpath_in}" ] && cd "${__ns_realpath_in}" && __ns_realpath_in="."
+	while [ -h "${__ns_realpath_in}" ]
+	do
+		__ns_realpath_rl="$(readlink "${__ns_realpath_in}")"
+		if [ "${__ns_realpath_rl#/}" = "${__ns_realpath_rl}" ]
+		then
+			__ns_realpath_in="$(dirname "${__ns_realpath_in}")/${__ns_realpath_rl}"
+		else
+			__ns_realpath_in="${__ns_realpath_rl}"
+		fi
+	done
 	
-	if [ -d "${inputPath}" ]
+	if [ -d "${__ns_realpath_in}" ]
 	then
-		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
+		__ns_realpath_in="$(cd -P "$(dirname "${__ns_realpath_in}")" && pwd)"
 	else
-		inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
+		__ns_realpath_in="$(cd -P "$(dirname "${__ns_realpath_in}")" && pwd)/$(basename "${__ns_realpath_in}")"
 	fi
 	
-	cd "${cwd}" 1>/dev/null 2>&1
-	echo "${inputPath}"
+	cd "${__ns_realpath_cwd}" 1>/dev/null 2>&1
+	echo "${__ns_realpath_in}"
 }
 ns_relativepath()
 {
@@ -1746,10 +1955,26 @@ then
 	xshTestProgramStylesheet="${xshTestsPathBase}/testprogram.xsl"
 	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
+	c=${#parser_values[@]}
 	while read test
 	do
-		echo $test
-		xsltproc --output "${xshTestProgram}" --xinclude "${xshTestProgramStylesheet}" "${test}" \
+		xshTestBase="$(basename "${test}")"
+		xshTestBase="${xshTestBase%.xsh}"
+		if [ ${c} -gt 0 ]
+		then
+			xshTestFound=false
+			for t in "${parser_values[@]}"
+			do
+				[ "${t}" = "${xshTestBase}" ] && xshTestFound=true && break 
+			done 
+			${xshTestFound} || continue
+		fi
+		echo "${xshTestBase}"
+		xsltproc --output "${xshTestProgram}" \
+				--xinclude \
+				--stringparam out "${xsh_stdout}" \
+				--stringparam err "${xsh_stderr}" \
+				"${xshTestProgramStylesheet}" "${test}" \
 		&& chmod 755 "${xshTestProgram}" \
 		&& "${xshTestProgram}"
 		  

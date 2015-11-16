@@ -15,6 +15,39 @@
 				<prg:abstract>XSH function library tests</prg:abstract>
 			</prg:documentation>
 			<prg:name>xsh</prg:name>
+			<prg:options>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>stdout</prg:variable>
+					</prg:databinding>
+					<prg:default>/dev/null</prg:default>
+					<prg:documentation>
+						<prg:abstract>Standard output for test program</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>stdout</prg:long>
+						<prg:short>1</prg:short>
+					</prg:names>
+				</prg:argument>
+				<prg:argument>
+					<prg:databinding>
+						<prg:variable>stderr</prg:variable>
+					</prg:databinding>
+					<prg:default>/dev/null</prg:default>
+					<prg:documentation>
+						<prg:abstract>Error output for test program</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>stderr</prg:long>
+						<prg:short>2</prg:short>
+					</prg:names>
+				</prg:argument>
+			</prg:options>
+			<prg:values>
+				<prg:other>
+					<prg:documentation><prg:abstract>Tests</prg:abstract></prg:documentation>
+				</prg:other>
+			</prg:values>
 		</prg:subcommand>
 		<prg:subcommand>
 			<prg:documentation>

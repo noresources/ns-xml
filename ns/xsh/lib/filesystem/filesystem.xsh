@@ -15,22 +15,32 @@
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_realpath">
-		<xsh:parameter name="inputPath" />
+		<xsh:parameter name="__ns_realpath_in" />
 		<xsh:body>
-			<xsh:local name="cwd">$(pwd)</xsh:local>
+			<xsh:local name="__ns_realpath_rl"></xsh:local>
+			<xsh:local name="__ns_realpath_cwd">$(pwd)</xsh:local>
 		<![CDATA[
-[ -d "${inputPath}" ] && cd "${inputPath}" && inputPath="."
-while [ -h "${inputPath}" ] ; do inputPath="$(readlink "${inputPath}")"; done
+[ -d "${__ns_realpath_in}" ] && cd "${__ns_realpath_in}" && __ns_realpath_in="."
+while [ -h "${__ns_realpath_in}" ]
+do
+	__ns_realpath_rl="$(readlink "${__ns_realpath_in}")"
+	if [ "${__ns_realpath_rl#/}" = "${__ns_realpath_rl}" ]
+	then
+		__ns_realpath_in="$(dirname "${__ns_realpath_in}")/${__ns_realpath_rl}"
+	else
+		__ns_realpath_in="${__ns_realpath_rl}"
+	fi
+done
 
-if [ -d "${inputPath}" ]
+if [ -d "${__ns_realpath_in}" ]
 then
-	inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)"
+	__ns_realpath_in="$(cd -P "$(dirname "${__ns_realpath_in}")" && pwd)"
 else
-	inputPath="$(cd -P "$(dirname "${inputPath}")" && pwd)/$(basename "${inputPath}")"
+	__ns_realpath_in="$(cd -P "$(dirname "${__ns_realpath_in}")" && pwd)/$(basename "${__ns_realpath_in}")"
 fi
 
-cd "${cwd}" 1>/dev/null 2>&1
-echo "${inputPath}"
+cd "${__ns_realpath_cwd}" 1>/dev/null 2>&1
+echo "${__ns_realpath_in}"
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_relativepath">
@@ -78,13 +88,13 @@ elif which 'mktemp' 1>/dev/null 2>&1 \
 then
 	mktemp --suffix "${key}"
 else]]>
-	<xsh:local name='__ns_mktemp_root' /><![CDATA[
+			<xsh:local name='__ns_mktemp_root' /><![CDATA[
 	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 	do
 		[ -d "${__ns_mktemp_root}" ] && break
 	done
 	[ -d "${__ns_mktemp_root}" ] || return 1]]>
-	<xsh:local name="__ns_mktemp">/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
+			<xsh:local name="__ns_mktemp">/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
 	touch "${__ns_mktemp}" && echo "${__ns_mktemp}"
 fi
 ]]></xsh:body>
@@ -104,7 +114,7 @@ then
 	# Use key as a suffix
 	mktemp -d --suffix "${key}"
 else]]>
-	<xsh:local name='__ns_mktemp_root' /><![CDATA[
+			<xsh:local name='__ns_mktemp_root' /><![CDATA[
 	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 	do
 		[ -d "${__ns_mktemp_root}" ] && break
