@@ -14,15 +14,8 @@ namespace NoreSources;
 
 # DON'T EDIT THE LINE BELOW
 # XSLT-begin
-use \ArrayObject;
-use \ArrayAccess;
-use \Exception;
-use \InvalidArgumentException;
-use \Iterator;
-use \ArrayIterator;
 
 // Basic objects
-
 
 /**
  * An option name
@@ -89,7 +82,7 @@ class OptionName
 /**
  * Array of OptionName
  */
-class OptionNameList extends ArrayObject
+class OptionNameList extends \ArrayObject
 {
 
 	public function __construct($options = array())
@@ -1677,7 +1670,7 @@ class Message
 /**
  * Base class for SubcommandResult and ProgramResult
  */
-class RootItemResult implements ItemResult, ArrayAccess
+class RootItemResult implements ItemResult, \ArrayAccess
 {
 
 	public function __construct()
@@ -1688,7 +1681,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 	/**
 	 *
 	 * @param key $variableName
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 * @return OptionResult if found
 	 */
 	public function __get($variableName)
@@ -1698,25 +1691,25 @@ class RootItemResult implements ItemResult, ArrayAccess
 			return $this->options [$variableName];
 		}
 		
-		throw new InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
+		throw new \InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
 	}
 
 	/**
 	 *
 	 * @param string $variableName
 	 * @param OptionResult $result
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function __set($variableName, $result)
 	{
 		if ($this->offsetExists($variableName))
 		{
-			throw new InvalidArgumentException($variableName);
+			throw new \InvalidArgumentException($variableName);
 		}
 		
 		if (!(is_object($result) && ($result instanceof OptionResult)))
 		{
-			throw new InvalidArgumentException($variableName);
+			throw new \InvalidArgumentException($variableName);
 		}
 		
 		$this->options [$variableName] = $result;
@@ -1736,25 +1729,25 @@ class RootItemResult implements ItemResult, ArrayAccess
 			return $o->value($args);
 		}
 		
-		throw new InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
+		throw new \InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
 	}
 
 	/**
 	 *
 	 * @param string $variableName
 	 * @param OptionResult $result
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function offsetSet($variableName, $result)
 	{
 		if ($this->offsetExists($variableName))
 		{
-			throw new InvalidArgumentException($variableName . ' already exists');
+			throw new \InvalidArgumentException($variableName . ' already exists');
 		}
 		
 		if (!(is_object($result) && ($result instanceof OptionResult)))
 		{
-			throw new InvalidArgumentException($variableName);
+			throw new \InvalidArgumentException($variableName);
 		}
 		
 		$this->options [$variableName] = $result;
@@ -1778,7 +1771,7 @@ class RootItemResult implements ItemResult, ArrayAccess
 	/**
 	 *
 	 * @param key $variableName
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 * @return OptionResult if found
 	 */
 	public function offsetGet($variableName)
@@ -1793,11 +1786,11 @@ class RootItemResult implements ItemResult, ArrayAccess
 
 	/**
 	 *
-	 * @return ArrayIterator
+	 * @return \ArrayIterator
 	 */
 	public function getOptionIterator()
 	{
-		return new ArrayIterator($this->options);
+		return new \ArrayIterator($this->options);
 	}
 
 	/**
@@ -1813,10 +1806,10 @@ class SubcommandResult extends RootItemResult
 /**
  * Command line parsing program result
  *
- * Iterator interface allow use of foreach
+ * \Iterator interface allow use of foreach
  * to retrieve positional arguments
  */
-class ProgramResult extends RootItemResult implements Iterator
+class ProgramResult extends RootItemResult implements \Iterator
 {
 
 	/**
