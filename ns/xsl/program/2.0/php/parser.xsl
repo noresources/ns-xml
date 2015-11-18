@@ -1457,7 +1457,7 @@ class ArgumentOptionResult extends OptionResult
 /**
  * Multi argument option result
  */
-class MultiArgumentOptionResult extends OptionResult implements Countable
+class MultiArgumentOptionResult extends OptionResult implements \Countable
 {
 
 	/**
