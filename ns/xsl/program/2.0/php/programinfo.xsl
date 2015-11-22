@@ -681,19 +681,13 @@
 
 	<xsl:template name="prg.php.programinfo.output">
 		<xsl:param name="rootNode" select="/" />
-		<xsl:choose>
-			<xsl:when test="$prg.php.programinfo.namespace and (string-length($prg.php.programinfo.namespace) &gt; 0)">
-				<xsl:call-template name="php.namespace">
-					<xsl:with-param name="name" select="$prg.php.programinfo.namespace" />
-					<xsl:with-param name="content">
-						<xsl:apply-templates select="$rootNode/prg:program" />
-					</xsl:with-param>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
+		<xsl:call-template name="php.namespace">
+			<xsl:with-param name="name" select="$prg.php.programinfo.namespace" />
+			<xsl:with-param name="forceDeclaration" select="$prg.php.namespace.forceDeclaration" />
+			<xsl:with-param name="content">
 				<xsl:apply-templates select="$rootNode/prg:program" />
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
 	</xsl:template>
 
 	<xsl:template match="/">

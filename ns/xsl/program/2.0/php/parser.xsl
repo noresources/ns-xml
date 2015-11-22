@@ -2975,14 +2975,15 @@ class Parser
 		<xsl:call-template name="php.namespace">
 			<xsl:with-param name="name" select="$prg.php.parser.namespace" />
 			<xsl:with-param name="content" select="$prg.php.base.code" />
+			<xsl:with-param name="forceDeclaration" select="$prg.php.namespace.forceDeclaration" />
 		</xsl:call-template>
 	</xsl:template>
 	
 	<xsl:template match="/">
-		<if test="$prg.php.phpmarkers">
-			<text>&lt;?php</text>
-			<value-of select="$str.endl" />
-		</if>
+		<xsl:if test="$prg.php.phpmarkers">
+			<xsl:text>&lt;?php</xsl:text>
+			<xsl:value-of select="$str.endl" />
+		</xsl:if>
 		
 		<xsl:call-template name="prg.php.base.output" />
 		

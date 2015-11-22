@@ -15,6 +15,8 @@
 	<!-- PHP Parser base class namespace -->
 	<xsl:param name="prg.php.parser.namespace" select="''" />
 
+	<xsl:param name="prg.php.namespace.forceDeclaration" select="false()" />
+
 	<!-- Local item index -->
 	<xsl:template name="prg.php.itemLocalIndex">
 		<xsl:param name="itemNode" select="." />

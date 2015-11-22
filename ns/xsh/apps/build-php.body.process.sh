@@ -1,4 +1,6 @@
 buildphpXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/php"
+buildphpXsltprocOptions=(--xinclude)
+buildphpForceNamespace=false
 
 # Check required templates
 for x in parser programinfo embed
@@ -18,10 +20,25 @@ else
 	buildphpXsltStylesheet="embed.xsl"
 fi
 
-buildphpXsltprocOptions=(--xinclude)
-[ -z "${parserNamespace}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.parser.namespace "${parserNamespace}")   
-[ -z "${programNamespace}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.programinfo.namespace "${programNamespace}")
-[ -z "${programInfoClassname}" ] || buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" --stringparam prg.php.programinfo.classname "${programInfoClassname}")
+[ -z "${parserNamespace}" ] \
+	|| buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
+		--stringparam prg.php.parser.namespace "${parserNamespace}")
+[ -z "${programNamespace}" ] \
+	|| buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
+	--stringparam prg.php.programinfo.namespace "${programNamespace}")
+[ -z "${programInfoClassname}" ] \
+	|| buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
+	--stringparam prg.php.programinfo.classname "${programInfoClassname}")
+
+if ${generateEmbedded} || [ "${generationMode}" = 'generateMerge' ] 
+then
+	if [ ! -z "${parserNamespace}" ] || [ ! -z "${programNamespace}" ]
+	then
+		buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
+			--param prg.php.namespace.forceDeclaration 'true()' \
+		)
+	fi
+fi
 
 buildphpTemporaryOutput="${outputScriptFilePath}"
 [ "${generationMode}" = "generateMerge" ] && buildphpTemporaryOutput="$(ns_mktemp build-php-lib)"
