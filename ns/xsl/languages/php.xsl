@@ -245,12 +245,21 @@
 		<xsl:param name="content" />
 		<!-- Use curly brackets syntax or ';' -->
 		<xsl:param name="brackets" select="true()" />
+		<!-- Force declaration even if namespace name is empty -->
+		<xsl:param name="forceDeclaration" select="false()" />
 		<xsl:param name="indent" select="false()" />
 
-		<xsl:variable name="nsname" select="normalize-space($name)" />
+		<xsl:variable name="nsname">
+			<xsl:choose>
+				<xsl:when test="normalize-space($name) = '\'" />
+				<xsl:otherwise>
+					<xsl:value-of select="normalize-space($name)" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 		<xsl:choose>
-			<xsl:when test="(string-length($nsname) &gt; 0) and ($nsname != '\')">
+			<xsl:when test="$forceDeclaration or (string-length($nsname) &gt; 0)">
 				<xsl:text>namespace </xsl:text>
 				<xsl:value-of select="$nsname" />
 				<xsl:choose>
