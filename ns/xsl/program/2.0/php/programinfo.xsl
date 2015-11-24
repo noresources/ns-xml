@@ -660,16 +660,18 @@
 	</xsl:template>
 
 	<xsl:template match="prg:br|prg:endl">
-		<xsl:text>\n</xsl:text>
+		<xsl:text>' . PHP_EOL . '</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="prg:block">
-		<xsl:text>\n</xsl:text>
+		<xsl:text>' . PHP_EOL . '</xsl:text>
 		<xsl:call-template name="str.prependLine">
 			<xsl:with-param name="text">
 				<xsl:apply-templates />
 			</xsl:with-param>
-			<xsl:with-param name="prependedText" select="'\t'" />
+			<xsl:with-param name="prependedText">
+				<xsl:text>' . "\t" . '</xsl:text>
+			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
 

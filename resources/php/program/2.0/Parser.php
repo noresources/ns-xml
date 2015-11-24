@@ -289,7 +289,7 @@ class TextWrap
 	 */
 	public $indentString;
 
-	public function __construct($length = 80, $indent = '  ', $eolString = "\n")
+	public function __construct($length = 80, $indent = '  ', $eolString = PHP_EOL)
 	{
 		$this->lineLength = $length;
 		$this->endOfLineString = $eolString;
@@ -1271,7 +1271,7 @@ class ProgramInfo extends RootItemInfo
 		foreach ($root->getPositionalArguments() as $pa)
 		{
 			$abstract = $pa->abstract ? $pa->abstract : '';
-			$e = explode("\n", $abstract);
+			$e = explode(PHP_EOL, $abstract);
 			$abstract = $e[0];
 			if ($pa->maxArgumentCount > 1)
 			{
