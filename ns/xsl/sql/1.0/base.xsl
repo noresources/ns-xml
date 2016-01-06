@@ -7,6 +7,11 @@
 	<xsl:import href="../../strings.xsl" />
 	<xsl:output method="text" indent="yes" encoding="utf-8" />
 
+	<!-- Keyword for NULL values -->
+	<xsl:variable name="sql.keyword.dbnull">
+		<xsl:text>NULL</xsl:text>
+	</xsl:variable>
+
 	<!-- Should be overriden by Datasource implementations -->
 	<xsl:template name="sql.protectString">
 		<xsl:param name="string" />
@@ -90,17 +95,20 @@
 			<xsl:when test="$action = 'null'">
 				<xsl:text>SET NULL</xsl:text>
 			</xsl:when>
-			<xsl:when test="$action = 'default'">
-				<xsl:text>SET DEFAULT</xsl:text>
-			</xsl:when>
 			<xsl:when test="$action = 'cascade'">
 				<xsl:text>CASCADE</xsl:text>
 			</xsl:when>
-			<xsl:when test="$action = 'restrict'">
-				<xsl:text>RESTRICT</xsl:text>
+			<xsl:when test="$action = 'default'">
+				<xsl:text>SET DEFAULT</xsl:text>
 			</xsl:when>
 			<xsl:when test="$action = 'noaction'">
 				<xsl:text>NO ACTION</xsl:text>
+			</xsl:when>
+			<xsl:when test="$action = 'null'">
+				<xsl:text>SET NULL</xsl:text>
+			</xsl:when>
+			<xsl:when test="$action = 'restrict'">
+				<xsl:text>RESTRICT</xsl:text>
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -340,6 +348,20 @@
 	<xsl:template match="sql:default">
 		<xsl:text> DEFAULT </xsl:text>
 		<xsl:apply-templates />
+	</xsl:template>
+
+	<xsl:template match="sql:default/*">
+		<xsl:value-of select="." />
+	</xsl:template>
+	
+	<xsl:template match="sql:default/sql:string">
+		<xsl:call-template name="sql.protectString">
+			<xsl:with-param name="string" select="." />
+		</xsl:call-template>
+	</xsl:template>
+	
+	<xsl:template match="sql:default/sql:null">
+		<xsl:value-of select="$sql.keyword.dbnull" />
 	</xsl:template>
 
 	<xsl:template match="sql:notnull">

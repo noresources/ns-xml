@@ -69,10 +69,11 @@
 			</documentation>
 		</annotation>
 		<restriction base="string">
-			<enumeration value="default" />
 			<enumeration value="cascade" />
-			<enumeration value="restrict" />
+			<enumeration value="default" />
 			<enumeration value="noaction" />
+			<enumeration value="null" />
+			<enumeration value="restrict" />
 		</restriction>
 	</simpleType>
 
