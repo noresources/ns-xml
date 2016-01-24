@@ -2063,7 +2063,7 @@ then
 			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
 			| sed "s,failed,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
 			
-		if [ "${testResult}" = 'passed' ] && ! ${keepTemporaryFiles}
+		if [ "${testResult}" = "${expected}" ] && ! ${keepTemporaryFiles}
 		then
 			rm -f "${f}.result"
 		fi 

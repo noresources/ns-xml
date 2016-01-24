@@ -8,6 +8,7 @@
 *.result-python*
 *.transformresult
 *.schemaresult
+*.xml.result
 unittests/parsers/apps/*/program-*
 unittests/parsers/apps/*/program.bash
 unittests/parsers/apps/*/program.ksh
