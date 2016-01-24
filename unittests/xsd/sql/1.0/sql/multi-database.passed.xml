@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource version="1.0" xmlns:sql="http://xsd.nore.fr/sql">
+	<sql:comment>A datasource with two databases</sql:comment>
+	<sql:database name="main">
+		<sql:comment>The main database</sql:comment>
+		<sql:table name="A">
+			<sql:comment>A simple table with two columns</sql:comment>
+			<sql:column name="key">
+				<sql:datatype>
+					<sql:numeric autoincrement="yes" />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+			<sql:column name="value">
+				<sql:datatype>
+					<sql:string>
+					</sql:string>
+				</sql:datatype>
+			</sql:column>
+		</sql:table>
+	</sql:database>
+	<sql:database name="secondary">
+		<sql:table name="S">
+			<sql:column name="date">
+				<sql:comment>A datetime column</sql:comment>
+				<sql:datatype>
+					<sql:timestamp mode="datetime" timezone="yes" />
+				</sql:datatype>
+			</sql:column>
+		</sql:table>
+	</sql:database>
+</sql:datasource>

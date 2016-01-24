@@ -77,8 +77,9 @@
 	</xsl:template>
 
 	<xsl:template match="sql:table/sql:column">
+		<xsl:apply-templates select="sql:comment" />
 		<xsl:call-template name="sql.elementName" />
-		<xsl:apply-templates />
+		<xsl:apply-templates select="*[not (self::sql:comment)]" />
 
 		<xsl:variable name="name" select="@name" />
 		<xsl:variable name="pk" select="../sql:primarykey" />

@@ -148,6 +148,15 @@
 	</xsl:template>
 
 	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<xsl:template match="sql:comment">
+		<xsl:call-template name="str.prependLine">
+			<xsl:with-param name="text" select="." />
+			<xsl:with-param name="prependedText" select="'&#45;&#45; '" />
+		</xsl:call-template>
+		<xsl:value-of select="$str.endl" />
+	</xsl:template>
+
 	<xsl:template match="sql:datasource">
 		<xsl:text>&#45;&#45; ns-xml database schema to SQL translation</xsl:text>
 		<xsl:value-of select="$str.endl" />
@@ -159,13 +168,14 @@
 			<xsl:value-of select="@author" />
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
-		<xsl:apply-templates select="sql:database" />
+		<xsl:apply-templates select="./*" />
 	</xsl:template>
 
 	<xsl:template match="sql:database">
 		<xsl:text>&#45;&#45; Database </xsl:text>
 		<xsl:value-of select="@name" />
 		<xsl:value-of select="$str.endl" />
+		<xsl:apply-templates select="sql:comment" />
 		<xsl:apply-templates select="sql:table|sql:index" />
 	</xsl:template>
 
@@ -185,8 +195,6 @@
 		<xsl:call-template name="sql.elementName" />
 		<xsl:text> ON </xsl:text>
 		<xsl:apply-templates />
-		<!-- <call-template name="sql.tableReferenceName"> <with-param name="fullName" select="true()"/> <with-param name="name" select=""></with-param>
-			</call-template> -->
 		<xsl:text> (</xsl:text>
 		<xsl:for-each select="sql:column">
 			<xsl:call-template name="sql.elementNameList" />
@@ -196,6 +204,7 @@
 	</xsl:template>
 
 	<xsl:template match="sql:table">
+		<xsl:apply-templates select="./sql:comment" />
 		<xsl:text>CREATE TABLE </xsl:text>
 		<xsl:if test="../@name">
 			<xsl:call-template name="sql.elementName">
@@ -211,7 +220,7 @@
 		<xsl:value-of select="$str.endl" />
 
 		<!-- List of columns -->
-		<xsl:for-each select="sql:column">
+		<xsl:for-each select="sql:column|sql:field">
 			<xsl:apply-templates select="." />
 			<xsl:if test="position() != last()">
 				<xsl:text>,</xsl:text>
@@ -248,9 +257,10 @@
 		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
-	<xsl:template match="sql:table/sql:column">
+	<xsl:template match="sql:table/sql:column|sql:table/sql:field">
+		<xsl:apply-templates select="sql:comment" />
 		<xsl:call-template name="sql.elementName" />
-		<xsl:apply-templates />
+		<xsl:apply-templates select="*[not (self::sql:comment)]" />
 	</xsl:template>
 
 	<xsl:template match="sql:index/sql:tableref">
@@ -354,14 +364,14 @@
 		<xsl:value-of select="." />
 	</xsl:template>
 	
+	<xsl:template match="sql:default/sql:null">
+		<xsl:value-of select="$sql.keyword.dbnull" />
+	</xsl:template>
+
 	<xsl:template match="sql:default/sql:string">
 		<xsl:call-template name="sql.protectString">
 			<xsl:with-param name="string" select="." />
 		</xsl:call-template>
-	</xsl:template>
-	
-	<xsl:template match="sql:default/sql:null">
-		<xsl:value-of select="$sql.keyword.dbnull" />
 	</xsl:template>
 
 	<xsl:template match="sql:notnull">

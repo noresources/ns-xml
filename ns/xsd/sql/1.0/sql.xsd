@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2012 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<xsd:schema targetNamespace="http://xsd.nore.fr/sql" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:sql="http://xsd.nore.fr/sql">
+<xsd:schema targetNamespace="http://xsd.nore.fr/sql" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sql="http://xsd.nore.fr/sql">
 
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">Description of a SQL data source</xsd:documentation>
@@ -285,6 +284,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:all>
+						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
 						<xsd:element name="datatype" type="sql:dataFormatType" minOccurs="0" maxOccurs="1" />
 						<xsd:element name="notnull" type="sql:notnullColumnConstraintType" minOccurs="0" maxOccurs="1" />
 						<xsd:element name="default" type="sql:defaultValueColumnConstraintType" minOccurs="0" maxOccurs="1" />
@@ -450,6 +450,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:sequence>
+						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
 						<xsd:group ref="sql:databaseElementGroup" minOccurs="1" maxOccurs="unbounded" />
 					</xsd:sequence>
 				</xsd:extension>
@@ -465,7 +466,8 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="sql:database" />
+				<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="sql:database" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute name="name" type="sql:elementNameType" default="main" />
 			<xsd:attribute name="version" type="xsd:decimal" use="required" fixed="1.0" />

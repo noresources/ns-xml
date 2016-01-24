@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A basic SQL schema -->
+<!-- Element declaration order -->
 <sql:database name="main" xmlns:sql="http://xsd.nore.fr/sql">
 	<sql:comment>The main database</sql:comment>
 	<sql:table name="A">
 		<sql:comment>A simple table with two columns</sql:comment>
 		<sql:column name="key">
+			<sql:comment>Elements are delared in the same order as the XSD schema</sql:comment>
 			<sql:datatype>
 				<sql:numeric autoincrement="yes" />
 			</sql:datatype>
 			<sql:notnull />
+			<sql:default>
+				<sql:number>1</sql:number>
+			</sql:default>
 		</sql:column>
 		<sql:column name="value">
 			<sql:datatype>
 				<sql:string>
 				</sql:string>
 			</sql:datatype>
+			<sql:comment>We shuffle a bit the order</sql:comment>
+			<sql:default>
+				<sql:string>ABC n'D</sql:string>
+			</sql:default>
+			<sql:notnull />
 		</sql:column>
 	</sql:table>
 </sql:database>
