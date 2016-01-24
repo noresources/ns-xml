@@ -26,15 +26,13 @@ EOFSCUSAGE
 parsers)
 cat << EOFSCUSAGE
 parsers: Parsers tests
-Usage: run-tests parsers [-T] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+Usage: run-tests parsers [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
 With:
   -p, --parsers: Parser to test  
     The argument have to be one of the following:  
       c, php, python or sh
   -a, --apps: Test groups to run
   -t, --tests: Test id(s) to run
-  -T, --temp: Keep temporary files
-    Don't remove temporary files even if test passed
 EOFSCUSAGE
 ;;
 xslt | xsl)
@@ -45,6 +43,12 @@ With:
   
 EOFSCUSAGE
 ;;
+xsd | schema)
+cat << EOFSCUSAGE
+xsd: XML schema validation tests
+Usage: run-tests xsd
+EOFSCUSAGE
+;;
 
 esac
 return 0
@@ -52,14 +56,17 @@ fi
 cat << 'EOFUSAGE'
 run-tests: Run ns-xml unittests
 Usage: 
-  run-tests <subcommand [subcommand option(s)]> [--help]
+  run-tests <subcommand [subcommand option(s)]> [-T] [--help]
   With subcommand:
     xsh: XSH function library tests
       options: [-1 <...>] [-2 <...>]
     parsers: Parsers tests
-      options: [-T] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+      options: [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
     xslt, xsl: XSLT tests
+    xsd, schema: XML schema validation tests
   With global options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
     --help: Display program usage
 EOFUSAGE
 }
@@ -93,7 +100,7 @@ parser_index=${parser_startindex}
 # (Subcommand required options will be added later)
 
 # Switch options
-parsers_keepTemporaryFiles=false
+keepTemporaryFiles=false
 displayHelp=false
 # Single argument options
 xsh_stdout=
@@ -281,6 +288,8 @@ parse_setdefaultarguments()
 		;;
 	xslt | xsl)
 		;;
+	xsd | schema)
+		;;
 	
 	esac
 }
@@ -356,6 +365,12 @@ parse_addvalue()
 				;;
 			
 			esac
+			;;
+		xsd)
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand xsd does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
+			return ${PARSER_ERROR}
 			;;
 		*)
 			return ${PARSER_ERROR}
@@ -670,16 +685,6 @@ parse_process_subcommand_option()
 				
 				parse_setoptionpresence SC_2_parsers_3_tests
 				;;
-			temp)
-				if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
-				then
-					parse_adderror "Option --${parser_option} does not allow an argument"
-					parser_optiontail=''
-					return ${PARSER_SC_ERROR}
-				fi
-				parsers_keepTemporaryFiles=true
-				parse_setoptionpresence SC_2_parsers_4_temp
-				;;
 			*)
 				return ${PARSER_SC_SKIP}
 				;;
@@ -831,10 +836,6 @@ parse_process_subcommand_option()
 				
 				parse_setoptionpresence SC_2_parsers_3_tests
 				;;
-			T)
-				parsers_keepTemporaryFiles=true
-				parse_setoptionpresence SC_2_parsers_4_temp
-				;;
 			*)
 				return ${PARSER_SC_SKIP}
 				;;
@@ -887,6 +888,16 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
+		temp)
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			keepTemporaryFiles=true
+			parse_setoptionpresence G_1_temp
+			;;
 		help)
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -895,7 +906,28 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_1_help
+			parse_setoptionpresence G_2_help
+			;;
+		*)
+			parse_addfatalerror "Unknown option \"${parser_option}\""
+			return ${PARSER_ERROR}
+			;;
+		
+		esac
+	elif [ "${parser_item:0:1}" = "-" ] && [ ${#parser_item} -gt 1 ]
+	then
+		parser_optiontail="${parser_item:$(expr ${parser_subindex} + 2)}"
+		parser_option="${parser_item:$(expr ${parser_subindex} + 1):1}"
+		if [ -z "${parser_option}" ]
+		then
+			parser_subindex=0
+			return ${PARSER_SC_OK}
+		fi
+		
+		case "${parser_option}" in
+		T)
+			keepTemporaryFiles=true
+			parse_setoptionpresence G_1_temp
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -916,6 +948,10 @@ parse_process_option()
 			;;
 		xslt | xsl)
 			parser_subcommand="xslt"
+			
+			;;
+		xsd | schema)
+			parser_subcommand="xsd"
 			
 			;;
 		*)
@@ -1211,7 +1247,7 @@ projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"
 rm -f "${logFile}"
 
-#http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
 NORMAL_COLOR="$(tput sgr0)"
 ERROR_COLOR="$(tput setaf 1)"
 SUCCESS_COLOR="$(tput setaf 2)"
@@ -1239,8 +1275,7 @@ then
 	parsers=("${parsers_parsers[@]}")
 	apps=("${parsers_apps[@]}")
 	tests=("${parsers_tests[@]}")
-	keepTemporaryFiles=${parsers_keepTemporaryFiles}
-		
+			
 	parserTestsPathBase="${projectPath}/unittests/parsers"
 	tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 	programSchemaVersion="2.0"
@@ -1956,6 +1991,7 @@ then
 	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
 	c=${#parser_values[@]}
+	testResultFormat="%-40.40s | %-8s\n"
 	while read test
 	do
 		xshTestBase="$(basename "${test}")"
@@ -1969,20 +2005,72 @@ then
 			done 
 			${xshTestFound} || continue
 		fi
-		echo "${xshTestBase}"
+		
+		printf "${testResultFormat}" "${xshTestBase}" "RESULT"
+	
+		testResult=false	
 		xsltproc --output "${xshTestProgram}" \
 				--xinclude \
 				--stringparam out "${xsh_stdout}" \
 				--stringparam err "${xsh_stderr}" \
 				"${xshTestProgramStylesheet}" "${test}" \
 		&& chmod 755 "${xshTestProgram}" \
-		&& "${xshTestProgram}"
+		&& "${xshTestProgram}" \
+		&& testResult=true
+		
+		testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
+		
+		${testResult} \
+		&& testResultString="${SUCCESS_COLOR}passed${NORMAL_COLOR}" \
+		|| xshTestResult=$(expr ${xshTestResult} + 1)
+		
+		printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
 		  
 	done << EOF
 	$(find "${xshTestsPathBase}" -name '*.xsh') 
 EOF
 	rm -f "${xshTestProgram}" 
 	exit ${xshTestResult}
+elif [ "${parser_subcommand}" = 'xsd' ]
+then
+	xsdTestPathBase="${rootPath}/unittests/xsd"
+	xsdPathBase="${projectPath}/ns/xsd"
+	xsdTextResultFormat="%-15.15s | %-20.20s | %-10s | %-8s | %-.15s\n"
+	printf "${xsdTextResultFormat}" 'schema' 'test' 'validation' 'expected' 'RESULT'
+	xsdTestsResult=0
+	while read f
+	do
+		b="$(basename "${f}" .xml)"
+		n="${b%.failed}"
+		n="${n%.passed}"
+		expected='passed'
+		echo "${b}" | egrep -q ".*.failed$" \
+			&& expected='failed' 
+			
+		d="$(dirname "${f}")"
+		xsdPath="${xsdPathBase}${d#${xsdTestPathBase}}.xsd"
+		
+		result='failed'
+		xmllint --noout --xinclude --schema "${xsdPath}" "${f}" 1>"${f}.result" 2>&1 \
+			&& result='passed'
+		
+		testResult='passed'
+		[ "${result}" != "${expected}" ] \
+			&& xsdTestsResult="$(expr "${xsdTestsResult}" + 1)" \
+			&& testResult='failed'
+		
+		printf "${xsdTextResultFormat}" "${d#${xsdTestPathBase}/}" "${n}" "${result}" "${expected}" "${testResult}" \
+			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
+			| sed "s,failed,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
+			
+		if [ "${testResult}" = 'passed' ] && ! ${keepTemporaryFiles}
+		then
+			rm -f "${f}.result"
+		fi 
+	done << EOF
+$(find "${xsdTestPathBase}" -type f -name '*.xml')
+EOF
+	exit ${xsdTestsResult}
 elif [ "${parser_subcommand}" = 'xslt' ]
 then
 	xsltTestsResult=0

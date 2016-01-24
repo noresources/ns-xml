@@ -38,16 +38,22 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:value-of select="$sh.endl" />
-		
+		<xsl:text>NORMAL_COLOR="$(tput sgr0)"</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>ERROR_COLOR="$(tput setaf 1)"</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>SUCCESS_COLOR="$(tput setaf 2)"</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>testResultFormat="%-40.40s | %-8s\n"</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+
 		<xsl:text>xsh_test_program_result=0</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>xsh_test_program_result_string=0</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 
 		<xsl:for-each select="//sh:function[substring(@name, 1, string-length($testsuiteFunctionPrefix)) = $testsuiteFunctionPrefix]">
-				<xsl:variable name="testName" select="substring(@name, string-length($testsuiteFunctionPrefix) + 1)" />
-			<xsl:text>printf '%-40s : ' '</xsl:text>
-			<xsl:value-of select="$testName" />
-			<xsl:text>: '</xsl:text>
-			<xsl:value-of select="$sh.endl" />
+			<xsl:variable name="testName" select="substring(@name, string-length($testsuiteFunctionPrefix) + 1)" />
 			<xsl:call-template name="sh.if">
 				<xsl:with-param name="condition">
 					<xsl:value-of select="@name" />
@@ -57,17 +63,23 @@
 					<xsl:value-of select="$errRedirection" />
 				</xsl:with-param>
 				<xsl:with-param name="then">
-					<xsl:text>echo SUCCESS</xsl:text>
+					<xsl:text>xsh_test_program_result_string=""${SUCCESS_COLOR}passed${NORMAL_COLOR}</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="else">
-					<xsl:text>echo FAILURE</xsl:text>
+					<xsl:text>xsh_test_program_result_string=""${ERROR_COLOR}failed${NORMAL_COLOR}</xsl:text>
+					<xsl:value-of select="$sh.endl" />
+					<xsl:text>xsh_test_program_result=$(expr ${xsh_test_program_result} + 1)</xsl:text>
 					<xsl:value-of select="$sh.endl" />
 				</xsl:with-param>
 			</xsl:call-template>
 
+			<xsl:text>printf "${testResultFormat}" "</xsl:text>
+			<xsl:value-of select="$testName" />
+			<xsl:text>" "${xsh_test_program_result_string}"</xsl:text>
+			
 			<xsl:value-of select="$sh.endl" />
 		</xsl:for-each>
-		<xsl:text>exit 0</xsl:text>
+		<xsl:text>exit ${xsh_test_program_result}</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 	</xsl:template>
 

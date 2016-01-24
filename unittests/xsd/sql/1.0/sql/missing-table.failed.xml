@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A basic SQL schema -->
+<sql:database name="main" xmlns:sql="http://xsd.nore.fr/sql">
+</sql:database>

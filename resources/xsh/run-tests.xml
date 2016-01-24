@@ -45,7 +45,9 @@
 			</prg:options>
 			<prg:values>
 				<prg:other>
-					<prg:documentation><prg:abstract>Tests</prg:abstract></prg:documentation>
+					<prg:documentation>
+						<prg:abstract>Tests</prg:abstract>
+					</prg:documentation>
 				</prg:other>
 			</prg:values>
 		</prg:subcommand>
@@ -97,19 +99,6 @@
 						<prg:short>t</prg:short>
 					</prg:names>
 				</prg:multiargument>
-				<prg:switch>
-					<prg:databinding>
-						<prg:variable>keepTemporaryFiles</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>Keep temporary files</prg:abstract>
-						<prg:details>Don't remove temporary files even if test passed</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>temp</prg:long>
-						<prg:short>T</prg:short>
-					</prg:names>
-				</prg:switch>
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>
@@ -128,14 +117,38 @@
 							Test subset to run.
 							<prg:endl />
 							Test names should be the path of a .info file located in the unittests/xslt directory or
-							its shortname (basename without extension)
+							its shortname (basename without
+							extension)
 						</prg:details>
 					</prg:documentation>
 				</prg:other>
 			</prg:values>
 		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>xsd</prg:name>
+			<prg:aliases>
+				<prg:alias>schema</prg:alias>
+			</prg:aliases>
+			<prg:documentation>
+				<prg:abstract>XML schema validation tests</prg:abstract>
+				<prg:details>Check if the given files should validate (or not) a XML schema definition</prg:details>
+			</prg:documentation>
+		</prg:subcommand>
 	</prg:subcommands>
 	<prg:options>
+		<prg:switch>
+					<prg:databinding>
+						<prg:variable>keepTemporaryFiles</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Keep temporary files</prg:abstract>
+						<prg:details>Don't remove temporary files even if test passed</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>temp</prg:long>
+						<prg:short>T</prg:short>
+					</prg:names>
+				</prg:switch>
 		<!-- Help -->
 		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 	</prg:options>

@@ -27,7 +27,7 @@ projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"
 rm -f "${logFile}"
 
-#http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
 NORMAL_COLOR="$(tput sgr0)"
 ERROR_COLOR="$(tput setaf 1)"
 SUCCESS_COLOR="$(tput setaf 2)"
@@ -55,8 +55,7 @@ then
 	parsers=("${parsers_parsers[@]}")
 	apps=("${parsers_apps[@]}")
 	tests=("${parsers_tests[@]}")
-	keepTemporaryFiles=${parsers_keepTemporaryFiles}
-		
+			
 	parserTestsPathBase="${projectPath}/unittests/parsers"
 	tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 	programSchemaVersion="2.0"
@@ -772,6 +771,7 @@ then
 	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
 	c=${#parser_values[@]}
+	testResultFormat="%-40.40s | %-8s\n"
 	while read test
 	do
 		xshTestBase="$(basename "${test}")"
@@ -785,20 +785,72 @@ then
 			done 
 			${xshTestFound} || continue
 		fi
-		echo "${xshTestBase}"
+		
+		printf "${testResultFormat}" "${xshTestBase}" "RESULT"
+	
+		testResult=false	
 		xsltproc --output "${xshTestProgram}" \
 				--xinclude \
 				--stringparam out "${xsh_stdout}" \
 				--stringparam err "${xsh_stderr}" \
 				"${xshTestProgramStylesheet}" "${test}" \
 		&& chmod 755 "${xshTestProgram}" \
-		&& "${xshTestProgram}"
+		&& "${xshTestProgram}" \
+		&& testResult=true
+		
+		testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
+		
+		${testResult} \
+		&& testResultString="${SUCCESS_COLOR}passed${NORMAL_COLOR}" \
+		|| xshTestResult=$(expr ${xshTestResult} + 1)
+		
+		printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
 		  
 	done << EOF
 	$(find "${xshTestsPathBase}" -name '*.xsh') 
 EOF
 	rm -f "${xshTestProgram}" 
 	exit ${xshTestResult}
+elif [ "${parser_subcommand}" = 'xsd' ]
+then
+	xsdTestPathBase="${rootPath}/unittests/xsd"
+	xsdPathBase="${projectPath}/ns/xsd"
+	xsdTextResultFormat="%-15.15s | %-20.20s | %-10s | %-8s | %-.15s\n"
+	printf "${xsdTextResultFormat}" 'schema' 'test' 'validation' 'expected' 'RESULT'
+	xsdTestsResult=0
+	while read f
+	do
+		b="$(basename "${f}" .xml)"
+		n="${b%.failed}"
+		n="${n%.passed}"
+		expected='passed'
+		echo "${b}" | egrep -q ".*.failed$" \
+			&& expected='failed' 
+			
+		d="$(dirname "${f}")"
+		xsdPath="${xsdPathBase}${d#${xsdTestPathBase}}.xsd"
+		
+		result='failed'
+		xmllint --noout --xinclude --schema "${xsdPath}" "${f}" 1>"${f}.result" 2>&1 \
+			&& result='passed'
+		
+		testResult='passed'
+		[ "${result}" != "${expected}" ] \
+			&& xsdTestsResult="$(expr "${xsdTestsResult}" + 1)" \
+			&& testResult='failed'
+		
+		printf "${xsdTextResultFormat}" "${d#${xsdTestPathBase}/}" "${n}" "${result}" "${expected}" "${testResult}" \
+			| sed "s,passed,${SUCCESS_COLOR}passed${NORMAL_COLOR},g" \
+			| sed "s,failed,${ERROR_COLOR}FAILED${NORMAL_COLOR},g"
+			
+		if [ "${testResult}" = 'passed' ] && ! ${keepTemporaryFiles}
+		then
+			rm -f "${f}.result"
+		fi 
+	done << EOF
+$(find "${xsdTestPathBase}" -type f -name '*.xml')
+EOF
+	exit ${xsdTestsResult}
 elif [ "${parser_subcommand}" = 'xslt' ]
 then
 	xsltTestsResult=0
