@@ -2094,7 +2094,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 				
 				if (eol && (eol != pai->item_info.abstract))
 				{
-					first_line_length = (eol - pai->item_info.abstract);
+					first_line_length = (size_t)(eol - pai->item_info.abstract);
 				}
 			}
 			
