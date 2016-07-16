@@ -1284,7 +1284,7 @@ then
 	# Supported Python interpreters
 	# Assumes all are installed in the same directory
 	pythonPath=""
-	if which python 1>/dev/null 2>&1
+	if ns_which -s python
 	then
 		pythonPath="$(dirname "$(which python)")"
 	else
@@ -1292,7 +1292,7 @@ then
 		do
 			for minor in 0 1 2 3 4 5 6 7 8 9
 			do
-				if which python${major}.${minor} 1>/dev/null 2>&1
+				if ns_which -s python${major}.${minor}
 				then
 					pythonPath="$(dirname "$(which python${major}.${minor})")"
 					break
@@ -1321,7 +1321,7 @@ EOF
 	shells=(bash zsh ksh)
 	for s in ${shells[@]}
 	do
-		if which ${s} 1>/dev/null 2>&1
+		if ns_which -s ${s}
 		then
 			check_func="check_${s}"
 			if [ "$(type -t "${check_func}")" != "function" ] || ${check_func}
@@ -1336,7 +1336,7 @@ EOF
 	then
 		for c in gcc clang
 		do
-			if which ${c} 1>/dev/null 2>&1
+			if ns_which -s ${c}
 			then
 				cc=${c}
 				break
@@ -1348,10 +1348,11 @@ EOF
 	
 	if [ -z "${CFLAGS}" ]
 	then
-		cflags="-Wall -pedantic -g -O0"
+		cflags=(-Wall -pedantic -Wextra -Wconversion -g -O0)
 	else
-		cflags="${CFLAGS}"
+		cflags=("${CFLAGS}")
 	fi
+	cflags=("${cflags[@]}" -Werror)
 	
 	# Test groups
 	if [ ${#apps[@]} -eq 0 ]
@@ -1395,17 +1396,17 @@ EOF
 			testPython=true
 		fi
 		
-		if which ${cc} 1>/dev/null 2>&1
+		if ns_which -s ${cc}
 		then
 			parsers=("${parsers[@]}" c)
 			testC=true
-			if which valgrind 1>/dev/null 2>&1
+			if ns_which -s valgrind
 			then
 				testValgrind=true
 			fi
 		fi
 		
-		if which php 1>/dev/null 2>&1
+		if ns_which -s php
 		then
 			parsers=("${parsers[@]}" php)
 			testPHP=true
@@ -1419,14 +1420,14 @@ EOF
 			elif [ "${parsers[${i}]}" = "python" ] && [ ${#pythonInterpreters[@]} -gt 0 ]
 			then
 				testPython=true
-			elif [ "${parsers[${i}]}" = "c" ] && which ${cc} 1>/dev/null 2>&1
+			elif [ "${parsers[${i}]}" = "c" ] && ns_which -s ${cc}
 			then
 				testC=true
-				if which valgrind 1>/dev/null 2>&1
+				if ns_which -s valgrind
 				then
 					testValgrind=true
 				fi
-			elif [ "${parsers[${i}]}" = "php" ] && which php 1>/dev/null 2>&1
+			elif [ "${parsers[${i}]}" = "php" ] && ns_which -s php
 			then
 				testPHP=true
 			fi
@@ -1646,9 +1647,10 @@ EOF
 				-p "app" || ns_error "Failed to generated C parser"
 				
 			log "Build C program"
-			gcc -Wall -pedantic -g -O0 \
-			-o "${cProgram}" \
-			"${cProgram}.c" "${cParserBase}.c" || ns_error "Failed to build C program"   
+			${cc} "${cflags[@]}" \
+				-o "${cProgram}" \
+				"${cProgram}.c" "${cParserBase}.c" \
+			|| ns_error "Failed to build C program"   
 		fi
 		
 		if ${testPHP}
