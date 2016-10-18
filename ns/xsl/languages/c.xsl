@@ -7,7 +7,7 @@
 	<xsl:import href="base.xsl" />
 	<!-- Naming convention for variables, parameters etc. -->
 	<xsl:param name="c.indentifierNamingStyle" select="'none'" />
-	<!-- Naming convention for structs -->
+	<!-- Naming convention for structs and types -->
 	<xsl:param name="c.structNamingStyle" select="'none'" />
 
 	<!-- C-style comment -->
@@ -274,6 +274,22 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<xsl:template name="c.enumDefinition">
+		<xsl:param name="name" />
+		<xsl:param name="nameStyle" select="$c.structNamingStyle" />
+		<xsl:param name="content" />
+		<xsl:text>enum </xsl:text>
+		<xsl:call-template name="code.identifierNamingStyle">
+			<xsl:with-param name="identifier" select="normalize-space($name)" />
+			<xsl:with-param name="from" select="'auto'" />
+			<xsl:with-param name="to" select="normalize-space($nameStyle)" />
+		</xsl:call-template>
+		<xsl:call-template name="c.block">
+			<xsl:with-param name="content" select="$content" />
+		</xsl:call-template>
+		<xsl:text>;</xsl:text>
+	</xsl:template>
+
 	<xsl:template name="c.structDefinition">
 		<!-- struct type name -->
 		<xsl:param name="name" />
@@ -285,23 +301,42 @@
 		<xsl:param name="variableNameStyle" select="$c.indentifierNamingStyle" />
 		<!-- Struct content -->
 		<xsl:param name="content" />
+		<!-- Use typedef -->
+		<xsl:param name="typedef" select="false()" />
+
+		<xsl:variable name="structName">
+			<xsl:call-template name="code.identifierNamingStyle">
+				<xsl:with-param name="identifier" select="normalize-space($name)" />
+				<xsl:with-param name="from" select="'auto'" />
+				<xsl:with-param name="to" select="normalize-space($nameStyle)" />
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:if test="$typedef">
+			<xsl:text>typedef </xsl:text>
+		</xsl:if>
 		<xsl:text>struct </xsl:text>
-		<xsl:call-template name="code.identifierNamingStyle">
-			<xsl:with-param name="identifier" select="normalize-space($name)" />
-			<xsl:with-param name="from" select="'auto'" />
-			<xsl:with-param name="to" select="normalize-space($nameStyle)" />
-		</xsl:call-template>
+		<xsl:if test="$variableName or not ($typedef)">
+			<xsl:value-of select="$structName" />
+		</xsl:if>
 		<xsl:call-template name="c.block">
 			<xsl:with-param name="content" select="$content" />
 		</xsl:call-template>
-		<xsl:if test="$variableName">
-			<xsl:text> </xsl:text>
-			<xsl:call-template name="code.identifierNamingStyle">
-				<xsl:with-param name="identifier" select="normalize-space($variableName)" />
-				<xsl:with-param name="from" select="'auto'" />
-				<xsl:with-param name="to" select="normalize-space($variableNameStyle)" />
-			</xsl:call-template>
-		</xsl:if>
+		<xsl:choose>
+			<xsl:when test="$variableName">
+				<xsl:text> </xsl:text>
+				<xsl:call-template name="code.identifierNamingStyle">
+					<xsl:with-param name="identifier" select="normalize-space($variableName)" />
+					<xsl:with-param name="from" select="'auto'" />
+					<xsl:with-param name="to" select="normalize-space($variableNameStyle)" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$typedef">
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$structName" />
+			</xsl:when>
+		</xsl:choose>
+
 		<xsl:text>;</xsl:text>
 	</xsl:template>
 
@@ -437,6 +472,44 @@
 		<xsl:call-template name="c.block">
 			<xsl:with-param name="content" select="$do" />
 		</xsl:call-template>
+	</xsl:template>
+
+	<!-- C header guard -->
+	<xsl:template name="c.chunk.headerGuardOpen">
+		<xsl:param name="identifier" />
+		
+		<xsl:variable name="id" select="normalize-space($identifier)" />
+		
+		<xsl:text>#if !defined (</xsl:text>
+		<xsl:value-of select="$id" />
+		<xsl:text>)</xsl:text>
+		<xsl:value-of select="$str.endl" />
+		<xsl:text>#define </xsl:text>
+		<xsl:value-of select="$id" />
+		<xsl:value-of select="$str.endl" />
+	</xsl:template>
+	
+	<xsl:template name="c.chunk.headerGuardClose">
+		<xsl:text>#endif</xsl:text>
+		<xsl:value-of select="$str.endl" />
+	</xsl:template>
+
+	<xsl:template name="c.chunk.cplusplusGuardOpen">
+		<xsl:text>#if defined (__cplusplus)</xsl:text>
+		<xsl:value-of select="$str.endl" />
+		<xsl:text>extern "C" {</xsl:text>
+		<xsl:value-of select="$str.endl" />
+		<xsl:text>#endif</xsl:text>
+		<xsl:value-of select="$str.endl" />
+	</xsl:template>
+	
+	<xsl:template name="c.chunk.cplusplusGuardClose">
+		<xsl:text>#if defined (__cplusplus)</xsl:text>
+		<xsl:value-of select="$str.endl" />
+		<xsl:text>} /* extern C */</xsl:text>
+		<xsl:value-of select="$str.endl" />
+		<xsl:text>#endif</xsl:text>
+		<xsl:value-of select="$str.endl" />
 	</xsl:template>
 
 </xsl:stylesheet>
