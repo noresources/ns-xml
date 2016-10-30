@@ -5,7 +5,7 @@
 <!-- Transforms sqldatasource xml document into SQLite instructions -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql">
 
-	<xsl:import href="base.xsl" />
+	<xsl:import href="dbms-base.xsl" />
 
 	<xsl:output method="text" indent="yes" encoding="utf-8" />
 

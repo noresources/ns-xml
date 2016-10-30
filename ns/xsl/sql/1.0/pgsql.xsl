@@ -5,7 +5,7 @@
 <!-- Transforms sql:datasource xml document into PostgreSQL instructions -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql">
 
-	<xsl:import href="base.xsl" />
+	<xsl:import href="dbms-base.xsl" />
 
 	<!-- The PostgreSQL target version -->
 	<xsl:param name="sql.pgsql.targetVersion" select="9.4" />
