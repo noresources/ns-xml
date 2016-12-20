@@ -59,6 +59,9 @@
 	<xsl:template name="sql.dataTypeTranslation">
 		<xsl:param name="dataTypeNode" />
 		<xsl:choose>
+			<xsl:when test="not ($dataTypeNode)">
+				<xsl:text>TEXT</xsl:text>
+			</xsl:when>
 			<xsl:when test="$dataTypeNode/sql:numeric">
 				<xsl:text>NUMERIC</xsl:text>
 			</xsl:when>
@@ -238,7 +241,6 @@
 				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$pkText" />
 			</xsl:if>
-
 		</xsl:if>
 
 		<!-- Foreign keys -->
@@ -260,6 +262,10 @@
 	<xsl:template match="sql:table/sql:column|sql:table/sql:field">
 		<xsl:apply-templates select="sql:comment" />
 		<xsl:call-template name="sql.elementName" />
+		<xsl:if test="not (sql:datatype)">
+			<xsl:text> </xsl:text>
+			<xsl:call-template name="sql.dataTypeTranslation"/>
+		</xsl:if>
 		<xsl:apply-templates select="*[not (self::sql:comment)]" />
 	</xsl:template>
 
@@ -363,7 +369,7 @@
 	<xsl:template match="sql:default/*">
 		<xsl:value-of select="." />
 	</xsl:template>
-	
+
 	<xsl:template match="sql:default/sql:null">
 		<xsl:value-of select="$sql.keyword.dbnull" />
 	</xsl:template>

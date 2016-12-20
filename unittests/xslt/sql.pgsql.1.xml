@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:database name="main" xmlns:sql="http://xsd.nore.fr/sql">
+	<sql:table name="A">
+		<sql:column name="key">
+			<sql:comment>Primary key</sql:comment>
+			<sql:datatype>
+				<sql:numeric autoincrement="yes" />
+			</sql:datatype>
+			<sql:notnull />
+		</sql:column>
+		<sql:column name="value">
+			<sql:comment>A string column</sql:comment>
+			<sql:datatype>
+				<sql:string>
+				</sql:string>
+			</sql:datatype>
+		</sql:column>
+		<sql:column name="defaultTypeColumn">
+			<sql:comment>A column without specified data type</sql:comment>
+		</sql:column>
+	</sql:table>
+</sql:database>

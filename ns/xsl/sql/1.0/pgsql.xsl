@@ -41,6 +41,9 @@
 	<xsl:template name="sql.dataTypeTranslation">
 		<xsl:param name="dataTypeNode" />
 		<xsl:choose>
+			<xsl:when test="not ($dataTypeNode)">
+				<xsl:text>TEXT</xsl:text>
+			</xsl:when>
 			<xsl:when test="$dataTypeNode/sql:boolean">
 				<xsl:text>BOOLEAN</xsl:text>
 			</xsl:when>
