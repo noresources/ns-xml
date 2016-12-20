@@ -581,7 +581,7 @@
 				<xsl:value-of select="$str.endl" />
 				<xsl:text>nsxml_parser_state_allocate_name_bindings(</xsl:text>
 				<xsl:value-of select="$stateVariableName" />
-				<xsl:text>, </xsl:text>
+				<xsl:text>, (size_t)</xsl:text>
 				<xsl:value-of select="$programBindingCount" />
 				<xsl:text>, option_binding_counts);</xsl:text>
 				<xsl:value-of select="$str.endl" />

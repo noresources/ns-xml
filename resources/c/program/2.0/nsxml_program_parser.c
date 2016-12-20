@@ -114,7 +114,7 @@ int nsxml_util_strncpy(char *output, size_t output_length, const char *input, si
 
 int nsxml_util_strcpy(char *output, size_t output_length, const char *input)
 {
-	return nsxml_util_strncpy(output, output_length, input, strlen(input));
+	return nsxml_util_strncpy(output, output_length, input, (size_t)strlen(input));
 }
 
 int nsxml_util_string_starts_with(const char *haystack, const char *needle)
@@ -392,7 +392,7 @@ struct nsxml_item_name *nsxml_item_names_new(const char *name, ...)
 		item = (struct nsxml_item_name *) malloc(sizeof(struct nsxml_item_name));
 		item->name = (char *) malloc(len + 1);
 		item->next_name = NULL;
-		nsxml_util_strncpy(item->name, len + 1, name, len);
+		nsxml_util_strncpy(item->name, (size_t)(len + 1), name, (size_t)len);
 		previous = item;
 		
 		va_start(arglist, name);
@@ -404,7 +404,7 @@ struct nsxml_item_name *nsxml_item_names_new(const char *name, ...)
 			next = (struct nsxml_item_name *) malloc(sizeof(struct nsxml_item_name));
 			next->name = (char *) malloc(len + 1);
 			next->next_name = NULL;
-			nsxml_util_strncpy(next->name, len + 1, arg_val, len);
+			nsxml_util_strncpy(next->name, (size_t)(len + 1), arg_val, (size_t)len);
 			previous->next_name = next;
 			
 			previous = next;
@@ -1725,12 +1725,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	{
 		if (nvalidator->decimal_count > 0)
 		{
-			snprintf(message_format, message_format_buffer_length, "Argument value must be between %%.%df and %%.%df", (int) nvalidator->decimal_count, (int) nvalidator->decimal_count);
+			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be between %%.%df and %%.%df", (int) nvalidator->decimal_count, (int) nvalidator->decimal_count);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
 		}
 		else
 		{
-			strncpy(message_format, "Argument value must be between %d and %d", message_format_buffer_length);
+			strncpy(message_format, "Argument value must be between %d and %d", (size_t)message_format_buffer_length);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
 		}
 	}
@@ -1738,12 +1738,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	{
 		if (nvalidator->decimal_count > 0)
 		{
-			snprintf(message_format, message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
+			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->min_value);
 		}
 		else
 		{
-			strncpy(message_format, "Argument value must be greater or equal %d", message_format_buffer_length);
+			strncpy(message_format, "Argument value must be greater or equal %d", (size_t) message_format_buffer_length);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->min_value);
 		}
 	}
@@ -1751,12 +1751,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	{
 		if (nvalidator->decimal_count > 0)
 		{
-			snprintf(message_format, message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
+			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->max_value);
 		}
 		else
 		{
-			strncpy(message_format, "Argument value must be lesser or equal %d", message_format_buffer_length);
+			strncpy(message_format, "Argument value must be lesser or equal %d", (size_t) message_format_buffer_length);
 			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->max_value);
 		}
 	}
@@ -2085,7 +2085,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 			pai = &info->positional_argument_infos[i];
 			first_line_length = 0;
 			
-			fwrite(((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["), 1, 2, stream);
+			fwrite(((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["), (size_t)1, (size_t)2, stream);
 			
 			if (pai->item_info.abstract)
 			{
@@ -2100,7 +2100,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 			
 			if (first_line_length > 0)
 			{
-				fwrite(pai->item_info.abstract, 1, first_line_length, stream);
+				fwrite(pai->item_info.abstract, (size_t)1, (size_t)first_line_length, stream);
 			}
 			else
 			{
@@ -2109,7 +2109,7 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 			
 			if (pai->max_argument != 1)
 			{
-				fwrite(" ...", 1, 4, stream);
+				fwrite(" ...", (size_t)1, (size_t)4, stream);
 			}
 			
 			fputc(((pai->positional_argument_flags & nsxml_positional_argument_required) ? '>' : ']'), stream);
@@ -2293,7 +2293,7 @@ void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_
 		
 		if (!o->parent)
 		{
-			nsxml_usage_option_detailed(stream, o, format, wrap, 1, &text_buffer, &text_buffer_length);
+			nsxml_usage_option_detailed(stream, o, format, wrap, (size_t)1, &text_buffer, &text_buffer_length);
 		}
 	}
 	
@@ -2313,7 +2313,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 	const nsxml_util_text_wrap_options *wrap;
 	
 	nsxml_util_text_wrap_options default_wrap;
-	nsxml_util_text_wrap_options_init(&default_wrap, 2, 80, nsxml_util_text_wrap_indent_others, nsxml_util_text_wrap_eol_lf);
+	nsxml_util_text_wrap_options_init(&default_wrap, (size_t)2, (size_t)80, nsxml_util_text_wrap_indent_others, nsxml_util_text_wrap_eol_lf);
 	wrap = user_wrap;
 	
 	if (!user_wrap)
@@ -3104,12 +3104,12 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 			{
 				size_t tail_length = strlen(tail);
 				size_t arg_length = strlen(state->argv[a]);
-				nsxml_util_strncpy(state->active_option_cli_name, NSXML_OPTION_NAME_BUFFER_LENGTH, state->argv[a], (arg_length - tail_length));
+				nsxml_util_strncpy(state->active_option_cli_name, (size_t)NSXML_OPTION_NAME_BUFFER_LENGTH, state->argv[a], (size_t)(arg_length - tail_length));
 				++tail;
 			}
 			else
 			{
-				nsxml_util_strncpy(state->active_option_cli_name, NSXML_OPTION_NAME_BUFFER_LENGTH, state->argv[a], strlen(state->argv[a]));
+				nsxml_util_strncpy(state->active_option_cli_name, (size_t)NSXML_OPTION_NAME_BUFFER_LENGTH, state->argv[a], (size_t)strlen(state->argv[a]));
 			}
 			
 			state->active_option_name = state->active_option_cli_name + 2;

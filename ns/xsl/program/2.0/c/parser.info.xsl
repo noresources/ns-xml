@@ -766,7 +766,7 @@
 						<xsl:call-template name="prg.c.parser.argumentType">
 							<xsl:with-param name="typeNode" select="./prg:type" />
 						</xsl:call-template>
-						<xsl:text>, </xsl:text>
+						<xsl:text>, (size_t)</xsl:text>
 						<xsl:choose>
 							<xsl:when test="./self::prg:value">
 								<xsl:text>1</xsl:text>
