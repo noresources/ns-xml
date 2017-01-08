@@ -1,0 +1,15 @@
+
+/* Tableset "Tableset" */
+/* - Table "Table" */
+/* -- Column "_1_1_1" */
+static NsXmlSqlColumn column_1_1_1 = {"primaryKey", kNsXmlDataTypeNumeric, (0 | kNsXmlColumnAutoincrement)};
+/* -- Column "_1_1_2" */
+static NsXmlSqlColumn column_1_1_2 = {"value", kNsXmlDataTypeString, (0 | kNsXmlColumnAcceptNull)};
+static NsXmlSqlColumn *columns_1_1[2] = {&column_1_1_1, &column_1_1_2};
+static NsXmlSqlColumnReference *column_references_1_1[2] = {NULL, NULL};
+static NsXmlSqlTable table_1_1 = { "Table", 2, &columns_1_1[0], &column_references_1_1[0]};
+static NsXmlSqlTable *tables_1[1] = {&table_1_1};
+static NsXmlSqlTableset tableset_1 = {"Tableset", 1, &tables_1[0]};
+static NsXmlSqlTableset *tablesets[1] = {&tableset_1};
+static NsXmlSqlDatasource internal_NsXmlStructure = {1, &tablesets[0]};
+NsXmlSqlDatasource *NsXmlStructure = &internal_NsXmlStructure;

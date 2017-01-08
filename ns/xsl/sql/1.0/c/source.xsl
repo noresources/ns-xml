@@ -13,7 +13,6 @@
 	<xsl:variable name="sql.c.source.datasourceIdentifierName">
 		<xsl:text>internal_</xsl:text>
 		<xsl:value-of select="$sql.c.exportIdentifierName" />
-
 	</xsl:variable>
 
 	<xsl:template name="sql.c.source.tableColumnIndex">
@@ -26,38 +25,16 @@
 			</xsl:if>
 		</xsl:for-each>
 	</xsl:template>
-	
-	<xsl:template name="sql.c.source.tableIndex">
-		<xsl:param name="tableset" />
-		<xsl:param name="tableName" />
-
-		<xsl:for-each select="$tableset/sql:table">
-			<xsl:if test="@name = $tableName">
-				<xsl:value-of select="position()" />
-			</xsl:if>
-		</xsl:for-each>
-	</xsl:template>
-	
-	<xsl:template name="sql.c.source.tablesetIndex">
-		<xsl:param name="datasource" />
-		<xsl:param name="tablesetName" />
-
-		<xsl:for-each select="$datasource/sql:tableset">
-			<xsl:if test="@name = $tablesetName">
-				<xsl:value-of select="position()" />
-			</xsl:if>
-		</xsl:for-each>
-	</xsl:template>
 
 	<!-- Output the table variable name corresponding to a given table reference -->
 	<xsl:template name="sql.c.source.tableReferenceVariable">
 		<!-- sql:tableref node -->
 		<xsl:param name="tableReference" select="." />
-		
+
 		<xsl:variable name="parentTable" select="$tableReference/../../.." />
 		<xsl:variable name="parentTableset" select="$parentTable/.." />
 		<xsl:variable name="datasource" select="$parentTableset/.." />
-		
+
 		<xsl:choose>
 			<xsl:when test="$tableReference/@name">
 				<xsl:choose>
@@ -69,7 +46,7 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
-		
+
 	<xsl:template name="sql.c.source.columnReference">
 		<xsl:param name="foreignKey" select="." />
 		<xsl:param name="tablesetIndex" />
@@ -79,14 +56,14 @@
 
 		<xsl:if test="$declare">
 			<xsl:call-template name="c.inlineComment">
-			<xsl:with-param name="content">
-				<xsl:text>-- Column ref </xsl:text>
-				<xsl:value-of select="$foreignKey/sql:column/@name" />
-				<xsl:text> -> </xsl:text>
-				<xsl:value-of select="$foreignKey/sql:reference/sql:column/@name"></xsl:value-of>
-			</xsl:with-param>
-		</xsl:call-template>
-		<xsl:value-of select="$str.endl" />
+				<xsl:with-param name="content">
+					<xsl:text>-- Column reference </xsl:text>
+					<xsl:value-of select="$foreignKey/sql:column/@name" />
+					<xsl:text> -> </xsl:text>
+					<xsl:value-of select="$foreignKey/sql:reference/sql:column/@name"></xsl:value-of>
+				</xsl:with-param>
+			</xsl:call-template>
+			<xsl:value-of select="$str.endl" />
 			<xsl:text>static </xsl:text>
 			<xsl:value-of select="$sql.c.columnReferenceStructureName" />
 			<xsl:text> </xsl:text>
@@ -115,12 +92,13 @@
 		<xsl:if test="$declare">
 			<xsl:call-template name="c.inlineComment">
 				<xsl:with-param name="content">
-					<xsl:text>	-- Column </xsl:text>
-					<xsl:call-template name="sql.c.elementSuffix"/>
+					<xsl:text>	-- Column "</xsl:text>
+					<xsl:call-template name="sql.c.elementSuffix" />
+					<xsl:text>"</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
 			<xsl:value-of select="$str.endl" />
-		
+
 			<xsl:text>static </xsl:text>
 			<xsl:value-of select="$sql.c.columnStructureName" />
 			<xsl:text> </xsl:text>
@@ -162,8 +140,9 @@
 		<xsl:if test="$declare">
 			<xsl:call-template name="c.inlineComment">
 				<xsl:with-param name="content">
-					<xsl:text>	- Table </xsl:text>
+					<xsl:text>	- Table "</xsl:text>
 					<xsl:value-of select="@name" />
+					<xsl:text>"</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
 			<xsl:value-of select="$str.endl" />
@@ -264,19 +243,30 @@
 	</xsl:template>
 
 	<xsl:template name="sql.c.source.tableset">
-		<xsl:param name="tablesetIndex" select="position()" />
+		<xsl:param name="element" select="." />
+		<xsl:param name="tablesetIndex">
+			<xsl:choose>
+				<xsl:when test="position()">
+					<xsl:value-of select="position()" />
+				</xsl:when>
+				<xsl:otherwise>
+					x
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:param>
 		<xsl:param name="declare" select="false()" />
 
 		<xsl:if test="$declare">
 			<xsl:call-template name="c.inlineComment">
 				<xsl:with-param name="content">
-					<xsl:text>Tableset </xsl:text>
-					<xsl:value-of select="@name" />
+					<xsl:text>Tableset "</xsl:text>
+					<xsl:value-of select="$element/@name" />
+					<xsl:text>"</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
 			<xsl:value-of select="$str.endl" />
 
-			<xsl:for-each select="sql:table">
+			<xsl:for-each select="$element/sql:table">
 				<xsl:call-template name="sql.c.source.table">
 					<xsl:with-param name="tablesetIndex" select="$tablesetIndex" />
 					<xsl:with-param name="declare" select="true()" />
@@ -289,9 +279,9 @@
 			<xsl:text> *tables_</xsl:text>
 			<xsl:value-of select="$tablesetIndex" />
 			<xsl:text>[</xsl:text>
-			<xsl:value-of select="count(sql:table)" />
+			<xsl:value-of select="count($element/sql:table)" />
 			<xsl:text>] = {</xsl:text>
-			<xsl:for-each select="sql:table">
+			<xsl:for-each select="$element/sql:table">
 				<xsl:text>&amp;</xsl:text>
 				<xsl:call-template name="sql.c.source.table">
 					<xsl:with-param name="tablesetIndex" select="$tablesetIndex" />
@@ -327,37 +317,54 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template name="sql.c.source.datasource">
-		<xsl:param name="declare" select="false()" />
+	<xsl:template name="sql.c.source.tablesetArray">
+		<!-- array of tablesets -->
 
-		<xsl:if test="$declare">
-			<!-- declare tablesets -->
-			<xsl:for-each select="sql:database">
-				<xsl:call-template name="sql.c.source.tableset">
-					<xsl:with-param name="declare" select="true()" />
-				</xsl:call-template>
-			</xsl:for-each>
-			<xsl:value-of select="$str.endl" />
+		<xsl:param name="database" />
+		<!-- for single tableset -->
 
-			<!-- array of tablesets -->
-			<xsl:text>static </xsl:text>
-			<xsl:value-of select="$sql.c.tablesetStructureName" />
-			<xsl:text> *tablesets[</xsl:text>
-			<xsl:value-of select="count(sql:database)" />
-			<xsl:text>] = {</xsl:text>
-			<xsl:for-each select="sql:database">
+		<xsl:text>static </xsl:text>
+		<xsl:value-of select="$sql.c.tablesetStructureName" />
+		<xsl:text> *tablesets[</xsl:text>
+		<xsl:choose>
+			<xsl:when test="$database">
+				<xsl:text>1</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="count(sql:database)" />
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>] = {</xsl:text>
+
+		<xsl:choose>
+			<xsl:when test="$database">
 				<xsl:text>&amp;</xsl:text>
 				<xsl:call-template name="sql.c.source.tableset">
 					<xsl:with-param name="declare" select="false()" />
+					<xsl:with-param name="element" select="$database" />
+					<xsl:with-param name="tablesetIndex" select="1" />
 				</xsl:call-template>
 				<xsl:if test="position() != last()">
 					<xsl:text>, </xsl:text>
 				</xsl:if>
-			</xsl:for-each>
-			<xsl:text>};</xsl:text>
-			<xsl:value-of select="$str.endl" />
-		</xsl:if>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:for-each select="sql:database">
+					<xsl:text>&amp;</xsl:text>
+					<xsl:call-template name="sql.c.source.tableset">
+						<xsl:with-param name="declare" select="false()" />
+					</xsl:call-template>
+					<xsl:if test="position() != last()">
+						<xsl:text>, </xsl:text>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>};</xsl:text>
+	</xsl:template>
 
+	<xsl:template name="sql.c.source.datasource">
+		<xsl:param name="declare" select="false()" />
 		<xsl:if test="$declare">
 			<xsl:text>static </xsl:text>
 			<xsl:value-of select="$sql.c.datasourceStructureName" />
@@ -367,7 +374,14 @@
 
 		<xsl:if test="$declare">
 			<xsl:text> = {</xsl:text>
-			<xsl:value-of select="count (sql:database)" />
+			<xsl:choose>
+				<xsl:when test="count (sql:database) = 0">
+					<xsl:text>1</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="count (sql:database)" />
+				</xsl:otherwise>
+			</xsl:choose>
 			<xsl:text>, </xsl:text>
 			<xsl:text>&amp;tablesets[0]</xsl:text>
 			<xsl:text>};</xsl:text>
@@ -377,7 +391,7 @@
 	<xsl:template match="sql:column">
 		<xsl:param name="declare" select="false()" />
 		<xsl:param name="suffixOnly" select="false" />
-		
+
 		<xsl:choose>
 			<xsl:when test="$suffixOnly">
 				<xsl:call-template name="sql.c.elementSuffix" />
@@ -389,11 +403,11 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
+
 	<xsl:template match="sql:table">
 		<xsl:param name="declare" select="false()" />
 		<xsl:param name="suffixOnly" select="false()" />
-		
+
 		<xsl:choose>
 			<xsl:when test="$suffixOnly">
 				<xsl:call-template name="sql.c.elementSuffix" />
@@ -409,12 +423,12 @@
 	<xsl:template match="sql:tableref">
 		<xsl:param name="declare" select="false()" />
 		<xsl:param name="table" select="../../.." />
-		<xsl:param name="columnName"/>
-			
+		<xsl:param name="columnName" />
+
 		<xsl:choose>
 			<xsl:when test="@name">
 				<xsl:variable name="name" select="@name" />
-				<xsl:variable name="tableref" select="$table/../sql:table[@name = $name]"/>
+				<xsl:variable name="tableref" select="$table/../sql:table[@name = $name]" />
 				<xsl:choose>
 					<xsl:when test="$columnName">
 						<xsl:apply-templates select="$tableref/sql:column[@name = $columnName]">
@@ -446,8 +460,8 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
-	<xsl:template match="sql:datasource">
+
+	<xsl:template match="/sql:datasource|/sql:database">
 
 		<xsl:if test="string-length($sql.c.headerInclude)">
 			<xsl:text>#include "</xsl:text>
@@ -455,6 +469,32 @@
 			<xsl:text>"</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
+
+		<xsl:value-of select="$str.endl" />
+
+		<xsl:choose>
+			<xsl:when test="./self::sql:datasource">
+				<!-- declare tablesets -->
+				<xsl:for-each select="sql:database">
+					<xsl:call-template name="sql.c.source.tableset">
+						<xsl:with-param name="declare" select="true()" />
+					</xsl:call-template>
+				</xsl:for-each>
+				<xsl:value-of select="$str.endl" />
+				<xsl:call-template name="sql.c.source.tablesetArray" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sql.c.source.tableset">
+					<xsl:with-param name="declare" select="true()" />
+				</xsl:call-template>
+				<xsl:value-of select="$str.endl" />
+
+				<xsl:call-template name="sql.c.source.tablesetArray">
+					<xsl:with-param name="database" select="." />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+
 
 		<xsl:value-of select="$str.endl" />
 		<xsl:call-template name="sql.c.source.datasource">

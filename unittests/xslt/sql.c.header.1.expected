@@ -1,0 +1,16 @@
+#if !defined (__NSXMLSTRUCTURE_HEADER__)
+#define __NSXMLSTRUCTURE_HEADER__
+#if (!defined (NSXMLSTRUCTURE_API))
+#define NSXMLSTRUCTURE_API
+#endif
+#if defined (__cplusplus)
+extern "C" {
+#endif
+#include <stdlib.h>
+
+extern NsXmlSqlDatasource *NsXmlStructure;
+#if defined (__cplusplus)
+} /* extern C */
+#endif
+#endif
+

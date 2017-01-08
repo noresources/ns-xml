@@ -119,11 +119,18 @@
 				<xsl:number count="sql:database/sql:table" />
 			</xsl:when>
 			<xsl:when test="$node/self::sql:database">
-				<xsl:call-template name="sql.c.elementSuffix">
-					<xsl:with-param name="node" select="$node/.." />
-				</xsl:call-template>
-				<xsl:text>_</xsl:text>
-				<xsl:number count="sql:datasource/sql:database" />
+				<xsl:choose>
+					<xsl:when test="$node/../self::sql:datasource">
+						<xsl:call-template name="sql.c.elementSuffix">
+							<xsl:with-param name="node" select="$node/.." />
+						</xsl:call-template>
+						<xsl:text>_</xsl:text>
+						<xsl:number count="sql:datasource/sql:database" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>_1</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -225,7 +232,7 @@
 		<xsl:value-of select="$sql.c.datasourceStructureName" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
-		
+
 		<xsl:text>struct _</xsl:text>
 		<xsl:value-of select="$sql.c.tablesetStructureName" />
 		<xsl:text>;</xsl:text>
@@ -236,7 +243,7 @@
 		<xsl:value-of select="$sql.c.tablesetStructureName" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
-		
+
 		<xsl:text>struct _</xsl:text>
 		<xsl:value-of select="$sql.c.tableStructureName" />
 		<xsl:text>;</xsl:text>
@@ -247,7 +254,7 @@
 		<xsl:value-of select="$sql.c.tableStructureName" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
-		
+
 		<xsl:text>struct _</xsl:text>
 		<xsl:value-of select="$sql.c.columnStructureName" />
 		<xsl:text>;</xsl:text>
@@ -258,7 +265,7 @@
 		<xsl:value-of select="$sql.c.columnStructureName" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
-		
+
 		<xsl:text>struct _</xsl:text>
 		<xsl:value-of select="$sql.c.columnReferenceStructureName" />
 		<xsl:text>;</xsl:text>
@@ -296,7 +303,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:value-of select="$str.endl" />
-		
+
 		<xsl:call-template name="c.structDefinition">
 			<xsl:with-param name="name" select="concat ('_', $sql.c.columnReferenceStructureName)" />
 			<xsl:with-param name="content">
@@ -319,7 +326,7 @@
 		<xsl:value-of select="$str.endl" />
 
 		<xsl:call-template name="c.structDefinition">
-			<xsl:with-param name="name" select="concat('_', $sql.c.tableStructureName)"/>
+			<xsl:with-param name="name" select="concat('_', $sql.c.tableStructureName)" />
 			<xsl:with-param name="content">
 				<xsl:call-template name="c.identifierDefinition">
 					<xsl:with-param name="type" select="'const char'" />
@@ -396,20 +403,22 @@
 		</xsl:call-template>
 	</xsl:template>
 
-	<xsl:template match="sql:datasource">
+	<xsl:template match="/sql:datasource|/sql:database">
 		<xsl:value-of select="$sql.c.sourceHeader" />
-		<xsl:call-template name="c.comment">
-			<xsl:with-param name="content">
-				<xsl:text>Schema version: </xsl:text>
-				<xsl:value-of select="$datasource/@version" />
-				<xsl:if test="$datasource/@author">
-					<xsl:value-of select="$str.endl" />
-					<xsl:text>Author: </xsl:text>
-					<xsl:value-of select="$datasource/@author" />
-				</xsl:if>
-			</xsl:with-param>
-		</xsl:call-template>
-		<xsl:value-of select="$str.endl" />
+		<xsl:if test="./self::sql:datasource">
+			<xsl:call-template name="c.comment">
+				<xsl:with-param name="content">
+					<xsl:text>Schema version: </xsl:text>
+					<xsl:value-of select="@version" />
+					<xsl:if test="@author">
+						<xsl:value-of select="$str.endl" />
+						<xsl:text>Author: </xsl:text>
+						<xsl:value-of select="@author" />
+					</xsl:if>
+				</xsl:with-param>
+			</xsl:call-template>
+			<xsl:value-of select="$str.endl" />
+		</xsl:if>
 
 		<xsl:if test="string-length($sql.c.headerGuard)">
 			<xsl:call-template name="c.chunk.headerGuardOpen">

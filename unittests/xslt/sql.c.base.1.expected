@@ -1,0 +1,66 @@
+/* 
+* Schema version: 1.0
+*/
+#if !defined (__NSXMLSTRUCTURE_BASE__)
+#define __NSXMLSTRUCTURE_BASE__
+#if defined (__cplusplus)
+extern "C" {
+#endif
+#include <stdlib.h>
+/* 
+* SQL data types
+*/
+enum NsXmlSqlDataTypes
+{
+	kNsXmlDataTypeNumeric = 0,
+	kNsXmlDataTypeString,
+	kNsXmlDataTypeTimestamp,
+	kNsXmlDataTypeBinary,
+	kNsXmlDataTypeCount
+};
+enum NsXmlSqlColumnFlags
+{
+	kNsXmlColumnPrimary = 0x01,
+	kNsXmlColumnAcceptNull = 0x02,
+	kNsXmlColumnAutoincrement = 0x04
+};
+struct _NsXmlSqlDatasource;
+typedef struct _NsXmlSqlDatasource NsXmlSqlDatasource;
+struct _NsXmlSqlTableset;
+typedef struct _NsXmlSqlTableset NsXmlSqlTableset;
+struct _NsXmlSqlTable;
+typedef struct _NsXmlSqlTable NsXmlSqlTable;
+struct _NsXmlSqlColumn;
+typedef struct _NsXmlSqlColumn NsXmlSqlColumn;
+struct _NsXmlSqlColumnReference;
+typedef struct _NsXmlSqlColumnReference NsXmlSqlColumnReference;
+struct _NsXmlSqlColumn
+{
+	const char *columnName;
+	int columnDataType;
+	int columnFlags;
+};
+struct _NsXmlSqlColumnReference
+{
+	NsXmlSqlTable *table;
+	NsXmlSqlColumn *column;
+};
+struct _NsXmlSqlTable
+{
+	const char *tableName;
+	size_t columnCount;
+	NsXmlSqlColumn **columns;
+	NsXmlSqlColumnReference **foreignKeys;
+};
+struct _NsXmlSqlTableset
+{
+	const char *tablesetName;
+	size_t tableCount;
+	NsXmlSqlTable **tables;
+};
+struct _NsXmlSqlDatasource
+{
+	size_t tablesetCount;
+	NsXmlSqlTableset **tablesets;
+};
+#endif

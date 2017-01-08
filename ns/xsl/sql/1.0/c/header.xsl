@@ -21,7 +21,7 @@
 		</xsl:call-template>
 		<xsl:text>__</xsl:text>
 	</xsl:param>
-	
+
 	<xsl:param name="sql.c.apiExportDefine">
 		<xsl:call-template name="str.toUpper">
 			<xsl:with-param name="text">
@@ -31,7 +31,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:param>
-	
+
 	<xsl:template match="sql:datasource">
 		<xsl:if test="string-length($sql.c.headerGuard)">
 			<xsl:call-template name="c.chunk.headerGuardOpen">
@@ -50,7 +50,7 @@
 				<xsl:value-of select="$sql.c.apiExportDefine" />
 				<xsl:value-of select="$str.endl" />
 			</xsl:with-param>
-		</xsl:call-template>		
+		</xsl:call-template>
 		<xsl:value-of select="$str.endl" />
 
 		<xsl:call-template name="c.chunk.cplusplusGuardOpen" />
@@ -102,6 +102,4 @@
 		<!-- End of file -->
 		<xsl:value-of select="$str.endl" />
 	</xsl:template>
-
 </xsl:stylesheet>
-	
