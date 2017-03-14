@@ -12,13 +12,13 @@
 	<xsl:template match="/">
 		<xsl:variable name="outRedirection">
 			<xsl:if test="string-length($out) &gt; 0">
-				<xsl:text>1></xsl:text>
+				<xsl:text>1>></xsl:text>
 				<xsl:value-of select="$out"></xsl:value-of>
 			</xsl:if>
 		</xsl:variable>
 		<xsl:variable name="errRedirection">
 			<xsl:if test="string-length($err) &gt; 0">
-				<xsl:text>2></xsl:text>
+				<xsl:text>2>></xsl:text>
 				<xsl:value-of select="$err"></xsl:value-of>
 			</xsl:if>
 		</xsl:variable>
@@ -63,10 +63,10 @@
 					<xsl:value-of select="$errRedirection" />
 				</xsl:with-param>
 				<xsl:with-param name="then">
-					<xsl:text>xsh_test_program_result_string=""${SUCCESS_COLOR}passed${NORMAL_COLOR}</xsl:text>
+					<xsl:text>xsh_test_program_result_string="${SUCCESS_COLOR}passed${NORMAL_COLOR}"</xsl:text>
 				</xsl:with-param>
 				<xsl:with-param name="else">
-					<xsl:text>xsh_test_program_result_string=""${ERROR_COLOR}failed${NORMAL_COLOR}</xsl:text>
+					<xsl:text>xsh_test_program_result_string="${ERROR_COLOR}failed${NORMAL_COLOR}"</xsl:text>
 					<xsl:value-of select="$sh.endl" />
 					<xsl:text>xsh_test_program_result=$(expr ${xsh_test_program_result} + 1)</xsl:text>
 					<xsl:value-of select="$sh.endl" />

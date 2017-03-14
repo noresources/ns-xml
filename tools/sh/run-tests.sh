@@ -1107,8 +1107,6 @@ ns_relativepath()
 	[ -d "${base}" ] || return 3
 	from="$(ns_realpath "${from}")"
 	base="$(ns_realpath "${base}")"
-	#echo from: $from
-	#echo base: $base
 	c=0
 	sub="${base}"
 	newsub=""
@@ -1130,61 +1128,75 @@ ns_relativepath()
 }
 ns_mktemp()
 {
-	local key=
+	local __ns_mktemp_template=
 	if [ $# -gt 0 ]
 	then
-		key="${1}"
+		__ns_mktemp_template="${1}"
 		shift
 	else
-		key="$(date +%s)"
+		__ns_mktemp_template="$(date +%s)-XXXX"
 	fi
-	if [ "$(uname -s)" = 'Darwin' ]
+	local __ns_mktemp_xcount=
+	if which 'mktemp' 1>/dev/null 2>&1
 	then
-		#Use key as a prefix
-		mktemp -t "${key}"
-	elif which 'mktemp' 1>/dev/null 2>&1 \
-		&& mktemp --suffix "${key}" 1>/dev/null 2>&1
-	then
-		mktemp --suffix "${key}"
+		# Auto-fix template
+		__ns_mktemp_xcount=0
+		which 'grep' 1>/dev/null 2>&1 \
+		&& which 'wc' 1>/dev/null 2>&1 \
+		&& __ns_mktemp_xcount=$(grep -o X <<< "${__ns_mktemp_template}" | wc -c)
+		while [ ${__ns_mktemp_xcount} -lt 3 ]
+		do
+			__ns_mktemp_template="${__ns_mktemp_template}X"
+			__ns_mktemp_xcount=$(expr ${__ns_mktemp_xcount} + 1)
+		done
+		mktemp -t "${__ns_mktemp_template}" 2>/dev/null
 	else
 	local __ns_mktemp_root=
-	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
+	# Fallback to a manual solution
+		for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 		do
 			[ -d "${__ns_mktemp_root}" ] && break
 		done
 		[ -d "${__ns_mktemp_root}" ] || return 1
-	local __ns_mktemp="/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}"
-	touch "${__ns_mktemp}" && echo "${__ns_mktemp}"
+	local __ns_mktemp="/${__ns_mktemp_root}/${__ns_mktemp_template}.$(date +%s)-${RANDOM}"
+	touch "${__ns_mktemp}" 1>/dev/null 2>&1 && echo "${__ns_mktemp}"
 	fi
 }
 ns_mktempdir()
 {
-	local key=
+	local __ns_mktemp_template=
 	if [ $# -gt 0 ]
 	then
-		key="${1}"
+		__ns_mktemp_template="${1}"
 		shift
 	else
-		key="$(date +%s)"
+		__ns_mktemp_template="$(date +%s)-XXXX"
 	fi
-	if [ "$(uname -s)" = 'Darwin' ]
+	local __ns_mktemp_xcount=
+	if which 'mktemp' 1>/dev/null 2>&1
 	then
-		#Use key as a prefix
-		mktemp -d -t "${key}"
-	elif which 'mktemp' 1>/dev/null 2>&1 \
-		&& mktemp -d --suffix "${key}" 1>/dev/null 2>&1
-	then
-		# Use key as a suffix
-		mktemp -d --suffix "${key}"
+		# Auto-fix template
+		__ns_mktemp_xcount=0
+		which 'grep' 1>/dev/null 2>&1 \
+		&& which 'wc' 1>/dev/null 2>&1 \
+		&& __ns_mktemp_xcount=$(grep -o X <<< "${__ns_mktemp_template}" | wc -c)
+		
+		while [ ${__ns_mktemp_xcount} -lt 3 ]
+		do
+			__ns_mktemp_template="${__ns_mktemp_template}X"
+			__ns_mktemp_xcount=$(expr ${__ns_mktemp_xcount} + 1)
+		done
+		mktemp -d -t "${__ns_mktemp_template}" 2>/dev/null
 	else
 	local __ns_mktemp_root=
-	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
+	# Fallback to a manual solution
+		for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 		do
 			[ -d "${__ns_mktemp_root}" ] && break
 		done
 		[ -d "${__ns_mktemp_root}" ] || return 1
-	local __ns_mktempdir="/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}"
-	mkdir -p "${__ns_mktempdir}" && echo "${__ns_mktempdir}"
+	local __ns_mktempdir="/${__ns_mktemp_root}/${__ns_mktemp_template}.$(date +%s)-${RANDOM}"
+	mkdir -p "${__ns_mktempdir}" 1>/dev/null 2>&1 && echo "${__ns_mktempdir}"
 	fi
 }
 ns_which()
@@ -1990,10 +2002,11 @@ elif [ "${parser_subcommand}" = 'xsh' ]
 then
 	xshTestsPathBase="${projectPath}/unittests/xsh"
 	xshTestProgramStylesheet="${xshTestsPathBase}/testprogram.xsl"
-	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
 	c=${#parser_values[@]}
 	testResultFormat="%-40.40s | %-8s\n"
+	[ -f "${xsh_stdout}" ] && rm -f "${xsh_stdout}"
+	[ -f "${xsh_stderr}" ] && rm -f "${xsh_stderr}"
 	while read test
 	do
 		xshTestBase="$(basename "${test}")"
@@ -2010,6 +2023,7 @@ then
 		
 		printf "${testResultFormat}" "${xshTestBase}" "RESULT"
 	
+		xshTestProgram="$(dirname "${test}")/${xshTestBase}.run"
 		testResult=false	
 		xsltproc --output "${xshTestProgram}" \
 				--xinclude \
@@ -2027,11 +2041,10 @@ then
 		|| xshTestResult=$(expr ${xshTestResult} + 1)
 		
 		printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
-		  
+		${keepTemporaryFiles} || rm -f "${xshTestProgram}"	  
 	done << EOF
 	$(find "${xshTestsPathBase}" -name '*.xsh') 
 EOF
-	rm -f "${xshTestProgram}" 
 	exit ${xshTestResult}
 elif [ "${parser_subcommand}" = 'xsd' ]
 then

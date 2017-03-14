@@ -522,8 +522,6 @@ function ns_relativepath
 	[ -d "${base}" ] || return 3
 	from="$(ns_realpath "${from}")"
 	base="$(ns_realpath "${base}")"
-	#echo from: $from
-	#echo base: $base
 	c=0
 	sub="${base}"
 	newsub=""

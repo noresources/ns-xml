@@ -15,6 +15,7 @@ unittests/parsers/apps/*/program.ksh
 unittests/parsers/apps/*/program.zsh
 unittests/parsers/apps/*/Parser.py
 unittests/parsers/apps/*/ProgramInfo.py
+unittests/data
 run-tests.sh.log
 __pycache__
 *.pyc

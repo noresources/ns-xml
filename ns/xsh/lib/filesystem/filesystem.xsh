@@ -53,8 +53,6 @@ echo "${__ns_realpath_in}"
 [ -d "${base}" ] || return 3
 from="$(ns_realpath "${from}")"
 base="$(ns_realpath "${base}")"
-#echo from: $from
-#echo base: $base
 c=0
 sub="${base}"
 newsub=""
@@ -76,52 +74,63 @@ echo "${res}"
 		]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_mktemp">
-		<xsh:parameter name="key">$(date +%s)</xsh:parameter>
+		<xsh:parameter name="__ns_mktemp_template"><![CDATA[$(date +%s)-XXXX]]></xsh:parameter>
 		<xsh:body>
+			<xsh:local name="__ns_mktemp_xcount" />
 		<![CDATA[
-if [ "$(uname -s)" = 'Darwin' ]
+if which 'mktemp' 1>/dev/null 2>&1
 then
-	#Use key as a prefix
-	mktemp -t "${key}"
-elif which 'mktemp' 1>/dev/null 2>&1 \
-	&& mktemp --suffix "${key}" 1>/dev/null 2>&1
-then
-	mktemp --suffix "${key}"
-else]]>
-			<xsh:local name='__ns_mktemp_root' /><![CDATA[
+	# Auto-fix template
+	__ns_mktemp_xcount=0
+	which 'grep' 1>/dev/null 2>&1 \
+	&& which 'wc' 1>/dev/null 2>&1 \
+	&& __ns_mktemp_xcount=$(grep -o X <<< "${__ns_mktemp_template}" | wc -c)
+	while [ ${__ns_mktemp_xcount} -lt 3 ]
+	do
+		__ns_mktemp_template="${__ns_mktemp_template}X"
+		__ns_mktemp_xcount=$(expr ${__ns_mktemp_xcount} + 1)
+	done
+	mktemp -t "${__ns_mktemp_template}" 2>/dev/null
+else]]><xsh:local name='__ns_mktemp_root' /><![CDATA[
+	# Fallback to a manual solution
 	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 	do
 		[ -d "${__ns_mktemp_root}" ] && break
 	done
 	[ -d "${__ns_mktemp_root}" ] || return 1]]>
-			<xsh:local name="__ns_mktemp">/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
-	touch "${__ns_mktemp}" && echo "${__ns_mktemp}"
+	<xsh:local name="__ns_mktemp">/${__ns_mktemp_root}/${__ns_mktemp_template}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
+	touch "${__ns_mktemp}" 1>/dev/null 2>&1 && echo "${__ns_mktemp}"
 fi
 ]]></xsh:body>
 	</xsh:function>
 	<xsh:function name="ns_mktempdir">
-		<xsh:parameter name="key">
-			$(date +%s)
-		</xsh:parameter>
-		<xsh:body><![CDATA[
-if [ "$(uname -s)" = 'Darwin' ]
+		<xsh:parameter name="__ns_mktemp_template"><![CDATA[$(date +%s)-XXXX]]></xsh:parameter>
+		<xsh:body>
+			<xsh:local name="__ns_mktemp_xcount" />
+		<![CDATA[
+if which 'mktemp' 1>/dev/null 2>&1
 then
-	#Use key as a prefix
-	mktemp -d -t "${key}"
-elif which 'mktemp' 1>/dev/null 2>&1 \
-	&& mktemp -d --suffix "${key}" 1>/dev/null 2>&1
-then
-	# Use key as a suffix
-	mktemp -d --suffix "${key}"
-else]]>
-			<xsh:local name='__ns_mktemp_root' /><![CDATA[
+	# Auto-fix template
+	__ns_mktemp_xcount=0
+	which 'grep' 1>/dev/null 2>&1 \
+	&& which 'wc' 1>/dev/null 2>&1 \
+	&& __ns_mktemp_xcount=$(grep -o X <<< "${__ns_mktemp_template}" | wc -c)
+	
+	while [ ${__ns_mktemp_xcount} -lt 3 ]
+	do
+		__ns_mktemp_template="${__ns_mktemp_template}X"
+		__ns_mktemp_xcount=$(expr ${__ns_mktemp_xcount} + 1)
+	done
+	mktemp -d -t "${__ns_mktemp_template}" 2>/dev/null
+else]]><xsh:local name='__ns_mktemp_root' /><![CDATA[
+	# Fallback to a manual solution
 	for __ns_mktemp_root in "${TMPDIR}" "${TMP}" '/var/tmp' '/tmp'
 	do
 		[ -d "${__ns_mktemp_root}" ] && break
 	done
 	[ -d "${__ns_mktemp_root}" ] || return 1
-	]]><xsh:local name='__ns_mktempdir'>/${__ns_mktemp_root}/${key}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
-	mkdir -p "${__ns_mktempdir}" && echo "${__ns_mktempdir}"
+	]]><xsh:local name='__ns_mktempdir'>/${__ns_mktemp_root}/${__ns_mktemp_template}.$(date +%s)-${RANDOM}</xsh:local><![CDATA[
+	mkdir -p "${__ns_mktempdir}" 1>/dev/null 2>&1 && echo "${__ns_mktempdir}"
 fi
 ]]></xsh:body>
 	</xsh:function>

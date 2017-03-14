@@ -770,10 +770,11 @@ elif [ "${parser_subcommand}" = 'xsh' ]
 then
 	xshTestsPathBase="${projectPath}/unittests/xsh"
 	xshTestProgramStylesheet="${xshTestsPathBase}/testprogram.xsl"
-	xshTestProgram="$(ns_mktemp xsh-test-program)"
 	xshTestResult=0
 	c=${#parser_values[@]}
 	testResultFormat="%-40.40s | %-8s\n"
+	[ -f "${xsh_stdout}" ] && rm -f "${xsh_stdout}"
+	[ -f "${xsh_stderr}" ] && rm -f "${xsh_stderr}"
 	while read test
 	do
 		xshTestBase="$(basename "${test}")"
@@ -790,6 +791,7 @@ then
 		
 		printf "${testResultFormat}" "${xshTestBase}" "RESULT"
 	
+		xshTestProgram="$(dirname "${test}")/${xshTestBase}.run"
 		testResult=false	
 		xsltproc --output "${xshTestProgram}" \
 				--xinclude \
@@ -807,11 +809,10 @@ then
 		|| xshTestResult=$(expr ${xshTestResult} + 1)
 		
 		printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
-		  
+		${keepTemporaryFiles} || rm -f "${xshTestProgram}"	  
 	done << EOF
 	$(find "${xshTestsPathBase}" -name '*.xsh') 
 EOF
-	rm -f "${xshTestProgram}" 
 	exit ${xshTestResult}
 elif [ "${parser_subcommand}" = 'xsd' ]
 then
