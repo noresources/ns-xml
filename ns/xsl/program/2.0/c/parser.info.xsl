@@ -7,6 +7,7 @@
 	<xsl:import href="parser.base.xsl" />
 	<xsl:import href="parser.generic-names.xsl" />
 	<xsl:import href="parser.names.xsl" />
+		
 	<xsl:template name="prg.c.parser.memberSet">
 		<xsl:param name="variable" />
 		<xsl:param name="pointer" />
@@ -869,6 +870,15 @@
 				<xsl:value-of select="$infoParam" />
 				<xsl:text>-&gt;name = "</xsl:text>
 				<xsl:apply-templates select="$programNode/prg:name" />
+				<xsl:text>";</xsl:text>
+				<xsl:value-of select="$str.endl" />
+				<xsl:value-of select="$infoParam" />
+				<xsl:text>-&gt;version_string = "</xsl:text>
+				<xsl:choose>
+					<xsl:when test="$programNode/prg:version">
+						<xsl:apply-templates select="$programNode/prg:version" />
+					</xsl:when>
+				</xsl:choose>
 				<xsl:text>";</xsl:text>
 				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$infoParam" />

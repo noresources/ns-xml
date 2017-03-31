@@ -509,6 +509,7 @@ NSXMLAPI struct nsxml_program_info
 {
 	struct nsxml_rootitem_info rootitem_info;
 	const char *name;
+	const char *version_string;
 	size_t subcommand_info_count;
 	struct nsxml_subcommand_info *subcommand_infos;
 };
