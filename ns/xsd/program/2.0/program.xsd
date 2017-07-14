@@ -513,6 +513,7 @@
 		<xsd:all>
 			<xsd:element name="variable" type="prg:variableNameType" />
 		</xsd:all>
+		<xsd:attribute ref="xml:base" />
 	</xsd:complexType>
 
 	<xsd:simpleType name="variableNameType">
