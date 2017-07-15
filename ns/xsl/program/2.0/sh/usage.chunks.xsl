@@ -5,11 +5,11 @@
 <!-- Usage chunks for usage -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program">
 	<xsl:import href="../usage.chunks.xsl" />
-	
+
 	<xsl:param name="prg.sh.usage.indentChar">
 		<xsl:text>  </xsl:text>
 	</xsl:param>
-	
+
 	<!-- override default param prg.usage.indentChar -->
 	<xsl:variable name="prg.usage.indentChar" select="$prg.sh.usage.indentChar" />
 	<xsl:template match="prg:details/text()">

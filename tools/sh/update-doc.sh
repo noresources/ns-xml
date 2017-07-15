@@ -47,6 +47,9 @@ Usage:
       --html-body-only: Do not generate HTML header etc.
     
     --help: Display program usage
+  Positional arguments:
+    1. Things to update
+      One or more key representing the different documentation modules
 EOFUSAGE
 }
 

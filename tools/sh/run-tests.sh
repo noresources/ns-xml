@@ -21,6 +21,9 @@ With:
     Default value: /dev/null
   -2, --stderr: Error output for test program  
     Default value: /dev/null
+Positional arguments:
+  1. Tests
+    List of test names
 EOFSCUSAGE
 ;;
 parsers)
@@ -39,8 +42,11 @@ xslt | xsl)
 cat << EOFSCUSAGE
 xslt: XSLT tests
 Usage: run-tests xslt [Test names ...]
-With:
-  
+Positional arguments:
+  1. Test names
+    Test subset to run.
+    Test names should be the path of a .info file located in the unittests/xslt 
+    directory or its shortname (basename without extension)
 EOFSCUSAGE
 ;;
 xsd | schema)

@@ -84,28 +84,44 @@
 															<xsl:with-param name="valuesNode" select="./prg:values" />
 														</xsl:call-template>
 													</xsl:if>
-													<xsl:value-of select="$sh.endl" />
-													<xsl:text>With</xsl:text>
-													<xsl:text>:</xsl:text>
-													<xsl:call-template name="code.block">
-														<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
-														<xsl:with-param name="addFinalEndl" select="false()" />
-														<xsl:with-param name="content">
-															<xsl:call-template name="prg.usage.optionListDescription">
-																<xsl:with-param name="optionsNode" select="./prg:options" />
-															</xsl:call-template>
-															<!-- Program documentation & details -->
-															<xsl:if test="./prg:documentation/prg:details">
-																<xsl:call-template name="code.block">
-																	<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
-																	<xsl:with-param name="addFinalEndl" select="false()" />
-																	<xsl:with-param name="content">
-																		<xsl:apply-templates select="./prg:documentation/prg:details" />
-																	</xsl:with-param>
+													<!-- Subcommand option details -->
+													<xsl:if test="./prg:options">
+														<xsl:value-of select="$sh.endl" />
+														<xsl:text>With:</xsl:text>
+														<xsl:call-template name="code.block">
+															<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
+															<xsl:with-param name="addFinalEndl" select="false()" />
+															<xsl:with-param name="content">
+																<xsl:call-template name="prg.usage.optionListDescription">
+																	<xsl:with-param name="optionsNode" select="./prg:options" />
 																</xsl:call-template>
-															</xsl:if>
-														</xsl:with-param>
-													</xsl:call-template>
+																<!-- Program documentation & details -->
+																<xsl:if test="./prg:documentation/prg:details">
+																	<xsl:call-template name="code.block">
+																		<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
+																		<xsl:with-param name="addFinalEndl" select="false()" />
+																		<xsl:with-param name="content">
+																			<xsl:apply-templates select="./prg:documentation/prg:details" />
+																		</xsl:with-param>
+																	</xsl:call-template>
+																</xsl:if>
+															</xsl:with-param>
+														</xsl:call-template>
+													</xsl:if>
+													<!-- Positional arguments description -->
+													<xsl:if test="./prg:values">
+														<xsl:value-of select="$sh.endl" />
+														<xsl:text>Positional arguments:</xsl:text>
+														<xsl:call-template name="code.block">
+															<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
+															<xsl:with-param name="addFinalEndl" select="false()" />
+															<xsl:with-param name="content">
+																<xsl:call-template name="prg.usage.positionalArgumentsDescription">
+																	<xsl:with-param name="valuesNode" select="./prg:values" />
+																</xsl:call-template>
+															</xsl:with-param>
+														</xsl:call-template>
+													</xsl:if>
 												</xsl:if>
 												<xsl:value-of select="$sh.endl" />
 												<xsl:text>EOFSCUSAGE</xsl:text>
@@ -207,6 +223,28 @@
 								<xsl:with-param name="content">
 									<xsl:call-template name="prg.usage.optionListDescription">
 										<xsl:with-param name="optionsNode" select="$programNode/prg:options" />
+									</xsl:call-template>
+								</xsl:with-param>
+							</xsl:call-template>
+						</xsl:if>
+						<!-- Positional arguments description -->
+						<xsl:if test="$programNode/prg:values">
+							<xsl:value-of select="$sh.endl" />
+							<xsl:choose>
+								<xsl:when test="$programNode/prg:subcommands">
+									<xsl:text>Main program positional arguments</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>Positional arguments</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+							<xsl:text>:</xsl:text>
+							<xsl:call-template name="code.block">
+								<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
+								<xsl:with-param name="addFinalEndl" select="false()" />
+								<xsl:with-param name="content">
+									<xsl:call-template name="prg.usage.positionalArgumentsDescription">
+										<xsl:with-param name="valuesNode" select="$programNode/prg:values" />
 									</xsl:call-template>
 								</xsl:with-param>
 							</xsl:call-template>

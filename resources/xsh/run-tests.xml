@@ -47,6 +47,7 @@
 				<prg:other>
 					<prg:documentation>
 						<prg:abstract>Tests</prg:abstract>
+						<prg:details>List of test names</prg:details>
 					</prg:documentation>
 				</prg:other>
 			</prg:values>
@@ -137,18 +138,18 @@
 	</prg:subcommands>
 	<prg:options>
 		<prg:switch>
-					<prg:databinding>
-						<prg:variable>keepTemporaryFiles</prg:variable>
-					</prg:databinding>
-					<prg:documentation>
-						<prg:abstract>Keep temporary files</prg:abstract>
-						<prg:details>Don't remove temporary files even if test passed</prg:details>
-					</prg:documentation>
-					<prg:names>
-						<prg:long>temp</prg:long>
-						<prg:short>T</prg:short>
-					</prg:names>
-				</prg:switch>
+			<prg:databinding>
+				<prg:variable>keepTemporaryFiles</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Keep temporary files</prg:abstract>
+				<prg:details>Don't remove temporary files even if test passed</prg:details>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>temp</prg:long>
+				<prg:short>T</prg:short>
+			</prg:names>
+		</prg:switch>
 		<!-- Help -->
 		<xi:include href="../../ns/xsh/lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 	</prg:options>

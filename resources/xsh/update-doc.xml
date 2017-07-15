@@ -261,6 +261,7 @@
 		<prg:other>
 			<prg:documentation>
 				<prg:abstract>Things to update</prg:abstract>
+				<prg:details>One or more key representing the different documentation modules</prg:details>
 			</prg:documentation>
 			<prg:select>
 				<prg:option>html</prg:option>

@@ -145,6 +145,33 @@
 		</xsl:for-each>
 	</xsl:template>
 
+	<xsl:template name="prg.usage.positionalArgumentDescription">
+		<xsl:param name="valueNode" select="." />
+		<xsl:param name="details" select="true()" />
+		<xsl:param name="position" select="position()" />
+
+		<xsl:variable name="preIndentLength" select="string-length($prg.usage.indentChar)" />
+		<xsl:value-of select="$position" />
+		<xsl:text>. </xsl:text>
+		<xsl:call-template name="prg.usage.descriptionDisplay">
+			<xsl:with-param name="textNode" select="$valueNode/prg:documentation/prg:abstract" />
+		</xsl:call-template>
+		<xsl:if test="$details and $valueNode/prg:documentation/prg:details">
+			<xsl:value-of select="$str.endl" />
+			<xsl:call-template name="str.prependLine">
+				<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+				<xsl:with-param name="text">
+					<xsl:call-template name="prg.usage.descriptionDisplay">
+						<xsl:with-param name="textNode" select="$valueNode/prg:documentation/prg:details" />
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="forceBreak" select="false()" />
+				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
+
 	<!-- inline display of a switch argument (choose the first option name) -->
 	<xsl:template name="prg.usage.switchInline">
 		<xsl:param name="optionNode" select="." />
@@ -514,6 +541,19 @@
 					</xsl:call-template>
 				</xsl:when>
 			</xsl:choose>
+		</xsl:for-each>
+	</xsl:template>
+
+	<!-- Display the full documentation for each positional argument -->
+	<xsl:template name="prg.usage.positionalArgumentsDescription">
+		<xsl:param name="valuesNode" select="." />
+		<xsl:param name="details" select="true()" />
+
+		<xsl:for-each select="$valuesNode/*">
+			<xsl:if test="position() != 1">
+				<xsl:value-of select="$str.endl" />
+			</xsl:if>
+			<xsl:call-template name="prg.usage.positionalArgumentDescription" />
 		</xsl:for-each>
 	</xsl:template>
 
