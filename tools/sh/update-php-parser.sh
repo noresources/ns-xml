@@ -12,7 +12,7 @@ cat << 'EOFUSAGE'
 update-php-parser: 
 Usage: 
   update-php-parser [--help] [-v <...>]
-  With:
+  Options:
     --help: Display program usage
     -v, --version: Program schema version  
       Default value: 2.0

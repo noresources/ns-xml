@@ -170,6 +170,22 @@
 				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - $preIndentLength" />
 			</xsl:call-template>
 		</xsl:if>
+		<xsl:variable name="argumentValueDesc">
+			<xsl:call-template name="prg.usage.argumentValueDescription">
+				<xsl:with-param name="optionNode" select="$valueNode" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:if test="string-length($argumentValueDesc)">
+			<xsl:call-template name="str.prependLine">
+				<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+				<xsl:with-param name="text">
+					<xsl:value-of select="$argumentValueDesc" />
+				</xsl:with-param>
+				<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+				<xsl:with-param name="forceBreak" select="false()" />
+				<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - (string-length($prg.usage.indentChar) * 2)" />
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 
 	<!-- inline display of a switch argument (choose the first option name) -->

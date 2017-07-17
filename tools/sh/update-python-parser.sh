@@ -12,7 +12,7 @@ cat << 'EOFUSAGE'
 update-python-parser: 
 Usage: 
   update-python-parser [--help] [-v <...>]
-  With:
+  Options:
     --help: Display program usage
     -v, --version: Program schema version  
       Default value: 2.0

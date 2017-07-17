@@ -8,6 +8,10 @@
 	<prg:copyright>Copyright © 2012 by renaud</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>Run ns-xml unittests</prg:abstract>
+		<prg:details>
+			This program is used as a part of the git pre-commit hook of this project
+			<prg:block>see tools/sh/git/hooks/pre-commit</prg:block>
+		</prg:details>
 	</prg:documentation>
 	<prg:subcommands>
 		<prg:subcommand>

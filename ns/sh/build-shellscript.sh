@@ -16,7 +16,7 @@ cat << 'EOFUSAGE'
 build-shellscript: Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 Usage: 
   build-shellscript [-Spd] -s <path> [-x <path>] [(-i <...> | -I <...>)] [--force-interpreter] [--help] -o <path> [--ns-xml-path <path> --ns-xml-path-relative]
-  With:
+  Options:
     -s, --shell: XML shell file
       A XML file following the XML shell script (XSH) schema
       The file may include a program interface XML definition

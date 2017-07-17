@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 build-c: Create a customized Command line argument parser in C
 Usage: 
   build-c [([-b] --schema-version <...> | [-S] -x <path> ([-e] -i <path>)) -p <...> --struct-style <...> --function-style <...> --variable-style <...>] [[-u] -o <path> -f <...>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
-  With:
+  Options:
     Generation options
       Generation mode
         Select what to generate

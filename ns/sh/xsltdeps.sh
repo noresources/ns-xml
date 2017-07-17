@@ -13,7 +13,7 @@ cat << 'EOFUSAGE'
 xsltdeps: List file dependencies of the given XSLT files
 Usage: 
   xsltdeps [-id] [([-a] -r <path>)] [--help] [XSLT files ...]
-  With:
+  Options:
     Path presentation
       -a, --absolute: Print absolute paths
         Print absolute path for all dependencies found rather than the relative 
@@ -23,7 +23,7 @@ Usage:
     -i, --add-input: Add input files in result
     --help: Display program usage
     -d, --debug: Generate debug messages in help and command line parsing functions
-  Positional arguments:
+  Positional arguments::
     1. XSLT files
 EOFUSAGE
 }

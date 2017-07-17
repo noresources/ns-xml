@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 new-xsh: A script to create XSH (XML + SH) files
 Usage: 
   new-xsh [-s] -n <string> [-o <path>] [--help] [--ns-xml-path <path> --ns-xml-path-relative]
-  With:
+  Options:
     -n, --name: XSH program name
     -o, --output, --path: Output path  
       Default value: .

@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 update-doc: Rebuild C Parser XSLT from C source code
 Usage: 
   update-doc [--help] [-v <...>]
-  With:
+  Options:
     --help: Display program usage
     -v, --version: Program schema version  
       Default value: 2.0

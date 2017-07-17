@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 prgproc: Process a program interface XML definition with one of the available XSLT stylesheets
 Usage: 
   prgproc [-x <path>] -t <...> [-o <path>] [-p <...  [ ... ]>] [-s <...  [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
-  With:
+  Options:
     -x, --xml-description: Program description file
       If the program description file is provided, the xml file will be 
       validated before any XSLT processing

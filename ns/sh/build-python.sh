@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 build-python: ...
 Usage: 
   build-python [[-S] -x <path>] [([-be] -i <...> | -m <...>) -c <...>] [-o <path>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
-  With:
+  Options:
     Input
       -x, --xml-description: Program description file
         If the program description file is provided, the xml file will be 

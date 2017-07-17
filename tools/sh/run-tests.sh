@@ -15,44 +15,64 @@ case "${1}" in
 xsh)
 cat << EOFSCUSAGE
 xsh: XSH function library tests
-Usage: run-tests xsh [-1 <...>] [-2 <...>] [Tests ...]
-With:
-  -1, --stdout: Standard output for test program  
-    Default value: /dev/null
-  -2, --stderr: Error output for test program  
-    Default value: /dev/null
-Positional arguments:
-  1. Tests
-    List of test names
+Usage:
+  run-tests xsh [-1 <...>] [-2 <...>] [Tests ...]
+  Subcommand options:
+    -1, --stdout: Standard output for test program  
+      Default value: /dev/null
+    -2, --stderr: Error output for test program  
+      Default value: /dev/null
+  Program options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
+    --help: Display program usage
+  Positional arguments:
+    1. Tests
+      List of test names
+
 EOFSCUSAGE
 ;;
 parsers)
 cat << EOFSCUSAGE
 parsers: Parsers tests
-Usage: run-tests parsers [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
-With:
-  -p, --parsers: Parser to test  
-    The argument have to be one of the following:  
-      c, php, python or sh
-  -a, --apps: Test groups to run
-  -t, --tests: Test id(s) to run
+Usage:
+  run-tests parsers [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+  Subcommand options:
+    -p, --parsers: Parser to test  
+      The argument have to be one of the following:  
+        c, php, python or sh
+    -a, --apps: Test groups to run
+    -t, --tests: Test id(s) to run
+  Program options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
+    --help: Display program usage
+
 EOFSCUSAGE
 ;;
 xslt | xsl)
 cat << EOFSCUSAGE
 xslt: XSLT tests
-Usage: run-tests xslt [Test names ...]
-Positional arguments:
-  1. Test names
-    Test subset to run.
-    Test names should be the path of a .info file located in the unittests/xslt 
-    directory or its shortname (basename without extension)
+Usage:
+  run-tests xslt [Test names ...]
+  Program options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
+    --help: Display program usage
+  Positional arguments:
+    1. Test names
+      Test subset to run.
+      Test names should be the path of a .info file located in the unittests/xslt 
+      directory or its shortname (basename without extension)
+
 EOFSCUSAGE
 ;;
 xsd | schema)
 cat << EOFSCUSAGE
 xsd: XML schema validation tests
-Usage: run-tests xsd
+Usage:
+  run-tests xsd
+
 EOFSCUSAGE
 ;;
 
@@ -70,10 +90,12 @@ Usage:
       options: [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
     xslt, xsl: XSLT tests
     xsd, schema: XML schema validation tests
-  With global options:
+  Options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+  This program is used as a part of the git pre-commit hook of this project
+    see tools/sh/git/hooks/pre-commit
 EOFUSAGE
 }
 

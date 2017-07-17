@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 update-doc: Documentation builder
 Usage: 
   update-doc [--vcs <...> --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
-  With:
+  Options:
     XSLT documentation
       --vcs: Generate documentation for versionned XSLT files  
         The argument have to be one of the following:  
@@ -47,9 +47,11 @@ Usage:
       --html-body-only: Do not generate HTML header etc.
     
     --help: Display program usage
-  Positional arguments:
+  Positional arguments::
     1. Things to update
-      One or more key representing the different documentation modules
+      One or more key representing the different documentation modules  
+      The argument can be one the following :  
+        html, xsl or creole
 EOFUSAGE
 }
 

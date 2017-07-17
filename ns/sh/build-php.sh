@@ -14,7 +14,7 @@ cat << 'EOFUSAGE'
 build-php: ...
 Usage: 
   build-php [[-S] -x <path>] [([-bie] -m <...>) --parser-namespace <...> --program-namespace <...> -c <...>] [-o <path>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
-  With:
+  Options:
     Input
       -x, --xml-description: Program description file
         If the program description file is provided, the xml file will be 

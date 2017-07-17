@@ -14,10 +14,10 @@ cat << 'EOFUSAGE'
 create-gource-video: Documentation builder
 Usage: 
   create-gource-video [--help] -c <path> [Output file]
-  With:
+  Options:
     --help: Display program usage
     -c, --configuration: Gource configuration file
-  Positional arguments:
+  Positional arguments::
     1. Output file
 EOFUSAGE
 }
