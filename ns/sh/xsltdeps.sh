@@ -23,7 +23,7 @@ Usage:
     -i, --add-input: Add input files in result
     --help: Display program usage
     -d, --debug: Generate debug messages in help and command line parsing functions
-  Positional arguments::
+  Positional arguments:
     1. XSLT files
 EOFUSAGE
 }

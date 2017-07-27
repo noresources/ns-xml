@@ -93,7 +93,7 @@
 		<xsl:variable name="optionIndex">
 			<xsl:call-template name="prg.c.parser.optionIndex">
 				<xsl:with-param name="optionNode" select="$optionNode" />
-				<xsl:with-param name="rootNode" select="$rootNode" />
+				<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="infoRef">
@@ -245,7 +245,9 @@
 		<xsl:param name="resultVariableName" />
 		<xsl:param name="bindingIndex" select="1" />
 
-		<xsl:for-each select="$rootNode/prg:options//prg:names/*|$rootNode/prg:options//prg:group">
+		<xsl:variable name="optionsNode" select="$rootNode/prg:options" />
+
+		<xsl:for-each select="$optionsNode//prg:names/*|$optionsNode//prg:group">
 			<xsl:choose>
 				<xsl:when test="./self::prg:group">
 					<xsl:call-template name="prg.c.parser.stateBinding">
@@ -595,16 +597,18 @@
 				</xsl:call-template>
 				<xsl:value-of select="$str.endl" />
 				<!-- Subcommand option names -->
-				<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand[prg:options]">
+				<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
 					<!-- options -->
-					<xsl:call-template name="prg.c.parser.stateBindings">
-						<xsl:with-param name="programNode" select="$programNode" />
-						<xsl:with-param name="rootNode" select="." />
-						<xsl:with-param name="stateVariableName" select="$stateVariableName" />
-						<xsl:with-param name="resultVariableName" select="$prg.c.parser.resultVariableName" />
-						<xsl:with-param name="bindingIndex" select="position()" />
-					</xsl:call-template>
-					<xsl:value-of select="$str.endl" />
+					<xsl:if test="prg:options">
+						<xsl:call-template name="prg.c.parser.stateBindings">
+							<xsl:with-param name="programNode" select="$programNode" />
+							<xsl:with-param name="rootNode" select="." />
+							<xsl:with-param name="stateVariableName" select="$stateVariableName" />
+							<xsl:with-param name="resultVariableName" select="$prg.c.parser.resultVariableName" />
+							<xsl:with-param name="bindingIndex" select="position()" />
+						</xsl:call-template>
+						<xsl:value-of select="$str.endl" />
+					</xsl:if>
 				</xsl:for-each>
 				<!-- Initialize subcommand name bindings -->
 				<xsl:variable name="subcommandNameCount" select="count($programNode/prg:subcommands/*/prg:name) + count($programNode/prg:subcommands/*/prg:aliases/prg:alias)" />

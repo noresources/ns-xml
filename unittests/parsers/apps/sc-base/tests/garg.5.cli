@@ -1,1 +1,1 @@
-values --argument-b 'And its value' -- "This should be ok"
+values --argument-b 'And its value' -- 7 "This should be ok"

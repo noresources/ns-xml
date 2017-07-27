@@ -191,7 +191,7 @@ NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_tex
  * @param options Text wrapping option
  * @param level Initial indentation level
  */
-NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprintf"/><![CDATA[(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
+NSXMLAPI void nsxml_util_text_wrap_fprint(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
 
 /* Messages **************************************/
 

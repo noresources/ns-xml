@@ -79,13 +79,35 @@
 			<prg:name>values</prg:name>
 			<prg:values>
 				<prg:value>
+					<prg:documentation>
+						<prg:abstract>Subcommand positional argument</prg:abstract>
+						<prg:details>A useless positional argument for the subcommand</prg:details>
+					</prg:documentation>
+					<prg:type>
+						<prg:number min="5" max="10" />
+					</prg:type>
 				</prg:value>
 				<prg:other>
+					<prg:documentation>
+						<prg:abstract>Anything</prg:abstract>
+					</prg:documentation>
 				</prg:other>
 			</prg:values>
 		</prg:subcommand>
 	</prg:subcommands>
 	<prg:values>
-		<prg:other />
+		<prg:value>
+			<prg:documentation>
+				<prg:abstract>First positional argument</prg:abstract>
+				<prg:details>Parser test special command or simply the first
+					positional argument of the program
+				</prg:details>
+			</prg:documentation>
+		</prg:value>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>Whatever you want</prg:abstract>
+			</prg:documentation>
+		</prg:other>
 	</prg:values>
 </prg:program>

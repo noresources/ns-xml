@@ -248,7 +248,6 @@
 						<xsl:if test="$programNode/prg:values">
 							<xsl:value-of select="$sh.endl" />
 							<xsl:text>Positional arguments:</xsl:text>
-							<xsl:text>:</xsl:text>
 							<xsl:call-template name="code.block">
 								<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
 								<xsl:with-param name="addFinalEndl" select="false()" />

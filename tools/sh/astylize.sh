@@ -22,6 +22,6 @@ then
 	do
 		astyle --options="${astyleOptionFile}" "${f}"
 	done << EOFIND
-	$(find ${projectPath}/ns/c -type f -a \( -name "*.c" -o -name "*.h" \))
+	$(find ${projectPath}/resources/c -type f -a \( -name "*.c" -o -name "*.h" \))
 EOFIND
 fi

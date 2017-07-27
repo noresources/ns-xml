@@ -34,15 +34,21 @@ parse "${@}"
 echo -n "CLI: "
 cpt="${#}"
 debugMode=false
+displayHelp=false
 i=1
 for argv in "${@}"
 do
 	[ "${argv}" = '__msg__' ] && debugMode=true
-	[ "${argv}" = '__help__' ] && usage "${@}"
+	[ "${argv}" = '__help__' ] && displayHelp=true
 	[ ${i} -gt 1 ] && echo -n ", "
 	echo -n "\"${argv}\""
 	i=$(expr ${i} + 1)
 done
+if ${displayHelp}
+then
+	usage "${parser_subcommand}"
+	exit 0
+fi
 echo ""
 echo "Value count: ${#parser_values[*]}"
 cpt="${#parser_values[*]}"

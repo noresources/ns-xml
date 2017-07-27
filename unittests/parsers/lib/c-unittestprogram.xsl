@@ -152,6 +152,7 @@ int main(int argc, const char **argv)
 	/* Display command line arguments */
 	int first = 1;
 	int display_messages = 0;
+	int display_help = 0;
 	int i;
 	app_info info;
 	app_result *result;
@@ -172,12 +173,21 @@ int main(int argc, const char **argv)
 		{
 			display_messages = 1;
 		}
+		else if (strcmp(argv[i], "__help__") == 0)
+		{
+			display_help = 1;
+		}
 	}
 	printf("\n");
 	
 	app_info_init(&info);
 	result = app_parse(&info, argc, argv, 1);
-	
+	if (display_help)
+	{
+		app_usage(stdout, &info, result, nsxml_usage_format_details, NULL);
+		goto app_end;
+	}
+		
 	/* Positional arguments */
 	printf("Value count: %d\n", (int)result->value_count);
 	printf("Values: ");
@@ -191,7 +201,7 @@ int main(int argc, const char **argv)
 		printf("Errors: ");
 		app_result_display_errors(stderr, result, "- ");
 	}
-	
+		
 	printf("Subcommand: %s\n", ((result->subcommand_name) ? result->subcommand_name : ""));
 ]]></text>
 		<call-template name="str.prependLine">
@@ -217,6 +227,7 @@ int main(int argc, const char **argv)
 				</for-each>
 			</with-param>
 		</call-template><![CDATA[
+app_end:
 	app_result_free(result);
 	app_info_cleanup(&info);
 	return 0;

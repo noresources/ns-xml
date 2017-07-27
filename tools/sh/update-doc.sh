@@ -47,7 +47,7 @@ Usage:
       --html-body-only: Do not generate HTML header etc.
     
     --help: Display program usage
-  Positional arguments::
+  Positional arguments:
     1. Things to update
       One or more key representing the different documentation modules  
       The argument can be one the following :  

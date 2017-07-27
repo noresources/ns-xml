@@ -181,7 +181,7 @@ NSXMLAPI void nsxml_util_text_wrap_options_init(nsxml_util_text_wrap_options *op
  * @param options Text wrapping option
  * @param level Initial indentation level
  */
-NSXMLAPI void nsxml_util_text_wrap_fprintf(FILE *stream, const char *text, const nsxml_util_text_wrap_options *options, size_t level);
+NSXMLAPI void nsxml_util_text_wrap_fprint(FILE *stream, const char *text, const nsxml_util_text_wrap_options *options, size_t level);
 
 /* Messages **************************************/
 

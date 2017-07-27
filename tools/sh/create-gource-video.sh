@@ -17,7 +17,7 @@ Usage:
   Options:
     --help: Display program usage
     -c, --configuration: Gource configuration file
-  Positional arguments::
+  Positional arguments:
     1. Output file
 EOFUSAGE
 }

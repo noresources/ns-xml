@@ -7,7 +7,7 @@
 	<xsl:import href="parser.base.xsl" />
 	<xsl:import href="parser.generic-names.xsl" />
 	<xsl:import href="parser.names.xsl" />
-		
+
 	<xsl:template name="prg.c.parser.memberSet">
 		<xsl:param name="variable" />
 		<xsl:param name="pointer" />
@@ -272,7 +272,7 @@
 				<xsl:value-of select="$containerVariable" />
 				<xsl:text>[</xsl:text>
 				<xsl:call-template name="prg.c.parser.optionIndex">
-					<xsl:with-param name="rootNode" select="$rootNode" />
+					<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
 					<xsl:with-param name="optionNode" select="$optionNode/../../self::prg:group" />
 				</xsl:call-template>
 				<xsl:text>]</xsl:text>
@@ -685,7 +685,7 @@
 						<xsl:for-each select="$rootNode//prg:group">
 							<xsl:variable name="optionIndex">
 								<xsl:call-template name="prg.c.parser.optionIndex">
-									<xsl:with-param name="rootNode" select="$rootNode" />
+									<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
 									<xsl:with-param name="optionNode" select="." />
 								</xsl:call-template>
 							</xsl:variable>
@@ -702,7 +702,7 @@
 								<xsl:value-of select="position() - 1" />
 								<xsl:text>] = info-&gt;rootitem_info.option_infos[</xsl:text>
 								<xsl:call-template name="prg.c.parser.optionIndex">
-									<xsl:with-param name="rootNode" select="$rootNode" />
+									<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
 									<xsl:with-param name="optionNode" select="." />
 								</xsl:call-template>
 								<xsl:text>];</xsl:text>

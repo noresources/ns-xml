@@ -764,8 +764,17 @@ EOFSH
 	
 	${testC} && ${testValgrind} && (${keepTemporaryFiles} || rm -f "${valgrindOutputXslFile}")
 	
-	find "${parserTestsPathBase}" -name "*.result-*" | wc -l
-	exit $(find "${parserTestsPathBase}" -name "*.result-*" | wc -l)
+	count=0
+	while read result
+	do
+		expected="$(sed -E 's,(.*)\..*$,\1,g' <<< "${result}").expected"
+		[ -f "${expected}" ] || continue		
+		diff -q "${result}" "${expected}" 1>/dev/null 2>&1 || count=$(expr ${count} + 1) 
+	done << EOF
+$(find "${parserTestsPathBase}" -name "*.result-*")
+EOF
+	echo $count
+	exit $count
 elif [ "${parser_subcommand}" = 'xsh' ]
 then
 	xshTestsPathBase="${projectPath}/unittests/xsh"

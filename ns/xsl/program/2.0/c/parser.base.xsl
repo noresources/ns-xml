@@ -96,9 +96,9 @@
 
 	<!-- Get the option index (relative to root item) -->
 	<xsl:template name="prg.c.parser.optionIndex">
-		<xsl:param name="rootNode" />
+		<xsl:param name="optionsRootNode" />
 		<xsl:param name="optionNode" />
-		<xsl:for-each select="$rootNode//prg:options/*">
+		<xsl:for-each select="$optionsRootNode/*|$optionsRootNode//prg:options/*">
 			<xsl:if test="$optionNode = .">
 				<xsl:value-of select="position() - 1" />
 			</xsl:if>
