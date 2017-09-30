@@ -1,1 +1,1 @@
-sc --argument-b 'And its value' -- "This should be ok"
+sub-command --argument-b 'And its value' -- "This should be ok"

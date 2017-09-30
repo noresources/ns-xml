@@ -1,11 +1,11 @@
-CLI: "-a", "--argument-b", "Alias is used", "subcommand-alias", "but the active subcommand name will be 'sub' (always use main name)"
+CLI: "-a", "--argument-b", "Alias is used", "subcommand-alias", "but the active subcommand name will be 'sub-command' (always use main name)"
 Value count: 1
-Values: "but the active subcommand name will be 'sub' (always use main name)"
+Values: "but the active subcommand name will be 'sub-command' (always use main name)"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=True
 argumentB=Alias is used
 switchB=False
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=False
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=False

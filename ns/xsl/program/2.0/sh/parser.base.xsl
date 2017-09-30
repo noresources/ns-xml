@@ -61,7 +61,7 @@
 			<xsl:with-param name="variableNode" select="." />
 		</xsl:call-template>
 	</xsl:template>
-	
+
 	<xsl:template match="prg:default|prg:select/prg:option">
 		<!-- Escape special character. Assumes the literal is enclosed by single-quotes -->
 		<xsl:call-template name="sh.escapeLiteral">

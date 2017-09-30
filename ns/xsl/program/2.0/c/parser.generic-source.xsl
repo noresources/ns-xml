@@ -78,27 +78,28 @@ size_t nsxml_util_digit_count_s(size_t n)
 int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(char **output, size_t *output_length, const char *format, ...)
 {
 	int printed = 0;
-	size_t step = (*output_length > 256) ? *output_length : 256;
-	int redo = 0;
 	va_list list;
 	
 	do
 	{
-		redo = 0;
+		printed = 0;
 		va_start(list, format);
 		printed += vsnprintf(*output, *output_length, format, list);
-		
-		if (printed >= (int)(*output_length))
-		{
-			*output_length += step;
-			*output = (char *) realloc(*output, sizeof(char) * (*output_length));
-			printed = 0;
-			redo = 1;
-		}
-		
 		va_end(list);
+		
+		if (printed <= 0)
+		{
+			(*output)[0] = '\0';
+			*output_length = 0;
+			return 0;
+		}
+		else if ((size_t)printed >= (*output_length))
+		{
+			*output_length = (size_t)(printed + 1);
+			*output = (char *) realloc(*output, sizeof(char) * (*output_length));
+		}
 	}
-	while (redo);
+	while (printed == 0);
 	
 	return printed;
 }
@@ -1298,17 +1299,21 @@ void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state,
 	size_t i, j;
 	state->option_binding_group_count = option_binding_group_count;
 	state->option_binding_counts = (size_t *) malloc(sizeof(size_t) * option_binding_group_count);
-	state->option_bindings = (struct nsxml_option_binding **) malloc(sizeof(struct nsxml_option_binding *) * option_binding_group_count);
+	
+	if (option_binding_group_count > 0)
+	{
+		state->option_bindings = (struct nsxml_option_binding **) malloc(sizeof(struct nsxml_option_binding *) * option_binding_group_count);
+	}
+	else
+	{
+		state->option_bindings = NULL;
+	}
 	
 	for (i = 0; i < option_binding_group_count; ++i)
 	{
 		state->option_binding_counts[i] = option_binding_counts[i];
 		
-		if (option_binding_counts[i] == 0)
-		{
-			state->option_bindings[i] = NULL;
-		}
-		else
+		if (option_binding_counts[i] > 0)
 		{
 			state->option_bindings[i] = (struct nsxml_option_binding *) malloc(sizeof(struct nsxml_option_binding) * option_binding_counts[i]);
 			
@@ -1317,7 +1322,12 @@ void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state,
 				state->option_bindings[i][j].name_ref = NULL;
 				state->option_bindings[i][j].info_ref = NULL;
 				state->option_bindings[i][j].result_ref = NULL;
+				state->option_bindings[i][j].parent_tree_refs = NULL;
 			}
+		}
+		else
+		{
+			state->option_bindings[i] = NULL;
 		}
 	}
 }
@@ -1435,7 +1445,6 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 {
 	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *msg = NULL;
 	size_t message_size = (strlen(format) * 2) + 1;
-	int redo = 0;
 	int printed = 0;
 	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *msg2;
 	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *parent;
@@ -1461,19 +1470,23 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 	
 	do
 	{
-		redo = 0;
+		printed = 0;
 		va_start(list, format);
-		printed = vsnprintf(msg->message, message_size, format, list);
+		printed += vsnprintf(msg->message, message_size, format, list);
 		va_end(list);
 		
-		if (printed > (int) message_size)
+		if (printed <= 0)
 		{
-			message_size = (size_t) printed;
+			msg->message[0] = '\0';
+			break;
+		}
+		else if ((size_t)printed >= message_size)
+		{
+			message_size = (size_t)(printed + 1);
 			msg->message = (char *) realloc(msg->message, sizeof(char) * (message_size + 1));
-			redo = 1;
 		}
 	}
-	while (redo);
+	while (printed == 0);
 	
 	msg->type = type;
 	msg->code = code;

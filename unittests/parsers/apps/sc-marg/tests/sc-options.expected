@@ -1,11 +1,11 @@
-CLI: "sub", "-d", "abc", "def", "ghi", "This should be ok"
+CLI: "sub-command", "-d", "abc", "def", "ghi", "This should be ok"
 Value count: 3
 Values: "def", "ghi", "This should be ok"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=
 multiargC=
-sub_argumentD=abc
-sub_switchE=False
-sub_switchA2=False
+sub-command_argumentD=abc
+sub-command_switchE=False
+sub-command_switchA2=False

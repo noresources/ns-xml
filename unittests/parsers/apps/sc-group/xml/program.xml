@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>sc-group</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Test application (subcommand and multiargument behavior)</prg:abstract>
+	</prg:documentation>
+	<!-- Sub commands -->
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>subcommand-with-group</prg:name>
+			<prg:aliases>
+				<prg:alias>sc-group</prg:alias>
+			</prg:aliases>
+			<prg:documentation>
+				<prg:abstract>A sub command with option groups</prg:abstract>
+				<prg:details>This is a more complex subcommand :)</prg:details>
+			</prg:documentation>
+			<!-- Options of rgrp tests -->
+			<xi:include href="../../rgrp/xml/program.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//prg:options[@id='prg.unittest.options.rgrp'])" />
+		</prg:subcommand>
+	</prg:subcommands>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

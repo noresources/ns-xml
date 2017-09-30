@@ -141,12 +141,12 @@
 		<xsl:value-of select="count($programNode//prg:options/*[not(prg:databinding/prg:variable)])" />
 	</xsl:template>
 
-	<xsl:template match="prg:databinding/prg:variable">
+	<xsl:template match="prg:databinding/prg:variable|prg:subcommand/prg:name">
 		<xsl:call-template name="c.validIdentifierName">
 			<xsl:with-param name="name" select="translate(normalize-space(.),'-','_')" />
 		</xsl:call-template>
 	</xsl:template>
-
+	
 	<xsl:template match="prg:default|prg:select/prg:option">
 		<xsl:call-template name="c.escapeLiteral">
 			<xsl:with-param name="value" select="." />

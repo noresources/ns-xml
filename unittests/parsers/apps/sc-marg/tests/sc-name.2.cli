@@ -1,1 +1,1 @@
--c abc def ghi --switch-a sub "This should succeed"
+-c abc def ghi --switch-a sub-command "This should succeed"

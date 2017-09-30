@@ -1,11 +1,11 @@
-CLI: "sub", "--switch-a", "First subcommand positional argument", "--argument-b", "And its value", "This should be ok"
+CLI: "sub-command", "--switch-a", "First subcommand positional argument", "--argument-b", "And its value", "This should be ok"
 Value count: 2
 Values: "First subcommand positional argument", "This should be ok"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=And its value
 switchB=False
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=True
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=True

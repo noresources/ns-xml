@@ -442,7 +442,7 @@
 		<xsl:if test="$optionNode/prg:documentation/prg:details">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$optionVariable" />
-			<xsl:text>->details = '</xsl:text>
+			<xsl:text>-&gt;details = '</xsl:text>
 			<xsl:apply-templates select="$optionNode/prg:documentation/prg:details" />
 			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
@@ -516,17 +516,17 @@
 		<xsl:if test="$positionalArgumentNode/prg:documentation/prg:abstract">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$paiVariable" />
-			<xsl:text>->abstract = "</xsl:text>
+			<xsl:text>-&gt;abstract = '</xsl:text>
 			<xsl:apply-templates select="$positionalArgumentNode/prg:documentation/prg:abstract" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:if test="$positionalArgumentNode/prg:documentation/prg:details">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$paiVariable" />
-			<xsl:text>->details = "</xsl:text>
+			<xsl:text>-&gt;details = '</xsl:text>
 			<xsl:apply-templates select="$positionalArgumentNode/prg:documentation/prg:details" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 	</xsl:template>
@@ -538,17 +538,17 @@
 		<xsl:if test="$rootNode/prg:documentation/prg:abstract">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$rootVariable" />
-			<xsl:text>->abstract = "</xsl:text>
+			<xsl:text>-&gt;abstract = '</xsl:text>
 			<xsl:apply-templates select="$rootNode/prg:documentation/prg:abstract" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 		<xsl:if test="$rootNode/prg:documentation/prg:details">
 			<xsl:value-of select="$str.endl" />
 			<xsl:value-of select="$rootVariable" />
-			<xsl:text>->details = "</xsl:text>
+			<xsl:text>-&gt;details = '</xsl:text>
 			<xsl:apply-templates select="$rootNode/prg:documentation/prg:details" />
-			<xsl:text>";</xsl:text>
+			<xsl:text>';</xsl:text>
 			<xsl:value-of select="$str.endl" />
 		</xsl:if>
 

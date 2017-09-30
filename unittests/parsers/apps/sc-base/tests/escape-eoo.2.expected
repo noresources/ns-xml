@@ -2,10 +2,10 @@ CLI: "sc", "Escaping", "end-of-options", "\--", "--argument-b=Again", "-ae"
 Value count: 3
 Values: "Escaping", "end-of-options", "--"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=Again
 switchB=False
-sub_argumentD=
-sub_switchE=True
-sub_switchA2=True
+sub-command_argumentD=
+sub-command_switchE=True
+sub-command_switchA2=True

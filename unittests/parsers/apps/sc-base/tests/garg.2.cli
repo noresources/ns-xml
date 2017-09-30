@@ -1,1 +1,1 @@
-sub --switch-a 'First subcommand positional argument' --argument-b 'And its value' "This should be ok"
+sub-command --switch-a 'First subcommand positional argument' --argument-b 'And its value' "This should be ok"

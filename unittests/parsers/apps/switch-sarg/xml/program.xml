@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<prg:name>app1</prg:name>
+	<prg:name>switch-sarg</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
@@ -13,16 +13,25 @@
 			<prg:databinding>
 				<prg:variable>switchA</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A simple switch</prg:abstract>
+				<prg:details>The ui node will make this switch invisible in GUI</prg:details>
+			</prg:documentation>
 			<prg:names>
 				<prg:short>a</prg:short>
 				<prg:long>switch-a</prg:long>
 			</prg:names>
 			<prg:ui mode="disabled" />
 		</prg:switch>
+		<!-- Simple argument -->
 		<prg:argument id="prg.unittest.option.argumentB">
 			<prg:databinding>
 				<prg:variable>argumentB</prg:variable>
 			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>A basic single-argument option</prg:abstract>
+				<prg:details>Argument value has no particular restrictions</prg:details>
+			</prg:documentation>
 			<prg:names>
 				<prg:long>argument-b</prg:long>
 				<prg:short>b</prg:short>

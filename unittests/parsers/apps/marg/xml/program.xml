@@ -19,6 +19,7 @@
 			</prg:databinding>
 			<prg:documentation>
 				<prg:abstract>A basic multi-argument option</prg:abstract>
+				<prg:details>Argument values are not restricted</prg:details>
 			</prg:documentation>
 			<prg:names>
 				<prg:short>c</prg:short>

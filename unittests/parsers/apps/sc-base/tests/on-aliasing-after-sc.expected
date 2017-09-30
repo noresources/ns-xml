@@ -1,11 +1,11 @@
-CLI: "sub", "-a"
+CLI: "sub-command", "-a"
 Value count: 0
 Values: 
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=
 switchB=False
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=True
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=True

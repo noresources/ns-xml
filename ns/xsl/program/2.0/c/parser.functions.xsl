@@ -153,7 +153,7 @@
 		<xsl:value-of select="$infoRef" />
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
-		<xsl:text>dummy_ptr = </xsl:text>
+		<xsl:text>option_result_ptr = </xsl:text>
 		<xsl:choose>
 			<xsl:when test="$optionNode/prg:databinding/prg:variable">
 				<xsl:text>(&amp;</xsl:text>
@@ -188,7 +188,7 @@
 		<xsl:value-of select="$bindingIndex" />
 		<xsl:text>][</xsl:text>
 		<xsl:value-of select="$index" />
-		<xsl:text>].result_ref = (struct nsxml_option_result *)dummy_ptr;</xsl:text>
+		<xsl:text>].result_ref = (struct nsxml_option_result *)option_result_ptr;</xsl:text>
 		<xsl:value-of select="$str.endl" />
 		<!-- Level -->
 		<xsl:value-of select="$stateVariableName" />
@@ -216,6 +216,7 @@
 				<xsl:text>);</xsl:text>
 				<xsl:call-template name="prg.c.parser.stateOptionBindingParentTreeAssign">
 					<xsl:with-param name="programNode" select="$programNode" />
+					<xsl:with-param name="rootNode" select="$rootNode" />
 					<xsl:with-param name="stateVariableName" select="$stateVariableName" />
 					<xsl:with-param name="parentOptionNode" select="$optionNode/../.." />
 					<xsl:with-param name="levelCount" select="$level" />
@@ -278,7 +279,10 @@
 
 	<!-- -->
 	<xsl:template name="prg.c.parser.stateOptionBindingParentTreeAssign">
+		<!-- Main node -->
 		<xsl:param name="programNode" />
+		<!-- Program or subcommand node -->
+		<xsl:param name="rootNode" />
 		<xsl:param name="stateVariableName" />
 		<xsl:param name="parentOptionNode" />
 		<xsl:param name="level" select="0" />
@@ -286,7 +290,7 @@
 		<xsl:param name="variableBase" />
 		<xsl:param name="bindingIndex" />
 		<xsl:value-of select="$str.endl" />
-		<xsl:text>dummy_ptr = </xsl:text>
+		<xsl:text>option_result_ptr = </xsl:text>
 		<xsl:choose>
 			<xsl:when test="$parentOptionNode/prg:databinding/prg:variable">
 				<xsl:text>&amp;</xsl:text>
@@ -318,10 +322,11 @@
 		<xsl:value-of select="$variableBase" />
 		<xsl:text>[</xsl:text>
 		<xsl:value-of select="$level" />
-		<xsl:text>] = (struct nsxml_group_option_result *)dummy_ptr;</xsl:text>
+		<xsl:text>] = (struct nsxml_group_option_result *)option_result_ptr;</xsl:text>
 		<xsl:if test="($level + 1) &lt; $levelCount">
 			<xsl:call-template name="prg.c.parser.stateOptionBindingParentTreeAssign">
 				<xsl:with-param name="programNode" select="$programNode" />
+				<xsl:with-param name="rootNode" select="$rootNode" />
 				<xsl:with-param name="stateVariableName" select="$stateVariableName" />
 				<xsl:with-param name="parentOptionNode" select="$parentOptionNode/../.." />
 				<xsl:with-param name="level" select="$level + 1" />
@@ -458,8 +463,8 @@
 					</xsl:call-template>
 				</xsl:variable>
 				<!-- Declarations -->
-				<xsl:if test="$programNode/prg:options">
-					<xsl:text>void *dummy_ptr = NULL;</xsl:text>
+				<xsl:if test="$programNode//prg:options">
+					<xsl:text>void *option_result_ptr = NULL;</xsl:text>
 					<xsl:value-of select="$str.endl" />
 				</xsl:if>
 				<xsl:call-template name="c.structVariableDeclaration">
@@ -492,7 +497,7 @@
 				<xsl:value-of select="$programOptionNameBindingCount + $programOptionGroupBindingCount" />
 				<xsl:for-each select="$programNode/prg:subcommands/prg:subcommand">
 					<xsl:text>, </xsl:text>
-					<xsl:value-of select="count(./prg:options//prg:names/*)" />
+					<xsl:value-of select="count(./prg:options//prg:names/*) + count(./prg:options//prg:group)" />
 				</xsl:for-each>
 				<xsl:text>};</xsl:text>
 				<xsl:value-of select="$str.endl" />

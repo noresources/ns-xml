@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<prg:name>app4</prg:name>
+	<prg:name>rgrp</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
@@ -26,7 +26,7 @@
 		- F (arg + default)
 		- p (arg number)
 	-->
-	<prg:options>
+	<prg:options id="prg.unittest.options.rgrp">
 		<!-- Required group -->
 		<prg:group id="prg.unittest.option.groupQ" required="true">
 			<prg:databinding>

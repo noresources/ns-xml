@@ -1,1 +1,1 @@
--a --argument-b "Alias is used" subcommand-alias "but the active subcommand name will be 'sub' (always use main name)"
+-a --argument-b "Alias is used" subcommand-alias "but the active subcommand name will be 'sub-command' (always use main name)"

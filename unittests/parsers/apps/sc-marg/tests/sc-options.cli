@@ -1,1 +1,1 @@
-sub -d abc def ghi "This should be ok"
+sub-command -d abc def ghi "This should be ok"

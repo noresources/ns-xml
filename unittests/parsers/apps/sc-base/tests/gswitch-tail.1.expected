@@ -2,10 +2,10 @@ CLI: "sc", "--switch-b", "This should be ok"
 Value count: 1
 Values: "This should be ok"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=
 switchB=True
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=False
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=False

@@ -2,10 +2,10 @@ CLI: "sc", "--switch-b=ignored", "This is an error"
 Value count: 1
 Values: "This is an error"
 Error count: 1
-Subcommand: sub
+Subcommand: sub-command
 switchA=False
 argumentB=
 switchB=False
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=False
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=False

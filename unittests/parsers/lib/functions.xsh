@@ -14,10 +14,4 @@ echo "${trueString}"
 return 0
 		]]></xsh:body>
 	</xsh:function>
-	<xsh:function name="switchval">
-		<xsh:parameter name="varname" />
-		<xsh:body><![CDATA[
-echo "${varname}=$(toboolstr $(eval "echo \$${varname}"))"
-		]]></xsh:body>
-	</xsh:function>
 </xsh:functions>

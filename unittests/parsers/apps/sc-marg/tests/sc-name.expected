@@ -1,11 +1,11 @@
-CLI: "-c", "abc", "def", "ghi", "-a", "sub", "There is only global option names and option args before sc name"
+CLI: "-c", "abc", "def", "ghi", "-a", "sub-command", "There is only global option names and option args before sc name"
 Value count: 1
 Values: "There is only global option names and option args before sc name"
 Error count: 0
-Subcommand: sub
+Subcommand: sub-command
 switchA=True
 argumentB=
 multiargC=abc def ghi
-sub_argumentD=
-sub_switchE=False
-sub_switchA2=False
+sub-command_argumentD=
+sub-command_switchE=False
+sub-command_switchA2=False

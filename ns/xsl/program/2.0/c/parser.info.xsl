@@ -533,12 +533,14 @@
 		<xsl:param name="rootNode" />
 		<xsl:param name="variable" />
 		<xsl:param name="pointer" select="false()" />
+
 		<xsl:variable name="memberSet">
 			<xsl:call-template name="prg.c.parser.memberSet">
 				<xsl:with-param name="variable" select="$variable" />
 				<xsl:with-param name="pointer" select="$pointer" />
 			</xsl:call-template>
 		</xsl:variable>
+
 		<xsl:call-template name="prg.c.parser.itemInfoInit">
 			<xsl:with-param name="itemNode" select="$rootNode" />
 			<xsl:with-param name="variable" select="concat($memberSet, 'item_info')" />
@@ -681,8 +683,8 @@
 							</xsl:choose>
 							<xsl:value-of select="$str.endl" />
 						</xsl:for-each>
-						<!-- Link group options -->
-						<xsl:for-each select="$rootNode//prg:group">
+						<!-- Group postprocess: Link group options -->
+						<xsl:for-each select="$rootNode/prg:options//prg:group">
 							<xsl:variable name="optionIndex">
 								<xsl:call-template name="prg.c.parser.optionIndex">
 									<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
@@ -690,7 +692,9 @@
 								</xsl:call-template>
 							</xsl:variable>
 							<xsl:variable name="groupNode" select="." />
-							<xsl:text>o = info-&gt;rootitem_info.option_infos[</xsl:text>
+							<xsl:text>o = </xsl:text>
+							<xsl:value-of select="$containerVariable" />
+							<xsl:text>[</xsl:text>
 							<xsl:value-of select="$optionIndex" />
 							<xsl:text>];</xsl:text>
 							<xsl:if test="$haveArgOptions">
@@ -700,7 +704,9 @@
 							<xsl:for-each select="$groupNode/prg:options/*">
 								<xsl:text>((struct nsxml_group_option_info *)(o_ptr))-&gt;option_info_refs[</xsl:text>
 								<xsl:value-of select="position() - 1" />
-								<xsl:text>] = info-&gt;rootitem_info.option_infos[</xsl:text>
+								<xsl:text>] = </xsl:text>
+								<xsl:value-of select="$containerVariable" />
+								<xsl:text>[</xsl:text>
 								<xsl:call-template name="prg.c.parser.optionIndex">
 									<xsl:with-param name="optionsRootNode" select="$rootNode/prg:options" />
 									<xsl:with-param name="optionNode" select="." />
@@ -805,11 +811,15 @@
 		</xsl:variable>
 		<xsl:value-of select="$memberSet" />
 		<xsl:text>names = nsxml_item_names_new("</xsl:text>
-		<xsl:apply-templates select="$subcommandNode/prg:name" />
+		<xsl:call-template name="c.escapeLiteral">
+			<xsl:with-param name="value" select="$subcommandNode/prg:name" />
+		</xsl:call-template>
 		<xsl:text>", </xsl:text>
 		<xsl:for-each select="$subcommandNode/prg:aliases/prg:alias">
 			<xsl:text>"</xsl:text>
-			<xsl:apply-templates select="." />
+			<xsl:call-template name="c.escapeLiteral">
+				<xsl:with-param name="value" select="." />
+			</xsl:call-template>
 			<xsl:text>", </xsl:text>
 		</xsl:for-each>
 		<xsl:text>NULL);</xsl:text>
@@ -869,7 +879,9 @@
 				<!-- nsxml_program_info member -->
 				<xsl:value-of select="$infoParam" />
 				<xsl:text>-&gt;name = "</xsl:text>
-				<xsl:apply-templates select="$programNode/prg:name" />
+				<xsl:call-template name="c.escapeLiteral">
+					<xsl:with-param name="value" select="$programNode/prg:name" />
+				</xsl:call-template>
 				<xsl:text>";</xsl:text>
 				<xsl:value-of select="$str.endl" />
 				<xsl:value-of select="$infoParam" />
