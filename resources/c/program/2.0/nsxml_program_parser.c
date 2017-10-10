@@ -8,6 +8,14 @@
 
 #include "nsxml_program_parser.h"
 
+#if !defined (NSXML_TEXTBUFFER_BASESIZE)
+#	define NSXML_TEXTBUFFER_BASESIZE 1024
+#endif
+
+#if !defined (NSXML_TEXTBUFFER_MINBLOCKSIZE)
+#	define NSXML_TEXTBUFFER_MINBLOCKSIZE 64
+#endif
+
 #define NSXML_DBG 0
 
 #if defined(__cplusplus)
@@ -65,33 +73,63 @@ size_t nsxml_util_digit_count_s(size_t n)
 	return c;
 }
 
-int nsxml_util_asnprintf(char **output, size_t *output_length, const char *format, ...)
+size_t nsxml_util_append(char **output, size_t *output_length, size_t offset, const char *append)
+{
+	size_t printed = strlen(append);
+	
+	if ((printed + offset) >= *output_length)
+	{
+		size_t added = (size_t)((size_t)(printed + 1 + offset) - *output_length);
+		
+		if (added < NSXML_TEXTBUFFER_MINBLOCKSIZE)
+		{
+			added = NSXML_TEXTBUFFER_MINBLOCKSIZE;
+		}
+		
+		*output_length += added;
+		*output = (char *) realloc(*output, sizeof(char) * (*output_length));
+	}
+	
+	memcpy(*output + offset, append, printed);
+	(*output)[offset + printed] = '\0';
+	return printed;
+}
+
+size_t nsxml_util_asnprintf(char **output, size_t *output_length, size_t offset, const char *format, ...)
 {
 	int printed = 0;
 	va_list list;
+	size_t length;
 	
 	do
 	{
 		printed = 0;
+		length = (offset <= *output_length) ? (*output_length - offset) : 0;
 		va_start(list, format);
-		printed += vsnprintf(*output, *output_length, format, list);
+		printed += vsnprintf(*output + offset, length, format, list);
 		va_end(list);
 		
 		if (printed <= 0)
 		{
-			(*output)[0] = '\0';
-			*output_length = 0;
+			(*output)[offset] = '\0';
 			return 0;
 		}
-		else if ((size_t)printed >= (*output_length))
+		else if ((size_t)printed >= length)
 		{
-			*output_length = (size_t)(printed + 1);
+			size_t added = ((size_t)((size_t)printed + 1 + offset) - *output_length);
+			
+			if (added < NSXML_TEXTBUFFER_MINBLOCKSIZE)
+			{
+				added = NSXML_TEXTBUFFER_MINBLOCKSIZE;
+			}
+			
+			*output_length += added;
 			*output = (char *) realloc(*output, sizeof(char) * (*output_length));
 		}
 	}
 	while (printed == 0);
 	
-	return printed;
+	return (size_t)printed;
 }
 
 int nsxml_util_strncpy(char *output, size_t output_length, const char *input, size_t input_length)
@@ -383,7 +421,7 @@ const char *nsxml_item_name_get(const struct nsxml_item_name *list, int item_ind
 
 void nsxml_item_name_free(struct nsxml_item_name *);
 
-int nsxml_item_name_snprintf(const struct nsxml_item_name *, char **output, size_t *output_length, const char *prefix_text);
+size_t nsxml_item_name_snprintf(const struct nsxml_item_name *, char **output, size_t *output_length, const char *prefix_text);
 
 struct nsxml_item_name *nsxml_item_names_new(const char *name, ...)
 {
@@ -440,7 +478,7 @@ void nsxml_item_name_free(struct nsxml_item_name *item_start)
 	}
 }
 
-int nsxml_item_name_snprintf(const struct nsxml_item_name *names, char **output, size_t *output_length, const char *prefix_text)
+size_t nsxml_item_name_snprintf(const struct nsxml_item_name *names, char **output, size_t *output_length, const char *prefix_text)
 {
 	size_t text_buffer_length = 0;
 	size_t value_count = 0;
@@ -505,7 +543,7 @@ int nsxml_item_name_snprintf(const struct nsxml_item_name *names, char **output,
 		}
 	}
 	
-	return (int) text_buffer_length;
+	return text_buffer_length;
 }
 
 void nsxml_program_result_add_message(struct nsxml_program_result *result, int type, int code, const char *text);
@@ -534,13 +572,13 @@ struct nsxml_validated_item
 	} item;
 };
 
-int nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
-int nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
+size_t nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
+size_t nsmxl_value_validator_add_standard_error(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value)
 {
 	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *) self;
 	size_t output_length = 64;
 	char *output = (char *) malloc(sizeof(char) * output_length);
-	int usage_text_length = 0;
+	size_t usage_text_length = 0;
 	(void) value;
 	
 	output[0] = '\0';
@@ -1629,16 +1667,16 @@ const char *nsxml_usage_path_type_string(int fs_type);
 size_t nsxml_usage_path_type_count(int fs_type);
 const char *nsxml_usage_path_access_string(int fs_access);
 size_t nsxml_usage_path_access_count(int fs_);
-void nsxml_usage_option_argument_type(FILE *stream, int argumenttype, int short_name);
-void nsxml_usage_option_inline_details(FILE *stream, const struct nsxml_option_info *info, int short_name);
-void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_info *info, int info_index, int *visited, const nsxml_util_text_wrap_options *wrap);
+size_t nsxml_usage_option_argument_type(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, int argumenttype, int short_name);
+size_t nsxml_usage_option_inline_details(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, const struct nsxml_option_info *info, int short_name);
+void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t text_length, const struct nsxml_rootitem_info *info, int info_index, int *visited);
 void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_info *info, int format, const nsxml_util_text_wrap_options *wrap, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
 void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *info, int format, const nsxml_util_text_wrap_options *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
 void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_positional_argument_info *info, size_t index, int format, const nsxml_util_text_wrap_options *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
 
 /* Validator usage definitions */
 
-int nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
+size_t nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator *validator = (const struct nsxml_value_validator *) self;
 	int f;
@@ -1728,17 +1766,17 @@ int nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_it
 	
 	if ((path_access_count + path_type_count) > 0)
 	{
-		return nsxml_util_asnprintf(output, output_length, "%s", text_buffer);
+		return nsxml_util_asnprintf(output, output_length, 0, "%s", text_buffer);
 	}
 	
 	return 0;
 }
 
-int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
+size_t nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator_number *nvalidator = (const struct nsxml_value_validator_number *) self;
 	int min_and_max = (nsxml_value_validator_checkmin | nsxml_value_validator_checkmax);
-	int printed = 0;
+	size_t printed = 0;
 #	define message_format_buffer_length 64
 	char message_format[message_format_buffer_length];
 	(void) item;
@@ -1748,12 +1786,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be between %%.%df and %%.%df", (int) nvalidator->decimal_count, (int) nvalidator->decimal_count);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be between %d and %d", (size_t)message_format_buffer_length);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
 		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmin)
@@ -1761,12 +1799,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->min_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (double) nvalidator->min_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be greater or equal %d", (size_t) message_format_buffer_length);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->min_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (int) nvalidator->min_value);
 		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmax)
@@ -1774,12 +1812,12 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (double) nvalidator->max_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (double) nvalidator->max_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be lesser or equal %d", (size_t) message_format_buffer_length);
-			printed = nsxml_util_asnprintf(output, output_length, message_format, (int) nvalidator->max_value);
+			printed = nsxml_util_asnprintf(output, output_length, 0, message_format, (int) nvalidator->max_value);
 		}
 	}
 	
@@ -1788,7 +1826,7 @@ int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_
 	return printed;
 }
 
-int nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
+size_t nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length)
 {
 	const struct nsxml_value_validator_enum *evalidator = (const struct nsxml_value_validator_enum *) self;
 	static const char *kPrefixedText[2] =
@@ -1951,65 +1989,127 @@ const char *nsxml_usage_path_access_string(int fs_access)
 	return ("?");
 }
 
-void nsxml_usage_option_argument_type(FILE *stream, int argument_type, int short_name)
+size_t nsxml_usage_option_argument_type(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, int argument_type, int short_name)
 {
+	size_t printed = 0;
+	
 	if (short_name == 1)
 	{
-		fprintf(stream, " <");
+		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, " <");
 	}
 	else
 	{
-		fprintf(stream, "=");
+		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "=");
 	}
 	
 	switch (argument_type)
 	{
 		case nsxml_argument_type_existingcommand:
-			fprintf(stream, "command");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "command");
 			break;
 			
 		case nsxml_argument_type_hostname:
-			fprintf(stream, "hostname");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "hostname");
 			break;
 			
 		case nsxml_argument_type_number:
-			fprintf(stream, "number");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "number");
 			break;
 			
 		case nsxml_argument_type_path:
-			fprintf(stream, "path");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "path");
 			break;
 			
 		case nsxml_argument_type_string:
-			fprintf(stream, "string");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "string");
 			break;
 			
 		default:
-			fprintf(stream, "...");
+			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "...");
 			break;
 	}
 	
 	if (short_name == 1)
 	{
-		fprintf(stream, ">");
+		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, ">");
 	}
+	
+	return printed;
 }
 
-void nsxml_usage_option_inline_details(FILE *stream, const struct nsxml_option_info *info, int short_name)
+size_t nsxml_usage_option_inline_details(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, const struct nsxml_option_info *info, int short_name)
 {
+	size_t printed = 0;
 	const void *ptr = info;
 	
 	if (info->option_type == nsxml_option_type_argument)
 	{
-		nsxml_usage_option_argument_type(stream, ((const struct nsxml_argument_option_info *)(ptr))->argument_type, short_name);
+		printed += nsxml_usage_option_argument_type(text_buffer_ptr, text_buffer_length_ptr, offset, ((const struct nsxml_argument_option_info *)(ptr))->argument_type, short_name);
 	}
 	else if (info->option_type == nsxml_option_type_multiargument)
 	{
+		/**
+		 * @todo
+		 */
+	}
 	
+	return printed;
+}
+
+void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_info *info, int format, size_t level, const nsxml_util_text_wrap_options *wrap, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
+void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_info *info, int format, size_t level, const nsxml_util_text_wrap_options *wrap, char **text_buffer_ptr, size_t *text_buffer_length_ptr)
+{
+	/**
+	 * name, aliases: Abstract
+	 * 	Options: short form options
+	 */
+	
+	size_t text_length = 0;
+	struct nsxml_item_name *n;
+	
+	for (n = info->names; n; n = n->next_name)
+	{
+		if (text_length > 0)
+		{
+			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, ", ");
+		}
+		
+		text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, n->name);
+	}
+	
+	if ((format & nsxml_usage_format_abstract) == nsxml_usage_format_abstract)
+	{
+		if (info->rootitem_info.item_info.abstract)
+		{
+			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, ": ");
+			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, info->rootitem_info.item_info.abstract);
+		}
+	}
+	
+	nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level);
+	
+	text_length = 0;
+	
+	if (info->rootitem_info.option_info_count > 0)
+	{
+		size_t c = info->rootitem_info.option_info_count;
+		size_t a;
+		int *visited = (int *) malloc(sizeof(int) * c);
+		
+		for (a = 0; a < c; ++a)
+		{
+			visited[a] = 0;
+		}
+		
+		text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, "Options:");
+		nsxml_usage_option_root_short(text_buffer_ptr, text_buffer_length_ptr, text_length, &info->rootitem_info, -1, visited);
+		nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+		
+		free(visited);
 	}
 }
 
-void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_info *info, int info_index, int *visited, const nsxml_util_text_wrap_options *wrap)
+void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t text_length, const struct nsxml_rootitem_info *info, int info_index, int *visited)
 {
 	int is_first = 1;
 	size_t i;
@@ -2042,12 +2142,12 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 					
 					if (is_first == 1)
 					{
-						fprintf(stream, "-%s", n);
+						text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "-%s", n);
 						is_first = 0;
 					}
 					else
 					{
-						fprintf(stream, "%s", n);
+						text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "%s", n);
 					}
 				}
 			}
@@ -2065,11 +2165,11 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 			{
 				if (parent && (parent->group_type == nsxml_group_option_exclusive))
 				{
-					fprintf(stream, " | ");
+					text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, " | ");
 				}
 				else
 				{
-					fprintf(stream, " ");
+					text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, " ");
 				}
 			}
 			
@@ -2079,19 +2179,20 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 			
 			if (n)
 			{
-				fprintf(stream, "-%s", n);
-				nsxml_usage_option_inline_details(stream, o, 1);
+				text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "-%s", n);
+				text_length += nsxml_usage_option_inline_details(text_buffer_ptr, text_buffer_length_ptr, text_length, o, 1);
 			}
 			else if ((n = nsxml_usage_get_first_long_name(o)) != NULL)
 			{
-				fprintf(stream, "--%s", n);
-				nsxml_usage_option_inline_details(stream, o, 0);
+				text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "--%s", n);
+				text_length += nsxml_usage_option_inline_details(text_buffer_ptr, text_buffer_length_ptr, text_length, o, 0);
 			}
 			else if (o->option_type == nsxml_option_type_group)
 			{
-				fprintf(stream, "(");
-				nsxml_usage_option_root_short(stream, info, (int) i, visited, wrap);
-				fprintf(stream, ")");
+				text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "(");
+				nsxml_usage_option_root_short(text_buffer_ptr, text_buffer_length_ptr, text_length, info, (int) i, visited);
+				text_length = strlen(*text_buffer_ptr);
+				text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, ")");
 			}
 		}
 	}
@@ -2099,43 +2200,31 @@ void nsxml_usage_option_root_short(FILE *stream, const struct nsxml_rootitem_inf
 	/* Positional arguments */
 	if (info_index == -1)
 	{
-		size_t first_line_length;
-		const char *eol;
 		const struct nsxml_positional_argument_info *pai;
 		
 		for (i = 0; i < pac; ++i)
 		{
 			pai = &info->positional_argument_infos[i];
-			first_line_length = 0;
 			
-			fwrite(((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["), (size_t)1, (size_t)2, stream);
-			
+			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length,
+			                                 ((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["));
+			                                 
 			if (pai->item_info.abstract)
 			{
-				first_line_length = strlen(pai->item_info.abstract);
-				eol = strchr(pai->item_info.abstract, '\n');
-				
-				if (eol && (eol != pai->item_info.abstract))
-				{
-					first_line_length = (size_t)(eol - pai->item_info.abstract);
-				}
-			}
-			
-			if (first_line_length > 0)
-			{
-				fwrite(pai->item_info.abstract, (size_t)1, (size_t)first_line_length, stream);
+				text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, pai->item_info.abstract);
 			}
 			else
 			{
-				fprintf(stream, "arg %d", (int)(i + 1));
+				text_length += nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, text_length, "arg %d", (int)(i + 1));
 			}
 			
 			if (pai->max_argument != 1)
 			{
-				fwrite(" ...", (size_t)1, (size_t)4, stream);
+				text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, " ...");
 			}
 			
-			fputc(((pai->positional_argument_flags & nsxml_positional_argument_required) ? '>' : ']'), stream);
+			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length,
+			                                 ((pai->positional_argument_flags & nsxml_positional_argument_required) ? ">" : "]"));
 		}
 	}
 }
@@ -2157,6 +2246,10 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 	validated_item.item.binding = &validated_option_binding;
 	validated_option_binding.name_ref = NULL;
 	validated_option_binding.result_ref = NULL;
+	
+	/**
+	 * @todo use asnprintf
+	 */
 	
 	while (n)
 	{
@@ -2240,13 +2333,13 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		
 		if (a->argument_type > nsxml_argument_type_mixed)
 		{
-			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
 			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (a->default_value && (*a->default_value != '\0'))
 		{
-			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Default value: %s\n", a->default_value);
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Default value: %s\n", a->default_value);
 			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
@@ -2258,19 +2351,19 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		
 		if (m->argument_type > nsxml_argument_type_mixed)
 		{
-			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Arguments type: %s\n", nsxml_usage_option_argument_type_string(m->argument_type));
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Arguments type: %s\n", nsxml_usage_option_argument_type_string(m->argument_type));
 			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->min_argument > 0)
 		{
-			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Minimum number of arguments: %d\n", m->min_argument);
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Minimum number of arguments: %d\n", m->min_argument);
 			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->max_argument > 0)
 		{
-			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Maximum number of arguments: %d\n", m->max_argument);
+			nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Maximum number of arguments: %d\n", m->max_argument);
 			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
@@ -2349,7 +2442,7 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	/* Argument infos */
 	if (info->argument_type > nsxml_argument_type_mixed)
 	{
-		nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, "Argument type: %s\n", nsxml_usage_option_argument_type_string(info->argument_type));
+		nsxml_util_asnprintf(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(info->argument_type));
 		nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
 	}
 	
@@ -2388,12 +2481,13 @@ void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_
 void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsxml_program_result *result, int format, const nsxml_util_text_wrap_options *user_wrap)
 {
 	size_t i;
-	size_t c = info->rootitem_info.option_info_count;
-	int *visited = (int *) malloc(sizeof(int) * c);
+	size_t option_count = info->rootitem_info.option_info_count;
+	int *visited = (int *) malloc(sizeof(int) * option_count);
 	struct nsxml_subcommand_info *scinfo = NULL;
 	const nsxml_util_text_wrap_options *wrap;
-	char text_buffer[1024];
-	
+	size_t text_length = 0;
+	size_t text_buffer_length = NSXML_TEXTBUFFER_BASESIZE;
+	char *text_buffer = (char *) malloc(sizeof(char) * text_buffer_length);
 	nsxml_util_text_wrap_options default_wrap;
 	nsxml_util_text_wrap_options_init(&default_wrap, (size_t)2, (size_t)80, nsxml_util_text_wrap_indent_others, nsxml_util_text_wrap_eol_lf);
 	wrap = user_wrap;
@@ -2403,7 +2497,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 		wrap = &default_wrap;
 	}
 	
-	for (i = 0; i < c; ++i)
+	for (i = 0; i < option_count; ++i)
 	{
 		visited[i] = 0;
 	}
@@ -2420,44 +2514,63 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 		}
 	}
 	
-	fprintf(stream, "%s", "Usage:\n");
+	text_length = 0;
+	text_length += nsxml_util_append(&text_buffer, &text_buffer_length, text_length, "Usage: ");
 	
 	if (scinfo)
 	{
-		snprintf(text_buffer, sizeof(text_buffer), "%s %s", info->name, result->subcommand_name);
-		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 1);
-		nsxml_usage_option_root_short(stream, &scinfo->rootitem_info, -1, visited, wrap);
+		size_t c = scinfo->rootitem_info.option_info_count;
+		text_length += nsxml_util_asnprintf(&text_buffer, &text_buffer_length, text_length, "%s %s%s", info->name, result->subcommand_name, (c ? " " : ""));
+		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &scinfo->rootitem_info, -1, visited);
+		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 0);
 	}
 	else
 	{
-		snprintf(text_buffer, sizeof(text_buffer), "%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""));
-		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 1);
-		nsxml_usage_option_root_short(stream, &info->rootitem_info, -1, visited, wrap);
+		size_t c = info->rootitem_info.option_info_count;
+		text_length += nsxml_util_asnprintf(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
+		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &info->rootitem_info, -1, visited);
+		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 0);
 	}
 	
 	if ((format & nsxml_usage_format_abstract) == nsxml_usage_format_abstract)
 	{
-		size_t text_buffer_length = 1024;
-		char *text_buffer = (char *) malloc(sizeof(char) * text_buffer_length);
-		
-		if (scinfo)
+		if (scinfo) /* Selected subcommand */
 		{
 			if (scinfo->rootitem_info.option_info_count)
 			{
-				nsxml_util_text_wrap_fprint(stream, "\nSubcommand options:", wrap, (size_t)0);
+				nsxml_util_text_wrap_fprint(stream, "Subcommand options:", wrap, (size_t)1);
 				nsxml_usage_option_root_detailed(stream, &scinfo->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
 			}
 			
 			if (info->rootitem_info.option_info_count)
 			{
-				nsxml_util_text_wrap_fprint(stream, "\nProgram options:", wrap, (size_t)0);
+				if (scinfo->rootitem_info.option_info_count)
+				{
+					fprintf(stream, "%s", wrap->eol);
+				}
+				
+				nsxml_util_text_wrap_fprint(stream, "Program options:", wrap, (size_t)1);
 				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
 			}
 		}
-		else if (info->rootitem_info.option_info_count)
+		else /* Main program */
 		{
-			nsxml_util_text_wrap_fprint(stream, "\nWith:", wrap, (size_t)0);
-			nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
+			if (info->subcommand_info_count > 0)
+			{
+				size_t a;
+				nsxml_util_text_wrap_fprint(stream, "Subcommands:", wrap, (size_t)1);
+				
+				for (a = 0; a < info->subcommand_info_count; ++a)
+				{
+					nsxml_usage_subcommand_short(stream, &info->subcommand_infos[a], format, (size_t)2, wrap, &text_buffer, &text_buffer_length);
+				}
+			}
+			
+			if (info->rootitem_info.option_info_count)
+			{
+				nsxml_util_text_wrap_fprint(stream, "\nOptions:", wrap, (size_t)0);
+				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
+			}
 		}
 		
 		/* Positional arguments */
@@ -2484,10 +2597,9 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 				}
 			}
 		}
-		
-		free(text_buffer);
 	}
 	
+	free(text_buffer);
 	free(visited);
 	fprintf(stream, "%s\n", "");
 }

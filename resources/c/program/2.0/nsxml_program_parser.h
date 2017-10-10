@@ -92,6 +92,17 @@ NSXMLAPI int nsxml_util_strncpy(char *output, size_t output_length, const char *
  */
 NSXMLAPI int nsxml_util_strcpy(char *output, size_t output_length, const char *input);
 
+/** Append text */
+/**
+ * @param output Output string buffer
+ * @param output_length Output string buffer current size
+ * @param offset Append text at the given offset
+ * @param append Text to append
+ *
+ * @return Number of character appended to string
+ */
+NSXMLAPI size_t nsxml_util_strcat(char **output, size_t *output_length, size_t offset, const char *append);
+
 /** snprintf with automatic reallocation */
 /**
  * @param output Output string buffer
@@ -102,7 +113,7 @@ NSXMLAPI int nsxml_util_strcpy(char *output, size_t output_length, const char *i
  * Parameters @param output and @param output_length will be modified if the printed strings
  * is taller than @param output_length
  */
-NSXMLAPI int nsxml_util_asnprintf(char **output, size_t *output_length, const char *format, ...);
+NSXMLAPI size_t nsxml_util_asnprintf(char **output, size_t *output_length, size_t offset, const char *format, ...);
 
 /** Indicates if a string begins with a given character sequence */
 /**
@@ -270,7 +281,7 @@ struct nsxml_validated_item;
 
 typedef int nsxml_value_validator_validation_callback(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 typedef void nsxml_value_validator_cleanup_callback(void *self);
-typedef int nsxml_value_validator_usage_callback(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
+typedef size_t nsxml_value_validator_usage_callback(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
 
 /**
  * Validator flags
@@ -306,7 +317,7 @@ void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_v
 void nsxml_value_validator_add(struct nsxml_value_validator **list, struct nsxml_value_validator *validator);
 
 int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *, struct nsxml_validated_item *item, const char *value);
-int nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
+size_t nsxml_value_validator_usage_path(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
 
 struct nsxml_value_validator_number
 {
@@ -316,7 +327,7 @@ struct nsxml_value_validator_number
 	size_t decimal_count;
 };
 int nsxml_value_validator_validate_number(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
-int nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
+size_t nsxml_value_validator_usage_number(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
 
 struct nsxml_value_validator_enum
 {
@@ -325,7 +336,7 @@ struct nsxml_value_validator_enum
 };
 int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_validated_item *item, const char *value);
 void nsxml_value_validator_cleanup_enum(void *self);
-int nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
+size_t nsxml_value_validator_usage_enum(const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
 
 /* Item info *************************************/
 
