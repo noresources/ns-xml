@@ -398,7 +398,8 @@
 		<xsl:text>default_value = </xsl:text>
 		<xsl:choose>
 			<xsl:when test="$optionNode/prg:default">
-				<xsl:text>strdup("</xsl:text>
+				<xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup" />
+				<xsl:text>("</xsl:text>
 				<xsl:apply-templates select="$optionNode/prg:default" />
 				<xsl:text>");</xsl:text>
 			</xsl:when>

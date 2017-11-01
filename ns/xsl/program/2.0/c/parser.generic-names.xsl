@@ -6,6 +6,11 @@
 	xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<xsl:import href="parser.base.xsl" />
 	
+	<xsl:variable name="prg.c.parser.functionName.nsxml_util_append">
+		<xsl:call-template name="prg.c.parser.functionName">
+			<xsl:with-param name="name" select="'nsxml_util_append'" />
+		</xsl:call-template>
+	</xsl:variable>
 	<xsl:variable name="prg.c.parser.functionName.nsxml_util_strncpy">
 		<xsl:call-template name="prg.c.parser.functionName">
 			<xsl:with-param name="name" select="'nsxml_util_strncpy'" />
@@ -14,6 +19,16 @@
 	<xsl:variable name="prg.c.parser.functionName.nsxml_util_strcpy">
 		<xsl:call-template name="prg.c.parser.functionName">
 			<xsl:with-param name="name" select="'nsxml_util_strcpy'" />
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.c.parser.functionName.nsxml_util_strdup">
+		<xsl:call-template name="prg.c.parser.functionName">
+			<xsl:with-param name="name" select="'nsxml_util_strdup'" />
+		</xsl:call-template>
+	</xsl:variable>
+	<xsl:variable name="prg.c.parser.functionName.nsxml_util_strcat">
+		<xsl:call-template name="prg.c.parser.functionName">
+			<xsl:with-param name="name" select="'nsxml_util_strcat'" />
 		</xsl:call-template>
 	</xsl:variable>
 	<xsl:variable name="prg.c.parser.functionName.nsxml_util_asnprintf">
@@ -36,9 +51,9 @@
 			<xsl:with-param name="name" select="'nsxml_util_text_wrap_options_init'" />
 		</xsl:call-template>
 	</xsl:variable>
-	<xsl:variable name="prg.c.parser.functionName.nsxml_util_text_wrap_fprintf">
+	<xsl:variable name="prg.c.parser.functionName.nsxml_util_text_wrap_fprint">
 		<xsl:call-template name="prg.c.parser.functionName">
-			<xsl:with-param name="name" select="'nsxml_util_text_wrap_fprintf'" />
+			<xsl:with-param name="name" select="'nsxml_util_text_wrap_fprint'" />
 		</xsl:call-template>
 	</xsl:variable>
 	<xsl:variable name="prg.c.parser.structName.nsxml_util_text_wrap_options">

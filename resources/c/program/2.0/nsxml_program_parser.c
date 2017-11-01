@@ -16,6 +16,14 @@
 #	define NSXML_TEXTBUFFER_MINBLOCKSIZE 64
 #endif
 
+#if !defined (NSXML_SIZET_FORMAT)
+#	if defined(__x86_64__)
+#		define NSXML_SIZET_FORMAT "lu"
+#	else
+#		define NSXML_SIZET_FORMAT "u"
+#	endif
+#endif
+
 #define NSXML_DBG 0
 
 #if defined(__cplusplus)
@@ -156,6 +164,14 @@ int nsxml_util_strncpy(char *output, size_t output_length, const char *input, si
 	output[s] = 0;
 	
 	return (int)(input_length - s);
+}
+
+char *nsxml_util_strdup(const char *input)
+{
+	size_t size = strlen(input) + 1;
+	char *result = (char *)malloc(size * sizeof(char));
+	nsxml_util_strcpy(result, size, input);
+	return result;
 }
 
 int nsxml_util_strcpy(char *output, size_t output_length, const char *input)
@@ -879,7 +895,7 @@ void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *ab
 	
 	if (abstract)
 	{
-		info->abstract = strdup(abstract);
+		info->abstract = nsxml_util_strdup(abstract);
 	}
 	else
 	{
@@ -888,7 +904,7 @@ void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *ab
 	
 	if (details)
 	{
-		info->details = strdup(details);
+		info->details = nsxml_util_strdup(details);
 	}
 	else
 	{
@@ -948,7 +964,7 @@ void nsxml_option_info_init(struct nsxml_option_info *info, int type, int flags,
 	
 	if (var_name && (strlen(var_name) > 0))
 	{
-		info->var_name = strdup(var_name);
+		info->var_name = nsxml_util_strdup(var_name);
 	}
 	else
 	{
@@ -2422,11 +2438,11 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	
 	if (info->item_info.abstract)
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%lu. %s\n", (index + 1), info->item_info.abstract);
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ". %s\n", (index + 1), info->item_info.abstract);
 	}
 	else
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%lu.\n", (index + 1));
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ".\n", (index + 1));
 	}
 	
 	*text_ptr = '\0';

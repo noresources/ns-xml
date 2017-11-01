@@ -66,6 +66,19 @@ NSXML_EXTERNC_BEGIN
 
 /* Utility functions ******************************/
 
+/** Append string to another */
+/**
+ *
+ * @param output Output buffer
+ * @param output_length Output buffer length
+ * @param offset Where to append @param append
+ * @param append String to append to @param output
+ * @return Number of character appended to @param output
+ *
+ * If the
+ */
+size_t nsxml_util_append(char **output, size_t *output_length, size_t offset, const char *append);
+
 /** Copy a string */
 /*
  * @param output Output buffer
@@ -77,6 +90,13 @@ NSXML_EXTERNC_BEGIN
  * @return  Difference between @p input_length and the real number of character copied
  */
 NSXMLAPI int nsxml_util_strncpy(char *output, size_t output_length, const char *input, size_t input_length);
+
+/** Duplicate a string */
+/**
+ * @param input String to copy
+ * @return A new buffer containing @param input
+ */
+NSXMLAPI char *nsxml_util_strdup(const char *input);
 
 /** Copy a string */
 /**

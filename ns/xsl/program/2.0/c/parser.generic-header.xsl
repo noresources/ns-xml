@@ -76,6 +76,19 @@ NSXML_EXTERNC_BEGIN
 
 /* Utility functions ******************************/
 
+/** Append string to another */
+/**
+ *
+ * @param output Output buffer
+ * @param output_length Output buffer length
+ * @param offset Where to append @param append
+ * @param append String to append to @param output
+ * @return Number of character appended to @param output
+ *
+ * If the
+ */
+size_t ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(char **output, size_t *output_length, size_t offset, const char *append);
+
 /** Copy a string */
 /*
  * @param output Output buffer
@@ -87,6 +100,13 @@ NSXML_EXTERNC_BEGIN
  * @return  Difference between @p input_length and the real number of character copied
  */
 NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![CDATA[(char *output, size_t output_length, const char *input, size_t input_length);
+
+/** Duplicate a string */
+/**
+ * @param input String to copy
+ * @return A new buffer containing @param input
+ */
+NSXMLAPI char *]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup"/><![CDATA[(const char *input);
 
 /** Copy a string */
 /**
@@ -111,7 +131,7 @@ NSXMLAPI int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strc
  *
  * @return Number of character appended to string
  */
-NSXMLAPI size_t nsxml_util_strcat(char **output, size_t *output_length, size_t offset, const char *append);
+NSXMLAPI size_t ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strcat"/><![CDATA[(char **output, size_t *output_length, size_t offset, const char *append);
 
 /** snprintf with automatic reallocation */
 /**
@@ -202,7 +222,7 @@ NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_tex
  * @param options Text wrapping option
  * @param level Initial indentation level
  */
-NSXMLAPI void nsxml_util_text_wrap_fprint(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
+NSXMLAPI void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level);
 
 /* Messages **************************************/
 

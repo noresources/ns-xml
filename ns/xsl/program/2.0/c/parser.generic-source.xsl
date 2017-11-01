@@ -26,6 +26,14 @@
 #	define NSXML_TEXTBUFFER_MINBLOCKSIZE 64
 #endif
 
+#if !defined (NSXML_SIZET_FORMAT)
+#	if defined(__x86_64__)
+#		define NSXML_SIZET_FORMAT "lu"
+#	else
+#		define NSXML_SIZET_FORMAT "u"
+#	endif
+#endif
+
 #define NSXML_DBG 0
 
 #if defined(__cplusplus)
@@ -83,7 +91,7 @@ size_t nsxml_util_digit_count_s(size_t n)
 	return c;
 }
 
-size_t nsxml_util_append(char **output, size_t *output_length, size_t offset, const char *append)
+size_t ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(char **output, size_t *output_length, size_t offset, const char *append)
 {
 	size_t printed = strlen(append);
 	
@@ -168,6 +176,14 @@ int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![
 	return (int)(input_length - s);
 }
 
+char *]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup"/><![CDATA[(const char *input)
+{
+	size_t size = strlen(input) + 1;
+	char *result = (char *)malloc(size * sizeof(char));
+	]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strcpy"/><![CDATA[(result, size, input);
+	return result;
+}
+
 int ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strcpy"/><![CDATA[(char *output, size_t output_length, const char *input)
 {
 	return ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strncpy"/><![CDATA[(output, output_length, input, (size_t)strlen(input));
@@ -219,7 +235,7 @@ void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_op
 	options->eol[i] = '\0';
 }
 
-void nsxml_util_text_wrap_fprint(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level)
+void ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(FILE *stream, const char *text, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *options, size_t level)
 {
 	size_t i;
 	const char *text_ptr = text;
@@ -889,7 +905,7 @@ void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *ab
 	
 	if (abstract)
 	{
-		info->abstract = strdup(abstract);
+		info->abstract = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup"/><![CDATA[(abstract);
 	}
 	else
 	{
@@ -898,7 +914,7 @@ void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *ab
 	
 	if (details)
 	{
-		info->details = strdup(details);
+		info->details = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup"/><![CDATA[(details);
 	}
 	else
 	{
@@ -958,7 +974,7 @@ void nsxml_option_info_init(struct nsxml_option_info *info, int type, int flags,
 	
 	if (var_name && (strlen(var_name) > 0))
 	{
-		info->var_name = strdup(var_name);
+		info->var_name = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_strdup"/><![CDATA[(var_name);
 	}
 	else
 	{
@@ -2005,43 +2021,43 @@ size_t nsxml_usage_option_argument_type(char **text_buffer_ptr, size_t *text_buf
 	
 	if (short_name == 1)
 	{
-		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, " <");
+		printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, " <");
 	}
 	else
 	{
-		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "=");
+		printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "=");
 	}
 	
 	switch (argument_type)
 	{
 		case nsxml_argument_type_existingcommand:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "command");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "command");
 			break;
 			
 		case nsxml_argument_type_hostname:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "hostname");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "hostname");
 			break;
 			
 		case nsxml_argument_type_number:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "number");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "number");
 			break;
 			
 		case nsxml_argument_type_path:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "path");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "path");
 			break;
 			
 		case nsxml_argument_type_string:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "string");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "string");
 			break;
 			
 		default:
-			printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "...");
+			printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, "...");
 			break;
 	}
 	
 	if (short_name == 1)
 	{
-		printed += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, offset + printed, ">");
+		printed += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, offset + printed, ">");
 	}
 	
 	return printed;
@@ -2081,22 +2097,22 @@ void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_in
 	{
 		if (text_length > 0)
 		{
-			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, ", ");
+			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, ", ");
 		}
 		
-		text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, n->name);
+		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, n->name);
 	}
 	
 	if ((format & ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[) == ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[)
 	{
 		if (info->rootitem_info.item_info.abstract)
 		{
-			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, ": ");
-			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, info->rootitem_info.item_info.abstract);
+			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, ": ");
+			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, info->rootitem_info.item_info.abstract);
 		}
 	}
 	
-	nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level);
+	]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level);
 	
 	text_length = 0;
 	
@@ -2111,9 +2127,9 @@ void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_in
 			visited[a] = 0;
 		}
 		
-		text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, "Options:");
+		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, "Options:");
 		nsxml_usage_option_root_short(text_buffer_ptr, text_buffer_length_ptr, text_length, &info->rootitem_info, -1, visited);
-		nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		
 		free(visited);
 	}
@@ -2216,12 +2232,12 @@ void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_l
 		{
 			pai = &info->positional_argument_infos[i];
 			
-			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length,
+			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length,
 			                                 ((pai->positional_argument_flags & nsxml_positional_argument_required) ? " <" : " ["));
 			                                 
 			if (pai->item_info.abstract)
 			{
-				text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, pai->item_info.abstract);
+				text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, pai->item_info.abstract);
 			}
 			else
 			{
@@ -2230,10 +2246,10 @@ void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_l
 			
 			if (pai->max_argument != 1)
 			{
-				text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length, " ...");
+				text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, " ...");
 			}
 			
-			text_length += nsxml_util_append(text_buffer_ptr, text_buffer_length_ptr, text_length,
+			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length,
 			                                 ((pai->positional_argument_flags & nsxml_positional_argument_required) ? ">" : "]"));
 		}
 	}
@@ -2329,11 +2345,11 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 	
 	*text_ptr = '\0';
 	
-	nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level);
+	]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level);
 	
 	if (info->item_info.details && (format & ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[) == ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[)
 	{
-		nsxml_util_text_wrap_fprint(stream, info->item_info.details, wrap, level + 1);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, info->item_info.details, wrap, level + 1);
 	}
 	
 	if (info->option_type == nsxml_option_type_argument)
@@ -2344,13 +2360,13 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		if (a->argument_type > nsxml_argument_type_mixed)
 		{
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
-			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (a->default_value && (*a->default_value != '\0'))
 		{
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Default value: %s\n", a->default_value);
-			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
 	
@@ -2362,19 +2378,19 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		if (m->argument_type > nsxml_argument_type_mixed)
 		{
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Arguments type: %s\n", nsxml_usage_option_argument_type_string(m->argument_type));
-			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->min_argument > 0)
 		{
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Minimum number of arguments: %d\n", m->min_argument);
-			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->max_argument > 0)
 		{
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Maximum number of arguments: %d\n", m->max_argument);
-			nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
 	
@@ -2388,7 +2404,7 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 			
 			if ((*v->usage_callback)(v, &validated_item, text_buffer_ptr, text_buffer_length_ptr) > 0)
 			{
-				nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 			}
 		}
 		
@@ -2432,28 +2448,28 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	
 	if (info->item_info.abstract)
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%lu. %s\n", (index + 1), info->item_info.abstract);
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ". %s\n", (index + 1), info->item_info.abstract);
 	}
 	else
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%lu.\n", (index + 1));
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ".\n", (index + 1));
 	}
 	
 	*text_ptr = '\0';
 	
-	nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level);
+	]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level);
 	
 	/* details */
 	if (info->item_info.details && (format & ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[) == ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[)
 	{
-		nsxml_util_text_wrap_fprint(stream, info->item_info.details, wrap, level + 1);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, info->item_info.details, wrap, level + 1);
 	}
 	
 	/* Argument infos */
 	if (info->argument_type > nsxml_argument_type_mixed)
 	{
 		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(info->argument_type));
-		nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 	}
 	
 	v = info->validators;
@@ -2464,7 +2480,7 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 		{
 			if ((*v->usage_callback)(v, &validated_item, text_buffer_ptr, text_buffer_length_ptr) > 0)
 			{
-				nsxml_util_text_wrap_fprint(stream, *text_buffer_ptr, wrap, level + 1);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 			}
 		}
 		
@@ -2525,21 +2541,21 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 	}
 	
 	text_length = 0;
-	text_length += nsxml_util_append(&text_buffer, &text_buffer_length, text_length, "Usage: ");
+	text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "Usage: ");
 	
 	if (scinfo)
 	{
 		size_t c = scinfo->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s %s%s", info->name, result->subcommand_name, (c ? " " : ""));
 		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &scinfo->rootitem_info, -1, visited);
-		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 0);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, 0);
 	}
 	else
 	{
 		size_t c = info->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
 		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &info->rootitem_info, -1, visited);
-		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, 0);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, 0);
 	}
 	
 	if ((format & ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[) == ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[)
@@ -2548,7 +2564,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 		{
 			if (scinfo->rootitem_info.option_info_count)
 			{
-				nsxml_util_text_wrap_fprint(stream, "Subcommand options:", wrap, (size_t)1);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, "Subcommand options:", wrap, (size_t)1);
 				nsxml_usage_option_root_detailed(stream, &scinfo->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
 			}
 			
@@ -2559,7 +2575,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 					fprintf(stream, "%s", wrap->eol);
 				}
 				
-				nsxml_util_text_wrap_fprint(stream, "Program options:", wrap, (size_t)1);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, "Program options:", wrap, (size_t)1);
 				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
 			}
 		}
@@ -2568,7 +2584,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 			if (info->subcommand_info_count > 0)
 			{
 				size_t a;
-				nsxml_util_text_wrap_fprint(stream, "Subcommands:", wrap, (size_t)1);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, "Subcommands:", wrap, (size_t)1);
 				
 				for (a = 0; a < info->subcommand_info_count; ++a)
 				{
@@ -2578,7 +2594,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 			
 			if (info->rootitem_info.option_info_count)
 			{
-				nsxml_util_text_wrap_fprint(stream, "\nOptions:", wrap, (size_t)0);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, "\nOptions:", wrap, (size_t)0);
 				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
 			}
 		}
@@ -2598,7 +2614,7 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 			
 			if (pac)
 			{
-				nsxml_util_text_wrap_fprint(stream, "\nPositional arguments:", wrap, (size_t)0);
+				]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, "\nPositional arguments:", wrap, (size_t)0);
 				
 				for (i = 0; i < pac; ++i)
 				{

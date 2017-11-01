@@ -749,13 +749,16 @@ which astyle 1>/dev/null 2>&1 && hasAstyle=true
 astyleOptionsFile="${rootPath}/resources/astyle/c.style"
 
 transformableFunctions=(\
+	"nsxml_util_append" \
 	"nsxml_util_strncpy" \
 	"nsxml_util_strcpy" \
+	"nsxml_util_strdup" \
+	"nsxml_util_strcat" \
 	"nsxml_util_asnprintf" \
 	"nsxml_util_string_starts_with" \
 	"nsxml_util_path_access_check" \
 	"nsxml_util_text_wrap_options_init" \
-	"nsxml_util_text_wrap_fprintf"
+	"nsxml_util_text_wrap_fprint"
 )
 		
 transformableStructs=(\
