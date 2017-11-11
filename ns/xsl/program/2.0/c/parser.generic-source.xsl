@@ -31,10 +31,8 @@
 #		define NSXML_SIZET_FORMAT "zu"
 #	elif defined (__cplusplus) && (__cplusplus >= 201103L)
 #		define NSXML_SIZET_FORMAT "zu"
-#	elif defined(__x86_64__)
-#		define NSXML_SIZET_FORMAT "lu"
 #	else
-#		define NSXML_SIZET_FORMAT "u"
+#		define NSXML_SIZET_FORMAT "lu"
 #	endif
 #endif
 
