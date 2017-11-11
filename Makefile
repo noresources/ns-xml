@@ -10,7 +10,7 @@ parser-tests:
 	@tools/sh/run-tests.sh parsers
 	
 xsh-tests:
-	@tools/sh/run-tests.sh parsers
+	@tools/sh/run-tests.sh xsh
 	
 xslt:
 	@tools/sh/run-tests.sh xslt
