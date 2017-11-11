@@ -112,8 +112,10 @@ EOF
 	done
 	
 	# C compilers
-	if [ -z "${CC}" ] || ! which "${CC}" 1>/dev/null
+	if [ ! -z "${CC}" ] && ns_which -s "${CC}"
 	then
+		cc=${CC}
+	else
 		for c in gcc clang
 		do
 			if ns_which -s ${c}
@@ -122,8 +124,6 @@ EOF
 				break
 			fi
 		done
-	else
-		cc=${CC}
 	fi
 	
 	if [ -z "${CFLAGS}" ]
