@@ -22,7 +22,6 @@ then
 	exit 0
 fi
 
-
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"
 rm -f "${logFile}"
@@ -82,7 +81,6 @@ then
 		done
 	fi
 	
-	echo ${pythonPath}
 	if [ ! -z "${pythonPath}" ]
 	then
 		pythonInterpreterRegex="^python[0-9]+(\.[0-9]+)$"
