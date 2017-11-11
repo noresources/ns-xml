@@ -1,2 +1,7 @@
+addons:
+  apt:
+    packages:
+    - xsltproc
+    - libxml2-utils
 language: bash
 script: make tests
