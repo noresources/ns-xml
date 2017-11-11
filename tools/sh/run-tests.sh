@@ -1399,17 +1399,17 @@ EOF
 	then
 		while read d
 		do
-			selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
+			selectedApps=("${selectedApps[@]}" "$(basename "${d}")")
 		done << EOF
 		$(find "${parserTestsPathBase}/apps" -mindepth 1 -maxdepth 1 -type d | sort)
 EOF
 	else
-		for ((a=0;${a}<${#apps[@]};a++))
+		for app in "${apps[@]}"
 		do
-			d="${parserTestsPathBase}/apps/${apps[${a}]}"
+			d="${parserTestsPathBase}/apps/${app}"
 			if [ -d "${d}" ]
 			then
-				selectedApps[${#selectedApps[@]}]="$(basename "${d}")"
+				selectedApps=("${selectedApps[@]}" "${app}")
 			fi
 		done
 	fi
@@ -1452,22 +1452,22 @@ EOF
 			testPHP=true
 		fi
 	else
-		for ((i=0;${i}<${#parsers[@]};i++))
+		for parser in "${parsers[@]}"
 		do
-			if [ "${parsers[${i}]}" = "sh" ] && [ ${#available_shells[@]} -gt 0 ]
+			if [ "${parser}" = "sh" ] && [ ${#available_shells[@]} -gt 0 ]
 			then
 				testSh=true
-			elif [ "${parsers[${i}]}" = "python" ] && [ ${#pythonInterpreters[@]} -gt 0 ]
+			elif [ "${parser}" = "python" ] && [ ${#pythonInterpreters[@]} -gt 0 ]
 			then
 				testPython=true
-			elif [ "${parsers[${i}]}" = "c" ] && ns_which -s ${cc}
+			elif [ "${parser}" = "c" ] && ns_which -s ${cc}
 			then
 				testC=true
 				if ns_which -s valgrind
 				then
 					testValgrind=true
 				fi
-			elif [ "${parsers[${i}]}" = "php" ] && ns_which -s php
+			elif [ "${parser}" = "php" ] && ns_which -s php
 			then
 				testPHP=true
 			fi
@@ -1557,9 +1557,8 @@ EOF
 	
 	
 	# Testing ...
-	for ((ai=0;${ai}<${#selectedApps[@]};ai++))
+	for app in "${selectedApps[@]}"
 	do
-		app="${selectedApps[${ai}]}"
 		d="${parserTestsPathBase}/apps/${app}"
 		
 		groupTestBasePath="${d}/tests"
@@ -1577,13 +1576,13 @@ EOF
 			$(find "${groupTestBasePath}" -mindepth 1 -maxdepth 1 -type f -name "*.cli" | sort)
 EOF
 		else
-			for ((t=0;${t}<${#tests[@]};t++))
+			for test in "${#test[@]}"
 			do
-				#tn="${groupTestBasePath}/$(printf "%03d.cli" ${tests[${t}]})"
-				tn="${groupTestBasePath}/${tests[${t}]}.cli"
+				#tn="${groupTestBasePath}/$(printf "%03d.cli" "${test}")"
+				tn="${groupTestBasePath}/${test}.cli"
 				if [ -f "${tn}" ]
 				then 
-					groupTests[${#groupTests[@]}]="$(basename "${tn}")"
+					groupTests=("${groupTests[@]}" "${test}")
 				fi
 			done
 		fi
@@ -1593,7 +1592,7 @@ EOF
 			continue
 		fi
 			
-		echo "${selectedApps[${ai}]} (${#groupTests[@]} tests)"
+		echo "${app} (${#groupTests[@]} tests)"
 		printf "${resultLineFormat}" "Test" "${parserNames[@]}" "RESULT"
 		
 		# Per group initializations
@@ -1711,9 +1710,9 @@ EOF
 		fi
 			
 		log "Run test(s)"
-		for ((ti=0;${ti}<${#groupTests[@]};ti++))
+		for test in "${groupTests[@]}"
 		do
-			t="${groupTestBasePath}/${groupTests[${ti}]}"
+			t="${groupTestBasePath}/${test}"
 			base="${t%.cli}"
 			testnumber="$(basename "${base}")"
 			result="${base}.result"
