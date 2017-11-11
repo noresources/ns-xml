@@ -1388,7 +1388,7 @@ EOF
 	then
 		cflags=(-Wall -pedantic -Wextra -Wconversion -g -O0)
 	else
-		cflags=("${CFLAGS}")
+		cflags=(${CFLAGS})
 	fi
 	cflags=("${cflags[@]}" -Werror)
 	
