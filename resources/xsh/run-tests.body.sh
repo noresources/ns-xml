@@ -217,7 +217,7 @@ EOF
 	then
 		parserNames=("${parserNames[@]}" "${available_shells[@]}")
 		
-		for s in ${available_shells[@]}
+		for s in "${available_shells[@]}"
 		do
 			resultLineFormat="${resultLineFormat} %-7s |"	
 		done
@@ -314,13 +314,12 @@ EOF
 			$(find "${groupTestBasePath}" -mindepth 1 -maxdepth 1 -type f -name "*.cli" | sort)
 EOF
 		else
-			for test in "${#test[@]}"
+			for test in "${tests[@]}"
 			do
-				#tn="${groupTestBasePath}/$(printf "%03d.cli" "${test}")"
 				tn="${groupTestBasePath}/${test}.cli"
 				if [ -f "${tn}" ]
 				then 
-					groupTests=("${groupTests[@]}" "${test}")
+					groupTests=("${groupTests[@]}" "${test}.cli")
 				fi
 			done
 		fi

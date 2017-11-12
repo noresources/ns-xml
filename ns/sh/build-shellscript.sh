@@ -103,26 +103,19 @@ parse_addwarning()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_warnings[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_warnings[${c}]="${m}"
+	parser_warnings[$(expr ${#parser_warnings[*]} + ${parser_startindex})]=${m}
 }
 parse_adderror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]=${m}
 }
 parse_addfatalerror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
-	parser_aborted=true
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]=${m}
 }
 
 parse_displayerrors()
