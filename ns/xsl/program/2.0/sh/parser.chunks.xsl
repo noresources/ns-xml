@@ -411,7 +411,8 @@
 
 			<!-- Set option variable -->
 			<!-- except if group is not exclusive (meaningless in this case) -->
-			<xsl:if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
+			<xsl:if
+				test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
 				<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 				<xsl:text>="</xsl:text>
 				<!-- don't add subcommand prefix in this case -->
@@ -512,7 +513,8 @@
 			</xsl:call-template>
 
 			<!-- Exclusive clause -->
-			<xsl:if test="$groupOptionNode[@type = 'exclusive'] 
+			<xsl:if
+				test="$groupOptionNode[@type = 'exclusive'] 
 						and $groupOptionNode/prg:databinding/prg:variable 
 						and $optionNode/prg:databinding/prg:variable">
 				<xsl:call-template name="sh.if">
@@ -1747,8 +1749,20 @@
 			<xsl:value-of select="$sh.endl" />
 		</xsl:if>
 
-		<xsl:value-of select="$prg.sh.parser.vName_shell" />
-		<xsl:text>="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"</xsl:text>
+		<xsl:call-template name="sh.if">
+			<xsl:with-param name="condition">
+				<xsl:text>[ -r /proc/$$/exe ]</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="then">
+				<xsl:value-of select="$prg.sh.parser.vName_shell" />
+				<xsl:text>="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="else">
+				<xsl:value-of select="$prg.sh.parser.vName_shell" />
+				<xsl:text>="$(basename "$(ps -p $$ -o command= | cut -f 1 -d' ')")"</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_input" />
 		<xsl:text>=("${@}")</xsl:text>
@@ -1822,7 +1836,7 @@
 			<xsl:with-param name="name" select="$prg.sh.parser.vName_shell" />
 			<xsl:with-param name="quoted" select="true()" />
 		</xsl:call-template>
-		<xsl:text> = "zsh" ] &amp;&amp; </xsl:text>
+		<xsl:text> = 'zsh' ] &amp;&amp; </xsl:text>
 		<xsl:value-of select="$prg.sh.parser.vName_startindex" />
 		<xsl:text>=1</xsl:text>
 		<xsl:value-of select="$sh.endl" />

@@ -102,7 +102,13 @@ EOFUSAGE
 # Program parameter parsing
 parser_program_author="renaud"
 parser_program_version="1.0"
-parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+if [ -r /proc/$$/exe ]
+then
+	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+else
+	parser_shell="$(basename "$(ps -p $$ -o command= | cut -f 1 -d' ')")"
+fi
+
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
 parser_startindex=0
@@ -120,7 +126,7 @@ PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
 # Compatibility with shell which use "1" as start index
-[ "${parser_shell}" = "zsh" ] && parser_startindex=1
+[ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
@@ -138,19 +144,19 @@ parse_addwarning()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	parser_warnings[$(expr ${#parser_warnings[*]} + ${parser_startindex})]=${m}
+	parser_warnings[$(expr ${#parser_warnings[*]} + ${parser_startindex})]="${m}"
 }
 parse_adderror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]=${m}
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 }
 parse_addfatalerror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]=${m}
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 }
 
 parse_displayerrors()

@@ -25,7 +25,13 @@ EOFUSAGE
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
 parser_program_version="2.0"
-parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+if [ -r /proc/$$/exe ]
+then
+	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+else
+	parser_shell="$(basename "$(ps -p $$ -o command= | cut -f 1 -d' ')")"
+fi
+
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
 parser_startindex=0
@@ -43,7 +49,7 @@ PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
 # Compatibility with shell which use "1" as start index
-[ "${parser_shell}" = "zsh" ] && parser_startindex=1
+[ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
@@ -60,26 +66,19 @@ function parse_addwarning
 {
 	typeset var message="${1}"
 	typeset var m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	typeset var c=${#parser_warnings[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_warnings[${c}]="${m}"
+	parser_warnings[$(expr ${#parser_warnings[*]} + ${parser_startindex})]="${m}"
 }
 function parse_adderror
 {
 	typeset var message="${1}"
 	typeset var m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	typeset var c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 }
 function parse_addfatalerror
 {
 	typeset var message="${1}"
 	typeset var m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	typeset var c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
-	parser_aborted=true
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 }
 
 function parse_displayerrors
