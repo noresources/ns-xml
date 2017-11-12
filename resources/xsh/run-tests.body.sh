@@ -60,40 +60,16 @@ then
 	programSchemaVersion="2.0"
 	xshStylesheet="${projectPath}/ns/xsl/program/${programSchemaVersion}/xsh.xsl"
 	
-	# Supported Python interpreters
-	# Assumes all are installed in the same directory
-	pythonPath=""
-	if ns_which -s python
-	then
-		pythonPath="$(dirname "$(which python)")"
-	else
-		for major in 2 3
-		do
-			for minor in 0 1 2 3 4 5 6 7 8 9
-			do
-				if ns_which -s python${major}.${minor}
-				then
-					pythonPath="$(dirname "$(which python${major}.${minor})")"
-					break
-				fi
-			done
-			[ ! -z "${pythonPath}" ] && break
-		done
-	fi
 	
-	if [ ! -z "${pythonPath}" ]
-	then
-		pythonInterpreterRegex="^python[0-9]+(\.[0-9]+)$"
-		while read f
+	for major in 2 3
+	do
+		for minor in 0 1 2 3 4 5 6 7 8 9
 		do
-			if [ -x "${f}" ] && echo "$(basename "${f}")" | egrep "${pythonInterpreterRegex}" 1>/dev/null 2>&1
-			then
-				pythonInterpreters[${#pythonInterpreters[@]}]="$(basename "${f}")"
-			fi
-		done << EOF
-	$(find "${pythonPath}" -name "python*")
-EOF
-	fi
+			p="python${major}.${minor}"
+			ns_which -s "${p}" \
+				&& pythonInterpreters=("${pythonInterpreters[@]}" "${p}")
+		done
+	done
 	
 	# Supported shells
 	shells=(bash zsh ksh)
