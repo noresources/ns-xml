@@ -49,6 +49,8 @@ check_zsh()
 	return 0
 }
 
+[ -z "${TRAVIS}" ] && TRAVIS=false
+
 if [ "${parser_subcommand}" = 'parsers' ]
 then
 	parsers=("${parsers_parsers[@]}")
@@ -741,12 +743,25 @@ EOFSH
 	do
 		expected="$(sed -E 's,(.*)\..*$,\1,g' <<< "${result}").expected"
 		[ -f "${expected}" ] || continue		
-		diff -q "${result}" "${expected}" 1>/dev/null 2>&1 || count=$(expr ${count} + 1) 
+		if ! diff -q "${result}" "${expected}" 1>/dev/null 2>&1 
+		then
+			count=$(expr ${count} + 1)
+			if ${TRAVIS}
+			then
+				echo "-- ${result} -----------------------"
+				cat "${result}"
+			fi
+		fi 
 	done << EOF
 $(find "${parserTestsPathBase}" -name "*.result-*")
 EOF
-	echo $count
-	exit $count
+	if ${TRAVIS} && [ ${count} -gt 0 ]
+	then
+		echo '-- LOG ---------------'
+		cat "${logFile}"	
+	fi
+
+	exit ${count}
 elif [ "${parser_subcommand}" = 'xsh' ]
 then
 	xshTestsPathBase="${projectPath}/unittests/xsh"
@@ -928,5 +943,5 @@ EOF
 	
 	exit ${xsltTestsResult}
 fi
-	
+
 exit 0
