@@ -79,6 +79,7 @@ function parse_addfatalerror
 	typeset var message="${1}"
 	typeset var m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
 	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
+	parser_aborted=true
 }
 
 function parse_displayerrors
@@ -447,7 +448,7 @@ function parse
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option
-		if [ -z ${parser_optiontail} ]
+		if [ -z "${parser_optiontail}" ]
 		then
 			parser_index=$(expr ${parser_index} + 1)
 			parser_subindex=0

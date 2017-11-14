@@ -79,6 +79,10 @@
 					</xsl:with-param>
 				</xsl:call-template>
 				
+				<xsl:if test="string-length($onEnd)">
+					<xsl:value-of select="$sh.endl" />
+					<xsl:value-of select="$onEnd" />
+				</xsl:if>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -1478,7 +1482,7 @@
 								<xsl:text>[ -z </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-									<xsl:with-param name="quoted" select="false()" />
+									<xsl:with-param name="quoted" select="true()" />
 								</xsl:call-template>
 								<xsl:text> ]</xsl:text>
 							</xsl:with-param>
