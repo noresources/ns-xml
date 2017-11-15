@@ -68,8 +68,11 @@ then
 		for minor in 0 1 2 3 4 5 6 7 8 9
 		do
 			p="python${major}.${minor}"
-			ns_which -s "${p}" \
-				&& pythonInterpreters=("${pythonInterpreters[@]}" "${p}")
+			if ns_which -s "${p}"
+			then
+				log "Enable Python ${major}.${minor}"
+				pythonInterpreters=("${pythonInterpreters[@]}" "${p}")
+			fi
 		done
 	done
 	
@@ -80,8 +83,9 @@ then
 		if ns_which -s ${s}
 		then
 			check_func="check_${s}"
-			if [ "$(type -t "${check_func}")" != "function" ] || ${check_func}
+			if [ "$(type -t "${check_func}")" != 'function' ] || ${check_func}
 			then
+				log "Enable ${s} $(${s} --version 2>&1 | head -n 1 | xargs echo)"
 				available_shells[${#available_shells[@]}]=${s}
 			fi
 		fi
@@ -97,6 +101,7 @@ then
 			if ns_which -s ${c}
 			then
 				cc=${c}
+				log "Enable C compiler (${cc})"
 				break
 			fi
 		done
@@ -170,20 +175,20 @@ EOF
 	else
 		for parser in "${parsers[@]}"
 		do
-			if [ "${parser}" = "sh" ] && [ ${#available_shells[@]} -gt 0 ]
+			if [ "${parser}" = 'sh' ] && [ ${#available_shells[@]} -gt 0 ]
 			then
 				testSh=true
-			elif [ "${parser}" = "python" ] && [ ${#pythonInterpreters[@]} -gt 0 ]
+			elif [ "${parser}" = 'python' ] && [ ${#pythonInterpreters[@]} -gt 0 ]
 			then
 				testPython=true
-			elif [ "${parser}" = "c" ] && ns_which -s ${cc}
+			elif [ "${parser}" = 'c' ] && ns_which -s ${cc}
 			then
 				testC=true
 				if ns_which -s valgrind
 				then
 					testValgrind=true
 				fi
-			elif [ "${parser}" = "php" ] && ns_which -s php
+			elif [ "${parser}" = 'php' ] && ns_which -s php
 			then
 				testPHP=true
 			fi
@@ -203,7 +208,7 @@ EOF
 	
 	if ${testPython}
 	then
-		#parserNames=("${parserNames[@]}" "Python")	
+		#parserNames=("${parserNames[@]}" 'Python')	
 		#resultLineFormat="${resultLineFormat} %-7s |"
 		
 		for p in "${pythonInterpreters[@]}"
@@ -213,7 +218,7 @@ EOF
 			resultLineFormat="${resultLineFormat} %-7s |"
 		done
 		
-		log "Update Python parser XSLT" 
+		log 'Update Python parser XSLT' 
 		"${scriptPath}/update-python-parser.sh"
 	fi
 	
@@ -225,7 +230,7 @@ EOF
 			parserNames=("${parserNames[@]}" "C/Valgrind")
 		fi
 			
-		log "Update C parser XSLT "
+		log 'Update C parser XSLT'
 		"${scriptPath}/update-c-parser.sh"
 		resultLineFormat="${resultLineFormat} %-7s |"
 		
@@ -236,7 +241,7 @@ EOF
 		
 			testValgrind=true
 			valgrindArgs=("--tool=memcheck" "--leak-check=full" "--undef-value-errors=yes" "--xml=yes")
-			if [ "$(uname -s)" = "Darwin" ]
+			if [ "$(uname -s)" = 'Darwin' ]
 			then
 				valgrindArgs=("${valgrindArgs[@]}" \
 					"--dsymutil=yes" \
@@ -258,9 +263,9 @@ EOF
 	
 	if ${testPHP}
 	then
-		parserNames=("${parserNames[@]}" "PHP")
+		parserNames=("${parserNames[@]}" 'PHP')
 			
-		log "Update PHP parser XSLT"
+		log 'Update PHP parser XSLT'
 		"${scriptPath}/update-php-parser.sh"
 		resultLineFormat="${resultLineFormat} %-7s |"
 	fi
@@ -308,7 +313,7 @@ EOF
 		fi
 			
 		echo "${app} (${#groupTests[@]} tests)"
-		printf "${resultLineFormat}" "Test" "${parserNames[@]}" "RESULT"
+		printf "${resultLineFormat}" "Test" "${parserNames[@]}" 'RESULT'
 		
 		# Per group initializations
 		xmlDescription="${d}/xml/program.xml"
@@ -361,20 +366,20 @@ EOF
 			pyInfo="${d}/ProgramInfo.py"
 			pyProgramBase="${tmpScriptBasename}-exe-"
 			
-			log "Create Python parser module"
+			log 'Create Python parser module'
 			"${projectPath}/ns/sh/build-python.sh" -b \
 				-x "${xmlDescription}" \
-				-c "TestProgramInfo" \
+				-c 'TestProgramInfo' \
 				-o "${pyParser}" || ns_error "Failed to generated python module"
 				
-			log "Create Python program info module"
+			log 'Create Python program info module'
 			"${projectPath}/ns/sh/build-python.sh" \
-				-i "Parser" \
+				-i 'Parser' \
 				-x "${xmlDescription}" \
-				-c "TestProgramInfo" \
+				-c 'TestProgramInfo' \
 				-o "${pyInfo}" || ns_error "Failed to generated Python program info module"
 				
-			log "Generate python scripts"
+			log 'Generate python scripts'
 			unset pyPrograms
 			for p in "${pythonInterpreters[@]}"
 			do
@@ -393,38 +398,38 @@ EOF
 				"${parserTestsPathBase}/lib/c-unittestprogram.xsl" \
 				"${xmlDescription}" || ns_error "Failed to create ${cProgram} source"
 			
-			log "Create C files"
+			log 'Create C files'
 			"${projectPath}/ns/sh/build-c.sh" -eu \
 				-x "${xmlDescription}" \
 				-o "$(dirname "${tmpScriptBasename}")" \
 				-f "$(basename "${cParserBase}")" \
-				-p "app" || ns_error "Failed to generated C parser"
+				-p 'app' || ns_error 'Failed to generated C parser'
 				
-			log "Build C program"
+			log 'Build C program'
 			${cc} "${cflags[@]}" \
 				-o "${cProgram}" \
 				"${cProgram}.c" "${cParserBase}.c" \
-			|| ns_error "Failed to build C program"   
+			|| ns_error 'Failed to build C program'
 		fi
 		
 		if ${testPHP}
 		then
 			phpLibrary="${tmpScriptBasename}-lib.php"
 			phpProgram="${tmpScriptBasename}-exe.php"
-			log "Create PHP program info"
+			log 'Create PHP program info'
 			"${projectPath}/ns/sh/build-php.sh" -e \
 				-x "${xmlDescription}" \
-				-c "TestProgramInfo" \
+				-c 'TestProgramInfo' \
 				-o "${phpLibrary}" || ns_error "Failed to generated PHP module"
 				
-			log "Create program"
+			log 'Create program'
 			xsltproc --xinclude -o "${phpProgram}" \
 				"${parserTestsPathBase}/lib/php-unittestprogram.xsl" \
 				"${xmlDescription}" || ns_error "Failed to create ${phpProgram}"
 			chmod 755 "${phpProgram}"
 		fi
 			
-		log "Run test(s)"
+		log 'Run test(s)'
 		for test in "${groupTests[@]}"
 		do
 			t="${groupTestBasePath}/${test}"
@@ -507,7 +512,7 @@ EOFSH
 					then
 						for s in ${available_shells[@]}
 						do
-							resultLine[${#resultLine[@]}]="skipped"
+							resultLine[${#resultLine[@]}]='skipped'
 						done
 					else
 						for s in ${available_shells[@]}
@@ -515,9 +520,9 @@ EOFSH
 							if [ ! -f "${result}-${s}" ] || ! diff "${expected}" "${result}-${s}" >> "${logFile}"
 							then
 								passed=false
-								resultLine[${#resultLine[@]}]="FAILED"
+								resultLine[${#resultLine[@]}]='FAILED'
 							else
-								resultLine[${#resultLine[@]}]="passed"
+								resultLine[${#resultLine[@]}]='passed'
 								${keepTemporaryFiles} || rm -f "${result}-${s}"
 							fi
 							i=$(expr ${i} + 1)
@@ -531,7 +536,7 @@ EOFSH
 					then
 						for p in "${pythonInterpreters[@]}"
 						do
-							resultLine[${#resultLine[@]}]="skipped"
+							resultLine[${#resultLine[@]}]='skipped'
 						done
 					else
 						for p in "${pythonInterpreters[@]}"
@@ -539,9 +544,9 @@ EOFSH
 							if [ ! -f "${result}-${p}" ] || ! diff "${expected}" "${result}-${p}" >> "${logFile}"
 							then
 								passed=false
-								resultLine[${#resultLine[@]}]="FAILED"
+								resultLine[${#resultLine[@]}]='FAILED'
 							else
-								resultLine[${#resultLine[@]}]="passed"
+								resultLine[${#resultLine[@]}]='passed'
 								${keepTemporaryFiles} || rm -f "${result}-${p}"
 							fi
 						done
@@ -552,16 +557,16 @@ EOFSH
 				then
 					if [ -f "${base}.no-c" ]
 					then
-						resultLine[${#resultLine[@]}]="skipped"
-						${testValgrind} && resultLine[${#resultLine[@]}]="skipped"
+						resultLine[${#resultLine[@]}]='skipped'
+						${testValgrind} && resultLine[${#resultLine[@]}]='skipped'
 					else
 						if [ ! -f "${result}-c" ] || ! diff "${expected}" "${result}-c" >> "${logFile}"
 						then
 							passed=false
-							resultLine[${#resultLine[@]}]="FAILED"
-							${testValgrind} && resultLine[${#resultLine[@]}]="skipped"
+							resultLine[${#resultLine[@]}]='FAILED'
+							${testValgrind} && resultLine[${#resultLine[@]}]='skipped'
 						else
-							resultLine[${#resultLine[@]}]="passed"
+							resultLine[${#resultLine[@]}]='passed'
 							${keepTemporaryFiles} || rm -f "${result}-c"
 						
 							# Valgrind
@@ -572,16 +577,16 @@ EOFSH
 									res=$(xsltproc "${valgrindOutputXslFile}" "${valgrindXmlFile}")
 									if [ ! -z "${res}" ] && [ ${res} -eq 0 ]
 									then
-										resultLine[${#resultLine[@]}]="passed"
+										resultLine[${#resultLine[@]}]='passed'
 										${keepTemporaryFiles} || rm -f "${valgrindXmlFile}"
 										${keepTemporaryFiles} || rm -f "${valgrindShellFile}"
 									else
 										passed=false
-										resultLine[${#resultLine[@]}]="LEAK"
+										resultLine[${#resultLine[@]}]='LEAK'
 									fi
 								else
 									passed=false
-									resultLine[${#resultLine[@]}]="CALLERROR"
+									resultLine[${#resultLine[@]}]='CALLERROR'
 								fi
 							fi
 						fi
@@ -592,14 +597,14 @@ EOFSH
 				then
 					if [ -f "${base}.no-php" ]
 					then
-						resultLine[${#resultLine[@]}]="skipped"
+						resultLine[${#resultLine[@]}]='skipped'
 					else
 						if [ ! -f "${result}-php" ] || ! diff "${expected}" "${result}-php" >> "${logFile}"
 						then
 							passed=false
-							resultLine[${#resultLine[@]}]="FAILED"
+							resultLine[${#resultLine[@]}]='FAILED'
 						else
-							resultLine[${#resultLine[@]}]="passed"
+							resultLine[${#resultLine[@]}]='passed'
 							${keepTemporaryFiles} || rm -f "${result}-php"
 						fi
 					fi
@@ -612,14 +617,14 @@ EOFSH
 				then
 					for s in ${available_shells[@]}
 					do
-						resultLine[${#resultLine[@]}]="IGNORED"
+						resultLine[${#resultLine[@]}]='IGNORED'
 					done
 				fi
 				
-				${testPython} && resultLine[${#resultLine[@]}]="IGNORED"
-				${testC} && resultLine[${#resultLine[@]}]="IGNORED"
-				${testValgrind} && resultLine[${#resultLine[@]}]="IGNORED"
-				${testPHP} && resultLine[${#resultLine[@]}]="IGNORED"
+				${testPython} && resultLine[${#resultLine[@]}]='IGNORED'
+				${testC} && resultLine[${#resultLine[@]}]='IGNORED'
+				${testValgrind} && resultLine[${#resultLine[@]}]='IGNORED'
+				${testPHP} && resultLine[${#resultLine[@]}]='IGNORED'
 				
 				# Copy one of the result as the 'expected' file
 				if ${testC}
@@ -645,10 +650,10 @@ EOFSH
 					
 			if ${passed}
 			then
-				resultLine[${#resultLine[@]}]="passed"
+				resultLine[${#resultLine[@]}]='passed'
 				${keepTemporaryFiles} || rm -f "${tmpShellScript}"
 			else
-				resultLine[${#resultLine[@]}]="FAILED"
+				resultLine[${#resultLine[@]}]='FAILED'
 			fi
 			
 			# NB: printf doesn't like tput. So we do a post transformation
@@ -785,7 +790,7 @@ then
 			${xshTestFound} || continue
 		fi
 		
-		printf "${testResultFormat}" "${xshTestBase}" "RESULT"
+		printf "${testResultFormat}" "${xshTestBase}" 'RESULT'
 	
 		xshTestProgram="$(dirname "${test}")/${xshTestBase}.run"
 		testResult=false	
@@ -879,7 +884,7 @@ EOF
 	fi
 
 	resultFormat='%-25.25s | %-6s | %-9s | %-6s |\n'
-	printf "${resultFormat}" "Test" "schema" "transform" "RESULT"
+	printf "${resultFormat}" 'Test' 'schema' 'transform' 'RESULT'
 		
 	for f in "${testList[@]}"
 	do
