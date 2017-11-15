@@ -78,7 +78,7 @@
 						<xsl:value-of select="$prg.sh.parser.var_startindex" />
 					</xsl:with-param>
 				</xsl:call-template>
-				
+
 				<xsl:if test="string-length($onEnd)">
 					<xsl:value-of select="$sh.endl" />
 					<xsl:value-of select="$onEnd" />
@@ -1281,7 +1281,9 @@
 				<xsl:text>then</xsl:text>
 				<xsl:call-template name="code.block">
 					<xsl:with-param name="content">
-						<xsl:call-template name="prg.sh.parser.copyValues" />
+						<xsl:call-template name="prg.sh.parser.copyValues">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+						</xsl:call-template>
 						<xsl:value-of select="$sh.endl" />
 						<xsl:text>return </xsl:text>
 						<xsl:call-template name="sh.var">

@@ -32,38 +32,61 @@
 
 	<!-- for each remaining input, append parser_input[] to parser_values[] -->
 	<xsl:template name="prg.sh.parser.copyValues">
-		<xsl:call-template name="sh.incrementalFor">
-			<xsl:with-param name="variable">
-				<xsl:text>a</xsl:text>
-			</xsl:with-param>
-			<xsl:with-param name="init">
-				<xsl:text>$(expr </xsl:text>
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
-				</xsl:call-template>
-				<xsl:text> + 1)</xsl:text>
-			</xsl:with-param>
-			<xsl:with-param name="limit">
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-				</xsl:call-template>
-			</xsl:with-param>
-			<xsl:with-param name="do">
-				<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
-				<xsl:value-of select="' '" />
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
-					<xsl:with-param name="quoted" select="true()" />
-					<xsl:with-param name="index">
+		<xsl:param name="interpreter" />
+
+		<xsl:variable name="variable" select="'a'" />
+		<xsl:variable name="do">
+			<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
+			<xsl:value-of select="' '" />
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
+				<xsl:with-param name="quoted" select="true()" />
+				<xsl:with-param name="index">
+					<xsl:call-template name="sh.var">
+						<xsl:with-param name="name">
+							<xsl:text>a</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="init">
+			<xsl:text>$(expr </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+			</xsl:call-template>
+			<xsl:text> + 1)</xsl:text>
+		</xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="$interpreter = 'bash'">
+				<xsl:call-template name="sh.incrementalFor">
+					<xsl:with-param name="variable" select="$variable" />
+					<xsl:with-param name="init" select="$init" />
+					<xsl:with-param name="limit">
 						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name">
-								<xsl:text>a</xsl:text>
-							</xsl:with-param>
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
 						</xsl:call-template>
 					</xsl:with-param>
+					<xsl:with-param name="do" select="$do" />
 				</xsl:call-template>
-			</xsl:with-param>
-		</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sh.sequenceFor">
+					<xsl:with-param name="variable" select="$variable" />
+					<xsl:with-param name="init" select="$init" />
+					<xsl:with-param name="limit">
+						<xsl:text>$(expr </xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+						</xsl:call-template>
+						<xsl:text> - 1)</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="do" select="$do" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_index" />
 		<xsl:text>=</xsl:text>
@@ -411,8 +434,7 @@
 
 			<!-- Set option variable -->
 			<!-- except if group is not exclusive (meaningless in this case) -->
-			<xsl:if
-				test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
+			<xsl:if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
 				<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
 				<xsl:text>="</xsl:text>
 				<!-- don't add subcommand prefix in this case -->
@@ -513,8 +535,7 @@
 			</xsl:call-template>
 
 			<!-- Exclusive clause -->
-			<xsl:if
-				test="$groupOptionNode[@type = 'exclusive'] 
+			<xsl:if test="$groupOptionNode[@type = 'exclusive'] 
 						and $groupOptionNode/prg:databinding/prg:variable 
 						and $optionNode/prg:databinding/prg:variable">
 				<xsl:call-template name="sh.if">

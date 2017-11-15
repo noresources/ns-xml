@@ -1356,7 +1356,7 @@ then
 	then
 		cc=${CC}
 	else
-		for c in gcc clang
+		for c in cc gcc clang
 		do
 			if ns_which -s ${c}
 			then
