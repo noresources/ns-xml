@@ -63,44 +63,22 @@
 				</xsl:call-template>
 				<xsl:value-of select="$sh.endl" />
 
-				<xsl:call-template name="sh.local">
-					<xsl:with-param name="name" select="'c'" />
-					<xsl:with-param name="interpreter" select="$interpreter" />
+				<xsl:call-template name="sh.arrayAppend">
+					<xsl:with-param name="name" select="$tableName" />
 					<xsl:with-param name="value">
-						<xsl:call-template name="sh.arrayLength">
-							<xsl:with-param name="name" select="$tableName" />
+						<xsl:text>"</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name">
+								<xsl:text>m</xsl:text>
+							</xsl:with-param>
 						</xsl:call-template>
+						<xsl:text>"</xsl:text>
 					</xsl:with-param>
-					<xsl:with-param name="quoted" select="false()" />
+					<xsl:with-param name="startIndex">
+						<xsl:value-of select="$prg.sh.parser.var_startindex" />
+					</xsl:with-param>
 				</xsl:call-template>
-				<xsl:value-of select="$sh.endl" />
 
-				<xsl:text>c=$(expr </xsl:text>
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name">
-						<xsl:text>c</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-				<xsl:text> + </xsl:text>
-				<xsl:value-of select="$prg.sh.parser.var_startindex" />
-				<xsl:text>)</xsl:text>
-				<xsl:value-of select="$sh.endl" />
-
-
-				<xsl:value-of select="$tableName" />
-				<xsl:text>[</xsl:text>
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name">
-						<xsl:text>c</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-				<xsl:text>]="</xsl:text>
-				<xsl:call-template name="sh.var">
-					<xsl:with-param name="name">
-						<xsl:text>m</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-				<xsl:text>"</xsl:text>
 				<xsl:if test="string-length($onEnd)">
 					<xsl:value-of select="$sh.endl" />
 					<xsl:value-of select="$onEnd" />
@@ -1303,7 +1281,9 @@
 				<xsl:text>then</xsl:text>
 				<xsl:call-template name="code.block">
 					<xsl:with-param name="content">
-						<xsl:call-template name="prg.sh.parser.copyValues" />
+						<xsl:call-template name="prg.sh.parser.copyValues">
+							<xsl:with-param name="interpreter" select="$interpreter" />
+						</xsl:call-template>
 						<xsl:value-of select="$sh.endl" />
 						<xsl:text>return </xsl:text>
 						<xsl:call-template name="sh.var">
@@ -1504,7 +1484,7 @@
 								<xsl:text>[ -z </xsl:text>
 								<xsl:call-template name="sh.var">
 									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-									<xsl:with-param name="quoted" select="false()" />
+									<xsl:with-param name="quoted" select="true()" />
 								</xsl:call-template>
 								<xsl:text> ]</xsl:text>
 							</xsl:with-param>

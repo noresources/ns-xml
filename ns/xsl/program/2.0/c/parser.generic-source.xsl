@@ -27,10 +27,12 @@
 #endif
 
 #if !defined (NSXML_SIZET_FORMAT)
-#	if defined(__x86_64__)
-#		define NSXML_SIZET_FORMAT "lu"
+#	if defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#		define NSXML_SIZET_FORMAT "zu"
+#	elif defined (__cplusplus) && (__cplusplus >= 201103L)
+#		define NSXML_SIZET_FORMAT "zu"
 #	else
-#		define NSXML_SIZET_FORMAT "u"
+#		define NSXML_SIZET_FORMAT "lu"
 #	endif
 #endif
 
@@ -1792,7 +1794,7 @@ size_t nsxml_value_validator_usage_path(const void *self, struct nsxml_validated
 	
 	if ((path_access_count + path_type_count) > 0)
 	{
-		return ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, "%s", text_buffer);
+		return ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, "%s", text_buffer);
 	}
 	
 	return 0;
@@ -1812,12 +1814,12 @@ size_t nsxml_value_validator_usage_number(const void *self, struct nsxml_validat
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be between %%.%df and %%.%df", (int) nvalidator->decimal_count, (int) nvalidator->decimal_count);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (double) nvalidator->min_value, (double) nvalidator->max_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be between %d and %d", (size_t)message_format_buffer_length);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (int) nvalidator->min_value, (int) nvalidator->max_value);
 		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmin)
@@ -1825,12 +1827,12 @@ size_t nsxml_value_validator_usage_number(const void *self, struct nsxml_validat
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be greater or equal to %%.%df", (int) nvalidator->decimal_count);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (double) nvalidator->min_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (double) nvalidator->min_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be greater or equal %d", (size_t) message_format_buffer_length);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (int) nvalidator->min_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (int) nvalidator->min_value);
 		}
 	}
 	else if (nvalidator->validator.flags & nsxml_value_validator_checkmax)
@@ -1838,12 +1840,12 @@ size_t nsxml_value_validator_usage_number(const void *self, struct nsxml_validat
 		if (nvalidator->decimal_count > 0)
 		{
 			snprintf(message_format, (size_t)message_format_buffer_length, "Argument value must be lesser or equal to %%.%df", (int) nvalidator->decimal_count);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (double) nvalidator->max_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (double) nvalidator->max_value);
 		}
 		else
 		{
 			strncpy(message_format, "Argument value must be lesser or equal %d", (size_t) message_format_buffer_length);
-			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, 0, message_format, (int) nvalidator->max_value);
+			printed = ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(output, output_length, (size_t)0, message_format, (int) nvalidator->max_value);
 		}
 	}
 	
@@ -2359,13 +2361,13 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		
 		if (a->argument_type > nsxml_argument_type_mixed)
 		{
-			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(a->argument_type));
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (a->default_value && (*a->default_value != '\0'))
 		{
-			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Default value: %s\n", a->default_value);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Default value: %s\n", a->default_value);
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
@@ -2377,19 +2379,19 @@ void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *i
 		
 		if (m->argument_type > nsxml_argument_type_mixed)
 		{
-			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Arguments type: %s\n", nsxml_usage_option_argument_type_string(m->argument_type));
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Arguments type: %s\n", nsxml_usage_option_argument_type_string(m->argument_type));
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->min_argument > 0)
 		{
-			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Minimum number of arguments: %d\n", m->min_argument);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Minimum number of arguments: %d\n", m->min_argument);
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 		
 		if (m->max_argument > 0)
 		{
-			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Maximum number of arguments: %d\n", m->max_argument);
+			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Maximum number of arguments: %d\n", m->max_argument);
 			]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		}
 	}
@@ -2468,7 +2470,7 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	/* Argument infos */
 	if (info->argument_type > nsxml_argument_type_mixed)
 	{
-		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, 0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(info->argument_type));
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, (size_t)0, "Argument type: %s\n", nsxml_usage_option_argument_type_string(info->argument_type));
 		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 	}
 	
@@ -2548,14 +2550,14 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 		size_t c = scinfo->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s %s%s", info->name, result->subcommand_name, (c ? " " : ""));
 		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &scinfo->rootitem_info, -1, visited);
-		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, 0);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, (size_t)0);
 	}
 	else
 	{
 		size_t c = info->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
 		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &info->rootitem_info, -1, visited);
-		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, 0);
+		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, (size_t)0);
 	}
 	
 	if ((format & ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[) == ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[)

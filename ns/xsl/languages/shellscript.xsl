@@ -455,13 +455,14 @@
 		<xsl:text>done</xsl:text>
 	</xsl:template>
 
-	<!-- for (i=start;i<stop;i++) -->
-	<xsl:template name="sh.incrementalFor">
+	<!-- Range for loop -->
+	<xsl:template name="sh.sequenceFor">
 		<xsl:param name="variable">
 			<xsl:text>i</xsl:text>
 		</xsl:param>
+		<!-- Initial value -->
 		<xsl:param name="init" select="0" />
-		<xsl:param name="operator" select="'&lt;'" />
+		<!-- Outer limit -->
 		<xsl:param name="limit" />
 		<xsl:param name="increment" select="1" />
 		<xsl:param name="do" />
@@ -470,7 +471,6 @@
 		<xsl:param name="interpreter" select="'sh'" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select='false()' />
-
 
 		<xsl:if test="$declareLocal">
 			<xsl:call-template name="sh.local">
@@ -481,7 +481,84 @@
 		</xsl:if>
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="indent" select="$indent" />
+			<xsl:with-param name="condition">
+				<xsl:choose>
+					<xsl:when test="$interpreter = 'bash'">
+						<xsl:text>((</xsl:text>
+						<xsl:value-of select="$variable" />
+						<xsl:text>=</xsl:text>
+						<xsl:value-of select="$init" />
+						<xsl:text>;</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$variable" />
+						</xsl:call-template>
+						<xsl:text>&lt;=</xsl:text>
+						<xsl:value-of select="$limit" />
+						<xsl:text>;</xsl:text>
+						<xsl:choose>
+							<xsl:when test="$increment = 1">
+								<xsl:value-of select="$variable" />
+								<xsl:text>++</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$variable" />
+								<xsl:text>=$(expr </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$variable" />
+								</xsl:call-template>
+								<xsl:text> + </xsl:text>
+								<xsl:value-of select="$increment" />
+								<xsl:text>)</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:text>))</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$variable" />
+						<xsl:text> in {</xsl:text>
+						<xsl:value-of select="$init" />
+						<xsl:text>..</xsl:text>
+						<xsl:value-of select="$limit" />
+						<xsl:if test="$increment &gt; 1">
+							<xsl:text>..</xsl:text>
+							<xsl:value-of select="$increment" />
+						</xsl:if>
+						<xsl:text>}</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="do" select="$do" />
+		</xsl:call-template>
+	</xsl:template>
 
+	<!-- C-style for loop -->
+	<xsl:template name="sh.incrementalFor">
+		<!-- Increment variable name -->
+		<xsl:param name="variable">
+			<xsl:text>i</xsl:text>
+		</xsl:param>
+		<!-- Initial value -->
+		<xsl:param name="init" select="0" />
+		<xsl:param name="operator" select="'&lt;'" />
+		<!-- Increment limit -->
+		<xsl:param name="limit" />
+		<xsl:param name="increment" select="1" />
+		<xsl:param name="do" />
+		<xsl:param name="indent" select="true()" />
+		<!-- UNIX shell interpreter type -->
+		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Declare temporary variable as local variable -->
+		<xsl:param name="declareLocal" select='false()' />
+
+		<xsl:if test="$declareLocal">
+			<xsl:call-template name="sh.local">
+				<xsl:with-param name="name" select="$variable" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+			</xsl:call-template>
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
+		<xsl:call-template name="sh.for">
+			<xsl:with-param name="indent" select="$indent" />
 			<xsl:with-param name="condition">
 				<xsl:text>((</xsl:text>
 				<xsl:value-of select="normalize-space($variable)" />

@@ -32,10 +32,10 @@
 
 	<!-- for each remaining input, append parser_input[] to parser_values[] -->
 	<xsl:template name="prg.sh.parser.copyValues">
-		<xsl:call-template name="sh.incrementalFor">
-			<xsl:with-param name="variable">
-				<xsl:text>a</xsl:text>
-			</xsl:with-param>
+		<xsl:param name="interpreter" />
+
+		<xsl:call-template name="sh.sequenceFor">
+			<xsl:with-param name="variable" select="'a'" />
 			<xsl:with-param name="init">
 				<xsl:text>$(expr </xsl:text>
 				<xsl:call-template name="sh.var">
@@ -44,10 +44,13 @@
 				<xsl:text> + 1)</xsl:text>
 			</xsl:with-param>
 			<xsl:with-param name="limit">
+				<xsl:text>$(expr </xsl:text>
 				<xsl:call-template name="sh.var">
 					<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
 				</xsl:call-template>
+				<xsl:text> - 1)</xsl:text>
 			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
 			<xsl:with-param name="do">
 				<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
 				<xsl:value-of select="' '" />
@@ -64,6 +67,7 @@
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
+
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_index" />
 		<xsl:text>=</xsl:text>
@@ -1747,8 +1751,20 @@
 			<xsl:value-of select="$sh.endl" />
 		</xsl:if>
 
-		<xsl:value-of select="$prg.sh.parser.vName_shell" />
-		<xsl:text>="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"</xsl:text>
+		<xsl:call-template name="sh.if">
+			<xsl:with-param name="condition">
+				<xsl:text>[ -r /proc/$$/exe ]</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="then">
+				<xsl:value-of select="$prg.sh.parser.vName_shell" />
+				<xsl:text>="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="else">
+				<xsl:value-of select="$prg.sh.parser.vName_shell" />
+				<xsl:text>="$(basename "$(ps -p $$ -o command= | cut -f 1 -d' ')")"</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_input" />
 		<xsl:text>=("${@}")</xsl:text>
@@ -1822,7 +1838,7 @@
 			<xsl:with-param name="name" select="$prg.sh.parser.vName_shell" />
 			<xsl:with-param name="quoted" select="true()" />
 		</xsl:call-template>
-		<xsl:text> = "zsh" ] &amp;&amp; </xsl:text>
+		<xsl:text> = 'zsh' ] &amp;&amp; </xsl:text>
 		<xsl:value-of select="$prg.sh.parser.vName_startindex" />
 		<xsl:text>=1</xsl:text>
 		<xsl:value-of select="$sh.endl" />

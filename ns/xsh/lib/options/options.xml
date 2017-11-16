@@ -28,5 +28,18 @@
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
+	
+	<prg:switch id="prg.option.verbose">
+		<prg:databinding>
+			<prg:variable>verbose</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Increase program verbosity</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>verbose</prg:long>
+		</prg:names>
+		<prg:ui mode="disabled" />
+	</prg:switch>
 
 </prg:options>

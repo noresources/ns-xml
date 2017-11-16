@@ -57,7 +57,13 @@ EOFUSAGE
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
 parser_program_version="2.0"
-parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+if [ -r /proc/$$/exe ]
+then
+	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
+else
+	parser_shell="$(basename "$(ps -p $$ -o command= | cut -f 1 -d' ')")"
+fi
+
 parser_input=("${@}")
 parser_itemcount=${#parser_input[*]}
 parser_startindex=0
@@ -75,7 +81,7 @@ PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
 # Compatibility with shell which use "1" as start index
-[ "${parser_shell}" = "zsh" ] && parser_startindex=1
+[ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
@@ -103,25 +109,19 @@ parse_addwarning()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_warnings[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_warnings[${c}]="${m}"
+	parser_warnings[$(expr ${#parser_warnings[*]} + ${parser_startindex})]="${m}"
 }
 parse_adderror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 }
 parse_addfatalerror()
 {
 	local message="${1}"
 	local m="[${parser_option}:${parser_index}:${parser_subindex}] ${message}"
-	local c=${#parser_errors[*]}
-	c=$(expr ${c} + ${parser_startindex})
-	parser_errors[${c}]="${m}"
+	parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="${m}"
 	parser_aborted=true
 }
 
@@ -321,7 +321,7 @@ parse_process_option()
 	
 	if [ "${parser_item}" = '--' ]
 	then
-		for ((a=$(expr ${parser_index} + 1);${a}<${parser_itemcount};a++))
+		for ((a=$(expr ${parser_index} + 1);${a}<=$(expr ${parser_itemcount} - 1);a++))
 		do
 			parse_addvalue "${parser_input[${a}]}"
 		done
@@ -950,7 +950,7 @@ parse()
 	while [ ${parser_index} -lt ${parser_itemcount} ] && ! ${parser_aborted}
 	do
 		parse_process_option
-		if [ -z ${parser_optiontail} ]
+		if [ -z "${parser_optiontail}" ]
 		then
 			parser_index=$(expr ${parser_index} + 1)
 			parser_subindex=0
