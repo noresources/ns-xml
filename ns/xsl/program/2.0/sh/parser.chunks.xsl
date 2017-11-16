@@ -34,58 +34,39 @@
 	<xsl:template name="prg.sh.parser.copyValues">
 		<xsl:param name="interpreter" />
 
-		<xsl:variable name="variable" select="'a'" />
-		<xsl:variable name="do">
-			<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
-			<xsl:value-of select="' '" />
-			<xsl:call-template name="sh.var">
-				<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
-				<xsl:with-param name="quoted" select="true()" />
-				<xsl:with-param name="index">
-					<xsl:call-template name="sh.var">
-						<xsl:with-param name="name">
-							<xsl:text>a</xsl:text>
-						</xsl:with-param>
-					</xsl:call-template>
-				</xsl:with-param>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="init">
-			<xsl:text>$(expr </xsl:text>
-			<xsl:call-template name="sh.var">
-				<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
-			</xsl:call-template>
-			<xsl:text> + 1)</xsl:text>
-		</xsl:variable>
-
-		<xsl:choose>
-			<xsl:when test="$interpreter = 'bash'">
-				<xsl:call-template name="sh.incrementalFor">
-					<xsl:with-param name="variable" select="$variable" />
-					<xsl:with-param name="init" select="$init" />
-					<xsl:with-param name="limit">
+		<xsl:call-template name="sh.sequenceFor">
+			<xsl:with-param name="variable" select="'a'" />
+			<xsl:with-param name="init">
+				<xsl:text>$(expr </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_index" />
+				</xsl:call-template>
+				<xsl:text> + 1)</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="limit">
+				<xsl:text>$(expr </xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+				</xsl:call-template>
+				<xsl:text> - 1)</xsl:text>
+			</xsl:with-param>
+			<xsl:with-param name="interpreter" select="$interpreter" />
+			<xsl:with-param name="do">
+				<xsl:value-of select="$prg.sh.parser.fName_addvalue" />
+				<xsl:value-of select="' '" />
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_input" />
+					<xsl:with-param name="quoted" select="true()" />
+					<xsl:with-param name="index">
 						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
+							<xsl:with-param name="name">
+								<xsl:text>a</xsl:text>
+							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:with-param>
-					<xsl:with-param name="do" select="$do" />
 				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="sh.sequenceFor">
-					<xsl:with-param name="variable" select="$variable" />
-					<xsl:with-param name="init" select="$init" />
-					<xsl:with-param name="limit">
-						<xsl:text>$(expr </xsl:text>
-						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name" select="$prg.sh.parser.vName_itemcount" />
-						</xsl:call-template>
-						<xsl:text> - 1)</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="do" select="$do" />
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:with-param>
+		</xsl:call-template>
 
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_index" />

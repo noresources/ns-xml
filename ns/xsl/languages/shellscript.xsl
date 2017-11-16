@@ -455,7 +455,7 @@
 		<xsl:text>done</xsl:text>
 	</xsl:template>
 
-	<!-- a for loop which use the seq command line tool -->
+	<!-- Range for loop -->
 	<xsl:template name="sh.sequenceFor">
 		<xsl:param name="variable">
 			<xsl:text>i</xsl:text>
@@ -482,16 +482,50 @@
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="indent" select="$indent" />
 			<xsl:with-param name="condition">
-				<xsl:value-of select="$variable" />
-				<xsl:text> in {</xsl:text>
-				<xsl:value-of select="$init" />
-				<xsl:text>..</xsl:text>
-				<xsl:value-of select="$limit" />
-				<xsl:if test="$increment &gt; 1">
-					<xsl:text>..</xsl:text>
-					<xsl:value-of select="$increment" />
-				</xsl:if>
-				<xsl:text>}</xsl:text>
+				<xsl:choose>
+					<xsl:when test="$interpreter = 'bash'">
+						<xsl:text>((</xsl:text>
+						<xsl:value-of select="$variable" />
+						<xsl:text>=</xsl:text>
+						<xsl:value-of select="$init" />
+						<xsl:text>;</xsl:text>
+						<xsl:call-template name="sh.var">
+							<xsl:with-param name="name" select="$variable" />
+						</xsl:call-template>
+						<xsl:text>&lt;=</xsl:text>
+						<xsl:value-of select="$limit" />
+						<xsl:text>;</xsl:text>
+						<xsl:choose>
+							<xsl:when test="$increment = 1">
+								<xsl:value-of select="$variable" />
+								<xsl:text>++</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$variable" />
+								<xsl:text>=$(expr </xsl:text>
+								<xsl:call-template name="sh.var">
+									<xsl:with-param name="name" select="$variable" />
+								</xsl:call-template>
+								<xsl:text> + </xsl:text>
+								<xsl:value-of select="$increment" />
+								<xsl:text>)</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:text>))</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$variable" />
+						<xsl:text> in {</xsl:text>
+						<xsl:value-of select="$init" />
+						<xsl:text>..</xsl:text>
+						<xsl:value-of select="$limit" />
+						<xsl:if test="$increment &gt; 1">
+							<xsl:text>..</xsl:text>
+							<xsl:value-of select="$increment" />
+						</xsl:if>
+						<xsl:text>}</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:with-param>
 			<xsl:with-param name="do" select="$do" />
 		</xsl:call-template>
