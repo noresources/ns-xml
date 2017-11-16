@@ -483,15 +483,15 @@
 			<xsl:with-param name="indent" select="$indent" />
 			<xsl:with-param name="condition">
 				<xsl:value-of select="$variable" />
-				<xsl:text> in $(seq </xsl:text>
+				<xsl:text> in {</xsl:text>
 				<xsl:value-of select="$init" />
-				<xsl:text> </xsl:text>
-				<xsl:if test="$increment &gt; 1">
-					<xsl:value-of select="$increment" />
-					<xsl:text> </xsl:text>
-				</xsl:if>
+				<xsl:text>..</xsl:text>
 				<xsl:value-of select="$limit" />
-				<xsl:text>)</xsl:text>
+				<xsl:if test="$increment &gt; 1">
+					<xsl:text>..</xsl:text>
+					<xsl:value-of select="$increment" />
+				</xsl:if>
+				<xsl:text>}</xsl:text>
 			</xsl:with-param>
 			<xsl:with-param name="do" select="$do" />
 		</xsl:call-template>

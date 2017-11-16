@@ -279,7 +279,7 @@ function parse_process_option
 	
 	if [ "${parser_item}" = '--' ]
 	then
-		for a in $(seq $(expr ${parser_index} + 1) $(expr ${parser_itemcount} - 1))
+		for a in {$(expr ${parser_index} + 1)..$(expr ${parser_itemcount} - 1)}
 		do
 			parse_addvalue "${parser_input[${a}]}"
 		done
