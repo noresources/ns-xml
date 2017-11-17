@@ -97,7 +97,12 @@
 				<xsl:text> AUTOINCREMENT</xsl:text>
 			</xsl:if>
 		</xsl:if>
+	</xsl:template>
 
+	<xsl:template match="sql:tableref">
+		<xsl:call-template name="sql.tableReferenceName">
+			<xsl:with-param name="fullName" select="false()" />
+		</xsl:call-template>
 	</xsl:template>
 
 </xsl:stylesheet>

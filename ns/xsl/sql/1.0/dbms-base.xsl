@@ -27,6 +27,59 @@
 		<xsl:text>"</xsl:text>
 	</xsl:template>
 
+	<xsl:template name="sql.ancestorsNamePrefix">
+		<xsl:param name="element" select="." />
+
+		<xsl:variable name="parent" select="$element/.." />
+
+		<xsl:choose>
+			<xsl:when test="$parent/self::sql:table">
+				<xsl:variable name="top">
+					<xsl:call-template name="sql.ancestorsNamePrefix">
+						<xsl:with-param name="element" select="$parent" />
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:call-template name="sql.elementName">
+					<xsl:with-param name="name" select="$parent/@name" />
+				</xsl:call-template>
+				<xsl:text>.</xsl:text>
+			</xsl:when>
+			<xsl:when test="$parent/self::sql:tableset or $parent/self::sql:database">
+				<xsl:call-template name="sql.elementName">
+					<xsl:with-param name="name" select="$parent/@name" />
+				</xsl:call-template>
+				<xsl:text>.</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sql.ancestorsNamePrefix">
+					<xsl:with-param name="element" select="$parent" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Find a table with the given name in the current tableset -->
+	<xsl:template name="sql.findFullTablesetTableName">
+		<xsl:param name="tableName" select="@name" />
+		<xsl:param name="startingPoint" select="." />
+
+		<xsl:variable name="parent" select="$startingPoint/.." />
+
+		<xsl:choose>
+			<xsl:when test="$parent/self::sql:tableset or $parent/self::sql:database">
+				<xsl:call-template name="sql.ancestorsNamePrefix">
+					<xsl:with-param name="element" select="$parent//sql:table[@name = $tableName]" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sql.findFullTablesetTableName">
+					<xsl:with-param name="tableName" select="$tableName" />
+					<xsl:with-param name="startingPoint" select="$parent" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<xsl:template name="sql.elementNameList">
 		<xsl:call-template name="sql.elementName" />
 		<xsl:if test="position() != last()">
@@ -120,30 +173,32 @@
 	<!-- Both id or name attribute could be used to reference the table -->
 	<!-- id is required to display the full name of the table (db.table) -->
 	<xsl:template name="sql.tableReferenceName">
+		<xsl:param name="element" select="." />
 		<xsl:param name="fullName" select="false()" />
 		<xsl:param name="name" select="@name" />
 		<xsl:param name="id" select="@id" />
 
 		<xsl:choose>
 			<xsl:when test="$name">
+				<xsl:if test="$fullName">
+					<xsl:call-template name="sql.findFullTablesetTableName">
+						<xsl:with-param name="tableName" select="$name" />
+					</xsl:call-template>
+				</xsl:if>
 				<xsl:call-template name="sql.elementName">
 					<xsl:with-param name="name" select="normalize-space($name)" />
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:when test="$id">
+				<xsl:variable name="table" select="//sql:table[@id=$id]" />
 				<xsl:if test="$fullName">
-					<xsl:if test="//sql:table[@id=$id]/../@name">
-						<xsl:call-template name="sql.elementName">
-							<xsl:with-param name="name">
-								<xsl:value-of select="//sql:table[@id=$id]/../@name" />
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:text>.</xsl:text>
-					</xsl:if>
+					<xsl:call-template name="sql.ancestorsNamePrefix">
+						<xsl:with-param name="element" select="$table" />
+					</xsl:call-template>
 				</xsl:if>
 				<xsl:call-template name="sql.elementName">
 					<xsl:with-param name="name">
-						<xsl:value-of select="//sql:table[@id=$id]/@name" />
+						<xsl:value-of select="$table/@name" />
 					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:when>
@@ -264,20 +319,14 @@
 		<xsl:call-template name="sql.elementName" />
 		<xsl:if test="not (sql:datatype)">
 			<xsl:text> </xsl:text>
-			<xsl:call-template name="sql.dataTypeTranslation"/>
+			<xsl:call-template name="sql.dataTypeTranslation" />
 		</xsl:if>
 		<xsl:apply-templates select="*[not (self::sql:comment)]" />
 	</xsl:template>
 
-	<xsl:template match="sql:index/sql:tableref">
-		<xsl:call-template name="sql.tableReferenceName">
-			<xsl:with-param name="fullName" select="false()" />
-		</xsl:call-template>
-	</xsl:template>
-
 	<xsl:template match="sql:tableref">
 		<xsl:call-template name="sql.tableReferenceName">
-			<xsl:with-param name="fullName" select="false()" />
+			<xsl:with-param name="fullName" select="true()" />
 		</xsl:call-template>
 	</xsl:template>
 
