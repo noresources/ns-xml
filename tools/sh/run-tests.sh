@@ -2143,18 +2143,26 @@ $(find "${xsltTestPathBase}" -name '*.info')
 EOF
 	fi
 
-	resultFormat='%-25.25s | %-6s | %-9s | %-6s |\n'
+	resultFormat='%-30.30s | %-7s | %-9s | %-6s |\n'
 	printf "${resultFormat}" 'Test' 'schema' 'transform' 'RESULT'
 		
 	for f in "${testList[@]}"
 	do
-		n="$(basename "${f}" .info)"
+		#n="$(basename "${f}" .info)"
+		n="${f#${xsltTestPathBase}/}"
+		n="${n%.info}"
 		schemaResult='skipped'
 		transformResult='failed'
 		testResult='passed'
 		
-		transform="$(grep -E '^transform' "${f}" | cut -f 2 -d':' | xargs echo)"
-		schema="$(grep -E '^schema' "${f}" | cut -f 2 -d':' | xargs echo)"
+		[ -f "${f%.info}.xsl" ] \
+			&& transform="${f%.info}.xsl" \
+			&& transform="${transform#${rootPath}/}" \
+			|| transform="$(grep -E '^transform' "${f}" | cut -f 2 -d':' | xargs echo)"
+		[ -f "${f%.info}.xsd" ] \
+			&& schema="${f%.info}.xsd" \
+			|| schema="$(grep -E '^schema' "${f}" | cut -f 2 -d':' | xargs echo)"
+		
 		xml="${f%.info}.xml"
 		expected="${f%.info}.expected"
 		result="${f%.info}.transformresult"

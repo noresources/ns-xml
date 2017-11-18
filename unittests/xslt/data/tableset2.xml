@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource version="1.0" xmlns:sql="http://xsd.nore.fr/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<sql:database name="ThemePark">
+		<sql:table name="Visitors">
+			<sql:column name="visitorId">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="language">
+				<sql:datatype>
+					<sql:string length="3" />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="name">
+				<sql:datatype>
+					<sql:string length="12" />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="avatarId">
+				<sql:datatype>
+					<sql:numeric />
+				</sql:datatype>
+				<sql:default>
+					<sql:number>0</sql:number>
+				</sql:default>
+			</sql:column>
+			
+			<sql:primarykey name="pk_Visitors">
+				<sql:column name="visitorId" />
+			</sql:primarykey>
+		</sql:table>
+
+		<sql:table name="Attractions">
+			<sql:column name="attractionId">
+				<sql:datatype>
+					<sql:numeric />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+
+			<sql:column name="attractionData">
+				<sql:datatype>
+					<sql:binary />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:primarykey name="pk_Attractions">
+				<sql:column name="attractionId" />
+			</sql:primarykey>
+		</sql:table>
+
+		<sql:table name="GameSessions">
+			<sql:column name="gameSessionId">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+
+			<sql:column name="startDateTime">
+				<sql:datatype>
+					<sql:timestamp mode="datetime" timezone="yes" />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="endDateTime">
+				<sql:datatype>
+					<sql:timestamp mode="datetime" timezone="yes" />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:primarykey name="pk_GameSessions">
+				<sql:column name="gameSessionId" />
+			</sql:primarykey>
+		</sql:table>
+
+		<sql:table name="Scores">
+			<sql:column name="attractionId">
+				<sql:datatype>
+					<sql:numeric />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+			<sql:column name="gameSessionId">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+
+			<sql:column name="visitorId">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="position">
+				<sql:datatype>
+					<sql:numeric />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="score">
+				<sql:datatype>
+					<sql:numeric decimals="2" />
+				</sql:datatype>
+				<sql:default>
+					<sql:null />
+				</sql:default>
+			</sql:column>
+
+			<sql:primarykey name="pk_Scores">
+				<sql:column name="attractionId" />
+				<sql:column name="gameSessionId" />
+				<sql:column name="visitorId" />
+				<sql:column name="position" />
+			</sql:primarykey>
+
+			<sql:foreignkey>
+				<sql:column name="attractionId" />
+				<sql:reference>
+					<sql:tableref name="Attractions" />
+					<sql:column name="attractionId" />
+					<sql:onupdate action="cascade" />
+					<sql:ondelete action="cascade" />
+				</sql:reference>
+			</sql:foreignkey>
+
+			<sql:foreignkey>
+				<sql:column name="gameSessionId" />
+				<sql:reference>
+					<sql:tableref name="GameSessions" />
+					<sql:column name="gameSessionId" />
+					<sql:onupdate action="cascade" />
+					<sql:ondelete action="cascade" />
+				</sql:reference>
+			</sql:foreignkey>
+		</sql:table>
+	</sql:database>
+</sql:datasource>

@@ -12,9 +12,7 @@
 
 	<xsd:complexType name="emptyType">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en">
-				Empty element
-			</xsd:documentation>
+			<xsd:documentation xml:lang="en">Empty element</xsd:documentation>
 		</xsd:annotation>
 	</xsd:complexType>
 
@@ -150,10 +148,7 @@
 	<xsd:complexType name="elementDeclarationBaseType">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Base type for all SQL datasource elements.
-				Any element
-				have a name and may have a
-				unique
-				id.
+				Any element have a name and may have a unique id.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:attribute ref="xml:base" />
@@ -452,8 +447,7 @@
 
 	<xsd:element name="database">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en">
-			</xsd:documentation>
+			<xsd:documentation xml:lang="en">Table container</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
