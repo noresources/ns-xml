@@ -29,10 +29,24 @@
 #if !defined (NSXML_SIZET_FORMAT)
 #	if defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 #		define NSXML_SIZET_FORMAT "zu"
+#		if !defined (NSXML_SIZET_FORMAT_CAST)
+#			define NSXML_SIZET_FORMAT_CAST(x) (x)
+#		endif
 #	elif defined (__cplusplus) && (__cplusplus >= 201103L)
 #		define NSXML_SIZET_FORMAT "zu"
-#	else
+#		if !defined (NSXML_SIZET_FORMAT_CAST)
+#			define NSXML_SIZET_FORMAT_CAST(x) (x)
+#		endif
+#	elif (defined (__x86_64__) && __x86_64__) || (defined(__x86_64) && x86_64)
 #		define NSXML_SIZET_FORMAT "lu"
+#		if !defined (NSXML_SIZET_FORMAT_CAST)
+#			define NSXML_SIZET_FORMAT_CAST(x) ((long unsigned int)(x))
+#		endif
+#	else
+#		define NSXML_SIZET_FORMAT "u"
+#		if !defined (NSXML_SIZET_FORMAT_CAST)
+#			define NSXML_SIZET_FORMAT_CAST(x) ((unsigned int)(x))
+#		endif
 #	endif
 #endif
 
@@ -2450,11 +2464,11 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	
 	if (info->item_info.abstract)
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ". %s\n", (index + 1), info->item_info.abstract);
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ". %s\n", NSXML_SIZET_FORMAT_CAST(index + 1), info->item_info.abstract);
 	}
 	else
 	{
-		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ".\n", (index + 1));
+		text_ptr += snprintf(*text_buffer_ptr, *text_buffer_length_ptr, "%" NSXML_SIZET_FORMAT ".\n", NSXML_SIZET_FORMAT_CAST(index + 1));
 	}
 	
 	*text_ptr = '\0';
