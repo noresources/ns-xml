@@ -655,6 +655,7 @@
 
 	<xsl:variable name="str.smallCase" select="'abcdefghijklmnopqrstuvwxyz'" />
 	<xsl:variable name="str.upperCase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
+
 	<xsl:template name="str.toUpper">
 		<xsl:param name="text" select="." />
 		<xsl:value-of select="translate($text, $str.smallCase, $str.upperCase)" />
@@ -668,9 +669,11 @@
 	<xsl:variable name="str.ascii">
 		<xsl:text> !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</xsl:text>
 	</xsl:variable>
+
 	<xsl:variable name="str.hex">
 		<xsl:text>0123456789ABCDEF</xsl:text>
 	</xsl:variable>
+
 	<!-- http://lists.xml.org/archives/xml-dev/200109/msg00248.html -->
 	<xsl:template name="str.asciiToHex">
 		<xsl:param name="text" />
@@ -696,6 +699,157 @@
 				</xsl:call-template>
 			</xsl:if>
 		</xsl:if>
+	</xsl:template>
+
+	<!--
+		Decode base64 encoded string as hex string.
+
+		Adapted from the work of Hermann Stamm-Wilbrandt.
+		http://stamm-wilbrandt.de/en/xsl-list/Base64ToHex.xsl
+	-->
+	<xsl:template name="str.base64ToHex">
+		<!-- Base64 text to convert -->
+		<xsl:param name="text" />
+		<!-- Private parameter -->
+		<xsl:param name="_init" select="true()" />
+
+		<xsl:variable name="str">
+			<xsl:choose>
+				<xsl:when test="$_init">
+					<xsl:value-of select="translate(normalize-space($text),' ','')" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$text" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="len" select="string-length($str)" />
+
+		<xsl:choose>
+			<xsl:when test="$len = 0" />
+			<xsl:when test="$len &gt; 4">
+				<xsl:variable name="mid" select="4*floor($len div 8)" />
+				<xsl:call-template name="str.base64ToHex">
+					<xsl:with-param name="text" select="substring($str,1,$mid)" />
+					<xsl:with-param name="_init" select="false()" />
+				</xsl:call-template>
+				<xsl:call-template name="str.base64ToHex">
+					<xsl:with-param name="text" select="substring($str,$mid+1)" />
+					<xsl:with-param name="_init" select="false()" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of
+					select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0000111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFF='),
+        1,1)" />
+
+				<xsl:variable name="h2b1"
+					select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0123012301230123012301230123012301230123012301230123012301230123='),
+        1,1)" />
+
+				<xsl:choose>
+					<xsl:when test="$h2b1 = '0'">
+						<xsl:value-of
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0000000000000000111111111111111122222222222222223333333333333333='),
+            2,1)" />
+					</xsl:when>
+
+					<xsl:when test="$h2b1 = '1'">
+						<xsl:value-of
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'4444444444444444555555555555555566666666666666667777777777777777='),
+            2,1)" />
+					</xsl:when>
+
+					<xsl:when test="$h2b1 = '2'">
+						<xsl:value-of
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'88888888888888889999999999999999AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB='),
+            2,1)" />
+					</xsl:when>
+
+					<xsl:when test="$h2b1 = '3'">
+						<xsl:value-of
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'CCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFF='),
+            2,1)" />
+					</xsl:when>
+				</xsl:choose>
+
+				<xsl:if test="not(contains($str,'=='))">
+					<xsl:value-of
+						select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF='),
+          2,1)" />
+
+					<xsl:value-of
+						select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0000111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFF='),
+          3,1)" />
+
+					<xsl:if test="not(contains($str,'='))">
+						<xsl:variable name="h2b2"
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0123012301230123012301230123012301230123012301230123012301230123='),
+            3,1)" />
+
+						<xsl:choose>
+							<xsl:when test="$h2b2 = '0'">
+								<xsl:value-of
+									select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0000000000000000111111111111111122222222222222223333333333333333='),
+                4,1)" />
+							</xsl:when>
+
+							<xsl:when test="$h2b2 = '1'">
+								<xsl:value-of
+									select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'4444444444444444555555555555555566666666666666667777777777777777='),
+                4,1)" />
+							</xsl:when>
+
+							<xsl:when test="$h2b2 = '2'">
+								<xsl:value-of
+									select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'88888888888888889999999999999999AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB='),
+                4,1)" />
+							</xsl:when>
+
+							<xsl:when test="$h2b2 = '3'">
+								<xsl:value-of
+									select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'CCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFF='),
+                4,1)" />
+							</xsl:when>
+						</xsl:choose>
+
+						<xsl:value-of
+							select="substring(translate($str,
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+'0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF='),
+            4,1)" />
+
+					</xsl:if>
+				</xsl:if>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 </xsl:stylesheet>

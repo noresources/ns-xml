@@ -6,7 +6,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql">
 
 	<xsl:import href="dbms-base.xsl" />
-
+	
 	<!-- The PostgreSQL target version -->
 	<xsl:param name="sql.pgsql.targetVersion" select="9.4" />
 
@@ -123,6 +123,38 @@
 		<xsl:text>;</xsl:text>
 		<xsl:value-of select="$str.endl" />
 		<xsl:apply-templates />
+	</xsl:template>
+
+	<xsl:template match="sql:default/sql:hexBinary">
+		<xsl:text>E</xsl:text>
+		<xsl:text>'</xsl:text>
+		<xsl:call-template name="sql.pgsql.hexPrefix" />
+		<xsl:text>'</xsl:text>
+	</xsl:template>
+	
+	<xsl:template match="sql:default/sql:base64Binary">
+		<xsl:text>E</xsl:text>
+		<xsl:text>'</xsl:text>
+		<xsl:call-template name="sql.pgsql.hexPrefix">
+			<xsl:with-param name="string">
+				<xsl:call-template name="str.base64ToHex">
+					<xsl:with-param name="text" select="." />
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:text>'</xsl:text>
+	</xsl:template>
+
+	<xsl:template name="sql.pgsql.hexPrefix">
+		<xsl:param name="string" select="normalize-space(.)" />
+
+		<xsl:text>\x</xsl:text>
+		<xsl:value-of select="substring($string, 1, 2)" />
+		<xsl:if test="string-length($string) &gt; 2">
+			<xsl:call-template name="sql.pgsql.hexPrefix">
+				<xsl:with-param name="string" select="substring($string, 3)" />
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

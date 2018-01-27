@@ -231,7 +231,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="value" type="xsd:string">
+			<xsd:element name="preformatted" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
 						A user-formatted value. The value will be given to
