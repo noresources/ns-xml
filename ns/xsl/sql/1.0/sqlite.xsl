@@ -105,4 +105,18 @@
 		</xsl:call-template>
 	</xsl:template>
 
+	<xsl:template match="sql:default/sql:hexBinary">
+		<xsl:text>X'</xsl:text>
+		<xsl:value-of select="translate(normalize-space(.),' ','')" />
+		<xsl:text>'</xsl:text>
+	</xsl:template>
+
+	<xsl:template match="sql:default/sql:base64Binary">
+		<xsl:text>X</xsl:text>
+		<xsl:text>'</xsl:text>
+		<xsl:call-template name="str.base64ToHex">
+			<xsl:with-param name="text" select="." />
+		</xsl:call-template>
+		<xsl:text>'</xsl:text>
+	</xsl:template>
 </xsl:stylesheet>

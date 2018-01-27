@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource version="1.0" name="sql_sqlite_2" xmlns:sql="http://xsd.nore.fr/sql" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<sql:database name="tableset">
+		<xi:include href="./data/binarytable.xml" xpointer="xmlns(sql=http://xsd.nore.fr/sql) xpointer(/sql:table)" />
+	</sql:database>
+</sql:datasource>

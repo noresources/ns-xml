@@ -126,15 +126,13 @@
 	</xsl:template>
 
 	<xsl:template match="sql:default/sql:hexBinary">
-		<xsl:text>E</xsl:text>
-		<xsl:text>'</xsl:text>
+		<xsl:text>E'</xsl:text>
 		<xsl:call-template name="sql.pgsql.hexPrefix" />
 		<xsl:text>'</xsl:text>
 	</xsl:template>
 	
 	<xsl:template match="sql:default/sql:base64Binary">
-		<xsl:text>E</xsl:text>
-		<xsl:text>'</xsl:text>
+		<xsl:text>E'</xsl:text>
 		<xsl:call-template name="sql.pgsql.hexPrefix">
 			<xsl:with-param name="string">
 				<xsl:call-template name="str.base64ToHex">
@@ -146,7 +144,7 @@
 	</xsl:template>
 
 	<xsl:template name="sql.pgsql.hexPrefix">
-		<xsl:param name="string" select="normalize-space(.)" />
+		<xsl:param name="string" select="translate(normalize-space(.),' ','')" />
 
 		<xsl:text>\x</xsl:text>
 		<xsl:value-of select="substring($string, 1, 2)" />

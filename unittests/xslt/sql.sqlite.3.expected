@@ -1,0 +1,16 @@
+-- ns-xml database schema to SQL translation
+-- Schema version: 1.0
+-- Database tableset
+CREATE TABLE "tableset"."Binary"
+(
+-- Binary column
+"basic" BLOB,
+-- Binary column with a string default value "abcd" / 0x61626364
+"string" BLOB DEFAULT 'abcd',
+-- Binary column with a integer default value 2048 / 0x0800
+"integer" BLOB DEFAULT 2048,
+-- Binary column with a hexadecimal default value 0x61626364 / "abcd"
+"hexadecimal" BLOB DEFAULT X'61626364',
+-- Binary column with a Base64-encoded default value YWJjZA== / 0x61626364 / "abcd"
+"base64" BLOB DEFAULT X'61626364'
+);
