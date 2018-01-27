@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011-2016 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011-2018 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
 	<sh:function name="ns_semver_mumber_to_string">

@@ -4,7 +4,7 @@
 	<prg:name>xsltdeps</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:copyright>Copyright © 2013 by Renaud Guillard (dev@nore.fr)</prg:copyright>
+	<prg:copyright>Copyright © 2018 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>List file dependencies of the given XSLT files</prg:abstract>
 	</prg:documentation>

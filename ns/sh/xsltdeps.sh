@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ####################################
-# Copyright © 2013 by Renaud Guillard (dev@nore.fr)
+# Copyright © 2018 by Renaud Guillard (dev@nore.fr)
 # Author: Renaud Guillard
 # Version: 1.0
 # 
