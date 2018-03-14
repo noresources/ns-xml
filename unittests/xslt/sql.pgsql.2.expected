@@ -30,6 +30,5 @@ CREATE TABLE "ThemePark"."Scores"
 "position" INTEGER,
 "score" REAL DEFAULT NULL,
 CONSTRAINT "pk_Scores" PRIMARY KEY ("attractionId", "gameSessionId", "visitorId", "position"),
-FOREIGN KEY ("attractionId") REFERENCES "ThemePark"."Attractions" ("attractionId") ON UPDATE CASCADE ON DELETE CASCADE, 
-FOREIGN KEY ("gameSessionId") REFERENCES "ThemePark"."GameSessions" ("gameSessionId") ON UPDATE CASCADE ON DELETE CASCADE
+FOREIGN KEY ("attractionId", "gameSessionId") REFERENCES "ThemePark"."Attractions" ("attractionId", "gameSessionId") ON UPDATE CASCADE ON DELETE CASCADE
 );

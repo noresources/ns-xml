@@ -119,23 +119,16 @@
 
 			<sql:foreignkey>
 				<sql:column name="attractionId" />
+				<sql:column name="gameSessionId" />
 				<sql:reference>
 					<sql:tableref name="Attractions" />
 					<sql:column name="attractionId" />
-					<sql:onupdate action="cascade" />
-					<sql:ondelete action="cascade" />
-				</sql:reference>
-			</sql:foreignkey>
-
-			<sql:foreignkey>
-				<sql:column name="gameSessionId" />
-				<sql:reference>
-					<sql:tableref name="GameSessions" />
 					<sql:column name="gameSessionId" />
 					<sql:onupdate action="cascade" />
 					<sql:ondelete action="cascade" />
 				</sql:reference>
 			</sql:foreignkey>
+
 		</sql:table>
 	</sql:database>
 </sql:datasource>
