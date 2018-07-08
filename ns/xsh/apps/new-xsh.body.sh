@@ -116,7 +116,7 @@ cat > "${tmpFile}" << EOF
 <prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>${xshName}</prg:name>
 	<prg:author>${author}</prg:author>
-	<prg:version>1.0</prg:version>
+	<prg:version>1.0.0</prg:version>
 	<prg:copyright>Copyright © $(date +%Y) by ${author}</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>${xshName} short description</prg:abstract>

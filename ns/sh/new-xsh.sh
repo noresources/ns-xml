@@ -3,7 +3,7 @@
 # Copyright © 2018 by Renaud Guillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 1.0
+# Version: 1.0.0
 # 
 # A script to create XSH (XML + SH) files
 #
@@ -33,7 +33,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="1.0"
+parser_program_version="1.0.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -892,7 +892,7 @@ cat > "${tmpFile}" << EOF
 <prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>${xshName}</prg:name>
 	<prg:author>${author}</prg:author>
-	<prg:version>1.0</prg:version>
+	<prg:version>1.0.0</prg:version>
 	<prg:copyright>Copyright © $(date +%Y) by ${author}</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>${xshName} short description</prg:abstract>
