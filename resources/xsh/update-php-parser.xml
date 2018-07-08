@@ -4,7 +4,7 @@
 	<prg:name>update-php-parser</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:copyright>Copyright © 2012 by Renaud Guillard (dev@nore.fr)</prg:copyright>
+	<prg:copyright>Copyright © 2012-2018 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:options>
 	    <!-- Help -->
