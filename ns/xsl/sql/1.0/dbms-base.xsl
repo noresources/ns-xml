@@ -237,6 +237,23 @@
 		<xsl:apply-templates select="sql:table|sql:index" />
 	</xsl:template>
 
+	<xsl:template name="sql.indexName">
+		<!-- Index node -->
+		<xsl:param name="element" select="." />
+		<!-- 'declare' or 'reference' -->
+		<xsl:param name="usage" select="reference" />
+
+		<xsl:if test="$element/../@name">
+			<xsl:call-template name="sql.elementName">
+				<xsl:with-param name="name" select="$element/../@name" />
+			</xsl:call-template>
+			<xsl:text>.</xsl:text>
+		</xsl:if>
+		<xsl:call-template name="sql.elementName">
+			<xsl:with-param name="name" select="$element/@name" />
+		</xsl:call-template>
+	</xsl:template>
+
 	<xsl:template match="sql:database/sql:index">
 		<xsl:text>CREATE </xsl:text>
 		<xsl:if test="@unique = 'yes'">
@@ -244,13 +261,11 @@
 		</xsl:if>
 		<xsl:text>INDEX </xsl:text>
 		<!-- @todo IF NOT EXISTS -->
-		<xsl:if test="../@name">
-			<xsl:call-template name="sql.elementName">
-				<xsl:with-param name="name" select="../@name" />
+		<xsl:if test="@name">
+			<xsl:call-template name="sql.indexName">
+				<xsl:with-param name="usage" select='declare' />
 			</xsl:call-template>
-			<xsl:text>.</xsl:text>
 		</xsl:if>
-		<xsl:call-template name="sql.elementName" />
 		<xsl:text> ON </xsl:text>
 		<xsl:apply-templates />
 		<xsl:text> (</xsl:text>

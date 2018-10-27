@@ -6,7 +6,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql">
 
 	<xsl:import href="dbms-base.xsl" />
-	
+
 	<!-- The PostgreSQL target version -->
 	<xsl:param name="sql.pgsql.targetVersion" select="9.4" />
 
@@ -112,6 +112,23 @@
 		</xsl:choose>
 	</xsl:template>
 
+	<xsl:template name="sql.indexName">
+		<!-- Index node -->
+		<xsl:param name="element" select="." />
+		<!-- 'declare' or 'reference' -->
+		<xsl:param name="usage" select="reference" />
+
+		<xsl:if test="$element/../@name and ($usage = 'reference')">
+			<xsl:call-template name="sql.elementName">
+				<xsl:with-param name="name" select="$element/../@name" />
+			</xsl:call-template>
+			<xsl:text>.</xsl:text>
+		</xsl:if>
+		<xsl:call-template name="sql.elementName">
+			<xsl:with-param name="name" select="$element/@name" />
+		</xsl:call-template>
+	</xsl:template>
+
 	<!-- Objects -->
 
 	<xsl:template match="sql:database">
@@ -130,7 +147,7 @@
 		<xsl:call-template name="sql.pgsql.hexPrefix" />
 		<xsl:text>'</xsl:text>
 	</xsl:template>
-	
+
 	<xsl:template match="sql:default/sql:base64Binary">
 		<xsl:text>E'</xsl:text>
 		<xsl:call-template name="sql.pgsql.hexPrefix">
