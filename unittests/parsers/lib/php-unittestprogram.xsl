@@ -19,18 +19,13 @@
 $scriptPath = dirname (realpath(__FILE__));
 require_once ($scriptPath . '/program-lib.php' );
 
-function echol ($line)
-{
+function echol ($line) {
 	echo ($line . PHP_EOL);
 }
-
-function echolist ($iterable)
-{
+function echolist ($iterable) {
 	$first = true;
-	foreach ($iterable as $a)
-	{
-		if (!$first)
-		{
+	foreach ($iterable as $a) {
+		if (!$first) {
 			echo ', ';
 		}
 		$first = false;
@@ -40,18 +35,13 @@ function echolist ($iterable)
 	echo (PHP_EOL);
 }
 
-function echovalue($arg)
-{
-	if (is_bool($arg))
-	{
+function echovalue($arg) {
+	if (is_bool($arg)) {
 		echo (($arg) ? 'True' : 'False');
 	}
-	else if (is_array($arg))
-	{
+	else if (is_array($arg)){
 		echo implode(' ', $arg);
-	}
-	else
-	{
+	} else {
 		echo $arg;
 	}
 	echo (PHP_EOL);
@@ -63,6 +53,13 @@ $result = $parser->parse($_SERVER['argv']);
 
 $args = $_SERVER['argv'];
 array_shift($args);
+$displayHelp = false;
+foreach ($args as $arg) {
+	if ($arg == '__help__') {
+		$displayHelp = true;
+		break;
+	}
+}
 
 echo 'CLI: ';
 echolist ($args);
@@ -71,23 +68,13 @@ echo ('Values: '); echolist ($result);
 $errors = $result->getMessages(\Message::ERROR);
 $errorCount = count($errors);
 echol ('Error count: ' . $errorCount);
-if ($errorCount > 0)
-{
-	foreach ($args as $arg)
-	{
-		if ($arg == '__msg__')
-		{
+if ($errorCount > 0) {
+	foreach ($args as $arg) {
+		if ($arg == '__msg__') {
 			echol ('Errors');
-			foreach ($errors as $e)
-			{
+			foreach ($errors as $e) {
 				echol ('- ' . $e);
 			}
-		}
-		if ($arg == '__help__')
-		{
-			$usage = new UsageFormat;
-			$usage->format = UsageFormat::DETAILED_TEXT;
-			echo ($info->usage($usage));   
 		}
 	}
 } 
@@ -114,7 +101,12 @@ echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : '')
 				<text>}</text>
 				<value-of select="'&#10;'" />
 			</if>
-		</for-each>
+		</for-each><![CDATA[if ($displayHelp)  {
+	$usage = new UsageFormat;
+	$usage->format = UsageFormat::DETAILED_TEXT;
+	echo ($info->usage($usage, $result->subcommandName));
+	exit (0);
+}]]>
 	</template>
 
 	<template name="prg.php.unittest.variablePrefix">
@@ -193,5 +185,4 @@ echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : '')
 			<value-of select="'&#10;'" />
 		</if>
 	</template>
-
 </stylesheet>

@@ -10,12 +10,14 @@
 	<prg:values>
 		<prg:value id="value.simple">
 			<prg:documentation>
-				<prg:abstract>A simple positional argument</prg:abstract>
+				<prg:abstract>Basic</prg:abstract>
+				<prg:details>A simple positional argument</prg:details>
 			</prg:documentation>
 		</prg:value>
 		<prg:value id="value.positiveint">
 			<prg:documentation>
-				<prg:abstract>A positional argument expecting an positive integer value</prg:abstract>
+				<prg:abstract>Integer</prg:abstract>
+				<prg:details>A positional argument expecting an positive integer value</prg:details>
 			</prg:documentation>
 			<prg:type>
 				<prg:number min="1" />
