@@ -1,7 +1,8 @@
 {
 	"name": "noresources/ns-xml",
 	"description": "A collection of XML-based tools to generate source code and programs",
-	"type": "library",
+	"type": "project",
+	"version": "1.0.0",
 	"homepage": "https://ns-xml.nore.fr",
 	"license": "MIT",
 	"authors": [
@@ -14,15 +15,10 @@
 	"support": {
 		"issues": "https://github.com/noresources/ns-xml/issues"
 	},
-	"prefer-stable": true,
 	"require": {
 		"php": "^5.3"
 	},
-	"config": {
-		"platform": {
-			"php": "5.3.0"
-		}
-	},
+	"minimum-stability": "dev",
 	"bin": [
 		"ns/sh/build-php.sh",
 		"ns/sh/xsltdeps.sh",
