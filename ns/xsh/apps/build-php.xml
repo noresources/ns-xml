@@ -12,7 +12,7 @@
 	<prg:ui>
 		<prg:label>PHP parser generator</prg:label>
 	</prg:ui>
-	<prg:options>
+	<prg:options id="build-php.option.input">
 		<prg:group>
 			<prg:documentation>
 				<prg:abstract>Input</prg:abstract>
@@ -25,12 +25,12 @@
 			</prg:options>
 		</prg:group>
 
-		<prg:group id="php.generationoptions">
+		<prg:group id="build-php.option.generation">
 			<prg:documentation>
 				<prg:abstract>Generation options</prg:abstract>
 			</prg:documentation>
 			<prg:options>
-				<prg:group type="exclusive" required="true" id="php.generationmode">
+				<prg:group type="exclusive" required="true" id="build-php.option.generationMode">
 					<prg:databinding>
 						<prg:variable>generationMode</prg:variable>
 					</prg:databinding>
@@ -93,7 +93,7 @@
 						</prg:argument>
 					</prg:options>
 				</prg:group>
-				<prg:argument id="php.parsernamespace">
+				<prg:argument id="build-php.option.parserNamespace">
 					<prg:databinding>
 						<prg:variable>parserNamespace</prg:variable>
 					</prg:databinding>
@@ -106,7 +106,7 @@
 						<prg:long>parser-ns</prg:long>
 					</prg:names>
 				</prg:argument>
-				<prg:argument id="php.programnamespace">
+				<prg:argument id="build-php.option.programNamespace">
 					<prg:databinding>
 						<prg:variable>programNamespace</prg:variable>
 					</prg:databinding>
@@ -119,7 +119,7 @@
 						<prg:long>prg-ns</prg:long>
 					</prg:names>
 				</prg:argument>
-				<prg:argument id="php.programclassname">
+				<prg:argument id="build-php.option.programClassname">
 					<prg:databinding>
 						<prg:variable>programInfoClassname</prg:variable>
 					</prg:databinding>
@@ -140,7 +140,7 @@
 			</prg:documentation>
 			<prg:options>
 				<!-- Output folder -->
-				<prg:argument id="php.outputScriptFilePath" required="true">
+				<prg:argument id="build-php.option.outputScriptFilePath" required="true">
 					<prg:databinding>
 						<prg:variable>outputScriptFilePath</prg:variable>
 					</prg:databinding>
