@@ -12,8 +12,8 @@
 	<prg:ui>
 		<prg:label>PHP parser generator</prg:label>
 	</prg:ui>
-	<prg:options id="build-php.option.input">
-		<prg:group>
+	<prg:options>
+		<prg:group id="build-php.option.input">
 			<prg:documentation>
 				<prg:abstract>Input</prg:abstract>
 			</prg:documentation>
