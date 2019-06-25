@@ -90,9 +90,9 @@
 						</prg:path>
 					</prg:type>
 				</prg:argument>
-				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.parsernamespace'])" />
-				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programnamespace'])" />
-				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'php.programclassname'])" />
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'build-php.option.parserNamespace'])" />
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'build-php.option.programNamespace'])" />
+				<xi:include href="./build-php.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'build-php.option.programClassname'])" />
 				<!-- <prg:argument>
 					<prg:databinding>
 					<prg:variable>xulContextDefine</prg:variable>
