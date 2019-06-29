@@ -1892,8 +1892,19 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Indicates if the command line argument parsing completes successfully (without any errors)
 	 * @return boolean
+	 * @return boolean
 	 */
 	public function __invoke()
+	{
+		return $this->success();
+	}
+	
+	/**
+	 * Indicates if the command line argument parsing completes successfully (without any errors)
+	 * @return boolean
+	 * @return boolean
+	 */
+	public function success ()
 	{
 		$errors = $this->getMessages(Message::ERROR, Message::FATALERROR);
 		return (count($errors) == 0);
