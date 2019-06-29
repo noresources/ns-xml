@@ -1,3 +1,6 @@
+# Composer
+/vendor
+
 # Unittests temporary files
 *.result-bash
 *.result-ksh
@@ -28,6 +31,7 @@ __pycache__
 /gource-*.mp4
 .~lock*
 .settings
+*.bundle.*
 
 # IDE project files
 \.project

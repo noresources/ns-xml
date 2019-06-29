@@ -4,9 +4,76 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7eda9ac67d2808eeb5c06ed21aa4a178",
+    "content-hash": "b740f967e6dcc9c08a4c340725f0e89c",
     "packages": [],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "noresources/ns-php-core",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noresources/ns-php-core",
+                "reference": "a00b4d2aa3406750d2d97c3de9f376885c7d31f2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NoreSources\\": "./"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renaud Guillard",
+                    "email": "dev@nore.fr",
+                    "role": "lead"
+                }
+            ],
+            "description": "Utility class library for PHP",
+            "support": {
+                "issues": "https://github.com/noresources/ns-php-core/issues"
+            },
+            "time": "2019-06-27T23:05:14+00:00"
+        },
+        {
+            "name": "noresources/ns-php-xslt",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noresources/ns-php-xslt",
+                "reference": "9dbff1daac652a84a966928b34ab86a719cf82ea"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xsl": "*",
+                "noresources/ns-php-core": "^2.0",
+                "php": "^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NoreSources\\XSLT\\": "./"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renaud Guillard",
+                    "email": "dev@nore.fr",
+                    "role": "lead"
+                }
+            ],
+            "description": "XSLT-related class library for PHP",
+            "support": {
+                "issues": "https://github.com/noresources/ns-php-xslt/issues"
+            },
+            "time": "2019-06-27T23:07:59+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": [],

@@ -1,6 +1,6 @@
 {
 	"name": "noresources/ns-xml",
-	"description": "A collection of XML-based tools to generate source code and programs",
+	"description": "A collection of NSXML-based tools to generate source code and programs",
 	"type": "project",
 	"version": "1.0.0",
 	"homepage": "https://ns-xml.nore.fr",
@@ -15,10 +15,31 @@
 	"support": {
 		"issues": "https://github.com/noresources/ns-xml/issues"
 	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/noresources/ns-php-core"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/noresources/ns-php-xslt"
+		}
+	],
 	"require": {
 		"php": "^5.3"
 	},
+	"require-dev": {
+		"noresources/ns-php-xslt": "^2.0"
+	},
 	"minimum-stability": "dev",
+	"autoload": {
+		"psr-4": {
+			"NoreSources\\NSXML\\Composer\\": "tools/php/composer//"
+		}
+	},
+	"scripts": {
+		"post-update-cmd": "@php tools/php/amalgamation.php"
+	},
 	"bin": [
 		"ns/sh/build-php.sh",
 		"ns/sh/xsltdeps.sh",
