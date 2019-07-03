@@ -1895,7 +1895,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	 */
 	public function __invoke()
 	{
-		return $this->success();
+		return self::success($this);
 	}
 	
 	/**
@@ -1903,9 +1903,9 @@ class ProgramResult extends RootItemResult implements \Iterator
 	 * @return boolean
 	 * @return boolean
 	 */
-	public function success ()
+	public static function success (ProgramResult $result)
 	{
-		$errors = $this->getMessages(Message::ERROR, Message::FATALERROR);
+		$errors = $result->getMessages(Message::ERROR, Message::FATALERROR);
 		return (count($errors) == 0);
 	}
 
