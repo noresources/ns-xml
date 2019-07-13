@@ -1028,7 +1028,7 @@ class OptionContainerOptionInfo extends OptionInfo
 			{
 				$text .= $usage->textWrap->wrap($optionTaxt, TextWrap::OFFSET_OTHER, $level) . $eol;
 			}
-			
+
 			if ($o instanceof GroupOptionInfo)
 			{
 				$subOptionsText = $o->optionUsage($usage, $level + 1);
@@ -1438,6 +1438,8 @@ abstract class OptionResult implements itemResult
 	 */
 	public function __invoke()
 	{
+		if (func_num_args() > 0)
+			return call_user_func_array(array ($this, 'value'), func_get_args());
 		return $this->value();
 	}
 
@@ -1522,61 +1524,78 @@ class MultiArgumentOptionResult extends OptionResult implements \Countable
 		$this->arguments = array ();
 	}
 
-	/**
-	 * @param mixed null or array
-	 * @return If no argument is given, return all option arguments.
-	 *         If an array of index is given, return a subset of the option arguments array
-	 */
-	public function __invoke( /* ... */ )
-	{
-		return $this->multiArgumentValue(func_get_args());
-	}
-
 	public function count()
 	{
 		return $this->isSet ? count($this->arguments) : 0;
 	}
-
+		
 	/**
-	 * @param mixed null or array
-	 * @return If no argument is given, return all option arguments.
-	 *         If an array of index is given, return a subset of the option arguments array
+	 * @para integer|array|null 
+	 * @return mixed A single argument or array of arguments
 	 */
-	public function value(/* ... */)
+	public function value()
 	{
-		return $this->multiArgumentValue(func_get_args());
+		$c = func_num_args();
+		
+		if ($c == 1)
+		{
+			$a = func_get_arg(0);
+			if (\is_array($a))
+			{
+				return $this->multiArgumentValue($a);
+			}
+		}
+		else if ($c > 1)
+		{
+			return $this->multiArgumentValue(func_get_args());
+		}
+		
+		return $this->multiArgumentValue(null);
 	}
 
-	private function multiArgumentValue($args)
+	/**
+	 * @param integer|array $subset Argument index or array of argument indexes
+	 * @throws \BadMethodCallException
+	 * @return array|array|NULL|NULL[]
+	 */
+	private function multiArgumentValue($subset)
 	{
 		if (!$this->isSet)
 		{
 			return array ();
 		}
-
-		if (is_integer($args))
-		{
-			$args = array (
-					$args
-			);
-		}
-
-		if (count($args) == 0)
+		
+		if (\is_null($subset))
 		{
 			return $this->arguments;
 		}
-		else if ((count($args) == 1) && is_array($args[0]))
+		elseif (is_integer($subset))
 		{
-			$args = $args[0];
+			if (\array_key_exists($subset, $this->arguments))
+			{
+				return $this->arguments[$subset];
+			}
+			
+			return null;
 		}
-
-		$partial = array ();
-		foreach ($args as $k)
+		elseif (\is_array($subset))
 		{
-			$partial[$k] = array_key_exists($k, $this->arguments) ? $this->arguments[$k] : null;
+			$partial = array ();
+			foreach ($subset as $k)
+			{
+				if (!\is_integer($k))
+					continue;
+					
+					$partial[$k] = array_key_exists($k, $this->arguments) ? $this->arguments[$k] : null;
+			}
+			
+			return $partial;
 		}
-
-		return $$partial;
+		else
+		{
+			$t = (is_object($subset) ? get_class($subset) : gettype($subset));
+			throw new \BadMethodCallException(__METHOD__ . ': Invalid argument type ' . $t . ', null, integer or array expected');
+		}
 	}
 }
 
@@ -1766,10 +1785,9 @@ class RootItemResult implements ItemResult, \ArrayAccess
 	 */
 	public function __call($variableName, $args = array())
 	{
-		if (count($args) == 0 && array_key_exists($variableName, $this->options))
+		if (array_key_exists($variableName, $this->options))
 		{
-			$o = $this->options[$variableName];
-			return $o->value($args);
+			return call_user_func_array(array ($this->options[$variableName], 'value'), $args);
 		}
 
 		throw new \InvalidArgumentException('Invalid option key \'' . $variableName . '\'');
@@ -1874,10 +1892,21 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Indicates if the command line argument parsing completes successfully (without any errors)
 	 * @return boolean
+	 * @return boolean
 	 */
 	public function __invoke()
 	{
-		$errors = $this->getMessages(Message::ERROR, Message::FATALERROR);
+		return self::success($this);
+	}
+	
+	/**
+	 * Indicates if the command line argument parsing completes successfully (without any errors)
+	 * @param ProgramResult $result
+	 * @return boolean
+	 */
+	public static function success (ProgramResult $result)
+	{
+		$errors = $result->getMessages(Message::ERROR, Message::FATALERROR);
 		return (count($errors) == 0);
 	}
 
