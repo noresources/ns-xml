@@ -1,0 +1,63 @@
+{
+	"name": "noresources/ns-xml",
+	"description": "A collection of NSXML-based tools to generate source code and programs",
+	"type": "project",
+	"version": "1.0.0",
+	"homepage": "https://ns-xml.nore.fr",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Renaud Guillard",
+			"email": "dev@nore.fr",
+			"role": "lead"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/noresources/ns-xml/issues"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/noresources/ns-php-core"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/noresources/ns-php-xslt"
+		}
+	],
+	"require": {
+		"php": ">= 5.3"
+	},
+	"require-dev": {
+		"noresources/ns-php-xslt": "^2.0"
+	},
+	"minimum-stability": "dev",
+	"autoload": {
+		"psr-4": {
+			"NoreSources\\NSXML\\Composer\\": "tools/php/composer//"
+		}
+	},
+	"scripts": {
+		"post-update-cmd": "@php tools/php/update-bundled-files.php"
+	},
+	"bin": [
+		"ns/sh/build-php.sh",
+		"ns/sh/xsltdeps.sh",
+		"ns/sh/prgproc.sh",
+		"ns/sh/new-xsh.sh",
+		"ns/sh/build-xulapp.sh",
+		"ns/sh/sampleapp.sh",
+		"ns/sh/build-python.sh",
+		"ns/sh/build-shellscript.sh",
+		"ns/sh/build-c.sh",
+		"ns/sh/build-php.sh",
+		"ns/sh/xsltdeps.sh",
+		"ns/sh/prgproc.sh",
+		"ns/sh/new-xsh.sh",
+		"ns/sh/build-xulapp.sh",
+		"ns/sh/sampleapp.sh",
+		"ns/sh/build-python.sh",
+		"ns/sh/build-shellscript.sh",
+		"ns/sh/build-c.sh"
+	]
+}

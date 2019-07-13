@@ -1,0 +1,100 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "82945544cb7b7830d111e180d8c07afe",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "noresources/ns-php-core",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noresources/ns-php-core",
+                "reference": "81400a8d3f2ae05b27f9068b2276fd2751a558b2"
+            },
+            "require": {
+                "php": ">= 5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NoreSources\\": "./"
+                }
+            },
+            "scripts": {
+                "tests": [
+                    "@php  ./vendor/bin/phpunit --bootstrap autoload.php tests"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renaud Guillard",
+                    "email": "dev@nore.fr",
+                    "role": "lead"
+                }
+            ],
+            "description": "Utility class library for PHP",
+            "support": {
+                "issues": "https://github.com/noresources/ns-php-core/issues"
+            },
+            "time": "2019-07-09T20:08:21+00:00"
+        },
+        {
+            "name": "noresources/ns-php-xslt",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noresources/ns-php-xslt",
+                "reference": "8a82b7a67f2fcdaf4cfd72dbdaf9aec8f25d8686"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xsl": "*",
+                "noresources/ns-php-core": "~2.0",
+                "php": ">= 5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NoreSources\\XSLT\\": "./"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renaud Guillard",
+                    "email": "dev@nore.fr",
+                    "role": "lead"
+                }
+            ],
+            "description": "XSLT-related class library for PHP",
+            "support": {
+                "issues": "https://github.com/noresources/ns-php-xslt/issues"
+            },
+            "time": "2019-07-07T22:21:11+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">= 5.3"
+    },
+    "platform-dev": []
+}
