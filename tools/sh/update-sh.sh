@@ -69,7 +69,7 @@ do
 		echo "Update ${b}"
 		if ! ${buildshellscript} -p -x ${fn}.xml -s ${f} -o ${shOut}
 		then
-			echo "Failed to update ${f}"
+			echo "Failed to update ${f}" 1>&2
 			exit 1
 		fi
 	fi
@@ -80,10 +80,13 @@ do
 	fi
 	
 	programSchemaVersion="$(xsltproc --xinclude "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
-	#echo "Program schema version ${programSchemaVersion}"
 	
-	echo "Update bash completion for ${bn}.sh (${bashCompletionOutputPath}/${bn}.sh)"		
-	xsltproc --xinclude --stringparam prg.bash.completion.programFileExtension ".sh" "${bashCompletionStylesheetBasePath}/${programSchemaVersion}/${bashCompletionStylesheetFileName}" "${fn}.xml" > "${bashCompletionOutputPath}/${bn}.sh"
+	xsltproc \
+		--xinclude \
+		--stringparam prg.bash.completion.programFileExtension ".sh" \
+		--output "${bashCompletionOutputPath}/${bn}.sh" \
+		"${bashCompletionStylesheetBasePath}/${programSchemaVersion}/${bashCompletionStylesheetFileName}" \
+		"${fn}.xml"
 		
 	if ${buildXul}
 	then
@@ -97,7 +100,6 @@ do
 		
 		for t in linux osx
 		do
-			echo "Build XUL application for ${t}"
 			mkdir -p "${xulOutputPath}/${t}"
 			if ! ${xulBuilder} \
 				"${xulOptions[@]}" \
@@ -105,7 +107,7 @@ do
 				-o "${xulOutputPath}/${t}" \
 				-n 
 			then
-				echo "Failed to build XUL UI for ${f%xsh} (${t})"
+				echo "Failed to build XUL UI for ${f%xsh} (${t})" 1>&2
 				exit 1
 			fi
 		done

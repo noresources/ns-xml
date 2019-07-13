@@ -1,52 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011-2018 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<xsd:schema targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
-	xmlns:prg="http://xsd.nore.fr/program">
-	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:prg="http://xsd.nore.fr/program" targetNamespace="http://xsd.nore.fr/program" elementFormDefault="qualified">
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd"/>
 
-	<xsd:complexType name="emptyType" />
+	<xsd:complexType name="emptyType"/>
 
 	<xsd:simpleType name="nonEmptyString">
 		<xsd:restriction base="xsd:string">
-			<xsd:pattern value=".+" />
+			<xsd:pattern value=".+"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="literalTrueType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="true" />
+			<xsd:enumeration value="true"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="literalFalseType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="false" />
+			<xsd:enumeration value="false"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="literalBooleanType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="true" />
-			<xsd:enumeration value="false" />
+			<xsd:enumeration value="true"/>
+			<xsd:enumeration value="false"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="simpleTextType">
 		<xsd:restriction base="prg:nonEmptyString">
-			<xsd:whiteSpace value="collapse" />
+			<xsd:whiteSpace value="collapse"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="regularExpressionTypenameType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="POSIX" />
-			<xsd:enumeration value="PCRE" />
+			<xsd:enumeration value="POSIX"/>
+			<xsd:enumeration value="PCRE"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:complexType name="richTextType" mixed="true">
-		<xsd:group ref="prg:descriptionElementsGroup" minOccurs="0" maxOccurs="unbounded" />
+		<xsd:group ref="prg:descriptionElementsGroup" minOccurs="0" maxOccurs="unbounded"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="documentationType">
@@ -54,24 +53,24 @@
 			<xsd:documentation xml:lang="en">Documentation of an element</xsd:documentation>
 		</xsd:annotation>
 		<xsd:all minOccurs="1">
-			<xsd:element name="abstract" type="prg:simpleTextType" minOccurs="0" />
-			<xsd:element name="details" type="prg:richTextType" minOccurs="0" />
+			<xsd:element name="abstract" type="prg:simpleTextType" minOccurs="0"/>
+			<xsd:element name="details" type="prg:richTextType" minOccurs="0"/>
 		</xsd:all>
-		<xsd:attribute ref="xml:base" />
+		<xsd:attribute ref="xml:base"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="pathRuleType">
 		<xsd:simpleContent>
 			<xsd:extension base="prg:nonEmptyString">
-				<xsd:attribute name="casesensitive" type="prg:literalTrueType" use="optional" />
+				<xsd:attribute name="casesensitive" type="prg:literalTrueType" use="optional"/>
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
 	<xsd:group name="pathPatternRuleGroup">
 		<xsd:choice>
-			<xsd:element name="startWith" type="prg:pathRuleType" maxOccurs="1" />
-			<xsd:element name="endWith" type="prg:pathRuleType" maxOccurs="1" />
-			<xsd:element name="contains" type="prg:pathRuleType" maxOccurs="1" />
+			<xsd:element name="startWith" type="prg:pathRuleType" maxOccurs="1"/>
+			<xsd:element name="endWith" type="prg:pathRuleType" maxOccurs="1"/>
+			<xsd:element name="contains" type="prg:pathRuleType" maxOccurs="1"/>
 		</xsd:choice>
 	</xsd:group>
 
@@ -80,7 +79,7 @@
 			<xsd:element name="rule" minOccurs="1" maxOccurs="unbounded">
 				<xsd:complexType>
 					<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-						<xsd:group ref="prg:pathPatternRuleGroup" />
+						<xsd:group ref="prg:pathPatternRuleGroup"/>
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
@@ -92,14 +91,14 @@
 			<xsd:documentation xml:lang="en">A path pattern</xsd:documentation>
 		</xsd:annotation>
 		<xsd:all>
-			<xsd:element name="name" type="prg:nonEmptyString" minOccurs="1" />
-			<xsd:element name="rules" type="prg:pathPatternRulesType" minOccurs="1" />
+			<xsd:element name="name" type="prg:nonEmptyString" minOccurs="1"/>
+			<xsd:element name="rules" type="prg:pathPatternRulesType" minOccurs="1"/>
 		</xsd:all>
 	</xsd:complexType>
 
 	<xsd:complexType name="pathPatternsType">
 		<xsd:sequence minOccurs="1">
-			<xsd:element name="pattern" type="prg:pathPatternType" />
+			<xsd:element name="pattern" type="prg:pathPatternType"/>
 		</xsd:sequence>
 		<xsd:attribute name="restrict" type="prg:literalTrueType" use="optional">
 			<xsd:annotation>
@@ -111,21 +110,21 @@
 	<xsd:complexType name="pathTypeSelectionType">
 		<xsd:sequence minOccurs="1">
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="file" />
-				<xsd:element name="folder" />
-				<xsd:element name="symlink" />
-				<xsd:element name="socket" />
+				<xsd:element name="file"/>
+				<xsd:element name="folder"/>
+				<xsd:element name="symlink"/>
+				<xsd:element name="socket"/>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:simpleType name="pathAccessType">
 		<xsd:restriction base="xsd:string">
-			<xsd:minLength value="1" />
-			<xsd:maxLength value="3" />
-			<xsd:whiteSpace value="collapse" />
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="3"/>
+			<xsd:whiteSpace value="collapse"/>
 			<!-- @todo a better regex ? -->
-			<xsd:pattern value="(r|w|x|rw|rx|wr|wx|xr|xw|rwx|rxw|wrx|wxr|xrw|xwr)" />
+			<xsd:pattern value="(r|w|x|rw|rx|wr|wx|xr|xw|rwx|rxw|wrx|wxr|xrw|xwr)"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -158,15 +157,15 @@
 	</xsd:complexType>
 	<xsd:group name="itemTypeGroup">
 		<xsd:choice>
-			<xsd:element name="string" />
+			<xsd:element name="string"/>
 			<xsd:element name="number">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Any kind of number</xsd:documentation>
 				</xsd:annotation>
 				<xsd:complexType>
-					<xsd:attribute name="min" type="xsd:float" use="optional" />
-					<xsd:attribute name="max" type="xsd:float" use="optional" />
-					<xsd:attribute name="decimal" type="xsd:positiveInteger" use="optional" />
+					<xsd:attribute name="min" type="xsd:float" use="optional"/>
+					<xsd:attribute name="max" type="xsd:float" use="optional"/>
+					<xsd:attribute name="decimal" type="xsd:positiveInteger" use="optional"/>
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element name="path" type="prg:pathType">
@@ -198,8 +197,8 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Describes an argument option parameter or a value</xsd:documentation>
 		</xsd:annotation>
-		<xsd:group ref="prg:itemTypeGroup" />
-		<xsd:attribute ref="xml:base" />
+		<xsd:group ref="prg:itemTypeGroup"/>
+		<xsd:attribute ref="xml:base"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="optionUISpecsType">
@@ -210,7 +209,7 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional" />
+		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="argumentOptionUISpecsType">
@@ -226,7 +225,7 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional" />
+		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="multiargumentOptionUISpecsType">
@@ -251,13 +250,13 @@
 				</xsd:complexType>
 			</xsd:element>
 		</xsd:all>
-		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional" />
+		<xsd:attribute name="mode" type="prg:optionUIModeEnum" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:simpleType name="switchOptionModeEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="boolean" />
-			<xsd:enumeration value="integer" />
+			<xsd:enumeration value="boolean"/>
+			<xsd:enumeration value="integer"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -269,14 +268,14 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:all>
-			<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="names" type="prg:optionNamesType" minOccurs="1" />
-			<xsd:element name="ui" type="prg:optionUISpecsType" minOccurs="0" />
+			<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="names" type="prg:optionNamesType" minOccurs="1"/>
+			<xsd:element name="ui" type="prg:optionUISpecsType" minOccurs="0"/>
 		</xsd:all>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="id" type="xsd:ID" use="optional" />
-		<xsd:attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="id" type="xsd:ID" use="optional"/>
+		<xsd:attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="argumentOptionValueType">
@@ -297,7 +296,7 @@
 			<xsd:documentation xml:lang="en">Proposed values</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="option" type="prg:argumentOptionValueType" />
+			<xsd:element name="option" type="prg:argumentOptionValueType"/>
 		</xsd:sequence>
 		<xsd:attribute name="restrict" type="prg:literalTrueType" use="optional">
 			<xsd:annotation>
@@ -315,21 +314,21 @@
 		<xsd:complexContent>
 			<xsd:extension base="prg:emptyType">
 				<xsd:all>
-					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="names" type="prg:optionNamesType" minOccurs="1" />
-					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0" />
-					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1" />
+					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="names" type="prg:optionNamesType" minOccurs="1"/>
+					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0"/>
+					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1"/>
 					<xsd:element name="default" type="prg:nonEmptyString" minOccurs="0" maxOccurs="1">
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">Default argument value</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="ui" type="prg:argumentOptionUISpecsType" minOccurs="0" />
+					<xsd:element name="ui" type="prg:argumentOptionUISpecsType" minOccurs="0"/>
 				</xsd:all>
-				<xsd:attribute ref="xml:base" />
-				<xsd:attribute name="id" type="xsd:ID" use="optional" />
-				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
+				<xsd:attribute ref="xml:base"/>
+				<xsd:attribute name="id" type="xsd:ID" use="optional"/>
+				<xsd:attribute name="required" type="prg:literalTrueType" use="optional"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -342,23 +341,23 @@
 		<xsd:complexContent>
 			<xsd:extension base="prg:emptyType">
 				<xsd:all>
-					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="names" type="prg:optionNamesType" minOccurs="1" />
-					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0" />
-					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="ui" type="prg:multiargumentOptionUISpecsType" minOccurs="0" />
+					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="names" type="prg:optionNamesType" minOccurs="1"/>
+					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0"/>
+					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="ui" type="prg:multiargumentOptionUISpecsType" minOccurs="0"/>
 				</xsd:all>
-				<xsd:attribute ref="xml:base" />
-				<xsd:attribute name="id" type="xsd:ID" use="optional" />
-				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
+				<xsd:attribute ref="xml:base"/>
+				<xsd:attribute name="id" type="xsd:ID" use="optional"/>
+				<xsd:attribute name="required" type="prg:literalTrueType" use="optional"/>
 				<xsd:attribute name="min" use="optional" default="1">
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">Minimum number of values</xsd:documentation>
 					</xsd:annotation>
 					<xsd:simpleType>
 						<xsd:restriction base="xsd:positiveInteger">
-							<xsd:minInclusive value="1" />
+							<xsd:minInclusive value="1"/>
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:attribute>
@@ -368,7 +367,7 @@
 					</xsd:annotation>
 					<xsd:simpleType>
 						<xsd:restriction base="xsd:positiveInteger">
-							<xsd:minInclusive value="1" />
+							<xsd:minInclusive value="1"/>
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:attribute>
@@ -398,67 +397,67 @@
 		<xsd:complexContent>
 			<xsd:extension base="prg:emptyType">
 				<xsd:all>
-					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1" />
+					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="databinding" type="prg:databindingType" minOccurs="0" maxOccurs="1"/>
 					<xsd:element name="options" type="prg:optionsType" minOccurs="1">
 						<xsd:unique name="subOptionsIdUniqueness">
-							<xsd:selector xpath="./*" />
-							<xsd:field xpath="@id" />
+							<xsd:selector xpath="./*"/>
+							<xsd:field xpath="@id"/>
 						</xsd:unique>
 					</xsd:element>
-					<xsd:element name="ui" type="prg:optionUISpecsType" minOccurs="0" />
+					<xsd:element name="ui" type="prg:optionUISpecsType" minOccurs="0"/>
 					<xsd:element name="default" minOccurs="0" maxOccurs="1">
 						<xsd:complexType>
-							<xsd:attribute name="id" type="xsd:IDREF" />
+							<xsd:attribute name="id" type="xsd:IDREF"/>
 						</xsd:complexType>
 						<xsd:keyref name="groupDefaultOptionUniqueRef" refer="prg:subOptionsIdUniqueness">
-							<xsd:selector xpath="prg:default" />
-							<xsd:field xpath="@id" />
+							<xsd:selector xpath="prg:default"/>
+							<xsd:field xpath="@id"/>
 						</xsd:keyref>
 					</xsd:element>
 				</xsd:all>
-				<xsd:attribute ref="xml:base" />
-				<xsd:attribute name="id" type="xsd:ID" use="optional" />
-				<xsd:attribute name="type" type="prg:actionGroupTypeEnum" use="optional" />
-				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
+				<xsd:attribute ref="xml:base"/>
+				<xsd:attribute name="id" type="xsd:ID" use="optional"/>
+				<xsd:attribute name="type" type="prg:actionGroupTypeEnum" use="optional"/>
+				<xsd:attribute name="required" type="prg:literalTrueType" use="optional"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="otherValueNodeType">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en" />
+			<xsd:documentation xml:lang="en"/>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="prg:emptyType">
 				<xsd:all>
-					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1" />
-					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0" />
+					<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="type" type="prg:itemType" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0"/>
 				</xsd:all>
-				<xsd:attribute name="id" type="xsd:ID" use="optional" />
+				<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="valueNodeType">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en" />
+			<xsd:documentation xml:lang="en"/>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="prg:otherValueNodeType">
-				<xsd:attribute name="count" use="optional" default="1" />
+				<xsd:attribute name="count" use="optional" default="1"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="valuesNodeType">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en" />
+			<xsd:documentation xml:lang="en"/>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element name="value" type="prg:valueNodeType" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="other" type="prg:otherValueNodeType" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="value" type="prg:valueNodeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="other" type="prg:otherValueNodeType" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -469,13 +468,13 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[a-z]([a-z0-9A-Z_-]*)" />
+			<xsd:pattern value="[a-z]([a-z0-9A-Z_-]*)"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:complexType name="subcommandNamesType">
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="alias" type="prg:subcommandNameType" />
+			<xsd:element name="alias" type="prg:subcommandNameType"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -486,34 +485,34 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:all>
-			<xsd:element name="name" type="prg:subcommandNameType" minOccurs="1" />
-			<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" />
-			<xsd:element name="aliases" type="prg:subcommandNamesType" minOccurs="0" />
+			<xsd:element name="name" type="prg:subcommandNameType" minOccurs="1"/>
+			<xsd:element name="documentation" type="prg:documentationType" minOccurs="0"/>
+			<xsd:element name="aliases" type="prg:subcommandNamesType" minOccurs="0"/>
 			<xsd:element name="options" type="prg:optionsType" minOccurs="0" maxOccurs="1">
 				<xsd:unique name="subcommandOptionShortNameUniqueness">
-					<xsd:selector xpath=".//prg:names/prg:short" />
-					<xsd:field xpath="." />
+					<xsd:selector xpath=".//prg:names/prg:short"/>
+					<xsd:field xpath="."/>
 				</xsd:unique>
 				<xsd:unique name="subcommandOptionLongNameUniqueness">
-					<xsd:selector xpath=".//prg:names/prg:long" />
-					<xsd:field xpath="." />
+					<xsd:selector xpath=".//prg:names/prg:long"/>
+					<xsd:field xpath="."/>
 				</xsd:unique>
 				<xsd:unique name="subcommandVariableNameUniqueness">
-					<xsd:selector xpath=".//prg:databinding/prg:variable" />
-					<xsd:field xpath="." />
+					<xsd:selector xpath=".//prg:databinding/prg:variable"/>
+					<xsd:field xpath="."/>
 				</xsd:unique>
 			</xsd:element>
-			<xsd:element name="values" type="prg:valuesNodeType" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="ui" type="prg:subcommandUISpecsType" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="values" type="prg:valuesNodeType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ui" type="prg:subcommandUISpecsType" minOccurs="0" maxOccurs="1"/>
 		</xsd:all>
-		<xsd:attribute ref="xml:base" />
+		<xsd:attribute ref="xml:base"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="databindingType">
 		<xsd:all>
-			<xsd:element name="variable" type="prg:variableNameType" />
+			<xsd:element name="variable" type="prg:variableNameType"/>
 		</xsd:all>
-		<xsd:attribute ref="xml:base" />
+		<xsd:attribute ref="xml:base"/>
 	</xsd:complexType>
 
 	<xsd:simpleType name="variableNameType">
@@ -521,16 +520,16 @@
 			<xsd:documentation xml:lang="en">Programming language variable name</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:whiteSpace value="collapse" />
-			<xsd:pattern value="[a-zA-Z][\w_]*" />
+			<xsd:whiteSpace value="collapse"/>
+			<xsd:pattern value="[a-zA-Z][\w_]*"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="shortOptionNameType">
 		<xsd:restriction base="xsd:string">
-			<xsd:length value="1" />
-			<xsd:whiteSpace value="collapse" />
-			<xsd:pattern value="[a-zA-Z0-9]" />
+			<xsd:length value="1"/>
+			<xsd:whiteSpace value="collapse"/>
+			<xsd:pattern value="[a-zA-Z0-9]"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -539,9 +538,9 @@
 			<xsd:documentation xml:lang="en">Long argument name</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:minLength value="2" />
-			<xsd:whiteSpace value="collapse" />
-			<xsd:pattern value="[a-zA-Z0-9][\w_-]*" />
+			<xsd:minLength value="2"/>
+			<xsd:whiteSpace value="collapse"/>
+			<xsd:pattern value="[a-zA-Z0-9][\w_-]*"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -550,9 +549,9 @@
 			<xsd:documentation xml:lang="en">Set of elements accepted in description, liecense and details elements</xsd:documentation>
 		</xsd:annotation>
 		<xsd:choice>
-			<xsd:element name="endl" type="prg:emptyType" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="br" type="prg:emptyType" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="block" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="endl" type="prg:emptyType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="br" type="prg:emptyType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="block" minOccurs="0" maxOccurs="1"/>
 		</xsd:choice>
 	</xsd:group>
 
@@ -564,8 +563,8 @@
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="unbounded">
-				<xsd:element name="short" type="prg:shortOptionNameType" />
-				<xsd:element name="long" type="prg:longOptionNameType" />
+				<xsd:element name="short" type="prg:shortOptionNameType"/>
+				<xsd:element name="long" type="prg:longOptionNameType"/>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -578,8 +577,8 @@
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:choice minOccurs="1">
-				<xsd:element name="short" type="prg:shortOptionNameType" />
-				<xsd:element name="long" type="prg:longOptionNameType" />
+				<xsd:element name="short" type="prg:shortOptionNameType"/>
+				<xsd:element name="long" type="prg:longOptionNameType"/>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:group>
@@ -591,17 +590,17 @@
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:choice>
-				<xsd:element name="switch" type="prg:switchOptionType" />
-				<xsd:element name="argument" type="prg:argumentOptionType" />
-				<xsd:element name="multiargument" type="prg:multipleArgumentOptionType" />
-				<xsd:element name="group" type="prg:groupOptionType" />
+				<xsd:element name="switch" type="prg:switchOptionType"/>
+				<xsd:element name="argument" type="prg:argumentOptionType"/>
+				<xsd:element name="multiargument" type="prg:multipleArgumentOptionType"/>
+				<xsd:element name="group" type="prg:groupOptionType"/>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:group>
 
 	<xsd:complexType name="optionsType">
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:group ref="prg:optionGroup" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:group ref="prg:optionGroup" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute ref="xml:base">
 			<xsd:annotation>
@@ -610,15 +609,15 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="subcommandsType">
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="subcommand" type="prg:subcommandOptionType" />
+			<xsd:element name="subcommand" type="prg:subcommandOptionType"/>
 		</xsd:sequence>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="windowProgramUISpecsType">
@@ -629,8 +628,8 @@
 				prg.xul.windowHeight parameters of the XSLT stylesheet
 			</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute name="width" type="xsd:positiveInteger" use="optional" />
-		<xsd:attribute name="height" type="xsd:positiveInteger" use="optional" />
+		<xsd:attribute name="width" type="xsd:positiveInteger" use="optional"/>
+		<xsd:attribute name="height" type="xsd:positiveInteger" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="programUISpecsType">
@@ -640,13 +639,13 @@
 					<xsd:documentation xml:lang="en">Application name</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="window" type="prg:windowProgramUISpecsType" minOccurs="0" />
+			<xsd:element name="window" type="prg:windowProgramUISpecsType" minOccurs="0"/>
 		</xsd:all>
 	</xsd:complexType>
 
 	<xsd:simpleType name="subcommandUIModeEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="disabled" />
+			<xsd:enumeration value="disabled"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -658,7 +657,7 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
-		<xsd:attribute name="mode" type="prg:subcommandUIModeEnum" use="optional" />
+		<xsd:attribute name="mode" type="prg:subcommandUIModeEnum" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:simpleType name="optionUIModeEnum">
@@ -687,16 +686,16 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:unique name="optionShortNameUniqueness">
-			<xsd:selector xpath=".//prg:names/prg:short" />
-			<xsd:field xpath="." />
+			<xsd:selector xpath=".//prg:names/prg:short"/>
+			<xsd:field xpath="."/>
 		</xsd:unique>
 		<xsd:unique name="optionLongNameUniqueness">
-			<xsd:selector xpath=".//prg:names/prg:long" />
-			<xsd:field xpath="." />
+			<xsd:selector xpath=".//prg:names/prg:long"/>
+			<xsd:field xpath="."/>
 		</xsd:unique>
 		<xsd:unique name="optionVariableNameUniqueness">
-			<xsd:selector xpath=".//prg:databinding/prg:variable" />
-			<xsd:field xpath="." />
+			<xsd:selector xpath=".//prg:databinding/prg:variable"/>
+			<xsd:field xpath="."/>
 		</xsd:unique>
 	</xsd:element>
 
@@ -710,31 +709,31 @@
 	<xsd:element name="program">
 		<xsd:complexType>
 			<xsd:all>
-				<xsd:element name="name" type="prg:simpleTextType" minOccurs="1" />
-				<xsd:element name="author" type="prg:nonEmptyString" minOccurs="0" />
-				<xsd:element name="version" type="prg:nonEmptyString" minOccurs="0" />
-				<xsd:element name="license" type="prg:richTextType" minOccurs="0" />
-				<xsd:element name="copyright" type="prg:simpleTextType" minOccurs="0" />
-				<xsd:element name="documentation" type="prg:documentationType" minOccurs="0" />
-				<xsd:element name="subcommands" type="prg:subcommandsType" minOccurs="0" />
+				<xsd:element name="name" type="prg:simpleTextType" minOccurs="1"/>
+				<xsd:element name="author" type="prg:nonEmptyString" minOccurs="0"/>
+				<xsd:element name="version" type="prg:nonEmptyString" minOccurs="0"/>
+				<xsd:element name="license" type="prg:richTextType" minOccurs="0"/>
+				<xsd:element name="copyright" type="prg:simpleTextType" minOccurs="0"/>
+				<xsd:element name="documentation" type="prg:documentationType" minOccurs="0"/>
+				<xsd:element name="subcommands" type="prg:subcommandsType" minOccurs="0"/>
 				<xsd:element name="options" type="prg:optionsType" minOccurs="0">
 					<xsd:unique name="optionsShortNameUniqueness">
-						<xsd:selector xpath=".//prg:names/prg:short" />
-						<xsd:field xpath="." />
+						<xsd:selector xpath=".//prg:names/prg:short"/>
+						<xsd:field xpath="."/>
 					</xsd:unique>
 					<xsd:unique name="optionsLongNameUniqueness">
-						<xsd:selector xpath=".//prg:names/prg:long" />
-						<xsd:field xpath="." />
+						<xsd:selector xpath=".//prg:names/prg:long"/>
+						<xsd:field xpath="."/>
 					</xsd:unique>
 					<xsd:unique name="variableNameUniqueness">
-						<xsd:selector xpath=".//prg:databinding/prg:variable" />
-						<xsd:field xpath="." />
+						<xsd:selector xpath=".//prg:databinding/prg:variable"/>
+						<xsd:field xpath="."/>
 					</xsd:unique>
 				</xsd:element>
-				<xsd:element name="values" type="prg:valuesNodeType" minOccurs="0" />
-				<xsd:element name="ui" type="prg:programUISpecsType" minOccurs="0" />
+				<xsd:element name="values" type="prg:valuesNodeType" minOccurs="0"/>
+				<xsd:element name="ui" type="prg:programUISpecsType" minOccurs="0"/>
 			</xsd:all>
-			<xsd:attribute ref="xml:base" />
+			<xsd:attribute ref="xml:base"/>
 			<xsd:attribute name="version" use="required" fixed="2.0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
@@ -743,22 +742,22 @@
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:decimal">
-						<xsd:enumeration value="2.0" />
+						<xsd:enumeration value="2.0"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
 		</xsd:complexType>
 		<xsd:key name="subcommandNameKey">
-			<xsd:selector xpath="./prg:subcommands/prg:subcommand/prg:name" />
-			<xsd:field xpath="." />
+			<xsd:selector xpath="./prg:subcommands/prg:subcommand/prg:name"/>
+			<xsd:field xpath="."/>
 		</xsd:key>
 		<xsd:unique name="subcommandAliasUniqueness">
-			<xsd:selector xpath="./prg:subcommands/prg:subcommand/prg:aliases/prg:alias" />
-			<xsd:field xpath="." />
+			<xsd:selector xpath="./prg:subcommands/prg:subcommand/prg:aliases/prg:alias"/>
+			<xsd:field xpath="."/>
 		</xsd:unique>
 		<xsd:unique name="optionIdUniqueness">
-			<xsd:selector xpath=".//prg:options/*" />
-			<xsd:field xpath="@id" />
+			<xsd:selector xpath=".//prg:options/*"/>
+			<xsd:field xpath="@id"/>
 		</xsd:unique>
 	</xsd:element>
 </xsd:schema>

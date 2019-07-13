@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2018 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<xsd:schema targetNamespace="http://xsd.nore.fr/sql" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sql="http://xsd.nore.fr/sql" xmlns:xml="http://www.w3.org/XML/1998/namespace">
-	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sql="http://xsd.nore.fr/sql" targetNamespace="http://xsd.nore.fr/sql" elementFormDefault="qualified">
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd"/>
 
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">Description of a SQL data source</xsd:documentation>
@@ -21,8 +21,8 @@
 			<xsd:documentation xml:lang="en">Represents a valid SQL element name</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:minLength value="1" />
-			<xsd:pattern value="[^\s\[\]&quot;'`.;]+"></xsd:pattern>
+			<xsd:minLength value="1"/>
+			<xsd:pattern value="[^\s\[\]&quot;'`.;]+"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -32,22 +32,22 @@
 				A per-element-type unique identifier. Alias of XSD NCName
 			</xsd:documentation>
 		</xsd:annotation>
-		<xsd:restriction base="xsd:NCName" />
+		<xsd:restriction base="xsd:NCName"/>
 	</xsd:simpleType>
 
 	<!-- Enumerations -->
 
 	<xsd:simpleType name="literalYesType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="yes" />
+			<xsd:enumeration value="yes"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
 	<xsd:simpleType name="timestampFormatEnum">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="date" />
-			<xsd:enumeration value="time" />
-			<xsd:enumeration value="datetime" />
+			<xsd:enumeration value="date"/>
+			<xsd:enumeration value="time"/>
+			<xsd:enumeration value="datetime"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -56,8 +56,8 @@
 			<xsd:documentation xml:lang="en">Column sort order</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="ASC" />
-			<xsd:enumeration value="DESC" />
+			<xsd:enumeration value="ASC"/>
+			<xsd:enumeration value="DESC"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -67,11 +67,11 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="cascade" />
-			<xsd:enumeration value="default" />
-			<xsd:enumeration value="noaction" />
-			<xsd:enumeration value="null" />
-			<xsd:enumeration value="restrict" />
+			<xsd:enumeration value="cascade"/>
+			<xsd:enumeration value="default"/>
+			<xsd:enumeration value="noaction"/>
+			<xsd:enumeration value="null"/>
+			<xsd:enumeration value="restrict"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -79,7 +79,7 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Comments</xsd:documentation>
 		</xsd:annotation>
-		<xsd:restriction base="xsd:string" />
+		<xsd:restriction base="xsd:string"/>
 	</xsd:simpleType>
 
 	<!-- Complex types -->
@@ -88,15 +88,15 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Numeric type</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="length" type="xsd:positiveInteger" use="optional" />
-		<xsd:attribute name="decimals" type="xsd:positiveInteger" use="optional" />
-		<xsd:attribute name="autoincrement" type="sql:literalYesType" use="optional" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="length" type="xsd:positiveInteger" use="optional"/>
+		<xsd:attribute name="decimals" type="xsd:positiveInteger" use="optional"/>
+		<xsd:attribute name="autoincrement" type="sql:literalYesType" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="dataFormatStringEnumerationType">
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="value" type="xsd:string" />
+			<xsd:element name="value" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -107,10 +107,10 @@
 		<xsd:complexContent>
 			<xsd:extension base="sql:emptyType">
 				<xsd:sequence>
-					<xsd:element name="enumeration" type="sql:dataFormatStringEnumerationType" minOccurs="0" maxOccurs="1" />
+					<xsd:element name="enumeration" type="sql:dataFormatStringEnumerationType" minOccurs="0" maxOccurs="1"/>
 				</xsd:sequence>
-				<xsd:attribute ref="xml:base" />
-				<xsd:attribute name="length" type="xsd:positiveInteger" use="optional" />
+				<xsd:attribute ref="xml:base"/>
+				<xsd:attribute name="length" type="xsd:positiveInteger" use="optional"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -119,17 +119,17 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Timestamp (date, time or datetime) type</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="mode" type="sql:timestampFormatEnum" use="optional" default="datetime" />
-		<xsd:attribute name="timezone" type="sql:literalYesType" use="optional" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="mode" type="sql:timestampFormatEnum" use="optional" default="datetime"/>
+		<xsd:attribute name="timezone" type="sql:literalYesType" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="dataFormatBinaryType">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Binary type</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="length" type="xsd:positiveInteger" use="optional" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="length" type="xsd:positiveInteger" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="dataFormatType">
@@ -137,11 +137,11 @@
 			<xsd:documentation xml:lang="en">Information about a column data type</xsd:documentation>
 		</xsd:annotation>
 		<xsd:choice>
-			<xsd:element name="boolean" type="sql:emptyType" />
-			<xsd:element name="numeric" type="sql:dataFormatNumericType" />
-			<xsd:element name="string" type="sql:dataFormatStringType" />
-			<xsd:element name="timestamp" type="sql:dataFormatTimestampType" />
-			<xsd:element name="binary" type="sql:dataFormatBinaryType" />
+			<xsd:element name="boolean" type="sql:emptyType"/>
+			<xsd:element name="numeric" type="sql:dataFormatNumericType"/>
+			<xsd:element name="string" type="sql:dataFormatStringType"/>
+			<xsd:element name="timestamp" type="sql:dataFormatTimestampType"/>
+			<xsd:element name="binary" type="sql:dataFormatBinaryType"/>
 		</xsd:choice>
 	</xsd:complexType>
 
@@ -151,9 +151,9 @@
 				Any element have a name and may have a unique id.
 			</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="name" type="sql:elementNameType" use="required" />
-		<xsd:attribute name="id" type="sql:elementIdType" use="optional" />
+		<xsd:attribute ref="xml:base"/>
+		<xsd:attribute name="name" type="sql:elementNameType" use="required"/>
+		<xsd:attribute name="id" type="sql:elementIdType" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="elementReferenceBaseType">
@@ -163,7 +163,7 @@
 				name or id
 			</xsd:documentation>
 		</xsd:annotation>
-		<xsd:attribute ref="xml:base" />
+		<xsd:attribute ref="xml:base"/>
 		<xsd:attribute name="name" type="sql:elementNameType" use="optional">
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">
@@ -189,9 +189,9 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:choice>
-			<xsd:element name="integer" type="xsd:integer" />
-			<xsd:element name="boolean" type="xsd:boolean" />
-			<xsd:element name="datetime" type="xsd:dateTime" />
+			<xsd:element name="integer" type="xsd:integer"/>
+			<xsd:element name="boolean" type="xsd:boolean"/>
+			<xsd:element name="datetime" type="xsd:dateTime"/>
 			<xsd:element name="string" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
@@ -254,7 +254,7 @@
 
 	<xsd:complexType name="notnullColumnConstraintType">
 		<xsd:complexContent>
-			<xsd:extension base="sql:columnConstraintBaseType" />
+			<xsd:extension base="sql:columnConstraintBaseType"/>
 		</xsd:complexContent>
 	</xsd:complexType>
 
@@ -262,7 +262,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="sql:columnConstraintBaseType">
 				<xsd:sequence>
-					<xsd:group ref="sql:valueType" maxOccurs="1" minOccurs="1" />
+					<xsd:group ref="sql:valueType" maxOccurs="1" minOccurs="1"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -286,17 +286,17 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:all>
-						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
-						<xsd:element name="datatype" type="sql:dataFormatType" minOccurs="0" maxOccurs="1" />
-						<xsd:element name="notnull" type="sql:notnullColumnConstraintType" minOccurs="0" maxOccurs="1" />
-						<xsd:element name="default" type="sql:defaultValueColumnConstraintType" minOccurs="0" maxOccurs="1" />
+						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1"/>
+						<xsd:element name="datatype" type="sql:dataFormatType" minOccurs="0" maxOccurs="1"/>
+						<xsd:element name="notnull" type="sql:notnullColumnConstraintType" minOccurs="0" maxOccurs="1"/>
+						<xsd:element name="default" type="sql:defaultValueColumnConstraintType" minOccurs="0" maxOccurs="1"/>
 					</xsd:all>
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="field" substitutionGroup="sql:column" />
+	<xsd:element name="field" substitutionGroup="sql:column"/>
 
 	<xsd:group name="columnNameGroup">
 		<xsd:annotation>
@@ -307,8 +307,8 @@
 		<xsd:sequence>
 			<xsd:element name="column" maxOccurs="unbounded" minOccurs="1">
 				<xsd:complexType>
-					<xsd:attribute ref="xml:base" />
-					<xsd:attribute name="name" type="sql:elementNameType" use="required" />
+					<xsd:attribute ref="xml:base"/>
+					<xsd:attribute name="name" type="sql:elementNameType" use="required"/>
 				</xsd:complexType>
 			</xsd:element>
 		</xsd:sequence>
@@ -323,10 +323,10 @@
 		<xsd:sequence>
 			<xsd:element name="column" maxOccurs="unbounded" minOccurs="1">
 				<xsd:complexType>
-					<xsd:attribute ref="xml:base" />
-					<xsd:attribute name="name" type="sql:elementNameType" use="required" />
-					<xsd:attribute name="order" type="sql:orderEnum" use="optional" />
-					<xsd:attribute name="collation" type="xsd:string" />
+					<xsd:attribute ref="xml:base"/>
+					<xsd:attribute name="name" type="sql:elementNameType" use="required"/>
+					<xsd:attribute name="order" type="sql:orderEnum" use="optional"/>
+					<xsd:attribute name="collation" type="xsd:string"/>
 				</xsd:complexType>
 			</xsd:element>
 		</xsd:sequence>
@@ -337,16 +337,16 @@
 			<xsd:documentation xml:lang="en">Reference on one or more table column</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element ref="sql:tableref" minOccurs="1" maxOccurs="1" />
-			<xsd:group ref="sql:columnNameGroup" />
+			<xsd:element ref="sql:tableref" minOccurs="1" maxOccurs="1"/>
+			<xsd:group ref="sql:columnNameGroup"/>
 			<xsd:element name="onupdate" maxOccurs="1" minOccurs="0">
 				<xsd:complexType>
-					<xsd:attribute name="action" type="sql:eventActionEnum" use="required" />
+					<xsd:attribute name="action" type="sql:eventActionEnum" use="required"/>
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element name="ondelete" maxOccurs="1" minOccurs="0">
 				<xsd:complexType>
-					<xsd:attribute name="action" type="sql:eventActionEnum" use="required" />
+					<xsd:attribute name="action" type="sql:eventActionEnum" use="required"/>
 				</xsd:complexType>
 			</xsd:element>
 		</xsd:sequence>
@@ -359,8 +359,8 @@
 		<xsd:complexContent>
 			<xsd:extension base="sql:columnConstraintBaseType">
 				<xsd:sequence>
-					<xsd:group ref="sql:columnNameGroup" minOccurs="1" />
-					<xsd:element name="reference" type="sql:referenceType" minOccurs="1" maxOccurs="1" />
+					<xsd:group ref="sql:columnNameGroup" minOccurs="1"/>
+					<xsd:element name="reference" type="sql:referenceType" minOccurs="1" maxOccurs="1"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -386,10 +386,10 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:sequence>
-						<xsd:element ref="sql:tableref" />
-						<xsd:group ref="sql:indexedColumnNameGroup" minOccurs="1" maxOccurs="1" />
+						<xsd:element ref="sql:tableref"/>
+						<xsd:group ref="sql:indexedColumnNameGroup" minOccurs="1" maxOccurs="1"/>
 					</xsd:sequence>
-					<xsd:attribute name="unique" type="sql:literalYesType" use="optional" />
+					<xsd:attribute name="unique" type="sql:literalYesType" use="optional"/>
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
@@ -398,12 +398,12 @@
 	<xsd:element name="tableref">
 		<xsd:complexType>
 			<xsd:complexContent>
-				<xsd:extension base="sql:elementReferenceBaseType" />
+				<xsd:extension base="sql:elementReferenceBaseType"/>
 			</xsd:complexContent>
 		</xsd:complexType>
 		<xsd:key name="tableref_identifier_constraint">
-			<xsd:selector xpath="." />
-			<xsd:field xpath="@name|@id" />
+			<xsd:selector xpath="."/>
+			<xsd:field xpath="@name|@id"/>
 		</xsd:key>
 	</xsd:element>
 
@@ -416,22 +416,22 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:sequence>
-						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
+						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1"/>
 						<!-- Columns -->
-						<xsd:element ref="sql:column" minOccurs="0" maxOccurs="unbounded" />
+						<xsd:element ref="sql:column" minOccurs="0" maxOccurs="unbounded"/>
 						<!-- Column and table constraints -->
 						<xsd:element name="primarykey" minOccurs="0" maxOccurs="1">
 							<xsd:complexType>
 								<xsd:complexContent>
 									<xsd:extension base="sql:elementDeclarationBaseType">
 										<xsd:sequence>
-											<xsd:group ref="sql:indexedColumnNameGroup" />
+											<xsd:group ref="sql:indexedColumnNameGroup"/>
 										</xsd:sequence>
 									</xsd:extension>
 								</xsd:complexContent>
 							</xsd:complexType>
 						</xsd:element>
-						<xsd:element name="foreignkey" type="sql:foreignKeyConstraintType" maxOccurs="unbounded" minOccurs="0" />
+						<xsd:element name="foreignkey" type="sql:foreignKeyConstraintType" maxOccurs="unbounded" minOccurs="0"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -440,8 +440,8 @@
 
 	<xsd:group name="databaseElementGroup">
 		<xsd:choice>
-			<xsd:element ref="sql:table" />
-			<xsd:element ref="sql:index" />
+			<xsd:element ref="sql:table"/>
+			<xsd:element ref="sql:index"/>
 		</xsd:choice>
 	</xsd:group>
 
@@ -453,8 +453,8 @@
 			<xsd:complexContent>
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:sequence>
-						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
-						<xsd:group ref="sql:databaseElementGroup" minOccurs="1" maxOccurs="unbounded" />
+						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1"/>
+						<xsd:group ref="sql:databaseElementGroup" minOccurs="1" maxOccurs="unbounded"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -469,12 +469,12 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="sql:database" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="sql:database" minOccurs="1" maxOccurs="unbounded"/>
 			</xsd:sequence>
-			<xsd:attribute ref="xml:base" />
-			<xsd:attribute name="name" type="sql:elementNameType" default="main" />
-			<xsd:attribute name="version" type="xsd:decimal" use="required" fixed="1.0" />
+			<xsd:attribute ref="xml:base"/>
+			<xsd:attribute name="name" type="sql:elementNameType" default="main"/>
+			<xsd:attribute name="version" type="xsd:decimal" use="required" fixed="1.0"/>
 		</xsd:complexType>
 	</xsd:element>
 
