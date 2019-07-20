@@ -49,15 +49,11 @@
 		"ns/sh/sampleapp.sh",
 		"ns/sh/build-python.sh",
 		"ns/sh/build-shellscript.sh",
-		"ns/sh/build-c.sh",
-		"ns/sh/build-php.sh",
-		"ns/sh/xsltdeps.sh",
-		"ns/sh/prgproc.sh",
-		"ns/sh/new-xsh.sh",
-		"ns/sh/build-xulapp.sh",
-		"ns/sh/sampleapp.sh",
-		"ns/sh/build-python.sh",
-		"ns/sh/build-shellscript.sh",
 		"ns/sh/build-c.sh"
-	]
+	],
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
 }

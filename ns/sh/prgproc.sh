@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ####################################
-# Copyright © 2018 by Renaud GUillard (dev@nore.fr)
+# Copyright © 2018 - 2020 by Renaud GUillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: renaud
 # Version: 1.0
