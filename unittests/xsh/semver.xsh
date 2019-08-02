@@ -3,13 +3,13 @@
 <sh:functions xmlns:sh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<xi:include href="../../ns/xsh/lib/text/semver.xsh" xpointer="xmlns(xsh=http://xsd.nore.fr/xsh)xpointer(//xsh:function)" />
 
-	<sh:function name="ns_testsuite_ns_semver_mumber_to_string">
+	<sh:function name="ns_testsuite_ns_semver_number_to_string">
 		<sh:body>
 			<sh:local name="result" type="numeric">0</sh:local>
 		<![CDATA[
-[ "$(ns_semver_mumber_to_string 1)" = "0.0.1" ] || result="$(expr ${result} + 1)"
-[ "$(ns_semver_mumber_to_string 20301)" = "2.3.1" ] || result="$(expr ${result} + 1)"
-[ "$(ns_semver_mumber_to_string abc)" = "" ] || result="$(expr ${result} + 1)"
+[ "$(ns_semver_number_to_string 1)" = "0.0.1" ] || result="$(expr ${result} + 1)"
+[ "$(ns_semver_number_to_string 20301)" = "2.3.1" ] || result="$(expr ${result} + 1)"
+[ "$(ns_semver_number_to_string abc)" = "" ] || result="$(expr ${result} + 1)"
 return ${result}
 ]]></sh:body>
 	</sh:function>

@@ -2,7 +2,7 @@
 <!-- Copyright © 2011-2018 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
-	<sh:function name="ns_semver_mumber_to_string">
+	<sh:function name="ns_semver_number_to_string">
 		<sh:parameter name="_ns_semver_input" />
 		<sh:body>
 			<sh:local name="_ns_semver_major" type="numeric">0</sh:local>
