@@ -28,7 +28,7 @@
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
-	
+
 	<prg:switch id="prg.option.verbose">
 		<prg:databinding>
 			<prg:variable>verbose</prg:variable>
@@ -38,6 +38,19 @@
 		</prg:documentation>
 		<prg:names>
 			<prg:long>verbose</prg:long>
+		</prg:names>
+		<prg:ui mode="disabled" />
+	</prg:switch>
+
+	<prg:switch id="prg.option.silent">
+		<prg:databinding>
+			<prg:variable>silent</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Run silently</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>silent</prg:long>
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
