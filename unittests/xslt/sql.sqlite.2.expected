@@ -16,8 +16,8 @@ CREATE TABLE "ThemePark"."Attractions"
 CREATE TABLE "ThemePark"."GameSessions"
 (
 "gameSessionId" TEXT NOT NULL PRIMARY KEY,
-"startDateTime" NUMERIC,
-"endDateTime" NUMERIC
+"startDateTime" TEXT,
+"endDateTime" TEXT
 );
 CREATE TABLE "ThemePark"."Scores"
 (

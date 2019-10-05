@@ -12,6 +12,11 @@
 		<xsl:text>NULL</xsl:text>
 	</xsl:variable>
 
+	<!-- Keyword / function for current timestamp -->
+	<xsl:variable name="sql.keyword.now">
+		<xsl:text>CURRENT_TIMESTAMP</xsl:text>
+	</xsl:variable>
+
 	<!-- Should be overriden by Datasource implementations -->
 	<xsl:template name="sql.protectString">
 		<xsl:param name="string" />
@@ -391,8 +396,7 @@
 		<xsl:if test="@name">
 			<xsl:text>CONSTRAINT </xsl:text>
 			<xsl:call-template name="sql.elementName" />
-			<xsl:text>
-			</xsl:text>
+			<xsl:text> </xsl:text>
 		</xsl:if>
 		<xsl:text>FOREIGN KEY (</xsl:text>
 		<xsl:for-each select="sql:column">
@@ -436,6 +440,19 @@
 
 	<xsl:template match="sql:default/sql:null">
 		<xsl:value-of select="$sql.keyword.dbnull" />
+	</xsl:template>
+
+	<xsl:template match="sql:default/sql:datetime">
+		<xsl:choose>
+			<xsl:when test="string-length(normalize-space (.)) = 0">
+				<xsl:value-of select="$sql.keyword.now" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sql.protectString">
+					<xsl:with-param name="string" select="." />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="sql:default/sql:string">
