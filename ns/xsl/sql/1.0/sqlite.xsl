@@ -54,7 +54,7 @@
 				</xsl:choose>
 			</xsl:when>
 			<xsl:when test="$dataTypeNode/sql:timestamp">
-				<xsl:text>NUMERIC</xsl:text>
+				<xsl:text>TEXT</xsl:text>
 			</xsl:when>
 			<xsl:when test="$dataTypeNode/sql:string">
 				<xsl:text>TEXT</xsl:text>
