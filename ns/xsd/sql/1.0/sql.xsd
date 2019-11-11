@@ -342,6 +342,10 @@
 		</xsd:sequence>
 	</xsd:group>
 
+	<xsd:complexType name="constraintActionType">
+	<xsd:attribute name="action" type="sql:eventActionEnum" use="required" />
+	</xsd:complexType>
+
 	<xsd:complexType name="referenceType">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Reference on one or more table column</xsd:documentation>
@@ -349,16 +353,8 @@
 		<xsd:sequence>
 			<xsd:element ref="sql:tableref" minOccurs="1" maxOccurs="1" />
 			<xsd:group ref="sql:columnNameGroup" />
-			<xsd:element name="onupdate" maxOccurs="1" minOccurs="0">
-				<xsd:complexType>
-					<xsd:attribute name="action" type="sql:eventActionEnum" use="required" />
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="ondelete" maxOccurs="1" minOccurs="0">
-				<xsd:complexType>
-					<xsd:attribute name="action" type="sql:eventActionEnum" use="required" />
-				</xsd:complexType>
-			</xsd:element>
+			<xsd:element name="onupdate" type="sql:constraintActionType" maxOccurs="1" minOccurs="0" />
+			<xsd:element name="ondelete" type="sql:constraintActionType" maxOccurs="1" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -417,6 +413,16 @@
 		</xsd:key>
 	</xsd:element>
 
+	<xsd:complexType name="primaryKeyConstraintType">
+		<xsd:complexContent>
+			<xsd:extension base="sql:columnConstraintBaseType">
+				<xsd:sequence>
+					<xsd:group ref="sql:indexedColumnNameGroup" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:element name="table">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
@@ -430,17 +436,7 @@
 						<!-- Columns -->
 						<xsd:element ref="sql:column" minOccurs="0" maxOccurs="unbounded" />
 						<!-- Column and table constraints -->
-						<xsd:element name="primarykey" minOccurs="0" maxOccurs="1">
-							<xsd:complexType>
-								<xsd:complexContent>
-									<xsd:extension base="sql:elementDeclarationBaseType">
-										<xsd:sequence>
-											<xsd:group ref="sql:indexedColumnNameGroup" />
-										</xsd:sequence>
-									</xsd:extension>
-								</xsd:complexContent>
-							</xsd:complexType>
-						</xsd:element>
+						<xsd:element name="primarykey" type="sql:primaryKeyConstraintType" minOccurs="0" maxOccurs="1" />
 						<xsd:element name="foreignkey" type="sql:foreignKeyConstraintType" maxOccurs="unbounded" minOccurs="0" />
 					</xsd:sequence>
 				</xsd:extension>

@@ -396,8 +396,7 @@
 		<xsl:if test="@name">
 			<xsl:text>CONSTRAINT </xsl:text>
 			<xsl:call-template name="sql.elementName" />
-			<xsl:text>
-			</xsl:text>
+			<xsl:text> </xsl:text>
 		</xsl:if>
 		<xsl:text>FOREIGN KEY (</xsl:text>
 		<xsl:for-each select="sql:column">
