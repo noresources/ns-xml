@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2018 - 2020 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2018 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sql="http://xsd.nore.fr/sql" targetNamespace="http://xsd.nore.fr/sql" elementFormDefault="qualified">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sql="http://xsd.nore.fr/sql/2.0" targetNamespace="http://xsd.nore.fr/sql/2.0" elementFormDefault="qualified">
 	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="../../www.w3.org/XML/1998/namespace.xsd" />
 
 	<xsd:annotation>
@@ -15,16 +15,6 @@
 			<xsd:documentation xml:lang="en">Empty element</xsd:documentation>
 		</xsd:annotation>
 	</xsd:complexType>
-
-	<xsd:simpleType name="emptyString">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<xsd:simpleType name="nullableDateTime">
-		<xsd:union memberTypes="xsd:dateTime sql:emptyString"></xsd:union>
-	</xsd:simpleType>
 
 	<xsd:simpleType name="elementNameType">
 		<xsd:annotation>
@@ -50,14 +40,6 @@
 	<xsd:simpleType name="literalYesType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="yes" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<xsd:simpleType name="timestampFormatEnum">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="date" />
-			<xsd:enumeration value="time" />
-			<xsd:enumeration value="datetime" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -125,13 +107,23 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="dataFormatTimestampType">
+	<xsd:complexType name="dataFormatTimestampTimeType">
 		<xsd:annotation>
-			<xsd:documentation xml:lang="en">Timestamp (date, time or datetime) type</xsd:documentation>
+			<xsd:documentation xml:lang="en">Time part or a timestamp type (with or without timezone)</xsd:documentation>
 		</xsd:annotation>
 		<xsd:attribute ref="xml:base" />
-		<xsd:attribute name="mode" type="sql:timestampFormatEnum" use="optional" default="datetime" />
 		<xsd:attribute name="timezone" type="sql:literalYesType" use="optional" />
+	</xsd:complexType>
+
+	<xsd:complexType name="dataFormatTimestampType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Timestamp (date and/or time with or without timezone) type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="date" type="sql:emptyType" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="time" type="sql:dataFormatTimestampTimeType" minOccurs="0" maxOccurs="1" />
+		</xsd:sequence>
+		<xsd:attribute ref="xml:base" />
 	</xsd:complexType>
 
 	<xsd:complexType name="dataFormatBinaryType">
@@ -201,7 +193,20 @@
 		<xsd:choice>
 			<xsd:element name="integer" type="xsd:integer" />
 			<xsd:element name="boolean" type="xsd:boolean" />
-			<xsd:element name="datetime" type="sql:nullableDateTime" />
+			<xsd:element name="timestamp" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						A ISO 8601 timestamp. See http://books.xmlschemata.org/relaxng/ch19-77049.html
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="now" type="sql:emptyType">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">
+						Current timestamp
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="string" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">
@@ -358,6 +363,16 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="primaryKeyConstraintType">
+		<xsd:complexContent>
+			<xsd:extension base="sql:columnConstraintBaseType">
+				<xsd:sequence>
+					<xsd:group ref="sql:indexedColumnNameGroup" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="foreignKeyConstraintType">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Foreign key constraint</xsd:documentation>
@@ -413,16 +428,6 @@
 		</xsd:key>
 	</xsd:element>
 
-	<xsd:complexType name="primaryKeyConstraintType">
-		<xsd:complexContent>
-			<xsd:extension base="sql:columnConstraintBaseType">
-				<xsd:sequence>
-					<xsd:group ref="sql:indexedColumnNameGroup" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<xsd:element name="table">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
@@ -444,14 +449,14 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:group name="databaseElementGroup">
+	<xsd:group name="tablesetElementGroup">
 		<xsd:choice>
 			<xsd:element ref="sql:table" />
 			<xsd:element ref="sql:index" />
 		</xsd:choice>
 	</xsd:group>
 
-	<xsd:element name="database">
+	<xsd:element name="tableset">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Table container</xsd:documentation>
 		</xsd:annotation>
@@ -460,7 +465,7 @@
 				<xsd:extension base="sql:elementDeclarationBaseType">
 					<xsd:sequence>
 						<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
-						<xsd:group ref="sql:databaseElementGroup" minOccurs="1" maxOccurs="unbounded" />
+						<xsd:group ref="sql:tablesetElementGroup" minOccurs="1" maxOccurs="unbounded" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -476,11 +481,10 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="comment" type="sql:commentType" minOccurs="0" maxOccurs="1" />
-				<xsd:element ref="sql:database" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element ref="sql:tableset" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute ref="xml:base" />
 			<xsd:attribute name="name" type="sql:elementNameType" default="main" />
-			<xsd:attribute name="version" type="xsd:decimal" use="required" fixed="1.0" />
 		</xsd:complexType>
 	</xsd:element>
 
