@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource xmlns:sql="http://xsd.nore.fr/sql/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<sql:namespace name="Languages">
+		<sql:table name="Alpha3Codes">
+			<sql:column name="code">
+				<sql:comment>Alpha 3 code</sql:comment>
+				<sql:datatype nullable="no">
+					<sql:string length="3" />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="referenceName">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="type">
+				<sql:comment>Code type i(ndividual) m(acro), S(pecial)</sql:comment>
+				<sql:datatype>
+					<sql:string length="1">
+						<sql:enumeration>
+							<sql:value>I</sql:value>
+							<sql:value>M</sql:value>
+							<sql:value>S</sql:value>
+						</sql:enumeration>
+					</sql:string>
+				</sql:datatype>
+			</sql:column>
+
+			<sql:primarykey name="pk_Languages">
+				<sql:column name="code" />
+			</sql:primarykey>
+		</sql:table>
+	</sql:namespace>
+</sql:datasource>

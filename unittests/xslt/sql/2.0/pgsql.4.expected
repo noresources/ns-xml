@@ -1,0 +1,11 @@
+-- ns-xml database schema to SQL translation
+CREATE SCHEMA IF NOT EXISTS "Languages";
+CREATE TABLE "Languages"."Alpha3Codes"
+(
+-- Alpha 3 code
+"code" VARCHAR(3) NOT NULL,
+"referenceName" TEXT,
+-- Code type i(ndividual) m(acro), S(pecial)
+"type" VARCHAR(1),
+CONSTRAINT "pk_Languages" PRIMARY KEY ("code")
+);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:namespace name="Tableset" xmlns:sql="http://xsd.nore.fr/sql/2.0">
+	<sql:table name="Table">
+		<sql:column name="primaryKey">
+			<sql:comment>The primary key</sql:comment>
+			<sql:datatype nullable="no">
+				<sql:numeric autoincrement="yes" />
+			</sql:datatype>
+		</sql:column>
+		<sql:column name="value">
+			<sql:datatype>
+				<sql:string>
+				</sql:string>
+			</sql:datatype>
+		</sql:column>
+	</sql:table>
+</sql:namespace>

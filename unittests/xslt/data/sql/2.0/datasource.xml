@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource xmlns:sql="http://xsd.nore.fr/sql/2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<!-- namespace1 -->
+	<xi:include href="./namespace1.xml" xpointer="xmlns(sql=http://xsd.nore.fr/sql/2.0) xpointer(/sql:namespace)" />
+</sql:datasource>

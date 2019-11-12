@@ -1,0 +1,30 @@
+-- ns-xml database schema to SQL translation
+-- Database ThemePark
+CREATE TABLE "ThemePark"."Visitors"
+(
+"visitorId" TEXT PRIMARY KEY,
+"language" TEXT(3),
+"name" TEXT(12),
+"avatarId" INTEGER DEFAULT 0
+);
+CREATE TABLE "ThemePark"."Attractions"
+(
+"attractionId" INTEGER NOT NULL PRIMARY KEY,
+"attractionData" BLOB
+);
+CREATE TABLE "ThemePark"."GameSessions"
+(
+"gameSessionId" TEXT NOT NULL PRIMARY KEY,
+"startDateTime" TEXT,
+"endDateTime" TEXT
+);
+CREATE TABLE "ThemePark"."Scores"
+(
+"attractionId" INTEGER NOT NULL,
+"gameSessionId" TEXT NOT NULL,
+"visitorId" TEXT,
+"position" INTEGER,
+"score" REAL DEFAULT NULL,
+CONSTRAINT "pk_Scores" PRIMARY KEY ("attractionId", "gameSessionId", "visitorId", "position"),
+FOREIGN KEY ("attractionId", "gameSessionId") REFERENCES "Attractions" ("attractionId", "gameSessionId") ON UPDATE CASCADE ON DELETE CASCADE
+);

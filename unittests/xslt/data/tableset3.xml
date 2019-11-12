@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource version="1.0" xmlns:sql="http://xsd.nore.fr/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<sql:database name="main">
+		<sql:table name="Languages">
+			<sql:column name="code">
+				<sql:comment>Alpha 3 code</sql:comment>
+				<sql:datatype>
+					<sql:string length="3" />
+				</sql:datatype>
+				<sql:notnull />
+			</sql:column>
+
+			<sql:column name="referenceName">
+				<sql:datatype>
+					<sql:string />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:column name="macroCode">
+				<sql:comment>Alpha 3 code of the macro langauge if any</sql:comment>
+				<sql:datatype>
+					<sql:string length="3" />
+				</sql:datatype>
+			</sql:column>
+
+			<sql:foreignkey>
+				<sql:column name="macroCode" />
+				<sql:reference>
+					<sql:column name="code" />
+					<sql:tableref name="Languages" />
+					<sql:onupdate action="cascade" />
+					<sql:ondelete action="null" />
+				</sql:reference>
+			</sql:foreignkey>
+
+			<sql:primarykey name="pk_Languages">
+				<sql:column name="code" />
+			</sql:primarykey>
+		</sql:table>
+	</sql:database>
+</sql:datasource>

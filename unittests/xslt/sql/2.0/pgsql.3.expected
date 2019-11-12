@@ -1,0 +1,15 @@
+-- ns-xml database schema to SQL translation
+CREATE SCHEMA IF NOT EXISTS "namespace";
+CREATE TABLE "namespace"."Binary"
+(
+-- Binary column
+"basic" BYTEA,
+-- Binary column with a string default value "abcd" / 0x61626364
+"string" BYTEA DEFAULT 'abcd',
+-- Binary column with a integer default value 2048 / 0x0800
+"integer" BYTEA DEFAULT 2048,
+-- Binary column with a hexadecimal default value 0x61626364 / "abcd"
+"hexadecimal" BYTEA DEFAULT E'\x61\x62\x63\x64',
+-- Binary column with a Base64-encoded default value YWJjZA== / 0x61626364 / "abcd"
+"base64" BYTEA DEFAULT E'\x61\x62\x63\x64'
+);

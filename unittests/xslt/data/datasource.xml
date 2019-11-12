@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql:datasource version="1.0" xmlns:sql="http://xsd.nore.fr/sql" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<!-- tableset1 -->
-	<xi:include href="./tableset1.xml" xpointer="xmlns(sql=http://xsd.nore.fr/sql) xpointer(/sql:database)" />
+	<!-- namespace1 -->
+	<xi:include href="./namespace1.xml" xpointer="xmlns(sql=http://xsd.nore.fr/sql) xpointer(/sql:database)" />
 </sql:datasource>

@@ -1,0 +1,2 @@
+schema: ns/xsd/sql/2.0/sql.xsd
+transform: ns/xsl/sql/2.0/pgsql.xsl
