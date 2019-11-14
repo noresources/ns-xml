@@ -1241,7 +1241,13 @@ chunk_check_nsxml_ns_path || error 1 "Invalid ns-xml ns folder (${nsPath})"
 if [ -f "${xmlProgramDescriptionPath}" ]
 then
 	# Finding schema version
-	programSchemaVersion="$(xsltproc --xinclude "${nsPath}/xsl/program/get-version.xsl" "${xmlProgramDescriptionPath}")"
+	programSchemaVersion="$(xsltproc \
+		--xinclude \
+		--stringparam namespacePrefix 'http://xsd.nore.fr/program'  \
+		--stringparam defaultVersion 2.0 \
+		"${nsPath}/xsl/schema-version.xsl" \
+		"${xmlProgramDescriptionPath}"
+	)"
 	#echo "Program schema version ${programSchemaVersion}"
 	
 	if [ ! -f "${nsPath}/xsd/program/${programSchemaVersion}/program.xsd" ]
