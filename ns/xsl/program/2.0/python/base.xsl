@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2018 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2018 - 2020 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Parameters, variables and basic templates of the Python parser -->
@@ -18,7 +18,7 @@
 	</xsl:variable>
 
 	<xsl:variable name="prg.python.copyright">
-		<xsl:text>""" Copyright © 2018 by Renaud Guillard """</xsl:text>
+		<xsl:text>""" Copyright © 2018 - 2020 by Renaud Guillard """</xsl:text>
 		<xsl:value-of select="$str.endl" />
 		<xsl:text>""" Distributed under the terms of the MIT License, see LICENSE """</xsl:text>
 		<xsl:value-of select="$str.endl" />
