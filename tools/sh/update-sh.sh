@@ -78,8 +78,14 @@ do
 	then
 		continue
 	fi
-	
-	programSchemaVersion="$(xsltproc --xinclude "${projectPath}/ns/xsl/program/get-version.xsl" "${fn}.xml")"
+
+schemaVersionArgs=(\
+	--xinclude \
+	--stringparam 'namespacePrefix' 'http://xsd.nore.fr/program' \
+	--stringparam 'defaultVersion' '2.0' \
+	"${projectPath}/ns/xsl/schema-version.xsl" \
+)
+	programSchemaVersion="$(xsltproc "${schemaVersionArgs[@]}" "${fn}.xml")"
 	
 	xsltproc \
 		--xinclude \
