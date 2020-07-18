@@ -1,0 +1,15 @@
+CLI: 
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+mainGroup=
+exclusiveSubGroup=
+xGroupSwitchA=False
+xGroupArgumentB=
+requiredGroup=
+rGroupMultiArgC=
+rGroupSwitchD=True
+exclusiveRequiredGroup=xrGroupSwitchE
+xrGroupSwitchE=True
+xrArgumentF=

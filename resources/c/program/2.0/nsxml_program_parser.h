@@ -488,6 +488,7 @@ struct nsxml_group_option_info
 	int group_type;
 	size_t option_info_count;
 	struct nsxml_option_info **option_info_refs;
+	int default_option_info_index;
 };
 
 NSXMLAPI enum nsxml_positional_argument_flags

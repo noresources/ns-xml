@@ -57,20 +57,16 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
+
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_name:--name:"
 
-# Switch options
 addSamples=false
 displayHelp=false
 nsxmlPathRelative=false
-# Single argument options
 xshName=
 outputPath=
 nsxmlPath=
@@ -131,26 +127,22 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
-		then
-			_e_found=true; break
-		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		G_5_g)
-			;;
-		
-		esac
-	fi
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	G_5_g_1_ns_xml_path)
+		;;
+	G_5_g_2_ns_xml_path_relative)
+		;;
+	
+	esac
+	case "${1}" in
+	G_5_g)
+		;;
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -172,13 +164,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -202,25 +187,21 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
-	# outputPath
-	if ! parse_isoptionpresent G_2_output
+	
+	parser_set_default=true
+	parse_isoptionpresent G_2_output && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			outputPath='.'
-			parse_setoptionpresence G_2_output
-		fi
+		outputPath='.'
+		parse_setoptionpresence G_2_output
 	fi
 }
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -350,8 +331,10 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_name && return ${PARSER_ERROR}
+			
 			xshName="${parser_item}"
-			parse_setoptionpresence G_1_name
+			
 			;;
 		output | path)
 			if ${parser_optionhastail}
@@ -396,10 +379,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_output && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_output
+			
 			;;
 		sample)
+			! parse_setoptionpresence G_3_sample && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -407,9 +394,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			addSamples=true
-			parse_setoptionpresence G_3_sample
+			
 			;;
 		help)
+			! parse_setoptionpresence G_4_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -417,10 +406,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_4_help
+			
 			;;
 		ns-xml-path)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -445,11 +433,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_5_g_1_ns_xml_path && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_5_g && return ${PARSER_ERROR}
+			
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_5_g_1_ns_xml_path;parse_setoptionpresence G_5_g
+			
 			;;
 		ns-xml-path-relative)
-			# Group checks
+			! parse_setoptionpresence G_5_g_2_ns_xml_path_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_5_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -457,7 +452,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_5_g_2_ns_xml_path_relative;parse_setoptionpresence G_5_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -501,8 +496,10 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_name && return ${PARSER_ERROR}
+			
 			xshName="${parser_item}"
-			parse_setoptionpresence G_1_name
+			
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -547,12 +544,16 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_output && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_output
+			
 			;;
 		s)
+			! parse_setoptionpresence G_3_sample && return ${PARSER_ERROR}
+			
 			addSamples=true
-			parse_setoptionpresence G_3_sample
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -591,10 +592,14 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${parser_option_G_5_g:0:1}" = '@' ] && parser_option_G_5_g=''
+	parser_option_G_5_g=''
 	
 	
 	

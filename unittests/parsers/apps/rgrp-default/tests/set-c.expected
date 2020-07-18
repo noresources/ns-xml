@@ -1,0 +1,15 @@
+CLI: "-c", "set", "values", "--", "of", "the", "multi", "arg", "of", "the", "required", "group"
+Value count: 8
+Values: "of", "the", "multi", "arg", "of", "the", "required", "group"
+Error count: 0
+Subcommand: 
+mainGroup=
+exclusiveSubGroup=
+xGroupSwitchA=False
+xGroupArgumentB=
+requiredGroup=
+rGroupMultiArgC=set values
+rGroupSwitchD=False
+exclusiveRequiredGroup=xrGroupSwitchE
+xrGroupSwitchE=True
+xrArgumentF=

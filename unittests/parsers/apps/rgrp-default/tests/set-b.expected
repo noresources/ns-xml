@@ -1,0 +1,15 @@
+CLI: "-c", "Set the exclusive group argument"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+mainGroup=
+exclusiveSubGroup=
+xGroupSwitchA=False
+xGroupArgumentB=
+requiredGroup=
+rGroupMultiArgC=Set the exclusive group argument
+rGroupSwitchD=False
+exclusiveRequiredGroup=xrGroupSwitchE
+xrGroupSwitchE=True
+xrArgumentF=

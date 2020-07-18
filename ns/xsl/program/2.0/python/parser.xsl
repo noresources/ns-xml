@@ -534,10 +534,12 @@ class GroupOptionInfo(OptionContainerOptionInfo):
     TYPE_EXCLUSIVE = 1
 
     groupType = 0
+    defaultOption = None
 
-    def __init__(self, variableName = None, groupType = TYPE_NORMAL, flags = 0):
+    def __init__(self, variableName = None, groupType = TYPE_NORMAL, flags = 0, dfltOption = None):
         OptionContainerOptionInfo.__init__(self, variableName, flags)
         self.groupType = groupType
+        self.defaultOption = dfltOption
 
 class PositionalArgumentInfo(ItemInfo):
 
@@ -1227,19 +1229,37 @@ class Parser(object):
 
         self._state.values.append(value)
 
-    def _findOptionByName(self, name):
-        s = self._state
-        if self._state.activeSubcommandIndex > 0:
-            for nk, binding in self._state.optionNameBindings[self._state.activeSubcommandIndex].items():
-                if name == binding.name.name:
+    def _findOptionByInfo(self, info):
+        for i, group in enumerate(self._activeBindingGroups(0x2)):
+            for n, binding in group.items():
+                if info == binding.info:
                     return binding
-
-        for nk, binding in self._state.optionNameBindings[0].items():
-            if name == binding.name.name:
-                return binding
-
         return None
 
+    def _findOptionByName(self, name):
+        for i, group in enumerate(self._activeBindingGroups(0x2)):
+            for n, binding in group.items():
+                if name == binding.name.name:
+                    return binding
+        return None
+        
+    def _activeBindingGroups(self, types):
+        s = self._state
+        g = []
+        if s.activeSubcommandIndex > 0:
+            if types & 0x1:
+                g.append (s.optionGroupBindings[s.activeSubcommandIndex])
+                g.append (s.optionGroupBindings[0])
+            if types & 0x2:
+                g.append (s.optionNameBindings[s.activeSubcommandIndex])
+                g.append (s.optionNameBindings[0])
+        else:
+            if types & 0x1:
+                g.append (s.optionGroupBindings[0])
+            if types & 0x2:
+                g.append (s.optionNameBindings[0])
+        return g
+        
     def _optionExpected(self, binding):
         parentInfo = binding.info.parent
         previousResult = binding.result
@@ -1251,7 +1271,6 @@ class Parser(object):
 
             parentInfo = parentInfo.parent
             previousResult = parentResult
-
 
         return True
 
@@ -1272,31 +1291,42 @@ class Parser(object):
 
         return True
 
+    def _postProcessOption(self, result, current, forceSet):
+        if isinstance(current.info, GroupOptionInfo):
+            if (not current.result.isSet) and (forceSet or self._optionExpected(current)) and self._optionRequired(current) and (current.info.defaultOption != None):
+                return self._postProcessOption(result, self._findOptionByInfo(current.info.defaultOption), True)
+        if isinstance(current.info, SwitchOptionInfo) and (not current.result.isSet) and forceSet:
+            self._markOption(result, current, True)
+            return 1
+        elif isinstance(current.info, ArgumentOptionInfo):
+            if (not current.result.isSet):
+                if (current.info.defaultValue != None) and (forceSet or self._optionExpected(current)):
+                    current.result.argument = current.info.defaultValue
+                    self._markOption(result, current, True)
+                    return 1
+                else:
+                    current.result.argument = None
+        elif isinstance(current.info, MultiArgumentOptionInfo):
+            c = len(current.result.arguments)
+            if current.result.isSet and (current.info.minArgumentCount > 0) and (c < current.info.minArgumentCount):
+                result._appendMessage(Message.ERROR, 11, Message.ERROR_MISSING_MARG, current.info.minArgumentCount, current.name.cliName(), c)
+                self._markOption(result, current, False)
+                if not current.result.isSet:
+                    current.result.arguments = []
+                return 1
+                
+        return 0
+    
     def _postProcessOptions(self, result):
         current = None
         changeCount = 0
-        for i, group in enumerate(self._state.optionNameBindings):
+        for i, group in enumerate(self._activeBindingGroups(0x3)):
+            current = None
             for name, binding in group.items():
                 if current != None and (current.info == binding.info):
                     continue
                 current = binding
-                if isinstance(current.info, ArgumentOptionInfo):
-                    if (not current.result.isSet):
-                        if (current.info.defaultValue != None) and self._optionExpected(current):
-                            current.result.argument = current.info.defaultValue
-                            self._markOption(result, current, True)
-                            changeCount += 1
-                        else:
-                            current.result.argument = None
-                elif isinstance(current.info, MultiArgumentOptionInfo):
-                    c = len(current.result.arguments)
-                    if current.result.isSet and (current.info.minArgumentCount > 0) and (c < current.info.minArgumentCount):
-                        result._appendMessage(Message.ERROR, 11, Message.ERROR_MISSING_MARG, current.info.minArgumentCount, current.name.cliName(), c)
-                        self._markOption(result, current, False)
-                        changeCount += 1
-
-                        if not current.result.isSet:
-                            current.result.arguments = []
+                changeCount += self._postProcessOption (result, current, False)
 
         return changeCount
 

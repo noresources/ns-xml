@@ -19,7 +19,7 @@ fi
 
 # Process xsh file
 xsltprocArgs=(--xinclude)
-if ${debugMode}
+if ${debugTrace}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--param"
 	xsltprocArgs[${#xsltprocArgs[*]}]="prg.debug"
@@ -30,6 +30,13 @@ if ${prefixSubcommandBoundVariableName}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
 	xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.prefixSubcommandOptionVariable"
+	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
+fi
+
+if ${debugComments}
+then
+	xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+	xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.debug.comments"
 	xsltprocArgs[${#xsltprocArgs[*]}]="yes"
 fi
 

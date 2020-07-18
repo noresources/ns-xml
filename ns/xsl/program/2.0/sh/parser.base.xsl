@@ -9,6 +9,10 @@
 
 	<xsl:param name="prg.sh.parser.prefixSubcommandOptionVariable" select="'no'" />
 
+	<!-- Add comments in generated parsre codes -->
+	<xsl:param name="prg.sh.parser.debug.comments" select="'no'" />
+
+
 	<xsl:template name="prg.sh.parser.boundVariableName">
 		<!-- Variable name node -->
 		<xsl:param name="variableNode" />
@@ -44,6 +48,69 @@
 				<xsl:value-of select="normalize-space($variableNode)" />
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="prg.sh.parser.optionVariableName">
+		<xsl:param name="optionNode" select="." />
+		<xsl:param name="usePrefix" select="($prg.sh.parser.prefixSubcommandOptionVariable = 'yes')" />
+
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:databinding/prg:variable">
+				<xsl:call-template name="prg.sh.parser.boundVariableName">
+					<xsl:with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
+					<xsl:with-param name="usePrefix" select="$usePrefix" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="prg.prefixedName">
+					<xsl:with-param name="name">
+						<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+						<xsl:text>option_</xsl:text>
+						<xsl:call-template name="prg.optionId">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+					</xsl:with-param>
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Option marker (variable name witout prefix or ~optionId) -->
+	<xsl:template name="prg.sh.parser.optionMarker">
+		<xsl:param name="optionNode" select="." />
+
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:databinding/prg:variable">
+				<xsl:call-template name="prg.sh.parser.boundVariableName">
+					<xsl:with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
+					<xsl:with-param name="usePrefix" select="false()" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>~</xsl:text>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+
+	<xsl:template name="prg.sh.parser.comment">
+		<xsl:param name="content" select="''" />
+		<xsl:param name="endl" select="false()" />
+		<xsl:if test="$prg.sh.parser.debug.comments = 'yes'">
+			<xsl:value-of select="$sh.endl" />
+			<xsl:call-template name="sh.comment">
+				<xsl:with-param name="content">
+					<xsl:text>DEBUG: </xsl:text>
+					<xsl:value-of select="$content" />
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="$endl or ($prg.sh.parser.debug.comments = 'yes')">
+			<xsl:value-of select="$sh.endl" />
+		</xsl:if>
 	</xsl:template>
 
 	<!-- Prefix of all parser functions -->
