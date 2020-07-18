@@ -104,6 +104,16 @@
 						<prg:short>t</prg:short>
 					</prg:names>
 				</prg:multiargument>
+				<prg:switch>
+					<prg:databinding><prg:variable>debugComments</prg:variable></prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Add debug comments in generated test programs</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>comments</prg:long>
+						<prg:short>C</prg:short>
+					</prg:names>
+				</prg:switch>
 			</prg:options>
 		</prg:subcommand>
 		<prg:subcommand>

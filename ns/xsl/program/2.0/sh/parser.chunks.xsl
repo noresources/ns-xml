@@ -79,96 +79,190 @@
 	<!-- call setoptionprecence if necessary -->
 	<!-- @todo use unified id -->
 	<xsl:template name="prg.sh.parser.optionSetPresence">
+		<!-- Option node -->
 		<xsl:param name="optionNode" select="." />
-		<xsl:param name="inline" select="true()" />
+		<!-- If set, test return value of setoptionpresence function -->
+		<xsl:param name="onError" select="''" />
+		<!-- Internal use -->
+		<xsl:param name="depth" select="0" />
+
+		<xsl:if test="$depth = 0">
+			<xsl:call-template name="prg.sh.parser.comment">
+				<xsl:with-param name="content">
+					<xsl:text>Mark </xsl:text>
+					<xsl:call-template name="prg.sh.parser.optionVariableName">
+						<xsl:with-param name="optionNode" select="$optionNode" />
+					</xsl:call-template>
+					<xsl:text> and as present</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
 
 		<xsl:variable name="parentNode" select="$optionNode/../.." />
 
-		<xsl:value-of select="$prg.sh.parser.fName_setoptionpresence" />
-		<xsl:value-of select="' '" />
-		<xsl:call-template name="prg.optionId">
-			<xsl:with-param name="optionNode" select="$optionNode" />
-		</xsl:call-template>
+		<xsl:variable name="setPresenceCall">
+			<xsl:value-of select="$prg.sh.parser.fName_setoptionpresence" />
+			<xsl:value-of select="' '" />
+			<xsl:call-template name="prg.optionId">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="string-length ($onError) &gt; 0">
+				<xsl:call-template name="sh.if">
+					<xsl:with-param name="condition">
+						<xsl:text>! </xsl:text>
+						<xsl:value-of select="$setPresenceCall" />
+					</xsl:with-param>
+					<xsl:with-param name="then" select="$onError" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$setPresenceCall" />
+			</xsl:otherwise>
+		</xsl:choose>
 
 		<xsl:if test="$parentNode/self::prg:group">
-			<xsl:choose>
-				<xsl:when test="$inline">
-					<xsl:text>;</xsl:text>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$sh.endl" />
-				</xsl:otherwise>
-			</xsl:choose>
+			<xsl:value-of select="$sh.endl" />
 			<xsl:call-template name="prg.sh.parser.optionSetPresence">
 				<xsl:with-param name="optionNode" select="$parentNode" />
-				<xsl:with-param name="inline" select="$inline" />
+				<xsl:with-param name="onError" select="$onError" />
+				<xsl:with-param name="depth" select="$depth + 1" />
 			</xsl:call-template>
 		</xsl:if>
 	</xsl:template>
 
-	<!-- Set default values for all single arguments in a root item info
-		(part of the setdefaultarguments function)
-	-->
-	<xsl:template name="prg.sh.parser.setDefaultArguments">
+	<xsl:template name="prg.sh.parser.setDefaultOption">
 		<xsl:param name="rootNode" />
+		<xsl:param name="optionNode" select="." />
 		<xsl:param name="interpreter" />
 
-		<xsl:for-each select="$rootNode//prg:argument[prg:default and prg:databinding/prg:variable]">
-			<xsl:call-template name="sh.comment">
+		<xsl:call-template name="prg.sh.parser.comment">
+			<xsl:with-param name="content">
+				<xsl:call-template name="prg.sh.parser.optionVariableName" />
+			</xsl:with-param>
+			<xsl:with-param name="endl" select="true()" />
+		</xsl:call-template>
+
+		<xsl:variable name="parentNode" select="$optionNode/../.." />
+		<xsl:variable name="ignoreDefault">
+			<xsl:value-of select="$prg.sh.parser.vName_set_default" />
+			<xsl:text>=false</xsl:text>
+		</xsl:variable>
+		<xsl:variable name="setDefaultVariable">
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$prg.sh.parser.vName_set_default" />
+			</xsl:call-template>
+		</xsl:variable>
+
+
+		<xsl:value-of select="$prg.sh.parser.vName_set_default" />
+		<xsl:text>=true</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+
+		<!-- Check if option was set -->
+		<xsl:call-template name="sh.if">
+			<xsl:with-param name="condition">
+				<xsl:value-of select="$prg.sh.parser.fName_isoptionpresent" />
+				<xsl:text> </xsl:text>
+				<xsl:call-template name="prg.optionId">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="then" select="$ignoreDefault" />
+		</xsl:call-template>
+
+		<xsl:if test="$parentNode/self::prg:group">
+			<xsl:call-template name="prg.sh.parser.groupCheck">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+				<xsl:with-param name="comments" select="false()" />
+				<xsl:with-param name="process" select="false()" />
+				<xsl:with-param name="onError" select="$ignoreDefault" />
+			</xsl:call-template>
+		</xsl:if>
+
+		<xsl:if test="$optionNode/self::prg:switch">
+			<xsl:call-template name="prg.sh.parser.comment">
 				<xsl:with-param name="content">
-					<xsl:apply-templates select="prg:databinding/prg:variable" />
+					<xsl:text>Ignore switch if parent is already set</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
-			<xsl:value-of select="$sh.endl" />
-
-			<!-- Check if option was set -->
 			<xsl:call-template name="sh.if">
 				<xsl:with-param name="condition">
-					<xsl:text>! </xsl:text>
 					<xsl:value-of select="$prg.sh.parser.fName_isoptionpresent" />
 					<xsl:text> </xsl:text>
 					<xsl:call-template name="prg.optionId">
-						<xsl:with-param name="optionNode" select="." />
+						<xsl:with-param name="optionNode" select="$optionNode/../.." />
 					</xsl:call-template>
 				</xsl:with-param>
-				<xsl:with-param name="then">
-					<xsl:value-of select="$prg.sh.parser.vName_set_default" />
-					<xsl:text>=true</xsl:text>
-					<xsl:value-of select="$sh.endl" />
-					<xsl:if test="../../self::prg:group">
-						<xsl:call-template name="prg.sh.parser.groupCheck">
-							<xsl:with-param name="optionNode" select="." />
-							<xsl:with-param name="comments" select="false()" />
-							<xsl:with-param name="process" select="false()" />
-							<xsl:with-param name="onError">
-								<xsl:value-of select="$prg.sh.parser.vName_set_default" />
-								<xsl:text>=false</xsl:text>
-							</xsl:with-param>
-						</xsl:call-template>
-					</xsl:if>
-					<xsl:call-template name="sh.if">
-						<xsl:with-param name="condition">
-							<xsl:call-template name="sh.var">
-								<xsl:with-param name="name" select="$prg.sh.parser.vName_set_default" />
-							</xsl:call-template>
-						</xsl:with-param>
-						<xsl:with-param name="then">
-							<xsl:apply-templates select="prg:databinding/prg:variable" />
-							<xsl:text>='</xsl:text>
-							<xsl:apply-templates select="prg:default" />
-							<xsl:text>'</xsl:text>
-							<xsl:value-of select="$sh.endl" />
-							<xsl:call-template name="prg.sh.parser.groupSetVars">
-								<xsl:with-param name="optionNode" select="." />
-							</xsl:call-template>
-							<xsl:call-template name="prg.sh.parser.optionSetPresence">
-								<xsl:with-param name="optionNode" select="." />
-							</xsl:call-template>
-						</xsl:with-param>
-					</xsl:call-template>
-					<xsl:value-of select="$sh.endl" />
-				</xsl:with-param>
+				<xsl:with-param name="then" select="$ignoreDefault" />
 			</xsl:call-template>
+		</xsl:if>
+
+		<xsl:call-template name="sh.if">
+			<xsl:with-param name="condition" select="$setDefaultVariable" />
+			<xsl:with-param name="then">
+				<xsl:choose>
+					<xsl:when test="$optionNode/self::prg:argument">
+						<xsl:call-template name="prg.sh.parser.optionVariableName">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+						<xsl:text>='</xsl:text>
+						<xsl:apply-templates select="prg:default" />
+						<xsl:text>'</xsl:text>
+					</xsl:when>
+					<xsl:when test="$optionNode/self::prg:switch">
+						<xsl:call-template name="prg.sh.parser.optionVariableName">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+						<xsl:text>=true</xsl:text>
+					</xsl:when>
+				</xsl:choose>
+
+				<xsl:value-of select="$sh.endl" />
+				<xsl:call-template name="prg.sh.parser.groupSetVars">
+					<xsl:with-param name="optionNode" select="." />
+				</xsl:call-template>
+				<xsl:call-template name="prg.sh.parser.optionSetPresence">
+					<xsl:with-param name="optionNode" select="." />
+				</xsl:call-template>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
+
+	</xsl:template>
+
+	<!-- Set default values for all single arguments in a root item info
+		(part of the setdefaultoptions function)
+	-->
+	<xsl:template name="prg.sh.parser.setDefaultOptions">
+		<xsl:param name="rootNode" />
+		<xsl:param name="interpreter" />
+
+		<xsl:call-template name="sh.local">
+			<xsl:with-param name="name" select="$prg.sh.parser.vName_set_default" />
+			<xsl:with-param name="value" select="'false'" />
+			<xsl:with-param name="quoted" select="false()" />
+		</xsl:call-template>
+		<xsl:value-of select="$sh.endl" />
+
+		<xsl:for-each select="$rootNode//prg:options/*">
+
+			<xsl:variable name="parentNode" select="./../.." />
+			<xsl:variable name="isParentRequired" select="$parentNode/self::prg:group and ($parentNode/@required = 'true')" />
+			<xsl:variable name="isGroupDefaultOption" select="./@id and $parentNode/prg:default/@id and (@id = $parentNode/prg:default/@id)" />
+			<xsl:variable name="defaultArgument" select="./self::prg:argument and ./prg:default" />
+			<xsl:variable name="defaultSwitch" select="./self::prg:switch and $isParentRequired and $isGroupDefaultOption" />
+
+			<xsl:if test="$defaultSwitch or $defaultArgument">
+				<xsl:call-template name="prg.sh.parser.setDefaultOption">
+					<xsl:with-param name="rootNode" select="$rootNode" />
+					<xsl:with-param name="optionNode" select="." />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+				</xsl:call-template>
+			</xsl:if>
+
 		</xsl:for-each>
 	</xsl:template>
 
@@ -338,70 +432,98 @@
 		<xsl:param name="optionNode" select="." />
 		<xsl:param name="onError" />
 		<xsl:param name="shortOption" select="false()" />
+		<xsl:param name="interpreter" />
 
-		<xsl:if test="$optionNode/prg:databinding/prg:variable">
-			<xsl:choose>
-				<xsl:when test="$optionNode/self::prg:switch">
-					<!-- Check tail -->
-					<xsl:if test="not ($shortOption)">
-						<xsl:call-template name="sh.if">
-							<xsl:with-param name="condition">
-								<xsl:call-template name="sh.var">
-									<xsl:with-param name="name" select="$prg.sh.parser.vName_optionhastail" />
-									<xsl:with-param name="quoted" select="false()" />
-								</xsl:call-template>
-								<xsl:text> &amp;&amp; [ ! -z </xsl:text>
-								<xsl:call-template name="sh.var">
-									<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
-									<xsl:with-param name="quoted" select="true()" />
-								</xsl:call-template>
-								<xsl:text> ]</xsl:text>
-							</xsl:with-param>
-							<xsl:with-param name="then">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="$prg.sh.parser.fName_adderror" />
-								<xsl:text> "Option --</xsl:text>
-								<xsl:call-template name="sh.var">
-									<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
-								</xsl:call-template>
-								<xsl:text> does not allow an argument"</xsl:text>
+		<xsl:call-template name="prg.sh.parser.comment">
+			<xsl:with-param name="content">
+				<xsl:text>Set </xsl:text>
+				<xsl:call-template name="prg.sh.parser.optionVariableName">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+				<xsl:text> value</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+
+		<xsl:choose>
+			<xsl:when test="$optionNode/self::prg:switch">
+				<!-- Check tail -->
+				<xsl:if test="not ($shortOption)">
+					<xsl:call-template name="sh.if">
+						<xsl:with-param name="condition">
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="$prg.sh.parser.vName_optionhastail" />
+								<xsl:with-param name="quoted" select="false()" />
+							</xsl:call-template>
+							<xsl:text> &amp;&amp; [ ! -z </xsl:text>
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="$prg.sh.parser.vName_optiontail" />
+								<xsl:with-param name="quoted" select="true()" />
+							</xsl:call-template>
+							<xsl:text> ]</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="then">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="$prg.sh.parser.fName_adderror" />
+							<xsl:text> "Option --</xsl:text>
+							<xsl:call-template name="sh.var">
+								<xsl:with-param name="name" select="$prg.sh.parser.vName_option" />
+							</xsl:call-template>
+							<xsl:text> does not allow an argument"</xsl:text>
+							<xsl:value-of select="$sh.endl" />
+							<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
+							<xsl:text>=''</xsl:text>
+							<xsl:if test="$onError">
 								<xsl:value-of select="$sh.endl" />
-								<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
-								<xsl:text>=''</xsl:text>
-								<xsl:if test="$onError">
-									<xsl:value-of select="$sh.endl" />
-									<xsl:value-of select="$onError" />
-								</xsl:if>
+								<xsl:value-of select="$onError" />
+							</xsl:if>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="$optionNode/@node = 'integer'">
+						<xsl:call-template name="sh.varincrement">
+							<xsl:with-param name="name">
+								<xsl:call-template name="prg.sh.parser.optionVariableName">
+									<xsl:with-param name="optionNode" select="$optionNode" />
+								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
-					</xsl:if>
-					<xsl:choose>
-						<xsl:when test="$optionNode/@node = 'integer'">
-							<xsl:call-template name="sh.varincrement">
-								<xsl:with-param name="name">
-									<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
-								</xsl:with-param>
-							</xsl:call-template>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
-							<xsl:text>=true</xsl:text>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:when test="$optionNode/self::prg:argument">
-					<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
-					<xsl:text>=</xsl:text>
-					<xsl:call-template name="sh.var">
-						<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
-						<xsl:with-param name="quoted" select="true()" />
-					</xsl:call-template>
-				</xsl:when>
-			</xsl:choose>
-		</xsl:if>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="prg.sh.parser.optionVariableName">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+						<xsl:text>=true</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$optionNode/self::prg:argument">
+				<xsl:call-template name="prg.sh.parser.optionVariableName">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+				<xsl:text>=</xsl:text>
+				<xsl:call-template name="sh.var">
+					<xsl:with-param name="name" select="$prg.sh.parser.vName_item" />
+					<xsl:with-param name="quoted" select="true()" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:when test="$optionNode/self::prg:multiargument">
+
+				<xsl:call-template name="sh.arrayCopy">
+					<xsl:with-param name="from" select="$prg.sh.parser.vName_ma_values" />
+					<xsl:with-param name="to">
+						<xsl:call-template name="prg.sh.parser.optionVariableName">
+							<xsl:with-param name="optionNode" select="$optionNode" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="offsetExpression" select="$prg.sh.parser.var_startindex" />
+				</xsl:call-template>
+
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 
-	<!-- Set super group variables -->
 	<xsl:template name="prg.sh.parser.groupSetVars">
 		<xsl:param name="optionNode" select="." />
 		<xsl:variable name="optionsNode" select="$optionNode/.." />
@@ -415,16 +537,15 @@
 
 			<!-- Set option variable -->
 			<!-- except if group is not exclusive (meaningless in this case) -->
-			<xsl:if test="$optionNode/prg:databinding/prg:variable and $groupOptionNode/prg:databinding/prg:variable and ($groupOptionNode/@type = 'exclusive')">
-				<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
-				<xsl:text>="</xsl:text>
-				<!-- don't add subcommand prefix in this case -->
-				<xsl:call-template name="prg.sh.parser.boundVariableName">
-					<xsl:with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
-					<xsl:with-param name="usePrefix" select="false()" />
+			<xsl:if test="($groupOptionNode/@type = 'exclusive')">
+				<xsl:call-template name="prg.sh.parser.optionVariableName">
+					<xsl:with-param name="optionNode" select="$groupOptionNode" />
 				</xsl:call-template>
-				<!-- <apply-templates select="$optionNode/prg:databinding/prg:variable" /> -->
-				<xsl:text>"</xsl:text>
+				<xsl:text>='</xsl:text>
+				<xsl:call-template name="prg.sh.parser.optionMarker">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+				</xsl:call-template>
+				<xsl:text>'</xsl:text>
 				<xsl:value-of select="$sh.endl" />
 			</xsl:if>
 		</xsl:if>
@@ -478,6 +599,52 @@
 		</xsl:if>
 	</xsl:template>
 
+
+	<!-- List of test to check if a group was "set" at least by one variable -->
+	<xsl:template name="prg.sh.parser.groupSetCondition">
+		<!-- The group node -->
+		<xsl:param name="groupOptionNode" select="." />
+		<!-- If set, also check if group was set by this option -->
+		<xsl:param name="optionNode" />
+
+		<xsl:variable name="groupOptionVariableName">
+			<xsl:call-template name="prg.sh.parser.optionVariableName">
+				<xsl:with-param name="optionNode" select="$groupOptionNode" />
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:text>(</xsl:text>
+		<!-- Group was not net -->
+		<xsl:text>[ -z </xsl:text>
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$groupOptionVariableName" />
+			<xsl:with-param name="quoted" select="true()" />
+		</xsl:call-template>
+		<xsl:text> ]</xsl:text>
+		<!-- Group value is the default marker (group not set -->
+		<xsl:text> || [ </xsl:text>
+		<xsl:call-template name="sh.var">
+			<xsl:with-param name="name" select="$groupOptionVariableName" />
+			<xsl:with-param name="quoted" select="true()" />
+			<xsl:with-param name="length" select="1" />
+		</xsl:call-template>
+		<xsl:text> = '@' ]</xsl:text>
+
+		<xsl:if test="$optionNode">
+			<xsl:text> || [ </xsl:text>
+			<xsl:call-template name="sh.var">
+				<xsl:with-param name="name" select="$groupOptionVariableName" />
+				<xsl:with-param name="quoted" select="true()" />
+			</xsl:call-template>
+			<xsl:text> = "</xsl:text>
+			<xsl:call-template name="prg.sh.parser.optionMarker">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
+			<xsl:text>" ]</xsl:text>
+		</xsl:if>
+		<xsl:text>)</xsl:text>
+	</xsl:template>
+
 	<!-- Chec if the option is part of a group and if it does not break mutual exclusion rule -->
 	<xsl:template name="prg.sh.parser.groupCheck">
 		<!-- Option to check -->
@@ -496,15 +663,14 @@
 		<xsl:variable name="optionsNode" select="$optionNode/.." />
 
 		<xsl:if test="$optionsNode/parent::prg:group">
+
 			<xsl:variable name="groupOptionNode" select="$optionNode/../.." />
-			<xsl:if test="$comments">
-				<xsl:call-template name="sh.comment">
-					<xsl:with-param name="content">
-						<xsl:text>Group checks</xsl:text>
-					</xsl:with-param>
+
+			<xsl:variable name="groupOptionVariableName">
+				<xsl:call-template name="prg.sh.parser.optionVariableName">
+					<xsl:with-param name="optionNode" select="$groupOptionNode" />
 				</xsl:call-template>
-				<xsl:value-of select="$sh.endl" />
-			</xsl:if>
+			</xsl:variable>
 
 			<!-- Recursive check -->
 			<xsl:call-template name="prg.sh.parser.groupCheck">
@@ -515,58 +681,38 @@
 				<xsl:with-param name="comments" select="false()" />
 			</xsl:call-template>
 
+			<xsl:call-template name="prg.sh.parser.comment">
+				<xsl:with-param name="content">
+					<xsl:value-of select="$groupOptionVariableName" />
+					<xsl:text> group checks</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+
 			<!-- Exclusive clause -->
-			<xsl:if test="$groupOptionNode[@type = 'exclusive'] 
-						and $groupOptionNode/prg:databinding/prg:variable 
-						and $optionNode/prg:databinding/prg:variable">
+			<xsl:if test="$groupOptionNode[@type = 'exclusive']">
 				<xsl:call-template name="sh.if">
 					<xsl:with-param name="condition">
-						<xsl:text>! ([ -z </xsl:text>
-						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name">
-								<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
-							</xsl:with-param>
-							<xsl:with-param name="quoted" select="true()" />
+						<xsl:text>! </xsl:text>
+						<xsl:call-template name="prg.sh.parser.groupSetCondition">
+							<xsl:with-param name="groupOptionNode" select="$groupOptionNode"></xsl:with-param>
+							<xsl:with-param name="optionNode" select="$optionNode" />
 						</xsl:call-template>
-						<xsl:text> ] || [ </xsl:text>
-						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name">
-								<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
-							</xsl:with-param>
-							<xsl:with-param name="quoted" select="true()" />
-						</xsl:call-template>
-						<xsl:text> = "</xsl:text>
-						<!-- don't add subcommand prefix in this case -->
-						<xsl:call-template name="prg.sh.parser.boundVariableName">
-							<xsl:with-param name="variableNode" select="$optionNode/prg:databinding/prg:variable" />
-							<xsl:with-param name="usePrefix" select="false()" />
-						</xsl:call-template>
-						<!-- <apply-templates select="$optionNode/prg:databinding/prg:variable" /> -->
-						<xsl:text>" ] || [ </xsl:text>
-						<xsl:call-template name="sh.var">
-							<xsl:with-param name="name">
-								<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
-							</xsl:with-param>
-							<xsl:with-param name="quoted" select="true()" />
-							<xsl:with-param name="length" select="1" />
-						</xsl:call-template>
-						<xsl:text> = "@" ])</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="then">
-
 						<xsl:if test="$process">
 							<xsl:value-of select="$prg.sh.parser.fName_adderror" />
 							<xsl:text> "Another option of the group \"</xsl:text>
 							<!-- don't add subcommand prefix in this case -->
-							<xsl:call-template name="prg.sh.parser.boundVariableName">
-								<xsl:with-param name="variableNode" select="$groupOptionNode/prg:databinding/prg:variable" />
+							<xsl:call-template name="prg.sh.parser.optionVariableName">
+								<xsl:with-param name="optionNode" select="$groupOptionNode" />
 								<xsl:with-param name="usePrefix" select="false()" />
 							</xsl:call-template>
-							<!-- <apply-templates select="$groupOptionNode/prg:databinding/prg:variable" /> -->
 							<xsl:text>\" was previously set (</xsl:text>
 							<xsl:call-template name="sh.var">
 								<xsl:with-param name="name">
-									<xsl:apply-templates select="$groupOptionNode/prg:databinding/prg:variable" />
+									<xsl:call-template name="prg.sh.parser.optionVariableName">
+										<xsl:with-param name="optionNode" select="$groupOptionNode" />
+									</xsl:call-template>
 								</xsl:with-param>
 							</xsl:call-template>
 							<xsl:text>)"</xsl:text>
@@ -858,13 +1004,6 @@
 			<xsl:text>\"</xsl:text>
 		</xsl:param>
 
-		<!-- <call-template name="sh.comment">
-			<with-param name="content">
-			<text>Value type check</text>
-			</with-param>
-			</call-template>
-			<value-of select="$sh.endl" /> -->
-
 		<xsl:choose>
 			<xsl:when test="$node/prg:type/prg:number">
 				<xsl:call-template name="prg.sh.parser.numberCheck">
@@ -1014,7 +1153,9 @@
 		<xsl:param name="interpreter" />
 
 		<xsl:variable name="optionVariableName">
-			<xsl:apply-templates select="$optionNode/prg:databinding/prg:variable" />
+			<xsl:call-template name="prg.sh.parser.optionVariableName">
+				<xsl:with-param name="optionNode" select="$optionNode" />
+			</xsl:call-template>
 		</xsl:variable>
 
 		<xsl:call-template name="sh.caseblock">
@@ -1040,11 +1181,8 @@
 			</xsl:with-param>
 			<xsl:with-param name="content">
 
-				<!-- Check group -->
-				<xsl:call-template name="prg.sh.parser.groupCheck">
-					<xsl:with-param name="optionNode" select="$optionNode" />
-					<xsl:with-param name="onError" select="$onError" />
-					<xsl:with-param name="shortOption" select="$shortOption" />
+				<xsl:call-template name="prg.sh.parser.comment">
+					<xsl:with-param name="content" select="'Check option restrictions'" />
 				</xsl:call-template>
 
 				<xsl:choose>
@@ -1071,6 +1209,11 @@
 						<xsl:value-of select="$sh.endl" />
 
 						<xsl:call-template name="sh.local">
+							<xsl:with-param name="name" select="$prg.sh.parser.vName_ma_values" />
+							<xsl:with-param name="interpreter" select="$interpreter" />
+						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+						<xsl:call-template name="sh.local">
 							<xsl:with-param name="name" select="$prg.sh.parser.vName_ma_local_count" />
 							<xsl:with-param name="interpreter" select="$interpreter" />
 							<xsl:with-param name="value" select="0" />
@@ -1086,6 +1229,10 @@
 							</xsl:with-param>
 							<xsl:with-param name="quoted" select="false()" />
 						</xsl:call-template>
+						<xsl:value-of select="$sh.endl" />
+
+						<xsl:text>unset </xsl:text>
+						<xsl:value-of select="$prg.sh.parser.vName_ma_values" />
 						<xsl:value-of select="$sh.endl" />
 
 						<xsl:call-template name="prg.sh.parser.checkMax">
@@ -1116,7 +1263,7 @@
 									<xsl:with-param name="onError" select="$onError" />
 								</xsl:call-template>
 								<xsl:call-template name="sh.arrayAppend">
-									<xsl:with-param name="name" select="$optionVariableName" />
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_ma_values" />
 									<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 									<xsl:with-param name="value">
 										<xsl:call-template name="sh.var">
@@ -1240,7 +1387,7 @@
 								</xsl:call-template>
 
 								<xsl:call-template name="sh.arrayAppend">
-									<xsl:with-param name="name" select="$optionVariableName" />
+									<xsl:with-param name="name" select="$prg.sh.parser.vName_ma_values" />
 									<xsl:with-param name="startIndex" select="$prg.sh.parser.var_startindex" />
 									<xsl:with-param name="value">
 										<xsl:call-template name="sh.var">
@@ -1299,21 +1446,30 @@
 					</xsl:when>
 				</xsl:choose>
 
-				<!-- Finally -->
+				<xsl:call-template name="prg.sh.parser.comment">
+					<xsl:with-param name="content" select="'Set presence for option and parents'" />
+				</xsl:call-template>
+
+				<xsl:call-template name="prg.sh.parser.optionSetPresence">
+					<xsl:with-param name="optionNode" select="$optionNode" />
+					<xsl:with-param name="onError" select="$onError" />
+				</xsl:call-template>
+
+				<xsl:value-of select="$sh.endl" />
 
 				<xsl:call-template name="prg.sh.parser.optionSetValue">
 					<xsl:with-param name="optionNode" select="$optionNode" />
 					<xsl:with-param name="onError" select="$onError" />
 					<xsl:with-param name="shortOption" select="$shortOption" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
 				</xsl:call-template>
+
 				<xsl:value-of select="$sh.endl" />
 
 				<xsl:call-template name="prg.sh.parser.groupSetVars">
 					<xsl:with-param name="optionNode" select="$optionNode" />
 				</xsl:call-template>
-				<xsl:call-template name="prg.sh.parser.optionSetPresence">
-					<xsl:with-param name="optionNode" select="$optionNode" />
-				</xsl:call-template>
+
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -1399,30 +1555,6 @@
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
-			<!-- things to do while setting option presence -->
-			<xsl:if test="$optionNode/self::prg:group and $optionNode[@required = 'true']">
-				<xsl:variable name="defaultOptionId" select="$optionNode/prg:default/@id" />
-				<xsl:variable name="defaultOptionNode" select="$optionNode/prg:options/*[@id = $defaultOptionId]" />
-				<xsl:variable name="groupVariable" select="$optionNode/prg:databinding/prg:variable" />
-				<xsl:variable name="defaultOptionVariable" select="$defaultOptionNode/prg:databinding/prg:variable" />
-
-				<xsl:if test="$groupVariable and $defaultOptionVariable">
-					<xsl:text>:</xsl:text>
-					<xsl:apply-templates select="$groupVariable" />
-					<xsl:text>=</xsl:text>
-					<xsl:apply-templates select="$defaultOptionVariable" />
-					<xsl:if test="$defaultOptionNode/self::prg:switch">
-						<xsl:text>:</xsl:text>
-						<xsl:apply-templates select="$defaultOptionVariable" />
-						<xsl:text>=true</xsl:text>
-					</xsl:if>
-					<!-- recursively set option presence -->
-					<xsl:text>;</xsl:text>
-					<xsl:call-template name="prg.sh.parser.optionSetPresence">
-						<xsl:with-param name="optionNode" select="$defaultOptionNode" />
-					</xsl:call-template>
-				</xsl:if>
-			</xsl:if>
 		</xsl:variable>
 
 		<xsl:choose>
@@ -1606,6 +1738,7 @@
 						<xsl:value-of select="$prg.sh.parser.vName_optionhastail" />
 						<xsl:text>=true</xsl:text>
 						<xsl:value-of select="$sh.endl" />
+
 						<!-- split item between "=" -->
 						<xsl:value-of select="$prg.sh.parser.vName_optiontail" />
 						<xsl:text>=</xsl:text>
@@ -1827,12 +1960,11 @@
 		<xsl:text>=3</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 
-		<xsl:call-template name="sh.comment">
+		<xsl:call-template name="prg.sh.parser.comment">
 			<xsl:with-param name="content">
 				<xsl:text>Compatibility with shell which use "1" as start index</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:value-of select="$sh.endl" />
 		<xsl:text>[ </xsl:text>
 		<xsl:call-template name="sh.var">
 			<xsl:with-param name="name" select="$prg.sh.parser.vName_shell" />
@@ -1859,7 +1991,7 @@
 		<xsl:value-of select="$sh.endl" />
 
 		<xsl:value-of select="$sh.endl" />
-		<xsl:call-template name="sh.comment">
+		<xsl:call-template name="prg.sh.parser.comment">
 			<xsl:with-param name="content">
 				<xsl:text>Required global options</xsl:text>
 				<xsl:value-of select="$sh.endl" />
@@ -1872,17 +2004,16 @@
 		</xsl:call-template>
 		<xsl:value-of select="$sh.endl" />
 
-		<xsl:if test="//prg:switch/prg:databinding/prg:variable">
-			<xsl:call-template name="sh.comment">
+		<xsl:if test="//prg:switch">
+			<xsl:call-template name="prg.sh.parser.comment">
 				<xsl:with-param name="content">
 					<xsl:text>Switch options</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
-			<xsl:value-of select="$sh.endl" />
-			<xsl:for-each select="//prg:switch/prg:databinding/prg:variable">
-				<xsl:apply-templates select="." />
+			<xsl:for-each select="//prg:switch">
+				<xsl:call-template name="prg.sh.parser.optionVariableName" />
 				<xsl:choose>
-					<xsl:when test="../@node = 'integer'">
+					<xsl:when test="@node = 'integer'">
 						<xsl:text>=0</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1893,15 +2024,14 @@
 			</xsl:for-each>
 		</xsl:if>
 
-		<xsl:if test="//prg:argument/prg:databinding/prg:variable">
-			<xsl:call-template name="sh.comment">
+		<xsl:if test="//prg:argument">
+			<xsl:call-template name="prg.sh.parser.comment">
 				<xsl:with-param name="content">
 					<xsl:text>Single argument options</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
-			<xsl:value-of select="$sh.endl" />
-			<xsl:for-each select="//prg:argument/prg:databinding/prg:variable">
-				<xsl:apply-templates select="." />
+			<xsl:for-each select="//prg:argument">
+				<xsl:call-template name="prg.sh.parser.optionVariableName" />
 				<xsl:text>=</xsl:text>
 				<!-- default arguments are set later -->
 				<!-- <if test="../../prg:default">
@@ -1914,21 +2044,22 @@
 		</xsl:if>
 
 		<xsl:if test="//prg:group/prg:default">
-			<xsl:call-template name="sh.comment">
+			<xsl:call-template name="prg.sh.parser.comment">
 				<xsl:with-param name="content">
 					<xsl:text>Group default options</xsl:text>
 				</xsl:with-param>
+				<xsl:with-param name="endl" select="true()" />
 			</xsl:call-template>
 			<xsl:for-each select="//prg:group[prg:default]">
 				<xsl:variable name="defaultOptionId" select="prg:default/@id" />
 				<xsl:variable name="defaultOptionNode" select="./prg:options/*[@id = $defaultOptionId]" />
-				<xsl:if test="./prg:databinding/prg:variable and $defaultOptionNode/prg:databinding/prg:variable">
-					<xsl:apply-templates select="prg:databinding/prg:variable" />
-					<xsl:text>="@</xsl:text>
-					<xsl:apply-templates select="$defaultOptionNode/prg:databinding/prg:variable" />
-					<xsl:text>"</xsl:text>
-					<xsl:value-of select="$sh.endl" />
-				</xsl:if>
+				<xsl:call-template name="prg.sh.parser.optionVariableName" />
+				<xsl:text>="@</xsl:text>
+				<xsl:call-template name="prg.sh.parser.optionVariableName">
+					<xsl:with-param name="optionNode" select="$defaultOptionNode" />
+				</xsl:call-template>
+				<xsl:text>"</xsl:text>
+				<xsl:value-of select="$sh.endl" />
 			</xsl:for-each>
 		</xsl:if>
 		<xsl:value-of select="$sh.endl" />

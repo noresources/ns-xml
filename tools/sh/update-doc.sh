@@ -81,22 +81,18 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
 
-# Switch options
+
 xsltAbstract=false
 indexModeNone=false
 indexUrlRelativeToRoot=false
 indexCopyInFolders=false
 htmlBodyOnly=false
 displayHelp=false
-# Single argument options
 xsltVersionControlSystem=
 xsltDocOutputPath=
 xsltDocCssFile=
@@ -162,34 +158,114 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	G_1_g_1_vcs)
+		;;
+	G_1_g_2_xsl_output)
+		;;
+	G_1_g_3_xsl_css)
+		;;
+	G_1_g_4_stylesheet_abstract)
+		;;
+	G_1_g_5_g)
+		;;
+	G_1_g_5_g_1_no_index)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeNone" ])
 		then
-			_e_found=true; break
+			parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode}"
+			return ${PARSER_ERROR}
 		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		G_1_g)
-			;;
-		G_1_g_5_g_2_g)
-			;;
-		G_1_g_5_g_3_g)
-			;;
-		G_2_g)
-			;;
-		G_3_g)
-			;;
 		
-		esac
-	fi
+		
+		;;
+	G_1_g_5_g_2_g)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeUrl" ])
+		then
+			parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_2_g_1_index_url)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeUrl" ])
+		then
+			parse_adderror "Another option of the group \"indexModeUrl\" was previously set (${indexModeUrl}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_2_g_2_relative_index_url)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeUrl" ])
+		then
+			parse_adderror "Another option of the group \"indexModeUrl\" was previously set (${indexModeUrl}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_3_g)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeFile" ])
+		then
+			parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_3_g_1_index)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeFile" ])
+		then
+			parse_adderror "Another option of the group \"indexModeFile\" was previously set (${indexModeFile}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_3_g_2_index_name)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeFile" ])
+		then
+			parse_adderror "Another option of the group \"indexModeFile\" was previously set (${indexModeFile}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_5_g_3_g_3_copy_anywhere)
+		if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeFile" ])
+		then
+			parse_adderror "Another option of the group \"indexModeFile\" was previously set (${indexModeFile}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_2_g_1_html_output)
+		;;
+	G_2_g_2_nme_easylink)
+		;;
+	G_3_g_1_html_body_only)
+		;;
+	
+	esac
+	case "${1}" in
+	G_1_g)
+		;;
+	G_1_g_5_g_2_g)
+		;;
+	G_1_g_5_g_3_g)
+		;;
+	G_2_g)
+		;;
+	G_3_g)
+		;;
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -211,13 +287,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -241,41 +310,40 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
-	# indexFileOutputName
-	if ! parse_isoptionpresent G_1_g_5_g_3_g_2_index_name
+	
+	parser_set_default=true
+	parse_isoptionpresent G_1_g_5_g_3_g_2_index_name && parser_set_default=false
+	if ! ([ -z "${indexMode}" ] || [ "${indexMode:0:1}" = '@' ] || [ "${indexMode}" = "indexModeFile" ])
 	then
-		parser_set_default=true
-		if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
-		then
-			parser_set_default=false
-		fi
-		
-		if ${parser_set_default}
-		then
-			indexFileOutputName='index.php'
-			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_2_index_name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
-		fi
+		parser_set_default=false
 	fi
-	# nmeEasyLink
-	if ! parse_isoptionpresent G_2_g_2_nme_easylink
+	
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			nmeEasyLink='$.html'
-			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
-		fi
+		indexFileOutputName='index.php'
+		indexMode='indexModeFile'
+		parse_setoptionpresence G_1_g_5_g_3_g_2_index_name
+		parse_setoptionpresence G_1_g_5_g_3_g
+		parse_setoptionpresence G_1_g_5_g
+		parse_setoptionpresence G_1_g
+	fi
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_2_g_2_nme_easylink && parser_set_default=false
+	if ${parser_set_default}
+	then
+		nmeEasyLink='$.html'
+		parse_setoptionpresence G_2_g_2_nme_easylink
+		parse_setoptionpresence G_2_g
 	fi
 }
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -382,6 +450,8 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		help)
+			! parse_setoptionpresence G_4_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -389,10 +459,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_4_help
+			
 			;;
 		vcs)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -423,11 +492,14 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_1_g_1_vcs && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			xsltVersionControlSystem="${parser_item}"
-			parse_setoptionpresence G_1_g_1_vcs;parse_setoptionpresence G_1_g
+			
 			;;
 		xsl-output)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -464,11 +536,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_2_xsl_output && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			xsltDocOutputPath="${parser_item}"
-			parse_setoptionpresence G_1_g_2_xsl_output;parse_setoptionpresence G_1_g
+			
 			;;
 		xsl-css)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -505,11 +580,18 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_3_xsl_css && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			xsltDocCssFile="${parser_item}"
-			parse_setoptionpresence G_1_g_3_xsl_css;parse_setoptionpresence G_1_g
+			
 			;;
 		stylesheet-abstract | abstract)
-			# Group checks
+			! parse_setoptionpresence G_1_g_4_stylesheet_abstract && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -517,15 +599,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			xsltAbstract=true
-			parse_setoptionpresence G_1_g_4_stylesheet_abstract;parse_setoptionpresence G_1_g
+			
 			;;
 		no-index)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeNone" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_5_g_1_no_index && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -534,42 +615,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			indexModeNone=true
-			indexMode="indexModeNone"
-			parse_setoptionpresence G_1_g_5_g_1_no_index;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeNone'
+			
 			;;
 		index-url)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeUrl" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -594,17 +643,26 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_g_5_g_2_g_1_index_url && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			indexUrl="${parser_item}"
-			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_5_g_2_g_1_index_url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeUrl'
+			
 			;;
 		relative-index-url)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeUrl" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_5_g_2_g_2_relative_index_url && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -613,42 +671,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			indexUrlRelativeToRoot=true
-			indexMode="indexModeUrl"
-			parse_setoptionpresence G_1_g_5_g_2_g_2_relative_index_url;parse_setoptionpresence G_1_g_5_g_2_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeUrl'
+			
 			;;
 		index)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -691,43 +717,19 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_5_g_3_g_1_index && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			indexFile="${parser_item}"
-			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_1_index;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeFile'
+			
 			;;
 		index-name)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -752,17 +754,26 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_g_5_g_3_g_2_index_name && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			indexFileOutputName="${parser_item}"
-			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_2_index_name;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeFile'
+			
 			;;
 		copy-anywhere)
-			# Group checks
-			if ! ([ -z "${indexMode}" ] || [ "${indexMode}" = "indexModeFile" ] || [ "${indexMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"indexMode\" was previously set (${indexMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_5_g_3_g_3_copy_anywhere && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_5_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -771,11 +782,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			indexCopyInFolders=true
-			indexMode="indexModeFile"
-			parse_setoptionpresence G_1_g_5_g_3_g_3_copy_anywhere;parse_setoptionpresence G_1_g_5_g_3_g;parse_setoptionpresence G_1_g_5_g;parse_setoptionpresence G_1_g
+			indexMode='indexModeFile'
+			
 			;;
 		html-output)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -812,11 +822,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_g_1_html_output && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			htmlOutputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_html_output;parse_setoptionpresence G_2_g
+			
 			;;
 		nme-easylink | easylink)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -841,11 +854,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_2_g_2_nme_easylink && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			nmeEasyLink="${parser_item}"
-			parse_setoptionpresence G_2_g_2_nme_easylink;parse_setoptionpresence G_2_g
+			
 			;;
 		html-body-only)
-			# Group checks
+			! parse_setoptionpresence G_3_g_1_html_body_only && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -853,7 +873,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			htmlBodyOnly=true
-			parse_setoptionpresence G_3_g_1_html_body_only;parse_setoptionpresence G_3_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -892,10 +912,24 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${parser_option_G_1_g:0:1}" = '@' ] && parser_option_G_1_g=''
+	parser_option_G_1_g=''
+	[ "${indexMode:0:1}" = '@' ] && indexMode=''
+	[ "${indexMode:0:1}" = '~' ] && indexMode=''
+	[ "${indexModeUrl:0:1}" = '@' ] && indexModeUrl=''
+	indexModeUrl=''
+	[ "${indexModeFile:0:1}" = '@' ] && indexModeFile=''
+	indexModeFile=''
+	[ "${parser_option_G_2_g:0:1}" = '@' ] && parser_option_G_2_g=''
+	parser_option_G_2_g=''
+	[ "${parser_option_G_3_g:0:1}" = '@' ] && parser_option_G_3_g=''
+	parser_option_G_3_g=''
 	
 	
 	

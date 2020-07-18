@@ -65,19 +65,15 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
+
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_xslt:--xslt:"
 
-# Switch options
 nsxmlPathRelative=false
 displayHelp=false
-# Single argument options
 xmlProgramDescriptionPath=
 xslName=
 output=
@@ -139,26 +135,22 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
-		then
-			_e_found=true; break
-		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		G_6_g)
-			;;
-		
-		esac
-	fi
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	G_6_g_1_ns_xml_path)
+		;;
+	G_6_g_2_ns_xml_path_relative)
+		;;
+	
+	esac
+	case "${1}" in
+	G_6_g)
+		;;
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -180,13 +172,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -210,25 +195,25 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
 }
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
 	if [ ${#parameters[*]} -gt 0 ] && [ ${#parameters[*]} -lt 2 ]
 	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--param\". At least 2 expected, ${#parameters[*]} given"
+		parse_adderror "Invalid argument count for option \"--param\". At least 2 expected, ${#parameters[*]} given"
 		errorCount=$(expr ${errorCount} + 1)
+		unset parameters
 	fi
 	if [ ${#stringParameters[*]} -gt 0 ] && [ ${#stringParameters[*]} -lt 2 ]
 	then
-		parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]="Invalid argument count for option \"--stringparam\". At least 2 expected, ${#stringParameters[*]} given"
+		parse_adderror "Invalid argument count for option \"--stringparam\". At least 2 expected, ${#stringParameters[*]} given"
 		errorCount=$(expr ${errorCount} + 1)
+		unset stringParameters
 	fi
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -370,8 +355,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_xml_description && return ${PARSER_ERROR}
+			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_xml_description
+			
 			;;
 		xslt | xsl)
 			if ${parser_optionhastail}
@@ -404,8 +391,10 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_2_xslt && return ${PARSER_ERROR}
+			
 			xslName="${parser_item}"
-			parse_setoptionpresence G_2_xslt
+			
 			;;
 		output)
 			if ${parser_optionhastail}
@@ -444,8 +433,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_3_output && return ${PARSER_ERROR}
+			
 			output="${parser_item}"
-			parse_setoptionpresence G_3_output
+			
 			;;
 		param | params)
 			parser_item=''
@@ -455,11 +446,13 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			local parser_ma_values=
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
+			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -475,7 +468,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -485,8 +478,13 @@ parse_process_option()
 				parse_adderror "At least one argument expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_4_param && return ${PARSER_ERROR}
 			
-			parse_setoptionpresence G_4_param
+			for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+			do
+				parameters[${#parameters[*]}]="${parser_ma_values[${i}]}"
+			done
+			
 			;;
 		stringparam | stringparams)
 			parser_item=''
@@ -496,11 +494,13 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			local parser_ma_values=
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
+			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -516,7 +516,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -526,10 +526,17 @@ parse_process_option()
 				parse_adderror "At least one argument expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_5_stringparam && return ${PARSER_ERROR}
 			
-			parse_setoptionpresence G_5_stringparam
+			for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+			do
+				stringParameters[${#stringParameters[*]}]="${parser_ma_values[${i}]}"
+			done
+			
 			;;
 		help)
+			! parse_setoptionpresence G_7_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -537,10 +544,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_7_help
+			
 			;;
 		ns-xml-path)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -565,11 +571,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_6_g_1_ns_xml_path && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_6_g && return ${PARSER_ERROR}
+			
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_6_g_1_ns_xml_path;parse_setoptionpresence G_6_g
+			
 			;;
 		ns-xml-path-relative)
-			# Group checks
+			! parse_setoptionpresence G_6_g_2_ns_xml_path_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_6_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -577,7 +590,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_6_g_2_ns_xml_path_relative;parse_setoptionpresence G_6_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -633,8 +646,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_xml_description && return ${PARSER_ERROR}
+			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_1_xml_description
+			
 			;;
 		t)
 			if [ ! -z "${parser_optiontail}" ]
@@ -667,8 +682,10 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_2_xslt && return ${PARSER_ERROR}
+			
 			xslName="${parser_item}"
-			parse_setoptionpresence G_2_xslt
+			
 			;;
 		o)
 			if [ ! -z "${parser_optiontail}" ]
@@ -707,8 +724,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_3_output && return ${PARSER_ERROR}
+			
 			output="${parser_item}"
-			parse_setoptionpresence G_3_output
+			
 			;;
 		p)
 			parser_item=''
@@ -718,11 +737,13 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			local parser_ma_values=
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#parameters[*]}
+			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -738,7 +759,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				parameters[$(expr ${#parameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -748,8 +769,13 @@ parse_process_option()
 				parse_adderror "At least one argument expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_4_param && return ${PARSER_ERROR}
 			
-			parse_setoptionpresence G_4_param
+			for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+			do
+				parameters[${#parameters[*]}]="${parser_ma_values[${i}]}"
+			done
+			
 			;;
 		s)
 			parser_item=''
@@ -759,11 +785,13 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			local parser_ma_values=
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#stringParameters[*]}
+			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -779,7 +807,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				stringParameters[$(expr ${#stringParameters[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -789,8 +817,13 @@ parse_process_option()
 				parse_adderror "At least one argument expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_5_stringparam && return ${PARSER_ERROR}
 			
-			parse_setoptionpresence G_5_stringparam
+			for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+			do
+				stringParameters[${#stringParameters[*]}]="${parser_ma_values[${i}]}"
+			done
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -829,10 +862,14 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${parser_option_G_6_g:0:1}" = '@' ] && parser_option_G_6_g=''
+	parser_option_G_6_g=''
 	
 	
 	

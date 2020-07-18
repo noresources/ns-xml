@@ -351,8 +351,17 @@ EOF
 					-s "${xshFile}" \
 					-o "${shScript}"\
 				)
+				
+				${parsers_debugComments} \
+					&& buildShScriptArgs=(\
+						"${buildShScriptArgs[@]}" \
+						--debug-comments \
+					)
+				
 				log "Generating ${app} ${s} program (${buildShScriptArgs[@]})"
-				"${projectPath}/ns/sh/build-shellscript.sh" "${buildShScriptArgs[@]}" || ns_error "Failed to create ${shScript}" 
+				"${projectPath}/ns/sh/build-shellscript.sh" \
+					"${buildShScriptArgs[@]}" \
+				|| ns_error "Failed to create ${shScript}" 
 				chmod 755 "${shScript}"
 			done
 			
@@ -385,7 +394,9 @@ EOF
 			do
 				pyProgram="${pyProgramBase}${p}.py"
 				pyPrograms=("${pyPrograms[@]}" "${pyProgram}")
-				xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${pyProgram}"
+				xsltproc --xinclude -o "${pyProgram}" \
+				--stringparam interpreter \
+				${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${pyProgram}"
 				chmod 755 "${pyProgram}"
 			done
 		fi
@@ -456,7 +467,7 @@ EOFSH
 	done)
 EOFSH
 			fi
-			if ${testPython} && [ ! -f "${base}.no-py" ]
+			if ${testPython} && [ ! -f "${base}.no-python" ]
 			then
 				pi=0
 				for p in "${pythonInterpreters[@]}"
@@ -532,7 +543,7 @@ EOFSH
 				
 				if ${testPython}
 				then
-					if [ -f "${base}.no-py" ]
+					if [ -f "${base}.no-python" ]
 					then
 						for p in "${pythonInterpreters[@]}"
 						do

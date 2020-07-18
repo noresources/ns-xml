@@ -527,6 +527,22 @@
 		<xsl:text>option_info_refs = (struct nsxml_option_info **)malloc(sizeof(struct nsxml_option_info *) * </xsl:text>
 		<xsl:value-of select="count($optionNode/prg:options/*)" />
 		<xsl:text>);</xsl:text>
+		
+		<xsl:value-of select="$str.endl" />
+		<xsl:value-of select="$memberSet" />
+		<xsl:text>default_option_info_index = </xsl:text>
+		
+		<xsl:choose>
+			<xsl:when test="$optionNode/prg:default">
+				<xsl:variable name="defaultOptionId" select="$optionNode/prg:default/@id" />
+				<xsl:variable name="defaultOptionNode" select="$optionNode/prg:options/*[@id=$defaultOptionId]" />
+				<xsl:value-of select="count ($defaultOptionNode/preceding-sibling::*)" />
+				<xsl:text>;</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>-1;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<!-- -->

@@ -36,13 +36,14 @@ parsers)
 cat << EOFSCUSAGE
 parsers: Parsers tests
 Usage:
-  run-tests parsers [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+  run-tests parsers [-C] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
   Subcommand options:
     -p, --parsers: Parser to test  
       The argument have to be one of the following:  
         c, php, python or sh
     -a, --apps: Test groups to run
     -t, --tests: Test id(s) to run
+    -C, --comments: Add debug comments in generated test programs
   Program options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
@@ -87,7 +88,7 @@ Usage:
     xsh: XSH function library tests
       options: [-1 <...>] [-2 <...>]
     parsers: Parsers tests
-      options: [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+      options: [-C] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
     xslt, xsl: XSLT tests
     xsd, schema: XML schema validation tests
   Options:
@@ -125,18 +126,15 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
 
-# Switch options
+
+parsers_debugComments=false
 keepTemporaryFiles=false
 displayHelp=false
-# Single argument options
 xsh_stdout=
 xsh_stderr=
 
@@ -196,24 +194,16 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
-		then
-			_e_found=true; break
-		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		
-		esac
-	fi
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	
+	esac
+	case "${1}" in
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -235,13 +225,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -265,58 +248,61 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
-	# xsh_stdout
-	if ! parse_isoptionpresent SC_1_xsh_1_stdout
+	
+	parser_set_default=true
+	parse_isoptionpresent SC_1_xsh_1_stdout && parser_set_default=false
+	if ${parser_set_default}
 	then
+		xsh_stdout='/dev/null'
+		parse_setoptionpresence SC_1_xsh_1_stdout
+	fi
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent SC_1_xsh_2_stderr && parser_set_default=false
+	if ${parser_set_default}
+	then
+		xsh_stderr='/dev/null'
+		parse_setoptionpresence SC_1_xsh_2_stderr
+	fi
+	
+	case "${parser_subcommand}" in
+	xsh)
+		local parser_set_default=false
+		
 		parser_set_default=true
+		parse_isoptionpresent SC_1_xsh_1_stdout && parser_set_default=false
 		if ${parser_set_default}
 		then
 			xsh_stdout='/dev/null'
 			parse_setoptionpresence SC_1_xsh_1_stdout
 		fi
-	fi
-	# xsh_stderr
-	if ! parse_isoptionpresent SC_1_xsh_2_stderr
-	then
+		
+		
 		parser_set_default=true
+		parse_isoptionpresent SC_1_xsh_2_stderr && parser_set_default=false
 		if ${parser_set_default}
 		then
 			xsh_stderr='/dev/null'
 			parse_setoptionpresence SC_1_xsh_2_stderr
 		fi
-	fi
-	case "${parser_subcommand}" in
-	xsh)
-		# xsh_stdout
-		if ! parse_isoptionpresent SC_1_xsh_1_stdout
-		then
-			parser_set_default=true
-			if ${parser_set_default}
-			then
-				xsh_stdout='/dev/null'
-				parse_setoptionpresence SC_1_xsh_1_stdout
-			fi
-		fi
-		# xsh_stderr
-		if ! parse_isoptionpresent SC_1_xsh_2_stderr
-		then
-			parser_set_default=true
-			if ${parser_set_default}
-			then
-				xsh_stderr='/dev/null'
-				parse_setoptionpresence SC_1_xsh_2_stderr
-			fi
-		fi
+		
 		
 		;;
 	parsers)
+		local parser_set_default=false
+		
 		;;
 	xslt | xsl)
+		local parser_set_default=false
+		
 		;;
 	xsd | schema)
+		local parser_set_default=false
+		
 		;;
 	
 	esac
@@ -324,8 +310,6 @@ parse_setdefaultarguments()
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -455,8 +439,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_xsh_1_stdout && return ${PARSER_SC_ERROR}
+				
 				xsh_stdout="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_1_stdout
+				
 				;;
 			stderr)
 				if ${parser_optionhastail}
@@ -483,8 +469,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_xsh_2_stderr && return ${PARSER_SC_ERROR}
+				
 				xsh_stderr="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_2_stderr
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -527,8 +515,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_xsh_1_stdout && return ${PARSER_SC_ERROR}
+				
 				xsh_stdout="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_1_stdout
+				
 				;;
 			2)
 				if [ ! -z "${parser_optiontail}" ]
@@ -555,8 +545,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_xsh_2_stderr && return ${PARSER_SC_ERROR}
+				
 				xsh_stderr="${parser_item}"
-				parse_setoptionpresence SC_1_xsh_2_stderr
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -586,8 +578,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_parsers[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
 					if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
@@ -596,7 +590,7 @@ parse_process_subcommand_option()
 						
 						return ${PARSER_SC_ERROR}
 					fi
-					parsers_parsers[$(expr ${#parsers_parsers[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -618,7 +612,7 @@ parse_process_subcommand_option()
 						
 						return ${PARSER_SC_ERROR}
 					fi
-					parsers_parsers[$(expr ${#parsers_parsers[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -628,8 +622,13 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_1_parsers && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_1_parsers
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_parsers[${#parsers_parsers[*]}]="${parser_ma_values[${i}]}"
+				done
+				
 				;;
 			apps)
 				parser_item=''
@@ -639,11 +638,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_apps[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
-					parsers_apps[$(expr ${#parsers_apps[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -659,7 +660,7 @@ parse_process_subcommand_option()
 					parser_index=$(expr ${parser_index} + 1)
 					parser_item="${parser_input[${parser_index}]}"
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					parsers_apps[$(expr ${#parsers_apps[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -669,8 +670,13 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_2_apps && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_2_apps
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_apps[${#parsers_apps[*]}]="${parser_ma_values[${i}]}"
+				done
+				
 				;;
 			tests)
 				parser_item=''
@@ -680,11 +686,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_tests[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
-					parsers_tests[$(expr ${#parsers_tests[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -700,7 +708,7 @@ parse_process_subcommand_option()
 					parser_index=$(expr ${parser_index} + 1)
 					parser_item="${parser_input[${parser_index}]}"
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					parsers_tests[$(expr ${#parsers_tests[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -710,8 +718,25 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_3_tests && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_3_tests
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_tests[${#parsers_tests[*]}]="${parser_ma_values[${i}]}"
+				done
+				
+				;;
+			comments)
+				! parse_setoptionpresence SC_2_parsers_4_comments && return ${PARSER_SC_ERROR}
+				
+				if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+				then
+					parse_adderror "Option --${parser_option} does not allow an argument"
+					parser_optiontail=''
+					return ${PARSER_SC_ERROR}
+				fi
+				parsers_debugComments=true
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -737,8 +762,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_parsers[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
 					if ! ([ "${parser_item}" = 'c' ] || [ "${parser_item}" = 'php' ] || [ "${parser_item}" = 'python' ] || [ "${parser_item}" = 'sh' ])
@@ -747,7 +774,7 @@ parse_process_subcommand_option()
 						
 						return ${PARSER_SC_ERROR}
 					fi
-					parsers_parsers[$(expr ${#parsers_parsers[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -769,7 +796,7 @@ parse_process_subcommand_option()
 						
 						return ${PARSER_SC_ERROR}
 					fi
-					parsers_parsers[$(expr ${#parsers_parsers[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -779,8 +806,13 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_1_parsers && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_1_parsers
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_parsers[${#parsers_parsers[*]}]="${parser_ma_values[${i}]}"
+				done
+				
 				;;
 			a)
 				parser_item=''
@@ -790,11 +822,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_apps[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
-					parsers_apps[$(expr ${#parsers_apps[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -810,7 +844,7 @@ parse_process_subcommand_option()
 					parser_index=$(expr ${parser_index} + 1)
 					parser_item="${parser_input[${parser_index}]}"
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					parsers_apps[$(expr ${#parsers_apps[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -820,8 +854,13 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_2_apps && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_2_apps
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_apps[${#parsers_apps[*]}]="${parser_ma_values[${i}]}"
+				done
+				
 				;;
 			t)
 				parser_item=''
@@ -831,11 +870,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				local parser_ma_values=
 				local parser_ma_local_count=0
 				local parser_ma_total_count=${#parsers_tests[*]}
+				unset parser_ma_values
 				if [ ! -z "${parser_item}" ]
 				then
-					parsers_tests[$(expr ${#parsers_tests[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				fi
@@ -851,7 +892,7 @@ parse_process_subcommand_option()
 					parser_index=$(expr ${parser_index} + 1)
 					parser_item="${parser_input[${parser_index}]}"
 					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					parsers_tests[$(expr ${#parsers_tests[*]} + ${parser_startindex})]="${parser_item}"
+					parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 					parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 					parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 					parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -861,8 +902,19 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
+				! parse_setoptionpresence SC_2_parsers_3_tests && return ${PARSER_SC_ERROR}
 				
-				parse_setoptionpresence SC_2_parsers_3_tests
+				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+				do
+					parsers_tests[${#parsers_tests[*]}]="${parser_ma_values[${i}]}"
+				done
+				
+				;;
+			C)
+				! parse_setoptionpresence SC_2_parsers_4_comments && return ${PARSER_SC_ERROR}
+				
+				parsers_debugComments=true
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -917,6 +969,8 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		temp)
+			! parse_setoptionpresence G_1_temp && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -924,9 +978,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			keepTemporaryFiles=true
-			parse_setoptionpresence G_1_temp
+			
 			;;
 		help)
+			! parse_setoptionpresence G_2_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -934,7 +990,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_2_help
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -954,8 +1010,10 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		T)
+			! parse_setoptionpresence G_1_temp && return ${PARSER_ERROR}
+			
 			keepTemporaryFiles=true
-			parse_setoptionpresence G_1_temp
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -1010,10 +1068,12 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
 	
 	
 	
@@ -1611,8 +1671,17 @@ EOF
 					-s "${xshFile}" \
 					-o "${shScript}"\
 				)
+				
+				${parsers_debugComments} \
+					&& buildShScriptArgs=(\
+						"${buildShScriptArgs[@]}" \
+						--debug-comments \
+					)
+				
 				log "Generating ${app} ${s} program (${buildShScriptArgs[@]})"
-				"${projectPath}/ns/sh/build-shellscript.sh" "${buildShScriptArgs[@]}" || ns_error "Failed to create ${shScript}" 
+				"${projectPath}/ns/sh/build-shellscript.sh" \
+					"${buildShScriptArgs[@]}" \
+				|| ns_error "Failed to create ${shScript}" 
 				chmod 755 "${shScript}"
 			done
 			
@@ -1645,7 +1714,9 @@ EOF
 			do
 				pyProgram="${pyProgramBase}${p}.py"
 				pyPrograms=("${pyPrograms[@]}" "${pyProgram}")
-				xsltproc --xinclude -o "${pyProgram}" --stringparam interpreter ${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${pyProgram}"
+				xsltproc --xinclude -o "${pyProgram}" \
+				--stringparam interpreter \
+				${p} "${parserTestsPathBase}/lib/python-unittestprogram.xsl" "${xmlDescription}" || ns_error "Failed to create ${pyProgram}"
 				chmod 755 "${pyProgram}"
 			done
 		fi
@@ -1716,7 +1787,7 @@ EOFSH
 	done)
 EOFSH
 			fi
-			if ${testPython} && [ ! -f "${base}.no-py" ]
+			if ${testPython} && [ ! -f "${base}.no-python" ]
 			then
 				pi=0
 				for p in "${pythonInterpreters[@]}"
@@ -1792,7 +1863,7 @@ EOFSH
 				
 				if ${testPython}
 				then
-					if [ -f "${base}.no-py" ]
+					if [ -f "${base}.no-python" ]
 					then
 						for p in "${pythonInterpreters[@]}"
 						do

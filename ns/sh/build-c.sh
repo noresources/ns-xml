@@ -121,24 +121,20 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
+
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_1_g_1_g:(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):"
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_g_1_output:--output:"
 
-# Switch options
 generateBaseOnly=false
 skipValidation=false
 generateEmbedded=false
 outputOverwrite=false
 nsxmlPathRelative=false
 displayHelp=false
-# Single argument options
 programSchemaVersion=
 xmlProgramDescriptionPath=
 generateInclude=
@@ -206,43 +202,150 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	G_1_g_1_g)
+		;;
+	G_1_g_1_g_1_g)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramIndependent" ])
 		then
-			_e_found=true; break
+			parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode}"
+			return ${PARSER_ERROR}
 		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		G_1_g)
-			parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
-			
-			;;
-		G_1_g_1_g_1_g)
-			;;
-		G_1_g_1_g_2_g)
-			parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
-			parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
-			
-			;;
-		G_1_g_3_g)
-			;;
-		G_2_g)
-			parse_addrequiredoption G_2_g_1_output '--output:'
-			
-			;;
-		G_3_g)
-			;;
 		
-		esac
-	fi
+		
+		;;
+	G_1_g_1_g_1_g_1_base)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramIndependent" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramIndependent\" was previously set (${generateProgramIndependent}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_1_g_2_schema_version)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramIndependent" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramIndependent\" was previously set (${generateProgramIndependent}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g_1_xml_description)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependant\" was previously set (${generateProgramDependant}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g_2_skip_validation)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependant\" was previously set (${generateProgramDependant}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g_3_g)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependant\" was previously set (${generateProgramDependant}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g_3_g_1_embed)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode:0:1}" = '@' ] || [ "${generateProgramDependantMode}" = "generateEmbedded" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_1_g_2_g_3_g_2_include)
+		if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramDependant" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode:0:1}" = '@' ] || [ "${generateProgramDependantMode}" = "generateInclude" ])
+		then
+			parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_1_g_2_prefix)
+		;;
+	G_1_g_3_g)
+		;;
+	G_1_g_3_g_1_struct_style)
+		;;
+	G_1_g_3_g_2_function_style)
+		;;
+	G_1_g_3_g_3_variable_style)
+		;;
+	G_2_g_1_output)
+		;;
+	G_2_g_2_file_base)
+		;;
+	G_2_g_3_overwrite)
+		;;
+	G_3_g_1_ns_xml_path)
+		;;
+	G_3_g_2_ns_xml_path_relative)
+		;;
+	
+	esac
+	case "${1}" in
+	G_1_g)
+		parse_addrequiredoption G_1_g_1_g '(--base, --schema-version) or (--xml-description, --skip-validation, (--embed, --include)):'
+		
+		;;
+	G_1_g_1_g_1_g)
+		;;
+	G_1_g_1_g_2_g)
+		parse_addrequiredoption G_1_g_1_g_2_g_1_xml_description '--xml-description:'
+		parse_addrequiredoption G_1_g_1_g_2_g_3_g '--embed or --include:'
+		
+		;;
+	G_1_g_3_g)
+		;;
+	G_2_g)
+		parse_addrequiredoption G_2_g_1_output '--output:'
+		
+		;;
+	G_3_g)
+		;;
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -264,13 +367,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -294,81 +390,83 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
-	# programSchemaVersion
-	if ! parse_isoptionpresent G_1_g_1_g_1_g_2_schema_version
+	
+	parser_set_default=true
+	parse_isoptionpresent G_1_g_1_g_1_g_2_schema_version && parser_set_default=false
+	if ! ([ -z "${generationMode}" ] || [ "${generationMode:0:1}" = '@' ] || [ "${generationMode}" = "generateProgramIndependent" ])
 	then
-		parser_set_default=true
-		if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
-		then
-			parser_set_default=false
-		fi
-		
-		if ${parser_set_default}
-		then
-			programSchemaVersion='2.0'
-			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
-		fi
+		parser_set_default=false
 	fi
-	# structNameStyle
-	if ! parse_isoptionpresent G_1_g_3_g_1_struct_style
+	
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			structNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
-		fi
+		programSchemaVersion='2.0'
+		generationMode='generateProgramIndependent'
+		parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version
+		parse_setoptionpresence G_1_g_1_g_1_g
+		parse_setoptionpresence G_1_g_1_g
+		parse_setoptionpresence G_1_g
 	fi
-	# functionNameStyle
-	if ! parse_isoptionpresent G_1_g_3_g_2_function_style
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_1_g_3_g_1_struct_style && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			functionNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
-		fi
+		structNameStyle='none'
+		parse_setoptionpresence G_1_g_3_g_1_struct_style
+		parse_setoptionpresence G_1_g_3_g
+		parse_setoptionpresence G_1_g
 	fi
-	# variableNameStyle
-	if ! parse_isoptionpresent G_1_g_3_g_3_variable_style
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_1_g_3_g_2_function_style && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			variableNameStyle='none'
-			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
-		fi
+		functionNameStyle='none'
+		parse_setoptionpresence G_1_g_3_g_2_function_style
+		parse_setoptionpresence G_1_g_3_g
+		parse_setoptionpresence G_1_g
 	fi
-	# outputPath
-	if ! parse_isoptionpresent G_2_g_1_output
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_1_g_3_g_3_variable_style && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			outputPath='.'
-			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
-		fi
+		variableNameStyle='none'
+		parse_setoptionpresence G_1_g_3_g_3_variable_style
+		parse_setoptionpresence G_1_g_3_g
+		parse_setoptionpresence G_1_g
 	fi
-	# outputFileBase
-	if ! parse_isoptionpresent G_2_g_2_file_base
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_2_g_1_output && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			outputFileBase='<auto>'
-			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
-		fi
+		outputPath='.'
+		parse_setoptionpresence G_2_g_1_output
+		parse_setoptionpresence G_2_g
+	fi
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_2_g_2_file_base && parser_set_default=false
+	if ${parser_set_default}
+	then
+		outputFileBase='<auto>'
+		parse_setoptionpresence G_2_g_2_file_base
+		parse_setoptionpresence G_2_g
 	fi
 }
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -474,6 +572,8 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		help)
+			! parse_setoptionpresence G_4_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -481,15 +581,16 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_4_help
+			
 			;;
 		base)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_1_g_1_base && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -498,42 +599,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			generateBaseOnly=true
-			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramIndependent'
+			
 			;;
 		schema-version)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -564,43 +633,19 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			programSchemaVersion="${parser_item}"
-			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_2_schema_version;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramIndependent'
+			
 			;;
 		xml-description)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -637,17 +682,26 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			xmlProgramDescriptionPath="${parser_item}"
-			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			
 			;;
 		skip-validation | no-validation)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -656,22 +710,19 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			
 			;;
 		embed)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed && return ${PARSER_ERROR}
 			
-			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateEmbedded" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
@@ -680,49 +731,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			generateEmbedded=true
-			generationMode="generateProgramDependant"
-			generateProgramDependantMode="generateEmbedded"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			generateProgramDependantMode='generateEmbedded'
+			
 			;;
 		include)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
-			
-			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateInclude" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -759,13 +772,22 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			generateInclude="${parser_item}"
-			generationMode="generateProgramDependant"
-			generateProgramDependantMode="generateInclude"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			generateProgramDependantMode='generateInclude'
+			
 			;;
 		prefix)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -790,11 +812,14 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_g_2_prefix && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			prefix="${parser_item}"
-			parse_setoptionpresence G_1_g_2_prefix;parse_setoptionpresence G_1_g
+			
 			;;
 		struct-style | struct)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -825,11 +850,16 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_1_g_3_g_1_struct_style && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			structNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_1_struct_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			
 			;;
 		function-style | function | func)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -860,11 +890,16 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_1_g_3_g_2_function_style && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			functionNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_2_function_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			
 			;;
 		variable-style | variable | var)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -895,11 +930,16 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_1_g_3_g_3_variable_style && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			variableNameStyle="${parser_item}"
-			parse_setoptionpresence G_1_g_3_g_3_variable_style;parse_setoptionpresence G_1_g_3_g;parse_setoptionpresence G_1_g
+			
 			;;
 		output)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -936,11 +976,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_g_1_output && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
+			
 			;;
 		file-base | file)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -965,11 +1008,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_2_g_2_file_base && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
+			
 			;;
 		overwrite | force)
-			# Group checks
+			! parse_setoptionpresence G_2_g_3_overwrite && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -977,10 +1027,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			outputOverwrite=true
-			parse_setoptionpresence G_2_g_3_overwrite;parse_setoptionpresence G_2_g
+			
 			;;
 		ns-xml-path)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -1005,11 +1054,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_3_g_1_ns_xml_path && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
+			
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_3_g_1_ns_xml_path;parse_setoptionpresence G_3_g
+			
 			;;
 		ns-xml-path-relative)
-			# Group checks
+			! parse_setoptionpresence G_3_g_2_ns_xml_path_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1017,7 +1073,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_3_g_2_ns_xml_path_relative;parse_setoptionpresence G_3_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -1037,50 +1093,19 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		b)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramIndependent" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_1_g_1_base && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			generateBaseOnly=true
-			generationMode="generateProgramIndependent"
-			parse_setoptionpresence G_1_g_1_g_1_g_1_base;parse_setoptionpresence G_1_g_1_g_1_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramIndependent'
+			
 			;;
 		x)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				if ${parser_optionhastail}
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1116,81 +1141,49 @@ parse_process_option()
 				parse_adderror "Invalid patn type for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			xmlProgramDescriptionPath="${parser_item}"
-			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_1_xml_description;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			
 			;;
 		S)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			skipValidation=true
-			generationMode="generateProgramDependant"
-			parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			
 			;;
 		e)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed && return ${PARSER_ERROR}
 			
-			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateEmbedded" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
-				return ${PARSER_ERROR}
-			fi
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
 			
 			generateEmbedded=true
-			generationMode="generateProgramDependant"
-			generateProgramDependantMode="generateEmbedded"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			generateProgramDependantMode='generateEmbedded'
+			
 			;;
 		i)
-			# Group checks
-			if ! ([ -z "${generationMode}" ] || [ "${generationMode}" = "generateProgramDependant" ] || [ "${generationMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generationMode\" was previously set (${generationMode})"
-				return ${PARSER_ERROR}
-			fi
-			
-			if ! ([ -z "${generateProgramDependantMode}" ] || [ "${generateProgramDependantMode}" = "generateInclude" ] || [ "${generateProgramDependantMode:0:1}" = "@" ])
-			then
-				parse_adderror "Another option of the group \"generateProgramDependantMode\" was previously set (${generateProgramDependantMode})"
-				if [ ! -z "${parser_optiontail}" ]
-				then
-					parser_item=${parser_optiontail}
-				else
-					parser_index=$(expr ${parser_index} + 1)
-					if [ ${parser_index} -ge ${parser_itemcount} ]
-					then
-						parse_adderror "End of input reached - Argument expected"
-						return ${PARSER_ERROR}
-					fi
-					
-					parser_item="${parser_input[${parser_index}]}"
-					if [ "${parser_item}" = '--' ]
-					then
-						parse_adderror "End of option marker found - Argument expected"
-						parser_index=$(expr ${parser_index} - 1)
-						return ${PARSER_ERROR}
-					fi
-				fi
-				
-				parser_subindex=0
-				parser_optiontail=''
-				parser_optionhastail=false
-				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				
-				return ${PARSER_ERROR}
-			fi
-			
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1227,13 +1220,22 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g_3_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g_1_g && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			generateInclude="${parser_item}"
-			generationMode="generateProgramDependant"
-			generateProgramDependantMode="generateInclude"
-			parse_setoptionpresence G_1_g_1_g_2_g_3_g_2_include;parse_setoptionpresence G_1_g_1_g_2_g_3_g;parse_setoptionpresence G_1_g_1_g_2_g;parse_setoptionpresence G_1_g_1_g;parse_setoptionpresence G_1_g
+			generationMode='generateProgramDependant'
+			generateProgramDependantMode='generateInclude'
+			
 			;;
 		p)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1258,11 +1260,14 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_1_g_2_prefix && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			prefix="${parser_item}"
-			parse_setoptionpresence G_1_g_2_prefix;parse_setoptionpresence G_1_g
+			
 			;;
 		o)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1299,11 +1304,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_g_1_output && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_g_1_output;parse_setoptionpresence G_2_g
+			
 			;;
 		f)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1328,13 +1336,20 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_2_g_2_file_base && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			outputFileBase="${parser_item}"
-			parse_setoptionpresence G_2_g_2_file_base;parse_setoptionpresence G_2_g
+			
 			;;
 		u)
-			# Group checks
+			! parse_setoptionpresence G_2_g_3_overwrite && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}
+			
 			outputOverwrite=true
-			parse_setoptionpresence G_2_g_3_overwrite;parse_setoptionpresence G_2_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -1373,10 +1388,28 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${parser_option_G_1_g:0:1}" = '@' ] && parser_option_G_1_g=''
+	parser_option_G_1_g=''
+	[ "${generationMode:0:1}" = '@' ] && generationMode=''
+	[ "${generationMode:0:1}" = '~' ] && generationMode=''
+	[ "${generateProgramIndependent:0:1}" = '@' ] && generateProgramIndependent=''
+	generateProgramIndependent=''
+	[ "${generateProgramDependant:0:1}" = '@' ] && generateProgramDependant=''
+	generateProgramDependant=''
+	[ "${generateProgramDependantMode:0:1}" = '@' ] && generateProgramDependantMode=''
+	[ "${generateProgramDependantMode:0:1}" = '~' ] && generateProgramDependantMode=''
+	[ "${parser_option_G_1_g_3_g:0:1}" = '@' ] && parser_option_G_1_g_3_g=''
+	parser_option_G_1_g_3_g=''
+	[ "${parser_option_G_2_g:0:1}" = '@' ] && parser_option_G_2_g=''
+	parser_option_G_2_g=''
+	[ "${parser_option_G_3_g:0:1}" = '@' ] && parser_option_G_3_g=''
+	parser_option_G_3_g=''
 	
 	
 	

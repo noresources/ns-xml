@@ -7,6 +7,12 @@
 
 	<xsl:import href="base.xsl" />
 
+	<!-- Interpreter dialect. Could be bash, ksh or zsh -->
+	<xsl:param name="sh.interpreter" select="'sh'" />
+
+	<!-- If set, force to use this expression to adjust array indexes -->
+	<xsl:param name="sh.arrayOffsetExpression" />
+
 	<!-- End of line character for UNIX shell scripts -->
 	<xsl:variable name="sh.endl" select="$str.unix.endl" />
 
@@ -61,7 +67,7 @@
 		<!-- Variable name -->
 		<xsl:param name="name" />
 		<!-- Interpreter type -->
-		<xsl:param name="interpreter" select="sh" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 		<!-- Variable initial value -->
 		<xsl:param name="value" />
 		<!-- Indicates if the value value have to be quoted.
@@ -230,17 +236,80 @@
 		<xsl:text>[*]}</xsl:text>
 	</xsl:template>
 
-	<!-- Set an element of an array variable (not compatible with all shells) -->
+	<!-- Adjust array index according interpreter
+		array indexing offset policy.
+
+		Most of interpreters use 0-based index whereas
+		Zsh use 1-based index
+	-->
+	<xsl:template name="sh.arrayIndex">
+		<!-- Zero-based index to adjust -->
+		<xsl:param name="index" />
+		<!-- Interpreter dialect -->
+		<xsl:param name="interpreter" select="$sh.interpreter" />
+		<!-- User-defined array index offset expression.
+			This parameter prevails on $interpreter -->
+		<xsl:param name="offsetExpression" select="$sh.arrayOffsetExpression" />
+
+		<xsl:choose>
+			<xsl:when test="string-length($offsetExpression) &gt; 0">
+				<xsl:choose>
+					<xsl:when test="(number($index) = $index) and (number($offsetExpression) = $offsetExpression)">
+						<xsl:value-of select="$index + $offsetExpression" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>$(expr </xsl:text>
+						<xsl:value-of select="$index" />
+						<xsl:text> + </xsl:text>
+						<xsl:value-of select="$offsetExpression" />
+						<xsl:text>)</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$interpreter = 'zsh'">
+				<xsl:choose>
+					<xsl:when test="number($index) = $index">
+						<xsl:value-of select="$index + 1" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>$(expr </xsl:text>
+						<xsl:value-of select="$index" />
+						<xsl:text> + 1)</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$index" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Set an element of an array variable -->
 	<xsl:template name="sh.arraySetIndex">
 		<!-- Variable name -->
 		<xsl:param name="name" />
-		<!-- Array index -->
+		<!-- Array index. -->
 		<xsl:param name="index" />
 		<!-- Element value -->
 		<xsl:param name="value" />
+		<!-- Interpreter dialect. If specified, the
+			index value will be adjusted according
+			interpreter array indexinngpolicy -->
+		<xsl:param name="interpreter" select="$sh.interpreter" />
+		<!-- User-defined array index offset. This prevails over the $interpreter value -->
+		<xsl:param name="offsetExpression" select="$sh.arrayOffsetExpression" />
+
+		<xsl:variable name="realIndex">
+			<xsl:call-template name="sh.arrayIndex">
+				<xsl:with-param name="index" select="$index" />
+				<xsl:with-param name="interpreter" select="$interpreter" />
+				<xsl:with-param name="offsetExpression" select="$offsetExpression" />
+			</xsl:call-template>
+		</xsl:variable>
+
 		<xsl:value-of select="normalize-space($name)" />
 		<xsl:text>[</xsl:text>
-		<xsl:value-of select="normalize-space($index)" />
+		<xsl:value-of select="$realIndex" />
 		<xsl:text>]=</xsl:text>
 		<xsl:value-of select="normalize-space($value)" />
 	</xsl:template>
@@ -278,6 +347,8 @@
 			<xsl:with-param name="name" select="$name" />
 			<xsl:with-param name="index" select="$index" />
 			<xsl:with-param name="value" select="$value" />
+			<!--Disable index auto-adjust -->
+			<xsl:with-param name="interpreter" select="'sh'" />
 		</xsl:call-template>
 	</xsl:template>
 
@@ -290,8 +361,11 @@
 		<!-- Name of the index variable used in loop -->
 		<xsl:param name="indexVariableName" select="'i'" />
 		<xsl:param name="append" select="true()" />
-		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<!-- Interpreter dialect. Array indexes will be
+			adjusted according interpreter array indexing policy -->
+		<xsl:param name="interpreter" select="$sh.interpreter" />
+		<!-- User-defined array index offset. This prevails over the $interpreter value -->
+		<xsl:param name="offsetExpression" select="$sh.arrayOffsetExpression" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select='false()' />
 
@@ -311,15 +385,30 @@
 
 		<xsl:call-template name="sh.for">
 			<xsl:with-param name="condition">
+				<!-- init -->
 				<xsl:text>((</xsl:text>
-				<xsl:value-of select="normalize-space($indexVariableName)" />
-				<xsl:text>=0;</xsl:text>
-				<xsl:value-of select="normalize-space($indexVariable)" />
-				<xsl:text>&lt;</xsl:text>
-				<xsl:call-template name="sh.arrayLength">
-					<xsl:with-param name="name" select="$from" />
+				<xsl:value-of select="normalize-space ($indexVariableName)" />
+				<xsl:text>=</xsl:text>
+				<xsl:call-template name="sh.arrayIndex">
+					<xsl:with-param name="index" select="0" />
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="offsetExpression" select="$offsetExpression" />
 				</xsl:call-template>
 				<xsl:text>;</xsl:text>
+				<!-- test -->
+				<xsl:value-of select="normalize-space($indexVariable)" />
+				<xsl:text>&lt;</xsl:text>
+				<xsl:call-template name="sh.arrayIndex">
+					<xsl:with-param name="index">
+						<xsl:call-template name="sh.arrayLength">
+							<xsl:with-param name="name" select="$from" />
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="interpreter" select="$interpreter" />
+					<xsl:with-param name="offsetExpression" select="$offsetExpression" />
+				</xsl:call-template>
+				<xsl:text>;</xsl:text>
+				<!-- increment -->
 				<xsl:value-of select="normalize-space($indexVariableName)" />
 				<xsl:text>++))</xsl:text>
 			</xsl:with-param>
@@ -341,10 +430,13 @@
 					<xsl:with-param name="value">
 						<xsl:call-template name="sh.var">
 							<xsl:with-param name="name" select="$from" />
-							<xsl:with-param name="index" select="$indexVariable" />
+							<xsl:with-param name="index">
+								<xsl:value-of select="$indexVariable" />
+							</xsl:with-param>
 							<xsl:with-param name="quoted" select="true()" />
 						</xsl:call-template>
 					</xsl:with-param>
+					<xsl:with-param name="interpreter" select="$interpreter" />
 				</xsl:call-template>
 			</xsl:with-param>
 		</xsl:call-template>
@@ -357,7 +449,7 @@
 		<!-- Variable representing the current element -->
 		<xsl:param name="elementVariableName" select="'i'" />
 		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select="false()" />
 		<xsl:param name="do" />
@@ -392,7 +484,7 @@
 		<!-- Indicates if the function body have to be indented -->
 		<xsl:param name="indent" select="true()" />
 		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 
 		<xsl:if test="$interpreter = 'ksh'">
 			<xsl:text>function </xsl:text>
@@ -468,7 +560,7 @@
 		<xsl:param name="do" />
 		<xsl:param name="indent" select="true()" />
 		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select='false()' />
 
@@ -546,7 +638,7 @@
 		<xsl:param name="do" />
 		<xsl:param name="indent" select="true()" />
 		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select='false()' />
 
@@ -813,7 +905,7 @@
 		<!-- Value to check -->
 		<xsl:param name="value" />
 		<!-- UNIX shell interpreter type -->
-		<xsl:param name="interpreter" select="'sh'" />
+		<xsl:param name="interpreter" select="$sh.interpreter" />
 		<!-- Declare temporary variable as local variable -->
 		<xsl:param name="declareLocal" select='false()' />
 		<!-- What to do if value exists -->

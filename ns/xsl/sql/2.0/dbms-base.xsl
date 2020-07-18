@@ -38,33 +38,22 @@
 		<xsl:variable name="parent" select="$element/.." />
 
 		<xsl:choose>
-			<xsl:when test="$parent/self::sql:table">
-				<xsl:variable name="top">
-					<xsl:call-template name="sql.ancestorsNamePrefix">
-						<xsl:with-param name="element" select="$parent" />
-					</xsl:call-template>
-				</xsl:variable>
+			<xsl:when test="$parent/self::sql:table or $parent/self::sql:namespace">
 				<xsl:call-template name="sql.elementName">
 					<xsl:with-param name="name" select="$parent/@name" />
 				</xsl:call-template>
 				<xsl:text>.</xsl:text>
 			</xsl:when>
-			<xsl:when test="$parent/self::sql:namespace">
-				<xsl:call-template name="sql.elementName">
-					<xsl:with-param name="name" select="$parent/@name" />
-				</xsl:call-template>
-				<xsl:text>.</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
+			<xsl:when test="$parent/@name">
 				<xsl:call-template name="sql.ancestorsNamePrefix">
 					<xsl:with-param name="element" select="$parent" />
 				</xsl:call-template>
-			</xsl:otherwise>
+			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
 
 	<!-- Find a table with the given name in the current namespace -->
-	<xsl:template name="sql.findFullTablesetTableName">
+	<xsl:template name="sql.findFullNamespaceTableName">
 		<xsl:param name="tableName" select="@name" />
 		<xsl:param name="startingPoint" select="." />
 
@@ -77,7 +66,7 @@
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:call-template name="sql.findFullTablesetTableName">
+				<xsl:call-template name="sql.findFullNamespaceTableName">
 					<xsl:with-param name="tableName" select="$tableName" />
 					<xsl:with-param name="startingPoint" select="$parent" />
 				</xsl:call-template>
@@ -204,7 +193,7 @@
 		<xsl:choose>
 			<xsl:when test="$name">
 				<xsl:if test="$fullName">
-					<xsl:call-template name="sql.findFullTablesetTableName">
+					<xsl:call-template name="sql.findFullNamespaceTableName">
 						<xsl:with-param name="tableName" select="$name" />
 					</xsl:call-template>
 				</xsl:if>

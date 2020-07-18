@@ -144,10 +144,8 @@
 				<prg:short>p</prg:short>
 			</prg:names>
 		</prg:switch>
-		<!-- debugMode -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])" />
-		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+			
+		<!-- output file path -->
 		<prg:argument required="true">
 			<prg:databinding>
 				<prg:variable>outputScriptFilePath</prg:variable>
@@ -167,7 +165,27 @@
 				</prg:path>
 			</prg:type>
 		</prg:argument>
+
 		<!-- ns-xml path -->
 		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])" />
+
+		<prg:switch>
+			<prg:databinding><prg:variable>debugComments</prg:variable></prg:databinding>
+			<prg:documentation><prg:abstract>Add debug comments in code</prg:abstract></prg:documentation>
+			<prg:names>
+				<prg:long>debug-comments</prg:long>
+			</prg:names>
+		</prg:switch>
+		
+		<prg:switch>
+			<prg:databinding><prg:variable>debugTrace</prg:variable></prg:databinding>
+			<prg:documentation><prg:abstract>Parse will print debug informations</prg:abstract></prg:documentation>
+			<prg:names>
+				<prg:long>debug-trace</prg:long>
+			</prg:names>
+		</prg:switch>
+
+		<!-- Help -->		
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
 	</prg:options>
 </prg:program>

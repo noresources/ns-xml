@@ -79,7 +79,7 @@ __build_shellscript_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--shell --xml-description --skip-validation --no-validation --interpreter --interpreter-cmd --force-interpreter --prefix-sc-variables --debug --help --output --ns-xml-path --ns-xml-path-relative -s -x -S -p -d -o"
+	local globalargs="--shell --xml-description --skip-validation --no-validation --interpreter --interpreter-cmd --force-interpreter --prefix-sc-variables --output --ns-xml-path --ns-xml-path-relative --debug-comments --debug-trace --help -s -x -S -p -o"
 	local args="${globalargs}"
 	
 	

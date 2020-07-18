@@ -1,0 +1,15 @@
+CLI: "-f", "set arg of exclusive required group"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: 
+mainGroup=
+exclusiveSubGroup=
+xGroupSwitchA=False
+xGroupArgumentB=
+requiredGroup=
+rGroupMultiArgC=
+rGroupSwitchD=True
+exclusiveRequiredGroup=xrArgumentF
+xrGroupSwitchE=False
+xrArgumentF=set arg of exclusive required group

@@ -1,5 +1,0 @@
-CLI: "--", "The simple positional argument... and a non-positive integer value", "0"
-Value count: 2
-Values: "The simple positional argument... and a non-positive integer value", "0"
-Error count: 1
-Subcommand: 

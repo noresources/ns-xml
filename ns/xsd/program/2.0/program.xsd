@@ -407,6 +407,9 @@
 					</xsd:element>
 					<xsd:element name="ui" type="prg:optionUISpecsType" minOccurs="0"/>
 					<xsd:element name="default" minOccurs="0" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:appinfo>The sub option to select if none was set</xsd:appinfo>
+						</xsd:annotation>
 						<xsd:complexType>
 							<xsd:attribute name="id" type="xsd:IDREF"/>
 						</xsd:complexType>

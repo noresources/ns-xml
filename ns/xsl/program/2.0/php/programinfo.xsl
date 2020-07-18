@@ -20,7 +20,7 @@
 		<xsl:call-template name="str.replaceAll">
 			<xsl:with-param name="text">
 				<xsl:call-template name="prg.optionId">
-					<xsl:with-param name="itemNode" select="$itemNode" />
+					<xsl:with-param name="optionNode" select="$itemNode" />
 				</xsl:call-template>
 			</xsl:with-param>
 			<xsl:with-param name="replace">
@@ -277,6 +277,35 @@
 				<xsl:with-param name="parentVariable" select="$optionVariable" />
 			</xsl:call-template>
 		</xsl:for-each>
+
+		<xsl:if test="$optionNode/prg:default">
+			<xsl:variable name="defaultOptionId" select="$optionNode/prg:default/@id" />
+			<xsl:variable name="defaultOptionNode" select="$optionNode/prg:options/*[@id=$defaultOptionId]" />
+			<xsl:variable name="defaultOptionVariable">
+				<xsl:call-template name="prg.php.tempVarName">
+					<xsl:with-param name="itemNode" select="$defaultOptionNode" />
+				</xsl:call-template>
+			</xsl:variable>
+
+			<xsl:value-of select="$str.endl" />
+			<xsl:call-template name="php.comment">
+				<xsl:with-param name="content" select="$defaultOptionId"/>
+			</xsl:call-template>
+			<xsl:value-of select="$str.endl" />
+			<xsl:call-template name="php.comment">
+			<xsl:with-param name="content">
+				<xsl:value-of select="name($defaultOptionNode)" />
+				<xsl:text> </xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+		<xsl:value-of select="$str.endl" />
+			
+			<xsl:value-of select="$optionVariable" />
+			<xsl:text>-&gt;defaultOption = </xsl:text>
+			<xsl:value-of select="$defaultOptionVariable" />
+			<xsl:text>;</xsl:text>
+		</xsl:if>
+
 	</xsl:template>
 
 	<xsl:template name="prg.php.validators">

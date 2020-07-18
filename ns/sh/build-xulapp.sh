@@ -338,16 +338,13 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
+
 parser_required[$(expr ${#parser_required[*]} + ${parser_startindex})]="G_2_output:--output:"
 
-# Switch options
 xsh_prefixSubcommandBoundVariableName=false
 displayHelp=false
 update=false
@@ -355,7 +352,6 @@ skipValidation=false
 debugMode=false
 nsxmlPathRelative=false
 addNsXml=false
-# Single argument options
 python_scriptPath=
 python_programInfoClassname=
 php_scriptPath=
@@ -430,30 +426,56 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	SC_3_xsh_3_g_1_interpreter)
+		if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter:0:1}" = '@' ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ])
 		then
-			_e_found=true; break
+			parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter}"
+			return ${PARSER_ERROR}
 		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
-		G_7_g)
-			;;
-		G_8_g)
-			;;
-		G_9_g)
-			;;
 		
-		esac
-	fi
+		
+		;;
+	SC_3_xsh_3_g_2_interpreter_cmd)
+		if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter:0:1}" = '@' ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ])
+		then
+			parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	G_7_g_1_window_width)
+		;;
+	G_7_g_2_window_height)
+		;;
+	G_7_g_3_debug)
+		;;
+	G_8_g_1_init_script)
+		;;
+	G_8_g_2_resources)
+		;;
+	G_9_g_1_ns_xml_path)
+		;;
+	G_9_g_2_ns_xml_path_relative)
+		;;
+	G_9_g_3_ns)
+		;;
+	
+	esac
+	case "${1}" in
+	G_7_g)
+		;;
+	G_8_g)
+		;;
+	G_9_g)
+		;;
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -475,13 +497,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -505,47 +520,54 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
-	# targetPlatform
-	if ! parse_isoptionpresent G_4_target_platform
+	
+	parser_set_default=true
+	parse_isoptionpresent G_4_target_platform && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			targetPlatform='host'
-			parse_setoptionpresence G_4_target_platform
-		fi
+		targetPlatform='host'
+		parse_setoptionpresence G_4_target_platform
 	fi
-	# windowWidth
-	if ! parse_isoptionpresent G_7_g_1_window_width
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_7_g_1_window_width && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			windowWidth='1024'
-			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
-		fi
+		windowWidth='1024'
+		parse_setoptionpresence G_7_g_1_window_width
+		parse_setoptionpresence G_7_g
 	fi
-	# windowHeight
-	if ! parse_isoptionpresent G_7_g_2_window_height
+	
+	
+	parser_set_default=true
+	parse_isoptionpresent G_7_g_2_window_height && parser_set_default=false
+	if ${parser_set_default}
 	then
-		parser_set_default=true
-		if ${parser_set_default}
-		then
-			windowHeight='768'
-			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
-		fi
+		windowHeight='768'
+		parse_setoptionpresence G_7_g_2_window_height
+		parse_setoptionpresence G_7_g
 	fi
+	
 	case "${parser_subcommand}" in
 	python)
+		local parser_set_default=false
+		
 		;;
 	php)
+		local parser_set_default=false
+		
 		;;
 	xsh | sh | shell)
+		local parser_set_default=false
+		
 		;;
 	command | cmd)
+		local parser_set_default=false
+		
 		;;
 	
 	esac
@@ -553,8 +575,6 @@ parse_setdefaultarguments()
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -700,8 +720,10 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_1_python_1_script && return ${PARSER_SC_ERROR}
+				
 				python_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_1_python_1_script
+				
 				;;
 			classname)
 				if ${parser_optionhastail}
@@ -728,8 +750,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_python_2_classname && return ${PARSER_SC_ERROR}
+				
 				python_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_1_python_2_classname
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -790,8 +814,10 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_1_python_1_script && return ${PARSER_SC_ERROR}
+				
 				python_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_1_python_1_script
+				
 				;;
 			c)
 				if [ ! -z "${parser_optiontail}" ]
@@ -818,8 +844,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_1_python_2_classname && return ${PARSER_SC_ERROR}
+				
 				python_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_1_python_2_classname
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -884,8 +912,10 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_2_php_1_script && return ${PARSER_SC_ERROR}
+				
 				php_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_2_php_1_script
+				
 				;;
 			parser-namespace | parser-ns)
 				if ${parser_optionhastail}
@@ -912,8 +942,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_2_php_2_parser_namespace && return ${PARSER_SC_ERROR}
+				
 				php_parserNamespace="${parser_item}"
-				parse_setoptionpresence SC_2_php_2_parser_namespace
+				
 				;;
 			program-namespace | program-ns | prg-ns)
 				if ${parser_optionhastail}
@@ -940,8 +972,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_2_php_3_program_namespace && return ${PARSER_SC_ERROR}
+				
 				php_programNamespace="${parser_item}"
-				parse_setoptionpresence SC_2_php_3_program_namespace
+				
 				;;
 			classname)
 				if ${parser_optionhastail}
@@ -968,8 +1002,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_2_php_4_classname && return ${PARSER_SC_ERROR}
+				
 				php_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_2_php_4_classname
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1030,8 +1066,10 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_2_php_1_script && return ${PARSER_SC_ERROR}
+				
 				php_scriptPath="${parser_item}"
-				parse_setoptionpresence SC_2_php_1_script
+				
 				;;
 			c)
 				if [ ! -z "${parser_optiontail}" ]
@@ -1058,8 +1096,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_2_php_4_classname && return ${PARSER_SC_ERROR}
+				
 				php_programInfoClassname="${parser_item}"
-				parse_setoptionpresence SC_2_php_4_classname
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1118,10 +1158,14 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_3_xsh_1_shell && return ${PARSER_SC_ERROR}
+				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_3_xsh_1_shell
+				
 				;;
 			prefix-sc-variables)
+				! parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables && return ${PARSER_SC_ERROR}
+				
 				if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 				then
 					parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1129,41 +1173,9 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables
+				
 				;;
 			interpreter)
-				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if ${parser_optionhastail}
-					then
-						parser_item=${parser_optiontail}
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = '--' ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=''
-					parser_optionhastail=false
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if ${parser_optionhastail}
 				then
 					parser_item=${parser_optiontail}
@@ -1188,43 +1200,15 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_3_xsh_3_g_1_interpreter && return ${PARSER_SC_ERROR}
+				
+				! parse_setoptionpresence SC_3_xsh_3_g && return ${PARSER_SC_ERROR}
+				
 				xsh_defaultInterpreterType="${parser_item}"
-				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_3_xsh_3_g_1_interpreter;parse_setoptionpresence SC_3_xsh_3_g
+				xsh_defaultInterpreter='defaultInterpreterType'
+				
 				;;
 			interpreter-cmd)
-				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if ${parser_optionhastail}
-					then
-						parser_item=${parser_optiontail}
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = '--' ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=''
-					parser_optionhastail=false
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if ${parser_optionhastail}
 				then
 					parser_item=${parser_optiontail}
@@ -1249,9 +1233,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd && return ${PARSER_SC_ERROR}
+				
+				! parse_setoptionpresence SC_3_xsh_3_g && return ${PARSER_SC_ERROR}
+				
 				xsh_defaultInterpreterCommand="${parser_item}"
-				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd;parse_setoptionpresence SC_3_xsh_3_g
+				xsh_defaultInterpreter='defaultInterpreterCommand'
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1306,46 +1294,18 @@ parse_process_subcommand_option()
 					return ${PARSER_SC_ERROR}
 				fi
 				
+				! parse_setoptionpresence SC_3_xsh_1_shell && return ${PARSER_SC_ERROR}
+				
 				xsh_xmlShellFileDescriptionPath="${parser_item}"
-				parse_setoptionpresence SC_3_xsh_1_shell
+				
 				;;
 			p)
+				! parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables && return ${PARSER_SC_ERROR}
+				
 				xsh_prefixSubcommandBoundVariableName=true
-				parse_setoptionpresence SC_3_xsh_2_prefix_sc_variables
+				
 				;;
 			i)
-				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterType" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item=${parser_optiontail}
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = '--' ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=''
-					parser_optionhastail=false
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item=${parser_optiontail}
@@ -1370,43 +1330,15 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_3_xsh_3_g_1_interpreter && return ${PARSER_SC_ERROR}
+				
+				! parse_setoptionpresence SC_3_xsh_3_g && return ${PARSER_SC_ERROR}
+				
 				xsh_defaultInterpreterType="${parser_item}"
-				xsh_defaultInterpreter="defaultInterpreterType"
-				parse_setoptionpresence SC_3_xsh_3_g_1_interpreter;parse_setoptionpresence SC_3_xsh_3_g
+				xsh_defaultInterpreter='defaultInterpreterType'
+				
 				;;
 			I)
-				# Group checks
-				if ! ([ -z "${xsh_defaultInterpreter}" ] || [ "${xsh_defaultInterpreter}" = "defaultInterpreterCommand" ] || [ "${xsh_defaultInterpreter:0:1}" = "@" ])
-				then
-					parse_adderror "Another option of the group \"defaultInterpreter\" was previously set (${xsh_defaultInterpreter})"
-					if [ ! -z "${parser_optiontail}" ]
-					then
-						parser_item=${parser_optiontail}
-					else
-						parser_index=$(expr ${parser_index} + 1)
-						if [ ${parser_index} -ge ${parser_itemcount} ]
-						then
-							parse_adderror "End of input reached - Argument expected"
-							return ${PARSER_SC_ERROR}
-						fi
-						
-						parser_item="${parser_input[${parser_index}]}"
-						if [ "${parser_item}" = '--' ]
-						then
-							parse_adderror "End of option marker found - Argument expected"
-							parser_index=$(expr ${parser_index} - 1)
-							return ${PARSER_SC_ERROR}
-						fi
-					fi
-					
-					parser_subindex=0
-					parser_optiontail=''
-					parser_optionhastail=false
-					[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-					
-					return ${PARSER_SC_ERROR}
-				fi
-				
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item=${parser_optiontail}
@@ -1431,9 +1363,13 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd && return ${PARSER_SC_ERROR}
+				
+				! parse_setoptionpresence SC_3_xsh_3_g && return ${PARSER_SC_ERROR}
+				
 				xsh_defaultInterpreterCommand="${parser_item}"
-				xsh_defaultInterpreter="defaultInterpreterCommand"
-				parse_setoptionpresence SC_3_xsh_3_g_2_interpreter_cmd;parse_setoptionpresence SC_3_xsh_3_g
+				xsh_defaultInterpreter='defaultInterpreterCommand'
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1480,8 +1416,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_4_command_1_command && return ${PARSER_SC_ERROR}
+				
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_4_command_1_command
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1524,8 +1462,10 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+				! parse_setoptionpresence SC_4_command_1_command && return ${PARSER_SC_ERROR}
+				
 				command_existingCommandPath="${parser_item}"
-				parse_setoptionpresence SC_4_command_1_command
+				
 				;;
 			*)
 				return ${PARSER_SC_SKIP}
@@ -1580,6 +1520,8 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		help)
+			! parse_setoptionpresence G_1_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1587,7 +1529,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_1_help
+			
 			;;
 		output)
 			if ${parser_optionhastail}
@@ -1626,8 +1568,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_output && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_output
+			
 			;;
 		xml-description)
 			if ${parser_optionhastail}
@@ -1666,8 +1610,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_3_xml_description && return ${PARSER_ERROR}
+			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_xml_description
+			
 			;;
 		target-platform | target)
 			if ${parser_optionhastail}
@@ -1700,10 +1646,14 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_4_target_platform && return ${PARSER_ERROR}
+			
 			targetPlatform="${parser_item}"
-			parse_setoptionpresence G_4_target_platform
+			
 			;;
 		update)
+			! parse_setoptionpresence G_5_update && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1711,9 +1661,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			update=true
-			parse_setoptionpresence G_5_update
+			
 			;;
 		skip-validation | no-validation)
+			! parse_setoptionpresence G_6_skip_validation && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1721,10 +1673,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			skipValidation=true
-			parse_setoptionpresence G_6_skip_validation
+			
 			;;
 		window-width)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -1765,12 +1716,15 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 			fi
+			
+			! parse_setoptionpresence G_7_g_1_window_width && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
 			
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
+			
 			;;
 		window-height)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -1812,11 +1766,18 @@ parse_process_option()
 				fi
 			fi
 			
+			! parse_setoptionpresence G_7_g_2_window_height && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
+			
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
+			
 			;;
 		debug)
-			# Group checks
+			! parse_setoptionpresence G_7_g_3_debug && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1824,10 +1785,9 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
+			
 			;;
 		init-script)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -1864,11 +1824,14 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_8_g_1_init_script && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_8_g && return ${PARSER_ERROR}
+			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init_script;parse_setoptionpresence G_8_g
+			
 			;;
 		resources)
-			# Group checks
 			parser_item=''
 			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
@@ -1876,8 +1839,10 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			local parser_ma_values=
 			local parser_ma_local_count=0
 			local parser_ma_total_count=${#userDataPaths[*]}
+			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
 				if [ ! -e "${parser_item}" ]
@@ -1892,7 +1857,7 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 				
-				userDataPaths[$(expr ${#userDataPaths[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 			fi
@@ -1920,7 +1885,7 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 				
-				userDataPaths[$(expr ${#userDataPaths[*]} + ${parser_startindex})]="${parser_item}"
+				parser_ma_values[$(expr ${#parser_ma_values[*]} + ${parser_startindex})]="${parser_item}"
 				parser_ma_total_count=$(expr ${parser_ma_total_count} + 1)
 				parser_ma_local_count=$(expr ${parser_ma_local_count} + 1)
 				parser_nextitem="${parser_input[$(expr ${parser_index} + 1)]}"
@@ -1930,11 +1895,17 @@ parse_process_option()
 				parse_adderror "At least one argument expected for option \"${parser_option}\""
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_8_g_2_resources && return ${PARSER_ERROR}
 			
-			parse_setoptionpresence G_8_g_2_resources;parse_setoptionpresence G_8_g
+			! parse_setoptionpresence G_8_g && return ${PARSER_ERROR}
+			
+			for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
+			do
+				userDataPaths[${#userDataPaths[*]}]="${parser_ma_values[${i}]}"
+			done
+			
 			;;
 		ns-xml-path)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -1959,11 +1930,18 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
+			! parse_setoptionpresence G_9_g_1_ns_xml_path && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_9_g && return ${PARSER_ERROR}
+			
 			nsxmlPath="${parser_item}"
-			parse_setoptionpresence G_9_g_1_ns_xml_path;parse_setoptionpresence G_9_g
+			
 			;;
 		ns-xml-path-relative)
-			# Group checks
+			! parse_setoptionpresence G_9_g_2_ns_xml_path_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_9_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1971,10 +1949,13 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			nsxmlPathRelative=true
-			parse_setoptionpresence G_9_g_2_ns_xml_path_relative;parse_setoptionpresence G_9_g
+			
 			;;
 		ns | ns-xml-add)
-			# Group checks
+			! parse_setoptionpresence G_9_g_3_ns && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_9_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -1982,7 +1963,7 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			addNsXml=true
-			parse_setoptionpresence G_9_g_3_ns;parse_setoptionpresence G_9_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -2038,8 +2019,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_2_output && return ${PARSER_ERROR}
+			
 			outputPath="${parser_item}"
-			parse_setoptionpresence G_2_output
+			
 			;;
 		x)
 			if [ ! -z "${parser_optiontail}" ]
@@ -2078,8 +2061,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_3_xml_description && return ${PARSER_ERROR}
+			
 			xmlProgramDescriptionPath="${parser_item}"
-			parse_setoptionpresence G_3_xml_description
+			
 			;;
 		t)
 			if [ ! -z "${parser_optiontail}" ]
@@ -2112,19 +2097,24 @@ parse_process_option()
 				
 				return ${PARSER_ERROR}
 			fi
+			! parse_setoptionpresence G_4_target_platform && return ${PARSER_ERROR}
+			
 			targetPlatform="${parser_item}"
-			parse_setoptionpresence G_4_target_platform
+			
 			;;
 		u)
+			! parse_setoptionpresence G_5_update && return ${PARSER_ERROR}
+			
 			update=true
-			parse_setoptionpresence G_5_update
+			
 			;;
 		S)
+			! parse_setoptionpresence G_6_skip_validation && return ${PARSER_ERROR}
+			
 			skipValidation=true
-			parse_setoptionpresence G_6_skip_validation
+			
 			;;
 		W)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -2165,12 +2155,15 @@ parse_process_option()
 					return ${PARSER_ERROR}
 				fi
 			fi
+			
+			! parse_setoptionpresence G_7_g_1_window_width && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
 			
 			windowWidth="${parser_item}"
-			parse_setoptionpresence G_7_g_1_window_width;parse_setoptionpresence G_7_g
+			
 			;;
 		H)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -2212,16 +2205,22 @@ parse_process_option()
 				fi
 			fi
 			
+			! parse_setoptionpresence G_7_g_2_window_height && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
+			
 			windowHeight="${parser_item}"
-			parse_setoptionpresence G_7_g_2_window_height;parse_setoptionpresence G_7_g
+			
 			;;
 		d)
-			# Group checks
+			! parse_setoptionpresence G_7_g_3_debug && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_7_g && return ${PARSER_ERROR}
+			
 			debugMode=true
-			parse_setoptionpresence G_7_g_3_debug;parse_setoptionpresence G_7_g
+			
 			;;
 		j)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -2258,13 +2257,20 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_8_g_1_init_script && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_8_g && return ${PARSER_ERROR}
+			
 			userInitializationScript="${parser_item}"
-			parse_setoptionpresence G_8_g_1_init_script;parse_setoptionpresence G_8_g
+			
 			;;
 		n)
-			# Group checks
+			! parse_setoptionpresence G_9_g_3_ns && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_9_g && return ${PARSER_ERROR}
+			
 			addNsXml=true
-			parse_setoptionpresence G_9_g_3_ns;parse_setoptionpresence G_9_g
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -2321,10 +2327,20 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${xsh_defaultInterpreter:0:1}" = '@' ] && xsh_defaultInterpreter=''
+	[ "${xsh_defaultInterpreter:0:1}" = '~' ] && xsh_defaultInterpreter=''
+	[ "${parser_option_G_7_g:0:1}" = '@' ] && parser_option_G_7_g=''
+	parser_option_G_7_g=''
+	[ "${parser_option_G_8_g:0:1}" = '@' ] && parser_option_G_8_g=''
+	parser_option_G_8_g=''
+	[ "${parser_option_G_9_g:0:1}" = '@' ] && parser_option_G_9_g=''
+	parser_option_G_9_g=''
 	
 	
 	
@@ -2597,7 +2613,7 @@ build_xsh()
 	
 	# Process xsh file
 	xsltprocArgs=(--xinclude)
-	if ${debugMode}
+	if ${debugTrace}
 	then
 		xsltprocArgs[${#xsltprocArgs[*]}]="--param"
 		xsltprocArgs[${#xsltprocArgs[*]}]="prg.debug"
@@ -2608,6 +2624,13 @@ build_xsh()
 	then
 		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
 		xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.prefixSubcommandOptionVariable"
+		xsltprocArgs[${#xsltprocArgs[*]}]="yes"
+	fi
+	
+	if ${debugComments}
+	then
+		xsltprocArgs[${#xsltprocArgs[*]}]="--stringparam"
+		xsltprocArgs[${#xsltprocArgs[*]}]="prg.sh.parser.debug.comments"
 		xsltprocArgs[${#xsltprocArgs[*]}]="yes"
 	fi
 	

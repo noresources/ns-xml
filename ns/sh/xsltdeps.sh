@@ -54,20 +54,16 @@ PARSER_SC_OK=0
 PARSER_SC_ERROR=1
 PARSER_SC_UNKNOWN=2
 PARSER_SC_SKIP=3
-# Compatibility with shell which use "1" as start index
 [ "${parser_shell}" = 'zsh' ] && parser_startindex=1
 parser_itemcount=$(expr ${parser_startindex} + ${parser_itemcount})
 parser_index=${parser_startindex}
 
-# Required global options
-# (Subcommand required options will be added later)
 
-# Switch options
+
 absolutePath=false
 addInputFiles=false
 displayHelp=false
 debugMode=false
-# Single argument options
 relativePath=
 
 parse_addwarning()
@@ -126,24 +122,34 @@ parse_addrequiredoption()
 }
 parse_setoptionpresence()
 {
-	local _e_found=false
-	local _e=
-	for _e in "${parser_present[@]}"
-	do
-		if [ "${_e}" = "${1}" ]
+	parse_isoptionpresent "${1}" && return 0
+	
+	case "${1}" in
+	G_1_g_1_absolute)
+		if ! ([ -z "${parser_option_G_1_g}" ] || [ "${parser_option_G_1_g:0:1}" = '@' ] || [ "${parser_option_G_1_g}" = "absolutePath" ])
 		then
-			_e_found=true; break
+			parse_adderror "Another option of the group \"parser_option_G_1_g\" was previously set (${parser_option_G_1_g}"
+			return ${PARSER_ERROR}
 		fi
-	done
-	if ${_e_found}
-	then
-		return
-	else
-		parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
-		case "${1}" in
 		
-		esac
-	fi
+		
+		;;
+	G_1_g_2_relative)
+		if ! ([ -z "${parser_option_G_1_g}" ] || [ "${parser_option_G_1_g:0:1}" = '@' ] || [ "${parser_option_G_1_g}" = "relativePath" ])
+		then
+			parse_adderror "Another option of the group \"parser_option_G_1_g\" was previously set (${parser_option_G_1_g}"
+			return ${PARSER_ERROR}
+		fi
+		
+		
+		;;
+	
+	esac
+	case "${1}" in
+	
+	esac
+	parser_present[$(expr ${#parser_present[*]} + ${parser_startindex})]="${1}"
+	return 0
 }
 parse_isoptionpresent()
 {
@@ -165,13 +171,6 @@ parse_isoptionpresent()
 }
 parse_checkrequired()
 {
-	# First round: set default values
-	local o=
-	for o in "${parser_required[@]}"
-	do
-		local todoPart="$(echo "${o}" | cut -f 3 -d":")"
-		[ -z "${todoPart}" ] || eval "${todoPart}"
-	done
 	[ ${#parser_required[*]} -eq 0 ] && return 0
 	local c=0
 	for o in "${parser_required[@]}"
@@ -195,15 +194,13 @@ parse_checkrequired()
 	done
 	return ${c}
 }
-parse_setdefaultarguments()
+parse_setdefaultoptions()
 {
 	local parser_set_default=false
 }
 parse_checkminmax()
 {
 	local errorCount=0
-	# Check min argument for multiargument
-	
 	return ${errorCount}
 }
 parse_numberlesserequalcheck()
@@ -248,11 +245,16 @@ parse_addvalue()
 	then
 		case "${position}" in
 		*)
-			[ ! -e "${value}" ] && parse_adderror "Invalid path \"${value}\" for positional argument ${position}"
+			if [ ! -e "${value}" ]
+			then
+				parse_adderror "Invalid path \"${value}\" for positional argument ${position}"
+				return ${PARSER_ERROR}
+			fi
 			
 			if [ -a "${value}" ] && ! ([ -f "${value}" ])
 			then
 				parse_adderror "Invalid patn type for positional argument ${position}"
+				return ${PARSER_ERROR}
 			fi
 			
 			
@@ -318,6 +320,8 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		add-input)
+			! parse_setoptionpresence G_2_add_input && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -325,9 +329,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			addInputFiles=true
-			parse_setoptionpresence G_2_add_input
+			
 			;;
 		help)
+			! parse_setoptionpresence G_3_help && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -335,9 +341,11 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			displayHelp=true
-			parse_setoptionpresence G_3_help
+			
 			;;
 		debug)
+			! parse_setoptionpresence G_4_debug && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -345,10 +353,13 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			debugMode=true
-			parse_setoptionpresence G_4_debug
+			
 			;;
 		absolute)
-			# Group checks
+			! parse_setoptionpresence G_1_g_1_absolute && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 			then
 				parse_adderror "Option --${parser_option} does not allow an argument"
@@ -356,10 +367,10 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			absolutePath=true
-			parse_setoptionpresence G_1_g_1_absolute;parse_setoptionpresence G_1_g
+			parser_option_G_1_g='absolutePath'
+			
 			;;
 		relative)
-			# Group checks
 			if ${parser_optionhastail}
 			then
 				parser_item=${parser_optiontail}
@@ -396,8 +407,13 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_2_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			relativePath="${parser_item}"
-			parse_setoptionpresence G_1_g_2_relative;parse_setoptionpresence G_1_g
+			parser_option_G_1_g='relativePath'
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -417,20 +433,27 @@ parse_process_option()
 		
 		case "${parser_option}" in
 		i)
+			! parse_setoptionpresence G_2_add_input && return ${PARSER_ERROR}
+			
 			addInputFiles=true
-			parse_setoptionpresence G_2_add_input
+			
 			;;
 		d)
+			! parse_setoptionpresence G_4_debug && return ${PARSER_ERROR}
+			
 			debugMode=true
-			parse_setoptionpresence G_4_debug
+			
 			;;
 		a)
-			# Group checks
+			! parse_setoptionpresence G_1_g_1_absolute && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			absolutePath=true
-			parse_setoptionpresence G_1_g_1_absolute;parse_setoptionpresence G_1_g
+			parser_option_G_1_g='absolutePath'
+			
 			;;
 		r)
-			# Group checks
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -467,8 +490,13 @@ parse_process_option()
 				return ${PARSER_ERROR}
 			fi
 			
+			! parse_setoptionpresence G_1_g_2_relative && return ${PARSER_ERROR}
+			
+			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
+			
 			relativePath="${parser_item}"
-			parse_setoptionpresence G_1_g_2_relative;parse_setoptionpresence G_1_g
+			parser_option_G_1_g='relativePath'
+			
 			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
@@ -507,10 +535,14 @@ parse()
 	
 	if ! ${parser_aborted}
 	then
-		parse_setdefaultarguments
+		parse_setdefaultoptions
 		parse_checkrequired
 		parse_checkminmax
 	fi
+	
+	
+	[ "${parser_option_G_1_g:0:1}" = '@' ] && parser_option_G_1_g=''
+	[ "${parser_option_G_1_g:0:1}" = '~' ] && parser_option_G_1_g=''
 	
 	
 	

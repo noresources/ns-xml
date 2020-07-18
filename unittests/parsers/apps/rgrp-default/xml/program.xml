@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
+	<prg:name>nested-xgrp</prg:name>
+	<prg:documentation>
+		<prg:abstract>Nested exclusive group with default</prg:abstract>
+	</prg:documentation>
+	<prg:options>
+		<prg:group>
+			<prg:databinding>
+				<prg:variable>mainGroup</prg:variable>
+			</prg:databinding>
+			<prg:documentation>
+				<prg:abstract>Main group</prg:abstract>
+			</prg:documentation>
+			<prg:options>
+				<!-- Input data -->
+				<prg:group type="exclusive">
+					<prg:databinding>
+						<prg:variable>exclusiveSubGroup</prg:variable>
+					</prg:databinding>
+					<prg:default id="mainGroup.exclusiveSubGroup.a" />
+					<prg:documentation>
+						<prg:abstract>Exclusive sub group</prg:abstract>
+						<prg:details>Since group is not required, default option is ignored</prg:details>
+					</prg:documentation>
+					<prg:options>
+						<!-- STDIN -->
+						<prg:switch id="mainGroup.exclusiveSubGroup.a">
+							<prg:databinding>
+								<prg:variable>xGroupSwitchA</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>Default switch</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:short>a</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>xGroupArgumentB</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>b</prg:short>
+							</prg:names>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+
+				<prg:group required="true">
+					<prg:databinding>
+						<prg:variable>requiredGroup</prg:variable>
+					</prg:databinding>
+					<prg:default id="mainGroup.requiredGroup.d" />
+					<prg:documentation>
+						<prg:details>Since group is required, if --mc is not set, -d will be selected</prg:details>
+					</prg:documentation>
+					<prg:options>
+						<prg:multiargument>
+							<prg:databinding>
+								<prg:variable>rGroupMultiArgC</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>c</prg:short>
+							</prg:names>
+						</prg:multiargument>
+						<prg:switch id="mainGroup.requiredGroup.d">
+							<prg:databinding>
+								<prg:variable>rGroupSwitchD</prg:variable>
+							</prg:databinding>
+							<prg:documentation>
+								<prg:abstract>The default switch of a required group</prg:abstract>
+							</prg:documentation>
+							<prg:names>
+								<prg:short>d</prg:short>
+							</prg:names>
+						</prg:switch>
+					</prg:options>
+				</prg:group>
+
+				<prg:group required="true" type="exclusive">
+					<prg:databinding>
+						<prg:variable>exclusiveRequiredGroup</prg:variable>
+					</prg:databinding>
+					<prg:default id="mainGroup.xrGroup.e" />
+					<prg:options>
+						<prg:switch id="mainGroup.xrGroup.e">
+							<prg:databinding>
+								<prg:variable>xrGroupSwitchE</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>e</prg:short>
+							</prg:names>
+						</prg:switch>
+						<prg:argument>
+							<prg:databinding>
+								<prg:variable>xrArgumentF</prg:variable>
+							</prg:databinding>
+							<prg:names>
+								<prg:short>f</prg:short>
+							</prg:names>
+						</prg:argument>
+					</prg:options>
+				</prg:group>
+
+			</prg:options>
+		</prg:group>
+	</prg:options>
+	<prg:values>
+		<prg:other />
+	</prg:values>
+</prg:program>

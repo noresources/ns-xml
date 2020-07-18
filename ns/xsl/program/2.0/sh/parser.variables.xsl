@@ -14,7 +14,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.vName_program_version">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -23,7 +23,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<!-- Name of the used shell interpreter -->
 	<xsl:variable name="prg.sh.parser.vName_shell">
 		<xsl:call-template name="prg.prefixedName">
@@ -131,6 +131,15 @@
 			<xsl:with-param name="name">
 				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
 				<xsl:text>isfirstpositionalargument</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+
+	<xsl:variable name="prg.sh.parser.vName_ma_values">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>ma_values</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
@@ -389,7 +398,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
-	
+
 	<xsl:variable name="prg.sh.parser.fName_isoptionpresent">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
@@ -427,11 +436,11 @@
 	</xsl:variable>
 
 	<!-- Set default values for single argument options -->
-	<xsl:variable name="prg.sh.parser.fName_setdefaultarguments">
+	<xsl:variable name="prg.sh.parser.fName_setdefaultoptions">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
 				<xsl:value-of select="$prg.sh.parser.functionNamePrefix" />
-				<xsl:text>setdefaultarguments</xsl:text>
+				<xsl:text>setdefaultoptions</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
