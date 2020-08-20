@@ -583,8 +583,8 @@
 					<xsl:with-param name="content">
 						<xsl:text>struct nsxml_option_info *o = NULL;</xsl:text>
 						<xsl:value-of select="$str.endl" />
-						<xsl:variable name="haveArgOptions" select="count ($rootNode/prg:options//prg:argument | $rootNode/prg:options//prg:multiargument) &gt; 0" />
-						<xsl:if test="$haveArgOptions">
+						<xsl:variable name="haveConfigurableOptions" select="count ( $rootNode/prg:options//prg:group | $rootNode/prg:options//prg:argument | $rootNode/prg:options//prg:multiargument) &gt; 0" />
+						<xsl:if test="$haveConfigurableOptions">
 							<xsl:text>void *o_ptr = NULL;</xsl:text>
 						</xsl:if>
 						<xsl:value-of select="$str.endl" />
@@ -619,7 +619,7 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:if test="$haveArgOptions">
+									<xsl:if test="$haveConfigurableOptions">
 										<xsl:text>o_ptr = o;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
@@ -640,7 +640,7 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:if test="$haveArgOptions">
+									<xsl:if test="$haveConfigurableOptions">
 										<xsl:text>o_ptr = o;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
@@ -661,7 +661,7 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:if test="$haveArgOptions">
+									<xsl:if test="$haveConfigurableOptions">
 										<xsl:text>o_ptr = o;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
@@ -682,7 +682,7 @@
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
-									<xsl:if test="$haveArgOptions">
+									<xsl:if test="$haveConfigurableOptions">
 										<xsl:text>o_ptr = o;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
@@ -714,7 +714,7 @@
 							<xsl:text>[</xsl:text>
 							<xsl:value-of select="$optionIndex" />
 							<xsl:text>];</xsl:text>
-							<xsl:if test="$haveArgOptions">
+							<xsl:if test="$haveConfigurableOptions">
 								<xsl:text>o_ptr = o;</xsl:text>
 							</xsl:if>
 							<xsl:value-of select="$str.endl" />
