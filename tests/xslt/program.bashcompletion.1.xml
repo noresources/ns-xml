@@ -7,7 +7,7 @@
 	<prg:version>1.0</prg:version>
 	<prg:copyright>Copyright © 2012 by renaud</prg:copyright>
 	<prg:documentation>
-		<prg:abstract>Run ns-xml unittests</prg:abstract>
+		<prg:abstract>Run ns-xml tests</prg:abstract>
 	</prg:documentation>
 	<prg:subcommands>
 		<prg:subcommand>
@@ -94,7 +94,7 @@
 						<prg:details>
 							Test subset to run.
 							<prg:endl />
-							Test names should be the path of a .info file located in the unittests/xslt directory or
+							Test names should be the path of a .info file located in the tests/xslt directory or
 							its shortname (basename without extension)
 						</prg:details>
 					</prg:documentation>

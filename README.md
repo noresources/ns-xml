@@ -20,5 +20,5 @@ Various XSLT stylesheet to generate code and documents
   * xsh XML shell scripts applications & libraries
   * xsl XSLT stylesheet library* resources Development resources 
 * tools Development tools
-* unittests Tests for the program interface definition framework
+* tests Tests for the program interface definition framework
 * scripts Scripts & configurations files for IDE (mostly for Eclipse)

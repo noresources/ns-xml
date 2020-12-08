@@ -626,9 +626,6 @@
 	<xsd:complexType name="windowProgramUISpecsType">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">Application window preferences
-				The value given by width and height attributes
-				can be overriden by setting the prg.xul.windowWidth and
-				prg.xul.windowHeight parameters of the XSLT stylesheet
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:attribute name="width" type="xsd:positiveInteger" use="optional"/>

@@ -2,4 +2,4 @@ ns;ns
 tools;tools
 resources;resources
 doc;doc
-unittests;unittests
+tests;tests

@@ -20,20 +20,13 @@ cd "${cwd}"
 # Rebuild build-shellscript.sh
 ${projectPath}/tools/sh/refresh-build-shellscript.sh
 buildshellscript="${projectPath}/ns/sh/build-shellscript.sh"
-xulBuilder="${projectPath}/ns/sh/build-xulapp.sh"
 
 [ -x "${buildshellscript}" ] || (echo "${buildshellscript} not executable" && exit 1)
 
-buildXul=false
 singleBuild=""
 for ((i=1;${i}<=${#};i++))
 do
-	if [ "${!i}" == "xul" ]
-	then
-		buildXul=true
-	else
 		singleBuild="${!i}"
-	fi
 done
 
 completionCommands=
@@ -94,30 +87,6 @@ schemaVersionArgs=(\
 		"${bashCompletionStylesheetBasePath}/${programSchemaVersion}/${bashCompletionStylesheetFileName}" \
 		"${fn}.xml"
 		
-	if ${buildXul}
-	then
-		xulOutputPath="${projectPath}/xul"
-		xulOptions=(xsh \
-			-u \
-			-x "${f%xsh}xml" \
-			-s "${f}"
-		)
-		[ -f "${f%xsh}js" ] && xulOptions=("${xulOptions[@]}" -j "${f%xsh}js")
-		
-		for t in linux osx
-		do
-			mkdir -p "${xulOutputPath}/${t}"
-			if ! ${xulBuilder} \
-				"${xulOptions[@]}" \
-				-t ${t} \
-				-o "${xulOutputPath}/${t}" \
-				-n 
-			then
-				echo "Failed to build XUL UI for ${f%xsh} (${t})" 1>&2
-				exit 1
-			fi
-		done
-	fi
 done << EOF
 $(find "${appsBasePath}" -mindepth 1 -maxdepth 2 -name "*.xsh")
 EOF

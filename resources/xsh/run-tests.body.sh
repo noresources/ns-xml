@@ -57,7 +57,7 @@ then
 	apps=("${parsers_apps[@]}")
 	tests=("${parsers_tests[@]}")
 			
-	parserTestsPathBase="${projectPath}/unittests/parsers"
+	parserTestsPathBase="${projectPath}/tests/parsers"
 	tmpShellStylesheet="$(ns_mktemp "shell-xsl")"
 	programSchemaVersion="2.0"
 	xshStylesheet="${projectPath}/ns/xsl/program/${programSchemaVersion}/xsh.xsl"
@@ -780,7 +780,7 @@ EOF
 	exit ${count}
 elif [ "${parser_subcommand}" = 'xsh' ]
 then
-	xshTestsPathBase="${projectPath}/unittests/xsh"
+	xshTestsPathBase="${projectPath}/tests/xsh"
 	xshTestProgramStylesheet="${xshTestsPathBase}/testprogram.xsl"
 	xshTestResult=0
 	c=${#parser_values[@]}
@@ -828,7 +828,7 @@ EOF
 	exit ${xshTestResult}
 elif [ "${parser_subcommand}" = 'xsd' ]
 then
-	xsdTestPathBase="${rootPath}/unittests/xsd"
+	xsdTestPathBase="${rootPath}/tests/xsd"
 	xsdPathBase="${projectPath}/ns/xsd"
 	xsdTextResultFormat="%-15.15s | %-20.20s | %-10s | %-8s | %-.15s\n"
 	printf "${xsdTextResultFormat}" 'schema' 'test' 'validation' 'expected' 'RESULT'
@@ -869,7 +869,7 @@ EOF
 elif [ "${parser_subcommand}" = 'xslt' ]
 then
 	xsltTestsResult=0
-	xsltTestPathBase="${rootPath}/unittests/xslt"
+	xsltTestPathBase="${rootPath}/tests/xslt"
 	unset testList
 	if [ ${#parser_values[@]} -gt 0 ]
 	then

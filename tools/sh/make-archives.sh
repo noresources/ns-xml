@@ -36,8 +36,6 @@ transforms=(\
 	"s,ns/xsd,share/xsd," \
 	"s,ns/xsl,share/xsl," \
 	"s,ns/ns-xml.plist,share/ns-xml.plist," \
-	"s,xul/linux,bin," \
-	"s,xul/osx,Applications," \
 	"s,resources/sh/,," \
 )
 
@@ -47,14 +45,12 @@ prg=(\
 	ns/sh/build-python.sh \
 	ns/sh/build-php.sh \
 	ns/sh/build-shellscript.sh \
-	ns/sh/build-xulapp.sh \
 	ns/sh/new-xsh.sh \
 	ns/sh/prgproc.sh \
 	resources/bash_completion.d/build-c.sh \
 	resources/bash_completion.d/build-python.sh \
 	resources/bash_completion.d/build-php.sh \
 	resources/bash_completion.d/build-shellscript.sh \
-	resources/bash_completion.d/build-xulapp.sh \
 	resources/bash_completion.d/new-xsh.sh \
 	resources/bash_completion.d/prgproc.sh \
 	ns/xbl \
@@ -72,20 +68,6 @@ do
 done << EOF
 $(find "${projectPath}/ns/xsl/program" -name "*.xsl" \
 	| xargs "${projectPath}/ns/sh/xsltdeps.sh" --relative "${projectPath}" --add-input --)
-EOF
-
-while read d
-do
-	prg_linux=("${prg_linux[@]}" "${d}")
-done << EOF
-$(find "xul/linux" -mindepth 1 -maxdepth 1 -type d) 
-EOF
-
-while read d
-do
-	prg_osx=("${prg_osx[@]}" "${d}")
-done << EOF
-$(find "xul/osx" -mindepth 1 -maxdepth 1 -type d) 
 EOF
 
 xslt=(\
