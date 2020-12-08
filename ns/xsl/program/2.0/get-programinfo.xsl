@@ -11,8 +11,24 @@
 			<xsl:when test="$name = 'name'">
 				<xsl:value-of select="normalize-space(prg:name)" />
 			</xsl:when>
+			<xsl:when test="$name = 'abstract'">
+				<xsl:value-of select="normalize-space(prg:documentation/prg:abstract)" />
+			</xsl:when>
 			<xsl:when test="$name = 'label'">
 				<xsl:choose>
+					<xsl:when test="prg:ui/prg:label">
+						<xsl:value-of select="normalize-space(prg:ui/prg:label)" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="normalize-space(prg:name)" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$name = 'description'">
+				<xsl:choose>
+					<xsl:when test="prg:documentation/prg:abstract">
+						<xsl:value-of select="normalize-space(prg:documentation/prg:abstract)" />
+					</xsl:when>
 					<xsl:when test="prg:ui/prg:label">
 						<xsl:value-of select="normalize-space(prg:ui/prg:label)" />
 					</xsl:when>
