@@ -72,9 +72,14 @@
 	<!-- Do not write constraints if single column + autoincrement type -->
 	<!-- This constraint is handled separately -->
 	<xsl:template match="sql:table/sql:primarykey">
-		<xsl:if test="count(sql:column) &gt; 1">
-			<xsl:call-template name="sql.tablePrimaryKeyConstraint" />
-		</xsl:if>
+		<xsl:choose>
+			<xsl:when test="../sql:column/sql:datatype/sql:numeric/@autoincrement = 'yes'">
+				<xsl:call-template name="sql.tableUniqueConstraint" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="sql.tablePrimaryKeyConstraint" />
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="sql:table/sql:column">
@@ -86,16 +91,10 @@
 		<xsl:variable name="pk" select="../sql:primarykey" />
 		<xsl:variable name="isAutoIncrement" select="(./sql:datatype/sql:numeric/@autoincrement = 'yes')" />
 
-		<xsl:if test="$pk and (count($pk/sql:column) = 1) and $pk/sql:column[1][@name = $name]">
+		<xsl:if test="$isAutoIncrement">
 			<xsl:text> PRIMARY KEY</xsl:text>
-			<xsl:if test="$pk/sql:column[1]/@order">
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="$pk/sql:column[1]/@order" />
-			</xsl:if>
+			<xsl:text> AUTOINCREMENT</xsl:text>
 			<!-- @todo conflict clause -->
-			<xsl:if test="$isAutoIncrement">
-				<xsl:text> AUTOINCREMENT</xsl:text>
-			</xsl:if>
 		</xsl:if>
 	</xsl:template>
 
@@ -119,4 +118,6 @@
 		</xsl:call-template>
 		<xsl:text>'</xsl:text>
 	</xsl:template>
+
+
 </xsl:stylesheet>

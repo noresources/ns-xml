@@ -361,7 +361,6 @@
 	<xsd:group name="indexedColumnNameGroup">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
-
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
@@ -403,6 +402,16 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="primaryKeyConstraintType">
+		<xsd:complexContent>
+			<xsd:extension base="sql:columnConstraintBaseType">
+				<xsd:sequence>
+					<xsd:group ref="sql:indexedColumnNameGroup" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="uniqueConstraintType">
 		<xsd:complexContent>
 			<xsd:extension base="sql:columnConstraintBaseType">
 				<xsd:sequence>
@@ -517,6 +526,7 @@
 						<xsd:element ref="sql:column" minOccurs="0" maxOccurs="unbounded" />
 						<!-- Column and table constraints -->
 						<xsd:element name="primarykey" type="sql:primaryKeyConstraintType" minOccurs="0" maxOccurs="1" />
+						<xsd:element name="unique" type="sql:uniqueConstraintType" maxOccurs="unbounded" minOccurs="0" />
 						<xsd:element name="foreignkey" type="sql:foreignKeyConstraintType" maxOccurs="unbounded" minOccurs="0" />
 					</xsd:sequence>
 				</xsd:extension>

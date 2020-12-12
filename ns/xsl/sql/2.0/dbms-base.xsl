@@ -326,6 +326,17 @@
 			</xsl:if>
 		</xsl:if>
 
+		<xsl:if test="sql:unique">
+			<xsl:variable name="uniqueText">
+				<xsl:apply-templates select="sql:unique" />
+			</xsl:variable>
+			<xsl:if test="string-length($uniqueText) &gt; 0">
+				<xsl:text>,</xsl:text>
+				<xsl:value-of select="$str.endl" />
+				<xsl:value-of select="$uniqueText" />
+			</xsl:if>
+		</xsl:if>
+
 		<!-- Foreign keys -->
 		<xsl:if test="sql:foreignkey">
 			<xsl:text>,</xsl:text>
@@ -375,19 +386,21 @@
 		<xsl:apply-templates select="sql:ondelete" />
 	</xsl:template>
 
-	<xsl:template name="sql.tablePrimaryKeyConstraint">
-		<xsl:param name="primaryKeyNode" select="." />
+	<xsl:template name="sql.tableKeyConstraint">
+		<xsl:param name="keyNode" select="." />
+		<xsl:param name="constraintName" select="'PRIMARY KEY'" />
 
-		<xsl:if test="$primaryKeyNode/@name">
+		<xsl:if test="$keyNode/@name">
 			<xsl:text>CONSTRAINT </xsl:text>
 			<xsl:call-template name="sql.elementName">
-				<xsl:with-param name="name" select="$primaryKeyNode/@name" />
+				<xsl:with-param name="name" select="$keyNode/@name" />
 			</xsl:call-template>
 			<xsl:text> </xsl:text>
 		</xsl:if>
 
-		<xsl:text>PRIMARY KEY (</xsl:text>
-		<xsl:for-each select="$primaryKeyNode/sql:column">
+		<xsl:value-of select="$constraintName" />
+		<xsl:text> (</xsl:text>
+		<xsl:for-each select="$keyNode/sql:column">
 			<xsl:call-template name="sql.indexedElementName">
 				<xsl:with-param name="element" select="." />
 			</xsl:call-template>
@@ -398,9 +411,30 @@
 		<xsl:text>)</xsl:text>
 	</xsl:template>
 
+	<xsl:template name="sql.tablePrimaryKeyConstraint">
+		<xsl:param name="keyNode" select="." />
+		<xsl:call-template name="sql.tableKeyConstraint">
+			<xsl:with-param name="keyNode" select="$keyNode" />
+			<xsl:with-param name="constraintName" select="'PRIMARY KEY'" />
+		</xsl:call-template>
+	</xsl:template>
+
+	<xsl:template name="sql.tableUniqueConstraint">
+		<xsl:param name="keyNode" select="." />
+		<xsl:call-template name="sql.tableKeyConstraint">
+			<xsl:with-param name="keyNode" select="$keyNode" />
+			<xsl:with-param name="constraintName" select="'UNIQUE'" />
+		</xsl:call-template>
+	</xsl:template>
+	
 	<!-- Table primary key constraint -->
 	<xsl:template match="sql:table/sql:primarykey">
 		<xsl:call-template name="sql.tablePrimaryKeyConstraint" />
+	</xsl:template>
+
+	<!-- Table UNIQUE constraint -->
+	<xsl:template match="sql:table/sql:unique">
+		<xsl:call-template name="sql.tableUniqueConstraint" />
 	</xsl:template>
 
 	<xsl:template match="sql:table/sql:foreignkey">
