@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright © 2011-2018 by Renaud Guillard (dev@nore.fr)
+# Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr)
 
 ns_realpath2()
 {

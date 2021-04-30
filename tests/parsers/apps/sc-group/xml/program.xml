@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>sc-group</prg:name>
 	<prg:author>Renaud Guillard</prg:author>

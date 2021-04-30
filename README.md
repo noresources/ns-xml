@@ -4,7 +4,7 @@ A collection of XML-based tools to generate source code and programs
 
 # ns-xml components
 ## Program interface definition framework
-Generation of command line option parser, usage string, bash completion file, XUL GUI etc. 
+Generation of command line option parser, usage string, bash completion file etc. 
 from a single XML description of a program interface (options, positional arguments & subcommands)
 ## XSH - XML shell script
 A basic XML structure to write reusable and portable UNIX shell script code across interpreters (bash, zsh, ksh)

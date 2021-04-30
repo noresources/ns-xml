@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright © 2011-2018 by Renaud Guillard (dev@nore.fr)
+# Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr)
 ################################################################################
 # Update ns/sh scripts and completion files
 ################################################################################
