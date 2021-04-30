@@ -197,12 +197,12 @@ class PathValueValidator(ValueValidator):
 
     def validate(self, state, result, element, value):
         passed = True
-        if self.flags & EXISTS:
-            if self.flags & ACCESS_READ and not os.access(value, os.R_OK):
+        if self.flags & self.EXISTS:
+            if self.flags & self.ACCESS_READ and not os.access(value, os.R_OK):
                 passed = False
-            if self.flags & ACCESS_WRITE and not os.access(value, os.W_OK):
+            if self.flags & self.ACCESS_WRITE and not os.access(value, os.W_OK):
                 passed = False
-            if self.flags & ACCESS_EXECUTE and not os.access(value, os.X_OK):
+            if self.flags & self.ACCESS_EXECUTE and not os.access(value, os.X_OK):
                 passed = False
 
         if os.path.exists(value):

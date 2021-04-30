@@ -43,6 +43,7 @@ u = UnittestUtil()
 info = ProgramInfo.TestProgramInfo()
 parser = Parser.Parser(info)
 result = parser.parse(sys.argv, 1)
+displayHelp = False
 
 print ("CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)], "\"", "\"", ", "))
 print ("Value count: " + str(result.valueCount()))
@@ -55,11 +56,14 @@ if errorCount > 0:
 		arg = sys.argv[index]
 		if arg == "__msg__":
 			print (u.array_to_string(messages, " - ", "", "\n"))
+		if arg == "__help__":
+			displayHelp = True
             
 if result.subcommand:
 	print ("Subcommand: " + result.subcommandName)
 else:
 	print ("Subcommand: ")
+	
 ]]></text>
 		<!-- Global args -->
 		<if test="/prg:program/prg:options">
@@ -77,8 +81,13 @@ else:
 					</with-param>
 				</call-template>
 			</if>
-		</for-each>
-	</template>
+		</for-each><![CDATA[
+
+if displayHelp:
+	print ("Help")
+	usg = Parser.UsageFormat()
+	print (info.usage(usg))
+]]></template>
 
 	<template name="prg.unittest.python.variablePrefix">
 		<param name="node" select="." />

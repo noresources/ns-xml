@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2013-2020 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2013-2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Python Source code in customizable XSLT form -->
@@ -204,12 +204,12 @@ class PathValueValidator(ValueValidator):
 
     def validate(self, state, result, element, value):
         passed = True
-        if self.flags & EXISTS:
-            if self.flags & ACCESS_READ and not os.access(value, os.R_OK):
+        if self.flags & self.EXISTS:
+            if self.flags & self.ACCESS_READ and not os.access(value, os.R_OK):
                 passed = False
-            if self.flags & ACCESS_WRITE and not os.access(value, os.W_OK):
+            if self.flags & self.ACCESS_WRITE and not os.access(value, os.W_OK):
                 passed = False
-            if self.flags & ACCESS_EXECUTE and not os.access(value, os.X_OK):
+            if self.flags & self.ACCESS_EXECUTE and not os.access(value, os.X_OK):
                 passed = False
 
         if os.path.exists(value):

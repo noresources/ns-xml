@@ -1,4 +1,4 @@
-CLI: 
+CLI: "--file", "schema.xml"
 Value count: 0
 Values: 
 Error count: 0
@@ -10,4 +10,4 @@ argumentNumberRange=
 argumentNumberNegativeRange=
 argumentSelect=
 argumentNumberSelect=
-fileEndsWith=
+fileEndsWith=schema.xml

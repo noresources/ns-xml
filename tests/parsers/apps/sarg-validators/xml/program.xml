@@ -124,6 +124,32 @@
 				<prg:option>8</prg:option>
 			</prg:select>
 		</prg:argument>
+		<prg:argument>
+			<prg:databinding><prg:variable>fileEndsWith</prg:variable></prg:databinding>
+			<prg:documentation>
+				<prg:abstract>File matching extension(s)</prg:abstract>
+			</prg:documentation>
+			<prg:names>
+				<prg:long>file</prg:long>
+			</prg:names>
+			<prg:type>
+				<prg:path>
+					<prg:patterns>
+						<prg:pattern>
+							<prg:name>Structured text</prg:name>
+							<prg:rules>
+								<prg:rule>
+									<prg:endWith>.xml</prg:endWith>
+								</prg:rule>
+								<prg:rule>
+									<prg:endWith>.json</prg:endWith>
+								</prg:rule>
+							</prg:rules>
+						</prg:pattern>
+					</prg:patterns>
+				</prg:path>
+			</prg:type>
+		</prg:argument>
 	</prg:options>
 	<prg:subcommands>
 		<prg:subcommand>
