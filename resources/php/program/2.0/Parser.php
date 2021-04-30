@@ -6,7 +6,7 @@
  * This file contains the base classes to build a PHP representation
  * of a Program interface XML definition and parse command line arguments.
  *
- * @copyright Copyright © 2013 - 2019 by Renaud Guillard (dev@nore.fr)
+ * @copyright Copyright © 2013 - 2021 by Renaud Guillard (dev@nore.fr)
  * @version 1.0
  * @package NoreSources
  */

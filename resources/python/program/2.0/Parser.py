@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Copyright © 2013 - 2019 by Renaud Guillard 
+""" Copyright © 2013 - 2021 by Renaud Guillard 
 Distributed under the terms of the MIT License, see LICENSE """
 
 # DON'T EDIT THE LINE BELOW

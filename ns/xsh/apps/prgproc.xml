@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright © 2011 - 2020 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>prgproc</prg:name>
 	<prg:author>renaud</prg:author>
 	<prg:version>1.0</prg:version>
-	<prg:copyright>Copyright © 2018 - 2020 by Renaud GUillard (dev@nore.fr)</prg:copyright>
+	<prg:copyright>Copyright © 2018 - 2021 by Renaud GUillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
 		<prg:abstract>Process a program interface XML definition with one of the available XSLT stylesheets</prg:abstract>
