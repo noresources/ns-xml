@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ####################################
-# Copyright © 2012-2018 by renaud
+# Copyright © 2012 - 2021 by renaud
 # Author: renaud
 # Version: 1.0
 # 

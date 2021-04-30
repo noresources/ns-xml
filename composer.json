@@ -1,6 +1,6 @@
 {
 	"name": "noresources/ns-xml", 
-	"description": "A collection of NSXML-based tools to generate source code and programs", 
+	"description": "A collection of XML-based tools to generate source code and programs", 
 	"type": "project", 
 	"homepage": "https://ns-xml.nore.fr", 
 	"license": "MIT", 

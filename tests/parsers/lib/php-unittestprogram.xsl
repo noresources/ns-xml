@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2011-2012 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <stylesheet xmlns="http://www.w3.org/1999/XSL/Transform" xmlns:prg="http://xsd.nore.fr/program" version="1.0">
 	<output method="text" encoding="utf-8" />
 	<param name="interpreter">
