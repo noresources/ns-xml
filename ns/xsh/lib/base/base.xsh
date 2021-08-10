@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
+<xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
 
-	<sh:function name="ns_print_error">
+	<xsh:function name="ns_print_error">
 		<!-- Print error message to stderr -->
-		<sh:body>
-			<sh:local name="shell">$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")</sh:local>
-			<sh:local name="errorColor">${NSXML_ERROR_COLOR}</sh:local>
-			<sh:local name="useColor" type="boolean">false</sh:local><![CDATA[
+		<xsh:body>
+			<xsh:local name="shell">$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")</xsh:local>
+			<xsh:local name="errorColor">${NSXML_ERROR_COLOR}</xsh:local>
+			<xsh:local name="useColor" type="boolean">false</xsh:local><![CDATA[
 for s in bash zsh ash
 do
 	if [ "${shell}" = "${s}" ]
@@ -23,16 +23,16 @@ then
 	echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
 else
 	echo "${@}" 1>&2
-fi]]></sh:body>
-	</sh:function>
+fi]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_error">
+	<xsh:function name="ns_error">
 		<!-- Print error message and exit -->
 		<!-- requires: ns_print_error -->
-		<sh:parameter name="errno" type="numeric">1</sh:parameter>
+		<xsh:parameter name="errno" type="numeric">1</xsh:parameter>
 		<!-- Error code to return on exit -->
-		<sh:body>
-			<sh:local name="message">${@}</sh:local><![CDATA[
+		<xsh:body>
+			<xsh:local name="message">${@}</xsh:local><![CDATA[
 if [ -z "${errno##*[!0-9]*}" ]
 then
 	message="${errno} ${message}"
@@ -40,14 +40,14 @@ then
 fi
 ns_print_error "${message}"
 exit ${errno}
-		]]></sh:body>
-	</sh:function>
-	<sh:function name="nsxml_installpath">
+		]]></xsh:body>
+	</xsh:function>
+	<xsh:function name="nsxml_installpath">
 		<!-- Find ns-xml resources installation path -->
 		<!-- User-defined paths can be specified -->
 		<!-- requires: ns_print_error -->
-		<sh:body>
-			<sh:local name="subpath">share/ns</sh:local><![CDATA[
+		<xsh:body>
+			<xsh:local name="subpath">share/ns</xsh:local><![CDATA[
 for prefix in \
 	"${@}" \
 	"${NSXML_PATH}" \
@@ -69,6 +69,6 @@ done
 
 ns_print_error "nsxml_installpath: Path not found"
 return 1
-]]></sh:body>
-	</sh:function>
-</sh:functions>
+]]></xsh:body>
+	</xsh:function>
+</xsh:functions>

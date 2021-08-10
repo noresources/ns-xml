@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
-	<sh:function name="ns_semver_number_to_string">
-		<sh:parameter name="_ns_semver_input" />
-		<sh:body>
-			<sh:local name="_ns_semver_major" type="numeric">0</sh:local>
-			<sh:local name="_ns_semver_minor" type="numeric">0</sh:local>
-			<sh:local name="_ns_semver_patch" type="numeric">0</sh:local>
+<xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
+	<xsh:function name="ns_semver_number_to_string">
+		<xsh:parameter name="_ns_semver_input" />
+		<xsh:body>
+			<xsh:local name="_ns_semver_major" type="numeric">0</xsh:local>
+			<xsh:local name="_ns_semver_minor" type="numeric">0</xsh:local>
+			<xsh:local name="_ns_semver_patch" type="numeric">0</xsh:local>
 		<![CDATA[
 if [ -z "${_ns_semver_input##*[!0-9]*}" ]
 then
@@ -20,15 +20,15 @@ _ns_semver_minor=$(expr $(expr ${_ns_semver_input} % 10000) / 100)
 _ns_semver_patch=$(expr ${_ns_semver_input} % 100)
 echo "${_ns_semver_major}.${_ns_semver_minor}.${_ns_semver_patch}"
 return 0
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 
-	<sh:function name="ns_semver_string_to_number">
-		<sh:parameter name="_ns_semver_input" />
-		<sh:body>
-			<sh:local name="_ns_semver_major" type="numeric">0</sh:local>
-			<sh:local name="_ns_semver_minor" type="numeric">0</sh:local>
-			<sh:local name="_ns_semver_patch" type="numeric">0</sh:local>
+	<xsh:function name="ns_semver_string_to_number">
+		<xsh:parameter name="_ns_semver_input" />
+		<xsh:body>
+			<xsh:local name="_ns_semver_major" type="numeric">0</xsh:local>
+			<xsh:local name="_ns_semver_minor" type="numeric">0</xsh:local>
+			<xsh:local name="_ns_semver_patch" type="numeric">0</xsh:local>
 		<![CDATA[
 _ns_semver_input="$(echo "${_ns_semver_input}" | cut -f 1 -d'-' | cut -f 1 -d'+')"
 
@@ -59,14 +59,14 @@ _ns_semver_patch=${_ns_semver_patch##*[!0-9]*}
 
 expr "${_ns_semver_patch}" '+' "$(expr "$(expr "${_ns_semver_minor}" '*' 100)" '+' "$(expr "${_ns_semver_major}" '*' 10000)")"
 return 0
-]]></sh:body>
-	</sh:function>
-	<sh:function name="ns_semver_get">
-		<sh:parameter name="_ns_semver_component" />
-		<sh:parameter name="_ns_semver_input" />
-		<sh:body>
-			<sh:local name="_ns_semver_tmp" />
-			<sh:local name="_ns_semver_index" type="numeric">1</sh:local>
+]]></xsh:body>
+	</xsh:function>
+	<xsh:function name="ns_semver_get">
+		<xsh:parameter name="_ns_semver_component" />
+		<xsh:parameter name="_ns_semver_input" />
+		<xsh:body>
+			<xsh:local name="_ns_semver_tmp" />
+			<xsh:local name="_ns_semver_index" type="numeric">1</xsh:local>
 		<![CDATA[
 case "${_ns_semver_component}" in
 	major|minor|patch)
@@ -89,6 +89,6 @@ case "${_ns_semver_component}" in
 		return 1
 		;;
 esac
-]]></sh:body>
-	</sh:function>
-</sh:functions>
+]]></xsh:body>
+	</xsh:function>
+</xsh:functions>

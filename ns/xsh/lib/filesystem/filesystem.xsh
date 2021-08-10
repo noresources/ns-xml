@@ -55,7 +55,7 @@ from="$(ns_realpath "${from}")"
 base="$(ns_realpath "${base}")"
 c=0
 sub="${base}"
-newsub=""
+newsub=''
 while [ "${from:0:${#sub}}" != "${sub}" ]
 do
 	newsub="$(dirname "${sub}")"
@@ -63,13 +63,14 @@ do
 	sub="${newsub}"
 	c="$(expr ${c} + 1)"
 done
-res="."
+res='.'
 for ((i=0;${i}<${c};i++))
 do
 	res="${res}/.."
 done
 res="${res}${from#${sub}}"
 res="${res#./}"
+[ -z "${res}" ] && res='.'
 echo "${res}"
 		]]></xsh:body>
 	</xsh:function>

@@ -1088,7 +1088,7 @@ ns_relativepath()
 	base="$(ns_realpath "${base}")"
 	c=0
 	sub="${base}"
-	newsub=""
+	newsub=''
 	while [ "${from:0:${#sub}}" != "${sub}" ]
 	do
 		newsub="$(dirname "${sub}")"
@@ -1096,13 +1096,14 @@ ns_relativepath()
 		sub="${newsub}"
 		c="$(expr ${c} + 1)"
 	done
-	res="."
+	res='.'
 	for ((i=0;${i}<${c};i++))
 	do
 		res="${res}/.."
 	done
 	res="${res}${from#${sub}}"
 	res="${res#./}"
+	[ -z "${res}" ] && res='.'
 	echo "${res}"
 }
 ns_mktemp()

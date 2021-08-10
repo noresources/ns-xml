@@ -2,7 +2,7 @@
 
 packageName="ns-xml"
 interactive=true
-user=""
+user=''
 scriptFilePath="${0}"
 scriptDirectoryPath="$(dirname "${scriptFilePath}")"
 nsPath="${scriptDirectoryPath}"

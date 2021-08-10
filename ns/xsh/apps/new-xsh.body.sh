@@ -7,7 +7,7 @@ programSchemaVersion="2.0"
 
 tmpPath="/tmp"
 [ ! -z "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && tmpPath="${TMPDIR%/}/"
-author=""
+author=''
 if [ ! -z "${USER}" ]; then author="${USER}"
 elif [ ! -z "${LOGNAME}" ]; then author="${LOGNAME}"
 fi
@@ -24,24 +24,25 @@ done
 
 if ! parse "${@}"
 then
-	if ${displayHelp}
-	then
-		usage
-		exit 0
-	fi
+	${displayHelp} && usage && exit 0
+	${displayVersion} && echo "${parser_program_version}" && exit 0
 	
-	parse_displayerrors
-	exit 1
+	parse_displayerrors 1>&2 && exit 1
 fi
 
-if ${displayHelp}
-then
-	usage
-	exit 0
-fi
+${displayHelp} && usage && exit 0
+${displayVersion} && echo "${parser_program_version}" && exit 0
 
-#chunk_check_nsxml_ns_path || error "Invalid ns-xml ns folder (${nsPath})"
-#programSchemaVersion="$(get_program_version "${xmlProgramDescriptionPath}")"
+#######################################
+
+[ -d "${nsxmlPath}" ] || nsxmlPath="${scriptPath}/../.."
+
+[ ! -d "${nsxmlPath}" ] && ns_error "ns-xml path path not found"
+
+nsxmlPath="$(ns_realpath "${nsxmlPath}")"
+
+mkdir -p "${outputPath}" || ns_error "Failed to create output path"
+outputPath="$(ns_realpath "${outputPath}")"
 
 xshFile="${outputPath}/${xshName}.xsh"
 xmlFile="${outputPath}/${xshName}.xml"
@@ -53,58 +54,44 @@ do
 	[ -f "${f}" ] && error 1 "${f} already exists"
 done
 
+# XSH file
 cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<sh:program interpreterType="bash" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/xsh" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<sh:info>
+<xsh:program 
+	interpreterType="bash" 
+	xmlns:prg="http://xsd.nore.fr/program" 
+	xmlns:xsh="http://xsd.nore.fr/xsh" 
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<xsh:info>
 		<xi:include href="${xshName}.xml" />
-	</sh:info>
-$(
-if ${addSamples}
+	</xsh:info>
+EOF
+if [ ${#programContentFunctions[*]} -gt 0 ]
 then
-cat << INNEREOF
-	<sh:functions>
-	<!-- An equivalent of realpath -->
-	<sh:function name="ns_realpath" >
-		<sh:parameter name="path" />
-		<sh:body><sh:local name="cwd">\$(pwd)</sh:local><![CDATA[
-[ -d "\${path}" ] && cd "\${path}" && path="."
-while [ -h "\${path}" ] ; do path="\$(readlink "\${path}")"; done
-
-if [ -d "\${path}" ]
-then
-	path="\$( cd -P "\$( dirname "\${path}" )" && pwd )"
-else
-	path="\$( cd -P "\$( dirname "\${path}" )" && pwd )/\$(basename "\${path}")"
+	echo '	<xsh:functions>' >> "${tmpFile}"
+	for resource in "${programContentFunctions[@]}"
+	do
+		resourcePath="${nsxmlPath}/ns/xsh/lib/${resource}.xsh"
+		if ${programContentEmbed}
+		then
+			xmllint --xpath \
+				"//*[local-name() = 'function' and namespace-uri() = 'http://xsd.nore.fr/xsh']" \
+				"${resourcePath}" \
+				>> "${tmpFile}"
+		else
+			resourcePath="$(ns_relativepath "${resourcePath}" "${outputPath}")"
+			echo "		<xi:include href="\"${resourcePath}"\" xpointer=\"xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)\" />" >> "${tmpFile}"
+		fi
+	done 
+	echo '	</xsh:functions>' >> "${tmpFile}"		
 fi
 
-cd "\${cwd}" 1>/dev/null 2>&1
-echo "\${path}"
-		]]></sh:body>
-	</sh:function>
-		<!-- A function to write an error message and exit with a given code -->
-		<sh:function name="error">
-			<sh:parameter name="errno" type="numeric">1</sh:parameter>
-			<sh:body><![CDATA[
-local message="\${@}"
-if [ -z "\${errno##*[!0-9]*}" ]
-then 
-	message="\${errno} \${message}"
-	errno=1
-fi
-echo "\${message}"
-exit \${errno}
-]]></sh:body>
-		</sh:function>
-	</sh:functions>
-INNEREOF
-fi
-)
-	<sh:code>
+cat >> "${tmpFile}" << EOF
+	<xsh:code>
 		<!-- Include shell script code -->
 		<xi:include href="${xshName}.body.sh" parse="text" />
-	</sh:code>
-</sh:program>
+	</xsh:code>
+</xsh:program>
 EOF
 
 xmllint --output "${xshFile}" "${tmpFile}"
@@ -112,7 +99,6 @@ xmllint --output "${xshFile}" "${tmpFile}"
 # XML file
 cat > "${tmpFile}" << EOF
 <?xml version="1.0" encoding="utf-8"?>
-<!-- {} -->
 <prg:program xmlns:prg="http://xsd.nore.fr/program" version="2.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>${xshName}</prg:name>
 	<prg:author>${author}</prg:author>
@@ -121,63 +107,101 @@ cat > "${tmpFile}" << EOF
 	<prg:documentation>
 		<prg:abstract>${xshName} short description</prg:abstract>
 	</prg:documentation>
-$(if ${addSamples}
-then
-cat << INNEREOF
-	<prg:options>
-		<prg:switch>
-			<prg:databinding>
-				<prg:variable>displayHelp</prg:variable>
-			</prg:databinding>
-			<prg:documentation>
-				<prg:abstract>Display program usage</prg:abstract>
-			</prg:documentation>
-			<prg:names>
-				<prg:long>help</prg:long>
-			</prg:names>
-			<prg:ui mode="disabled" />
-		</prg:switch>
-	</prg:options>
-INNEREOF
-fi
-)
-</prg:program>
 EOF
+if [ ${#programContentOptions[*]} -gt 0 ]
+then
+	echo '	<prg:options>' >> "${tmpFile}"
+	for o in "${programContentOptions[@]}"
+	do
+		resourcePath="${nsxmlPath}/ns/xsh/lib/options/options.xml"
+		optionIdentifier=''
+		optionType='prg:switch'
+		case "${o}" in
+			help)
+				optionIdentifier='prg.option.displayHelp'
+				;;
+			version)
+				optionIdentifier='prg.option.displayVersion'
+				;;
+		esac
+		
+		if ${programContentEmbed}
+		then
+			xmllint --xpath \
+				"//*[local-name() = 'function']" \
+				"${resourcePath}" \
+				>> "${tmpFile}"
+		else
+			resourcePath="$(ns_relativepath "${resourcePath}" "${outputPath}")"
+			echo "<xi:include href=\"${resourcePath}\" xpointer=\"xmlns(prg=http://xsd.nore.fr/program) xpointer(//${optionType}[@id = '${optionIdentifier}'])\" />" \
+				>> "${tmpFile}"
+		fi
+	done
+	 
+	echo '	</prg:options>' >> "${tmpFile}"
+fi
+
+echo '</prg:program>' >> "${tmpFile}"
 
 xmllint --output "${xmlFile}" "${tmpFile}"
 
-# Body
+## SH body
 
 touch "${shFile}"
 
-if ${addSamples}
-then
-	cat > "${shFile}" << EOF
+cat > "${shFile}" << EOF
 # Global variables
+EOF
+if ns_array_contains filesystem/filesystem "${programContentFunctions[@]}"
+then
+	cat >> "${shFile}" << EOF
 scriptFilePath="\$(ns_realpath "\${0}")"
+EOF
+else
+	cat >> "${shFile}" << EOF
+scriptFilePath="\${0}"
+EOF
+fi
+
+cat >> "${shFile}" << EOF
 scriptPath="\$(dirname "\${scriptFilePath}")"
 scriptName="\$(basename "\${scriptFilePath}")"
 
 # Option parsing
 if ! parse "\${@}"
 then
-	if \${displayHelp}
-	then
-		usage "\${parser_subcommand}"
-		exit 0
-	fi
-	
-	parse_displayerrors
+EOF
+if ns_array_contains help "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+	\${displayHelp} && usage "\${parser_subcommand}" && exit 0
+EOF
+fi
+if ns_array_contains version "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+	\${displayVersion} && echo "\${parser_program_version}" && exit 0
+EOF
+fi
+cat >> "${shFile}" << EOF
+	parse_displayerrors 1>&2
 	exit 1
 fi
-
-if \${displayHelp}
+EOF
+if ns_array_contains help "${programContentOptions[@]}"
 then
-	usage "\${parser_subcommand}"
-	exit 0
+	cat >> "${shFile}" << EOF
+\${displayHelp} && usage "\${parser_subcommand}" && exit 0
+EOF
+fi
+if ns_array_contains version "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+\${displayVersion} && echo "\${parser_program_version}" && exit 0
+EOF
 fi
 
+cat >> "${shFile}" << EOF
 # Main code
 
 EOF
-fi

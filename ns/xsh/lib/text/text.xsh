@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<sh:functions xmlns:sh="http://xsd.nore.fr/xsh">
-	<sh:function name="ns_text_boolean_to_text">
-		<sh:parameter name="v" />
-		<sh:parameter name="t">true</sh:parameter>
-		<sh:parameter name="f">false</sh:parameter>
-		<sh:body><![CDATA[
+<xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
+	<xsh:function name="ns_text_boolean_to_text">
+		<xsh:parameter name="v" />
+		<xsh:parameter name="t">true</xsh:parameter>
+		<xsh:parameter name="f">false</xsh:parameter>
+		<xsh:body><![CDATA[
 if type ${v} 1>/dev/null 2>&1
 then
 	if ${v}
@@ -23,35 +23,35 @@ else
 		echo ${f}
 	fi
 fi
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_yesno">
-		<sh:parameter name="v" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_yesno">
+		<xsh:parameter name="v" />
+		<xsh:body><![CDATA[
 ns_text_boolean_to_text ${1} yes no
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_truefalse">
-		<sh:parameter name="v" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_truefalse">
+		<xsh:parameter name="v" />
+		<xsh:body><![CDATA[
 ns_text_boolean_to_text ${v} yes no
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_charcount">
-		<sh:parameter name="string" />
-		<sh:parameter name="char" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_charcount">
+		<xsh:parameter name="string" />
+		<xsh:parameter name="char" />
+		<xsh:body><![CDATA[
 count="$(expr $(echo "${string}" | sed "s/[^${char}]//g" | wc -c) - 1)"
 echo ${count}
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_tolower">
-		<sh:parameter name="string" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_tolower">
+		<xsh:parameter name="string" />
+		<xsh:body><![CDATA[
 if which tr 1>/dev/null 2>&1
 then
 	echo "${string}" | tr '[:upper:]' '[:lower:]'
@@ -59,12 +59,12 @@ then
 fi
 
 echo "${string}"
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_toupper">
-		<sh:parameter name="string" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_toupper">
+		<xsh:parameter name="string" />
+		<xsh:body><![CDATA[
 if which tr 1>/dev/null 2>&1
 then
 	echo "${string}" | tr '[:lower:]' '[:upper:]'
@@ -72,22 +72,22 @@ then
 fi
 
 echo "${string}"
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_contains">
-		<sh:parameter name="source" />
-		<sh:parameter name="pattern" />
-		<sh:body><![CDATA[
+	<xsh:function name="ns_text_contains">
+		<xsh:parameter name="source" />
+		<xsh:parameter name="pattern" />
+		<xsh:body><![CDATA[
 if echo "${source}" | grep "${pattern}" 1>/dev/null 2>&1
 then
 	return 0
 fi
 return 1
-]]></sh:body>
-	</sh:function>
+]]></xsh:body>
+	</xsh:function>
 	
-	<sh:function name="ns_text_trim_cr"><sh:body><![CDATA[
+	<xsh:function name="ns_text_trim_cr"><xsh:body><![CDATA[
 # Try tr (the best)
 if which tr 1>/dev/null 2>&1
 then
@@ -109,17 +109,17 @@ then
 else
 	echo "${@}"
 fi
-		]]></sh:body>
-	</sh:function>
+		]]></xsh:body>
+	</xsh:function>
 	
 	<!-- Concatenate array elements into a single string -->
-	<sh:function name="ns_text_implode">
-		<sh:parameter name="glue" />
-		<sh:parameter name="before" />
-		<sh:parameter name="after" />
-		<sh:body>
-		<sh:local name="stringResult" />
-		<sh:local name="stringElement" />
+	<xsh:function name="ns_text_implode">
+		<xsh:parameter name="glue" />
+		<xsh:parameter name="before" />
+		<xsh:parameter name="after" />
+		<xsh:body>
+		<xsh:local name="stringResult" />
+		<xsh:local name="stringElement" />
 		<![CDATA[
 for stringElement in "${@}"
 do
@@ -127,6 +127,6 @@ do
 	stringResult="${stringResult}${before}${stringElement}${after}"
 done
 echo "${stringResult}"
-]]></sh:body>
-	</sh:function>
-</sh:functions>
+]]></xsh:body>
+	</xsh:function>
+</xsh:functions>

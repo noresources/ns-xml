@@ -1822,7 +1822,7 @@ fi
 chunk_check_nsxml_ns_path || ns_error 1 "Invalid ns-xml ns folder (${nsPath})"
 
 buildcXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/c"
-buildcXsltprocParams=""
+buildcXsltprocParams=''
 outputPath="$(ns_realpath "${outputPath}")"
 
 # Modes

@@ -4,7 +4,7 @@
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>new-xsh</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
-	<prg:version>1.0.0</prg:version>
+	<prg:version>2.0.0</prg:version>
 	<prg:copyright>Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
@@ -16,7 +16,7 @@
 	</prg:documentation>
 	<prg:ui>
 		<prg:label>XML Shellscript generator</prg:label>
-		<prg:window width="640" height="256"/>
+		<prg:window width="640" height="256" />
 	</prg:ui>
 	<prg:options>
 		<prg:argument required="true">
@@ -32,7 +32,7 @@
 			</prg:names>
 			<prg:type>
 				<!-- When available, add restrictions to name ? -->
-				<prg:string/>
+				<prg:string />
 			</prg:type>
 		</prg:argument>
 		<prg:argument>
@@ -51,33 +51,74 @@
 			<prg:type>
 				<prg:path exist="true" access="rw">
 					<prg:kinds>
-						<prg:folder/>
+						<prg:folder />
 					</prg:kinds>
 				</prg:path>
 			</prg:type>
 		</prg:argument>
-		<prg:switch>
+
+		<prg:group>
 			<prg:databinding>
-				<prg:variable>addSamples</prg:variable>
+				<prg:variable>programContent</prg:variable>
 			</prg:databinding>
 			<prg:documentation>
-				<prg:abstract>Add basic sample code and options</prg:abstract>
-				<prg:details>
-					Add some basic xsh functions in XSH file, --help option definition in XML file
-					and common parsing code in SH
-					file.
-				</prg:details>
+				<prg:abstract>Program content</prg:abstract>
 			</prg:documentation>
-			<prg:names>
-				<prg:long>sample</prg:long>
-				<prg:short>s</prg:short>
-			</prg:names>
-		</prg:switch>
-		<!-- debugMode -->
-		<!-- <xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'nsxml.option.debugMode'])"/> -->
+			<prg:options>
+				<prg:switch>
+					<prg:databinding>
+						<prg:variable>programContentEmbed</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Embed pre-defined content</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>empbed</prg:long>
+						<prg:short>e</prg:short>
+					</prg:names>
+				</prg:switch>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>programContentOptions</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Predefined options</prg:abstract>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>options</prg:long>
+						<prg:short>O</prg:short>
+					</prg:names>
+					<prg:select restrict="true">
+						<prg:option>help</prg:option>
+						<prg:option>version</prg:option>
+					</prg:select>
+				</prg:multiargument>
+				<prg:multiargument>
+					<prg:databinding>
+						<prg:variable>programContentFunctions</prg:variable>
+					</prg:databinding>
+					<prg:documentation>
+						<prg:abstract>Predefined function libraries</prg:abstract>
+						<prg:details>
+							Short path of XSH library resources
+							<prg:endl />
+							Exemple: text/sed to include ns/xsh/lib/text/sed.xsh file
+						</prg:details>
+					</prg:documentation>
+					<prg:names>
+						<prg:long>functions</prg:long>
+						<prg:short>F</prg:short>
+					</prg:names>
+				</prg:multiargument>
+			</prg:options>
+
+		</prg:group>
+
 		<!-- Help -->
-		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])"/>
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayHelp'])" />
+		<!-- Version -->
+		<xi:include href="../lib/options/options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:switch[@id = 'prg.option.displayVersion'])" />
 		<!-- ns-xml path -->
-		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:group[@id = 'nsxml.option.nsxmlPathGroup'])"/>
+		<xi:include href="options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program) xpointer(//prg:argument[@id = 'nsxml.option.nsxmlPath'])" />
 	</prg:options>
 </prg:program>
