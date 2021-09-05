@@ -404,6 +404,7 @@
 
 		<xsl:text>#!</xsl:text>
 		<xsl:value-of select="$interpreterCommand" />
+		<xsl:value-of select="$str.unix.endl" />
 
 		<xsl:apply-templates select="xsh:functions">
 			<xsl:with-param name="interpreter" select="$interpreter" />
