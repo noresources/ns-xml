@@ -12,5 +12,5 @@ parser-tests:
 xsh-tests:
 	@tools/sh/run-tests.sh xsh
 	
-xslt:
+xslt-tests:
 	@tools/sh/run-tests.sh xslt
