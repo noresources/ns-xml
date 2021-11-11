@@ -718,28 +718,32 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 	{
 		if (!]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_path_access_check"/><![CDATA[(value, R_OK))
 		{
-#if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "%s Can't be accessed\n", value);
-#endif /* NSXML_DEBUG */
-			
+			nsxml_program_result_add_messagef(result,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[,
+			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF
+			                                  ". Path not found\n", state->active_option_cli_name, value);
+			                                  
 			return 0;
 		}
 		
 		if ((validator->flags & nsxml_value_validator_path_writable) && !]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_path_access_check"/><![CDATA[(value, W_OK))
 		{
-#if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "%s is not writable\n", value);
-#endif /* NSXML_DEBUG */
-			
+			nsxml_program_result_add_messagef(result,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[,
+			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF
+			                                  ". Path is not writable\n", state->active_option_cli_name, value);
 			return 0;
 		}
 		
 		if ((validator->flags & nsxml_value_validator_path_executable) && !]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_path_access_check"/><![CDATA[(value, X_OK))
 		{
-#if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "%s is not executable\n", value);
-#endif /* NSXML_DEBUG */
-			
+			nsxml_program_result_add_messagef(result,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[,
+			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF
+			                                  ". Path is not executable\n", state->active_option_cli_name, value);
 			return 0;
 		}
 	}
@@ -748,6 +752,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 	{
 		int types = (validator->flags & nsxml_value_validator_path_type_all);
 		struct stat statBuffer;
+		struct stat lstatBuffer;
 		
 		if ((types != 0) && (types != nsxml_value_validator_path_type_all))
 		{
@@ -757,6 +762,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 #endif /* NSXML_DEBUG */
 			
 			stat(value, &statBuffer);
+			lstat(value, &lstatBuffer);
 			
 			if ((types & nsxml_value_validator_path_type_folder) && S_ISDIR(statBuffer.st_mode))
 			{
@@ -767,7 +773,7 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 				typeFound++;
 			}
 			
-			else if ((types & nsxml_value_validator_path_type_symlink) && S_ISLNK(statBuffer.st_mode))
+			else if ((types & nsxml_value_validator_path_type_symlink) && S_ISLNK(lstatBuffer.st_mode))
 			{
 #if NSXML_DEBUG
 				nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "Is symlink\n");
@@ -787,13 +793,11 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 			
 			if (typeFound == 0)
 			{
-				/**
-				 * @todo error
-				 */
-#if NSXML_DEBUG
-				nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "None of specified types\n");
-#endif /* NSXML_DEBUG */
-				
+				nsmxl_value_validator_add_standard_error(self,
+				        state,
+				        result,
+				        item,
+				        value);
 				return 0;
 			}
 		}
@@ -875,13 +879,16 @@ int nsxml_value_validator_validate_enum(const void *self, struct nsxml_parser_st
 		
 		if (item->item_type == nsxml_item_type_option)
 		{
-			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[,
-			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF "\n", state->active_option_cli_name, output);
+			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_option_argument"/><![CDATA[,
+			                                  NSXML_ERROR_INVALID_OPTION_VALUE_MSGF
+			                                  "\n", state->active_option_cli_name, output);
 		}
 		else
 		{
 			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_invalid_pa_argument"/><![CDATA[,
-			                                  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF "\n", item->item.positional_argument_number, output);
+			                                  NSXML_ERROR_INVALID_POSARG_VALUE_MSGF
+			                                  "\n", item->item.positional_argument_number, output);
 		}
 		
 		free(output);
@@ -2670,34 +2677,34 @@ struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(struct nsxml_par
 {
 	size_t o;
 	(void) result;
-
+	
 	for (o = 0; o < state->option_binding_counts[group_index]; ++o)
 	{
 		const char *n = state->option_bindings[group_index][o].name_ref;
-
+		
 		if (n == NULL)
 		{
 			continue;
 		}
-
+		
 		if (strcmp(n, name) == 0)
 		{
 #if NSXML_DEBUG
 			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "Found name %s\n", name);
 #endif /* NSXML_DEBUG */
-
+			
 			return &state->option_bindings[group_index][o];
 		}
 	}
-
+	
 	return NULL;
 }
 
 struct nsxml_option_binding *nsxml_parse_find_option_by_info_at(
-						struct nsxml_parser_state *state,
-						struct nsxml_program_result *result,
-						const struct nsxml_option_info *info,
-						int group_index)
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    const struct nsxml_option_info *info,
+    int group_index)
 {
 	size_t o;
 	(void) result;
@@ -2731,22 +2738,22 @@ struct nsxml_option_binding *nsxml_parse_find_option_by_name(struct nsxml_parser
 }
 
 struct nsxml_option_binding *nsxml_parse_find_option_by_info(
-			struct nsxml_parser_state *state,
-			struct nsxml_program_result *result,
-			const struct nsxml_option_info *info)
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    const struct nsxml_option_info *info)
 {
 	struct nsxml_option_binding *option = NULL;
-
+	
 	if (state->subcommand_index > 0)
 	{
 		option = nsxml_parse_find_option_by_info_at(state, result, info, state->subcommand_index);
 	}
-
+	
 	if (option == NULL)
 	{
 		option = nsxml_parse_find_option_by_info_at(state, result, info, 0);
 	}
-
+	
 	return option;
 }
 
@@ -3125,18 +3132,18 @@ void nsxml_parse_process_positional_argument(struct nsxml_parser_state *state, s
 }
 
 size_t nsxml_parse_option_postprocess_option(
-				struct nsxml_parser_state *state,
-				struct nsxml_program_result *result,
-				struct nsxml_option_binding *binding,
-				int force_set
-			)
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    struct nsxml_option_binding *binding,
+    int force_set
+)
 {
 	const struct nsxml_option_info *i = binding->info_ref;
-
+	
 	if (i->option_type == nsxml_option_type_switch
-		&& (force_set)
-		&& (binding->result_ref->is_set == 0)
-		)
+	        && (force_set)
+	        && (binding->result_ref->is_set == 0)
+	   )
 	{
 		nsxml_parse_mark_option(state, result, binding, 1);
 		return 1;
@@ -3144,34 +3151,35 @@ size_t nsxml_parse_option_postprocess_option(
 	else if (i->option_type == nsxml_option_type_group)
 	{
 		struct nsxml_group_option_info *group_info = (struct nsxml_group_option_info *)i;
+		
 		if ((binding->result_ref->is_set == 0)
-			&& (force_set || nsxml_parse_option_required(state, result, binding))
-			&& (group_info->default_option_info_index >= 0))
+		        && (force_set || nsxml_parse_option_required(state, result, binding))
+		        && (group_info->default_option_info_index >= 0))
 		{
 			struct nsxml_option_info *default_option_info =
-				group_info->option_info_refs[group_info->default_option_info_index];
-
+				    group_info->option_info_refs[group_info->default_option_info_index];
+				    
 			return nsxml_parse_option_postprocess_option(
-							state,
-							result,
-							nsxml_parse_find_option_by_info(state, result, default_option_info),
-							1
-			);
+			           state,
+			           result,
+			           nsxml_parse_find_option_by_info(state, result, default_option_info),
+			           1
+			       );
 		}
 	}
 	else if (i->option_type == nsxml_option_type_argument)
 	{
 		void *res_ptr = binding->result_ref;
 		struct nsxml_argument_option_result *res = (struct nsxml_argument_option_result *) res_ptr;
-
+		
 		if (res->is_set == 0)
 		{
 			const void *i_ptr = i;
 			const struct nsxml_argument_option_info *ainfo = (const struct nsxml_argument_option_info *) i_ptr;
-
+			
 			if (ainfo->default_value
-				&& (force_set || nsxml_parse_option_expected(state, result, binding))
-				)
+			        && (force_set || nsxml_parse_option_expected(state, result, binding))
+			   )
 			{
 				/**
 				 * @todo Validate the default value ?
@@ -3179,7 +3187,7 @@ size_t nsxml_parse_option_postprocess_option(
 #if NSXML_DEBUG
 				nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "Set default value '%s' for option %s%s\n", ai->default_value, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name);
 #endif /* NSXML_DEBUG */
-
+				
 				nsxml_value_set(&res->argument, nsxml_argument_type_to_value_type(ainfo->argument_type), ainfo->default_value);
 				nsxml_parse_mark_option(state, result, binding, 1);
 				return 1;
@@ -3196,16 +3204,16 @@ size_t nsxml_parse_option_postprocess_option(
 		const struct nsxml_multiargument_option_info *mi = (const struct nsxml_multiargument_option_info *) i_ptr;
 		void *res_ptr = binding->result_ref;
 		struct nsxml_multiargument_option_result *res = (struct nsxml_multiargument_option_result *) res_ptr;
-
+		
 		if ((res->is_set == 1)
-			&& ((mi->min_argument > 0)
-			&& (res->argument_count < mi->min_argument)))
+		        && ((mi->min_argument > 0)
+		            && (res->argument_count < mi->min_argument)))
 		{
 			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_error"/><![CDATA[, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_error_not_enough_arguments"/><![CDATA[, "At least %d arguments required for %s%s option, got %d\n", mi->min_argument, (strlen(i->names->name) > 1) ? "--" : "-", i->names->name, res->argument_count);
 			nsxml_parse_mark_option(state, result, binding, 0);
 			return 1;
 		}
-
+		
 		if (res->is_set == 0)
 		{
 			res->argument_count = 0;
@@ -3214,12 +3222,12 @@ size_t nsxml_parse_option_postprocess_option(
 			res->argument_count = 0;
 		}
 	}
-
+	
 	return 0;
 }
 
 size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
-				struct nsxml_program_result *result)
+                                      struct nsxml_program_result *result)
 {
 	size_t g, o;
 	size_t mark_change_count = 0;
@@ -3236,6 +3244,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
 		{
 			struct nsxml_option_binding *binding = &state->option_bindings[g][o];
 			const struct nsxml_option_info *i = binding->info_ref;
+			
 			if (i == info) /* same option, different names */
 			{
 				continue;
