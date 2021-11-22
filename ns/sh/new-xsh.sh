@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 2.0.0
+# Version: 2.0.1
 # 
 # A script to create XSH (XML + SH) files
 #
@@ -19,7 +19,7 @@ Usage:
     -o, --output, --path: Output path  
       Default value: .
     Program content
-      -e, --empbed: Embed pre-defined content
+      -e, --embed: Embed pre-defined content
       -O, --options: Predefined options  
         The argument have to be one of the following:  
           help or version
@@ -38,7 +38,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="2.0.0"
+parser_program_version="2.0.1"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -135,7 +135,7 @@ parse_setoptionpresence()
 	parse_isoptionpresent "${1}" && return 0
 	
 	case "${1}" in
-	G_3_g_1_empbed)
+	G_3_g_1_embed)
 		;;
 	G_3_g_2_options)
 		;;
@@ -445,8 +445,8 @@ parse_process_option()
 			nsxmlPath="${parser_item}"
 			
 			;;
-		empbed)
-			! parse_setoptionpresence G_3_g_1_empbed && return ${PARSER_ERROR}
+		embed)
+			! parse_setoptionpresence G_3_g_1_embed && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
 			
@@ -667,7 +667,7 @@ parse_process_option()
 			
 			;;
 		e)
-			! parse_setoptionpresence G_3_g_1_empbed && return ${PARSER_ERROR}
+			! parse_setoptionpresence G_3_g_1_embed && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
 			

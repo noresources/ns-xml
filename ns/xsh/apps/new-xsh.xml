@@ -4,7 +4,7 @@
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>new-xsh</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
-	<prg:version>2.0.0</prg:version>
+	<prg:version>2.0.1</prg:version>
 	<prg:copyright>Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
@@ -73,7 +73,7 @@
 						<prg:abstract>Embed pre-defined content</prg:abstract>
 					</prg:documentation>
 					<prg:names>
-						<prg:long>empbed</prg:long>
+						<prg:long>embed</prg:long>
 						<prg:short>e</prg:short>
 					</prg:names>
 				</prg:switch>

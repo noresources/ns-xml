@@ -79,7 +79,7 @@ __new_xsh_bashcompletion()
 	local current="${COMP_WORDS[COMP_CWORD]}"
 	local previous="${COMP_WORDS[COMP_CWORD-1]}"
 	local first="${COMP_WORDS[1]}"
-	local globalargs="--name --output --path --empbed --options --functions --help --version --ns-xml-path -n -o"
+	local globalargs="--name --output --path --embed --options --functions --help --version --ns-xml-path -n -o"
 	local args="${globalargs}"
 	
 	
