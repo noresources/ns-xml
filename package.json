@@ -1,0 +1,39 @@
+{
+	"name": "@noresources/ns-xml", 
+	"version": "1.3.0", 
+	"description": "", 
+	"main": "index.js", 
+	"directories": [
+		"ns", 
+		"tests", 
+		"resources"
+	], 
+	"scripts": {
+		"test": "echo No test available"
+	}, 
+	"repository": {
+		"type": "git", 
+		"url": "git+https://github.com/noresources/ns-xml.git"
+	}, 
+	"keywords": [
+		"XML", 
+		"XSD", 
+		"XSLT"
+	], 
+	"author": "Renaud Guillard", 
+	"license": "MIT", 
+	"bugs": {
+		"url": "https://github.com/noresources/ns-xml/issues"
+	}, 
+	"homepage": "http://ns-xml.nore.fr", 
+	"bin": [
+		"ns/sh/build-php.sh", 
+		"ns/sh/build-python.sh", 
+		"ns/sh/xsltdeps.sh", 
+		"ns/sh/sampleapp.sh", 
+		"ns/sh/prgproc.sh", 
+		"ns/sh/build-shellscript.sh", 
+		"ns/sh/new-xsh.sh", 
+		"ns/sh/build-c.sh"
+	]
+}

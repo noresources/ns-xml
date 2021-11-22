@@ -1,5 +1,9 @@
 # Composer
 /vendor
+/composer.lock
+
+# npm
+/package-lock.json
 
 # Unittests temporary files
 *.result-bash
