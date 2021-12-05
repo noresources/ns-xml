@@ -200,7 +200,7 @@
 			<xsd:element name="timestamp" type="sql:dataFormatTimestampType" />
 			<xsd:element name="binary" type="sql:dataFormatBinaryType" />
 		</xsd:choice>
-		<xsd:attribute name="nullable" type="sql:literalBooleanType" use="optional" default="yes">
+		<xsd:attribute name="nullable" type="sql:literalBooleanType" use="optional" default="no">
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">Indicates if NULL is a valid value for the column</xsd:documentation>
 			</xsd:annotation>
