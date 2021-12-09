@@ -3,7 +3,7 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 
 <!-- Common template for sqldatasource xml file processing This stylesheet -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql/2.0">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sql="http://xsd.nore.fr/sql/2.1">
 	<xsl:import href="../../strings.xsl" />
 	<xsl:output method="text" indent="yes" encoding="utf-8" />
 
@@ -108,6 +108,9 @@
 		<xsl:choose>
 			<xsl:when test="not ($dataTypeNode)">
 				<xsl:text>TEXT</xsl:text>
+			</xsl:when>
+			<xsl:when test="$dataTypeNode/sql:integer">
+				<xsl:text>INTEGER</xsl:text>
 			</xsl:when>
 			<xsl:when test="$dataTypeNode/sql:numeric">
 				<xsl:text>NUMERIC</xsl:text>

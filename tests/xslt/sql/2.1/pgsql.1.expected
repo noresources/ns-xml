@@ -1,0 +1,10 @@
+CREATE SCHEMA IF NOT EXISTS "main";
+CREATE TABLE "main"."A"
+(
+-- Primary key
+"key" SERIAL NOT NULL,
+-- A string column
+"value" TEXT,
+-- A column without specified data type
+"defaultTypeColumn" TEXT
+);

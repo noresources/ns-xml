@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:namespace name="main" xmlns:sql="http://xsd.nore.fr/sql/2.1">
+	<sql:table name="A">
+		<sql:column name="key">
+			<sql:datatype nullable="no">
+				<sql:integer autoincrement="yes" />
+			</sql:datatype>
+		</sql:column>
+		<sql:column name="value">
+			<sql:datatype>
+				<sql:string>
+				</sql:string>
+			</sql:datatype>
+		</sql:column>
+	</sql:table>
+</sql:namespace>

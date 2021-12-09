@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:table name="Binary" xmlns:sql="http://xsd.nore.fr/sql/2.1">
+	<sql:column name="basic">
+		<sql:comment>Binary column</sql:comment>
+		<sql:datatype>
+			<sql:binary />
+		</sql:datatype>
+	</sql:column>
+	<sql:column name="string">
+		<sql:comment>Binary column with a string default value "abcd" / 0x61626364</sql:comment>
+		<sql:datatype>
+			<sql:binary />
+		</sql:datatype>
+		<sql:default>
+			<!-- 0x61626364 -->
+			<sql:string>abcd</sql:string>
+		</sql:default>
+	</sql:column>
+	<sql:column name="integer">
+		<sql:comment>Binary column with a integer default value 2048 / 0x0800</sql:comment>
+		<sql:datatype>
+			<sql:binary />
+		</sql:datatype>
+		<sql:default>
+			<!-- 0x0800 -->
+			<sql:integer>2048</sql:integer>
+		</sql:default>
+	</sql:column>
+	<sql:column name="hexadecimal">
+		<sql:comment>Binary column with a hexadecimal default value 0x61626364 / "abcd"</sql:comment>
+		<sql:datatype>
+			<sql:binary />
+		</sql:datatype>
+		<sql:default>
+			<!-- abcd -->
+			<sql:hexBinary>61626364</sql:hexBinary>
+		</sql:default>
+	</sql:column>
+	<sql:column name="base64">
+		<sql:comment>Binary column with a Base64-encoded default value YWJjZA== / 0x61626364 / "abcd"</sql:comment>
+		<sql:datatype>
+			<sql:binary />
+		</sql:datatype>
+		<sql:default>
+			<sql:base64Binary>YWJjZA==</sql:base64Binary>
+		</sql:default>
+	</sql:column>
+</sql:table>

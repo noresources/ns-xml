@@ -1,0 +1,6 @@
+-- Database main
+CREATE TABLE "main"."A"
+(
+"key" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+"value" TEXT
+);

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource xmlns:sql="http://xsd.nore.fr/sql/2.1">
+	<sql:namespace name="Types">
+		<sql:table name="Types">
+			<sql:column name="base"></sql:column>
+			<sql:column name="binary">
+				<sql:datatype>
+					<sql:binary />
+				</sql:datatype>
+				<sql:default>
+					<!-- abc -->
+					<sql:base64Binary>YWJj</sql:base64Binary>
+				</sql:default>
+			</sql:column>
+			<sql:column name="boolean">
+				<sql:datatype>
+					<sql:boolean />
+				</sql:datatype>
+				<sql:default>
+					<sql:boolean>true</sql:boolean>
+				</sql:default>
+			</sql:column>
+			<sql:column name="int">
+				<sql:datatype>
+					<sql:integer autoincrement="yes" />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="large_int">
+				<sql:comment>A large int with size spec.</sql:comment>
+				<sql:datatype>
+					<sql:integer length="12"  />
+				</sql:datatype>
+				<sql:default>
+					<sql:number>123456789012</sql:number>
+				</sql:default>
+			</sql:column>
+			<sql:column name="small_int">
+				<sql:comment>A quite small int with size spec.</sql:comment>
+				<sql:datatype>
+					<sql:integer length="3" signed="no"  />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="float">
+				<sql:datatype>
+					<sql:numeric scale="2" />
+				</sql:datatype>
+				<sql:default>
+					<sql:number>1.23</sql:number>
+				</sql:default>
+			</sql:column>
+			<sql:column name="timestamp">
+				<sql:datatype>
+					<sql:timestamp>
+						<sql:date/>
+						<sql:time/>
+					</sql:timestamp>
+				</sql:datatype>
+				<sql:default>
+					<sql:timestamp>2010-11-12T13:14:15+01:00</sql:timestamp>
+				</sql:default>
+			</sql:column>
+			<sql:column name="timestamp_tz">
+				<sql:datatype>
+					<sql:timestamp />
+				</sql:datatype>
+				<sql:default>
+					<sql:timestamp>2010-11-12T13:14:15+01:00</sql:timestamp>
+				</sql:default>
+			</sql:column>
+			<sql:primarykey name="pk_types">
+				<sql:column name="int" />
+			</sql:primarykey>
+		</sql:table>
+	</sql:namespace>
+</sql:datasource>

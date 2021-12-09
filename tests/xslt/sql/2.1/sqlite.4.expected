@@ -1,0 +1,17 @@
+-- ns-xml database schema to SQL translation
+-- Database namespace
+CREATE TABLE "namespace"."Keys"
+(
+"key" TEXT(63),
+"keyDescription",
+UNIQUE ("key")
+);
+-- The key column scheme of this table does not have any real life sense
+CREATE TABLE "namespace"."Documents"
+(
+"rowId" INTEGER PRIMARY KEY AUTOINCREMENT,
+"key" TEXT(63),
+"value",
+UNIQUE ("rowId", "key"),
+FOREIGN KEY ("key") REFERENCES "Keys" ("key")
+);

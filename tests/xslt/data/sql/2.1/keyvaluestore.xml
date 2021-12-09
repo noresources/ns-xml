@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql:datasource xmlns:sql="http://xsd.nore.fr/sql/2.1" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<sql:namespace name="ns_tests">
+		<sql:table name="Keys">
+			<sql:column name="key">
+				<sql:datatype>
+					<sql:string length="63" />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="keyDescription" />
+			<sql:unique>
+				<sql:column name="key" />
+			</sql:unique>
+		</sql:table>
+		
+		<sql:table name="Documents">
+			<sql:comment>The key column scheme of this table does not have any real life sense</sql:comment>
+			<sql:column name="rowId">
+				<sql:datatype>
+					<sql:integer autoincrement="yes"/>
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="key">
+				<sql:datatype>
+					<sql:string length="63" />
+				</sql:datatype>
+			</sql:column>
+			<sql:column name="value" />
+			<sql:primarykey>
+				<sql:column name="rowId"/>
+				<sql:column name="key"/>
+			</sql:primarykey>
+			<sql:foreignkey>
+				<sql:column name="key"/>
+				<sql:reference>
+					<sql:tableref name="Keys" />
+					<sql:column name="key"/>
+				</sql:reference>
+			</sql:foreignkey>
+		</sql:table>
+	</sql:namespace>
+</sql:datasource>
