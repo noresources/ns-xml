@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 2.0.1
+# Version: 2.0.2
 # 
 # A script to create XSH (XML + SH) files
 #
@@ -38,7 +38,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="2.0.1"
+parser_program_version="2.0.2"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -1119,7 +1119,7 @@ tmpFile="${tmpPath}/${xshName}.tmp"
 
 for f in "${xshFile}" "${xmlFile}" "${shFile}"
 do
-	[ -f "${f}" ] && error 1 "${f} already exists"
+	[ -f "${f}" ] && ns_error 1 "${f} already exists"
 done
 
 # XSH file
@@ -1162,7 +1162,7 @@ cat >> "${tmpFile}" << EOF
 </xsh:program>
 EOF
 
-xmllint --output "${xshFile}" "${tmpFile}"
+xmllint --format --output "${xshFile}" "${tmpFile}"
 
 # XML file
 cat > "${tmpFile}" << EOF
@@ -1196,7 +1196,7 @@ then
 		if ${programContentEmbed}
 		then
 			xmllint --xpath \
-				"//*[local-name() = 'function']" \
+				"//*[local-name() = '${optionType#prg:}' and @id = '${optionIdentifier}' and namespace-uri() = 'http://xsd.nore.fr/program']" \
 				"${resourcePath}" \
 				>> "${tmpFile}"
 		else
@@ -1211,7 +1211,7 @@ fi
 
 echo '</prg:program>' >> "${tmpFile}"
 
-xmllint --output "${xmlFile}" "${tmpFile}"
+xmllint --format --output "${xmlFile}" "${tmpFile}"
 
 ## SH body
 

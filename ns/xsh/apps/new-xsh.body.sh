@@ -51,7 +51,7 @@ tmpFile="${tmpPath}/${xshName}.tmp"
 
 for f in "${xshFile}" "${xmlFile}" "${shFile}"
 do
-	[ -f "${f}" ] && error 1 "${f} already exists"
+	[ -f "${f}" ] && ns_error 1 "${f} already exists"
 done
 
 # XSH file
@@ -94,7 +94,7 @@ cat >> "${tmpFile}" << EOF
 </xsh:program>
 EOF
 
-xmllint --output "${xshFile}" "${tmpFile}"
+xmllint --format --output "${xshFile}" "${tmpFile}"
 
 # XML file
 cat > "${tmpFile}" << EOF
@@ -128,7 +128,7 @@ then
 		if ${programContentEmbed}
 		then
 			xmllint --xpath \
-				"//*[local-name() = 'function']" \
+				"//*[local-name() = '${optionType#prg:}' and @id = '${optionIdentifier}' and namespace-uri() = 'http://xsd.nore.fr/program']" \
 				"${resourcePath}" \
 				>> "${tmpFile}"
 		else
@@ -143,7 +143,7 @@ fi
 
 echo '</prg:program>' >> "${tmpFile}"
 
-xmllint --output "${xmlFile}" "${tmpFile}"
+xmllint --format --output "${xmlFile}" "${tmpFile}"
 
 ## SH body
 
