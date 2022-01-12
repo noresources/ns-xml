@@ -7,5 +7,6 @@ projectPath="$(dirname "${0}")/../.."
 && "${projectPath}/tools/sh/update-doc.sh" \
 && "${projectPath}/tools/sh/run-tests.sh" parsers \
 && "${projectPath}/tools/sh/run-tests.sh" xsh \
+&& "${projectPath}/tools/sh/run-tests.sh" php \
 && "${projectPath}/tools/sh/run-tests.sh" xsd
 

@@ -12,6 +12,14 @@ usage()
 if [ ! -z "${1}" ]
 then
 case "${1}" in
+php)
+cat << EOFSCUSAGE
+php: PHP utilities
+Usage:
+  run-tests php
+
+EOFSCUSAGE
+;;
 xsh)
 cat << EOFSCUSAGE
 xsh: XSH function library tests
@@ -85,6 +93,7 @@ run-tests: Run ns-xml tests
 Usage: 
   run-tests <subcommand [subcommand option(s)]> [-T] [--help]
   With subcommand:
+    php: PHP utilities
     xsh: XSH function library tests
       options: [-1 <...>] [-2 <...>]
     parsers: Parsers tests
@@ -253,41 +262,45 @@ parse_setdefaultoptions()
 	local parser_set_default=false
 	
 	parser_set_default=true
-	parse_isoptionpresent SC_1_xsh_1_stdout && parser_set_default=false
+	parse_isoptionpresent SC_2_xsh_1_stdout && parser_set_default=false
 	if ${parser_set_default}
 	then
 		xsh_stdout='/dev/null'
-		parse_setoptionpresence SC_1_xsh_1_stdout
+		parse_setoptionpresence SC_2_xsh_1_stdout
 	fi
 	
 	
 	parser_set_default=true
-	parse_isoptionpresent SC_1_xsh_2_stderr && parser_set_default=false
+	parse_isoptionpresent SC_2_xsh_2_stderr && parser_set_default=false
 	if ${parser_set_default}
 	then
 		xsh_stderr='/dev/null'
-		parse_setoptionpresence SC_1_xsh_2_stderr
+		parse_setoptionpresence SC_2_xsh_2_stderr
 	fi
 	
 	case "${parser_subcommand}" in
+	php)
+		local parser_set_default=false
+		
+		;;
 	xsh)
 		local parser_set_default=false
 		
 		parser_set_default=true
-		parse_isoptionpresent SC_1_xsh_1_stdout && parser_set_default=false
+		parse_isoptionpresent SC_2_xsh_1_stdout && parser_set_default=false
 		if ${parser_set_default}
 		then
 			xsh_stdout='/dev/null'
-			parse_setoptionpresence SC_1_xsh_1_stdout
+			parse_setoptionpresence SC_2_xsh_1_stdout
 		fi
 		
 		
 		parser_set_default=true
-		parse_isoptionpresent SC_1_xsh_2_stderr && parser_set_default=false
+		parse_isoptionpresent SC_2_xsh_2_stderr && parser_set_default=false
 		if ${parser_set_default}
 		then
 			xsh_stderr='/dev/null'
-			parse_setoptionpresence SC_1_xsh_2_stderr
+			parse_setoptionpresence SC_2_xsh_2_stderr
 		fi
 		
 		
@@ -358,6 +371,12 @@ parse_addvalue()
 		return ${PARSER_ERROR}
 	else
 		case "${parser_subcommand}" in
+		php)
+			${parser_isfirstpositionalargument} && parser_errors[$(expr ${#parser_errors[*]} + ${parser_startindex})]='Subcommand php does not accept positional arguments'
+			
+			parser_isfirstpositionalargument=false
+			return ${PARSER_ERROR}
+			;;
 		xsh)
 			case "${position}" in
 			*)
@@ -439,7 +458,7 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				! parse_setoptionpresence SC_1_xsh_1_stdout && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_2_xsh_1_stdout && return ${PARSER_SC_ERROR}
 				
 				xsh_stdout="${parser_item}"
 				
@@ -469,7 +488,7 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				! parse_setoptionpresence SC_1_xsh_2_stderr && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_2_xsh_2_stderr && return ${PARSER_SC_ERROR}
 				
 				xsh_stderr="${parser_item}"
 				
@@ -515,7 +534,7 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				! parse_setoptionpresence SC_1_xsh_1_stdout && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_2_xsh_1_stdout && return ${PARSER_SC_ERROR}
 				
 				xsh_stdout="${parser_item}"
 				
@@ -545,7 +564,7 @@ parse_process_subcommand_option()
 				parser_optiontail=''
 				parser_optionhastail=false
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				! parse_setoptionpresence SC_1_xsh_2_stderr && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_2_xsh_2_stderr && return ${PARSER_SC_ERROR}
 				
 				xsh_stderr="${parser_item}"
 				
@@ -622,7 +641,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_1_parsers && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_1_parsers && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -670,7 +689,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_2_apps && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_2_apps && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -718,7 +737,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_3_tests && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_3_tests && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -727,7 +746,7 @@ parse_process_subcommand_option()
 				
 				;;
 			comments)
-				! parse_setoptionpresence SC_2_parsers_4_comments && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_4_comments && return ${PARSER_SC_ERROR}
 				
 				if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
 				then
@@ -806,7 +825,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_1_parsers && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_1_parsers && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -854,7 +873,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_2_apps && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_2_apps && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -902,7 +921,7 @@ parse_process_subcommand_option()
 					parse_adderror "At least one argument expected for option \"${parser_option}\""
 					return ${PARSER_SC_ERROR}
 				fi
-				! parse_setoptionpresence SC_2_parsers_3_tests && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_3_tests && return ${PARSER_SC_ERROR}
 				
 				for ((i=$(expr 0 + ${parser_startindex});${i}<$(expr ${#parser_ma_values[*]} + ${parser_startindex});i++))
 				do
@@ -911,7 +930,7 @@ parse_process_subcommand_option()
 				
 				;;
 			C)
-				! parse_setoptionpresence SC_2_parsers_4_comments && return ${PARSER_SC_ERROR}
+				! parse_setoptionpresence SC_3_parsers_4_comments && return ${PARSER_SC_ERROR}
 				
 				parsers_debugComments=true
 				
@@ -1024,6 +1043,10 @@ parse_process_option()
 	elif ${parser_subcommand_expected} && [ -z "${parser_subcommand}" ] && [ ${#parser_values[*]} -eq 0 ]
 	then
 		case "${parser_item}" in
+		php)
+			parser_subcommand="php"
+			
+			;;
 		xsh)
 			parser_subcommand="xsh"
 			
@@ -2099,6 +2122,51 @@ EOF
 	fi
 
 	exit ${count}
+elif [ "${parser_subcommand}" = 'php' ]
+then
+	phpTestsPathBase="${projectPath}/tests/php"
+	if ! ns_which -s php
+	then
+		echo "warning: No PHP interpreter found" 1>&2
+		exit 0
+	fi
+	phpTestResult=0
+	testResultFormat="%-40.40s | %-8s\n"
+	
+	printf "${testResultFormat}" 'TEST' 'RESULT'
+	
+	while read expectedFile
+	do
+		testFile="${expectedFile%expected}php"
+		[ -f "${testFile}" ] || continue
+		
+		testName="${testFile#${phpTestsPathBase}/}"
+		testName="${testName%.php}"
+		resultFile="${expectedFile%expected}result"
+		php "${testFile}" > "${resultFile}"
+		
+		if diff -q "${expectedFile}" "${resultFile}"
+		then
+			testResultString="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
+			${keepTemporaryFiles} || rm -f "${resultFile}"
+		else
+			testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
+			phpTestResult=$(expr ${phpTestResult} + 1)
+		fi
+		
+		printf "${testResultFormat}" "${testName}" "${testResultString}"
+		
+	done << EOF
+$(find "${phpTestsPathBase}" -name '*.expected')
+EOF
+
+[ ${phpTestResult} -eq 0 ] \
+&& testResultString="${SUCCESS_COLOR}passed${NORMAL_COLOR}" \
+|| testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
+
+	printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
+	exit ${phpTestResult}
+
 elif [ "${parser_subcommand}" = 'xsh' ]
 then
 	xshTestsPathBase="${projectPath}/tests/xsh"

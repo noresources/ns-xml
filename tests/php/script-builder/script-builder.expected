@@ -1,0 +1,9 @@
+#!/foo/bar
+ns_wtf()
+{
+	echo "Kapooooeh"
+}
+echo 'Calling the imported function function'
+ns_wtf
+
+

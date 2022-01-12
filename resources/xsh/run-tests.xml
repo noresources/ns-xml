@@ -15,6 +15,10 @@
 	</prg:documentation>
 	<prg:subcommands>
 		<prg:subcommand>
+			<prg:name>php</prg:name>
+			<prg:documentation><prg:abstract>PHP utilities</prg:abstract></prg:documentation>
+		</prg:subcommand>
+		<prg:subcommand>
 			<prg:documentation>
 				<prg:abstract>XSH function library tests</prg:abstract>
 			</prg:documentation>
