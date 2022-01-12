@@ -10,6 +10,9 @@
 
 	<xsl:include href="shellscript.xsl" />
 
+	<!-- Indicates if the #!<interpreter> should be output before script content -->
+	<xsl:param name="xsh.printShebang" select="'yes'" />
+
 	<!-- Interpreter type to use if none is set in the xsh:program node. Should
 		be one of the name defined by the interpreterNameType in the xsh XML schema -->
 	<xsl:param name="xsh.defaultInterpreterType" />
@@ -402,9 +405,11 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:text>#!</xsl:text>
-		<xsl:value-of select="$interpreterCommand" />
-		<xsl:value-of select="$str.unix.endl" />
+		<xsl:if test="$xsh.printShebang = 'yes'">
+			<xsl:text>#!</xsl:text>
+			<xsl:value-of select="$interpreterCommand" />
+			<xsl:value-of select="$str.unix.endl" />
+		</xsl:if>
 
 		<xsl:apply-templates select="xsh:functions">
 			<xsl:with-param name="interpreter" select="$interpreter" />
