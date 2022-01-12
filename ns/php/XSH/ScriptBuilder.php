@@ -28,7 +28,23 @@ class ScriptBuilder
 	{
 		$this->functions = [];
 		$this->bodyParts = [];
+		$this->searchPaths = [
+			__DIR__ . '/../../../ns/xsh/lib'
+		];
 		$this->flags = 0;
+	}
+
+	/**
+	 * Add library search path
+	 *
+	 * @param string $path
+	 *        	Directory to add
+	 * @return $this
+	 */
+	public function search($path)
+	{
+		\array_unshift($this->searchPaths, $path);
+		return $this;
 	}
 
 	/**
@@ -46,22 +62,27 @@ class ScriptBuilder
 
 		$this->flags |= self::SHEBANG;
 		if (\is_string($value))
-			$this->interpreter = $value;
+			return $this->interpreter($value);
 
 		return $this;
 	}
 
 	/**
+	 * Set interpreter type or path
 	 *
-	 * @param string $name
+	 * @param string $interpreter
+	 *        	Interpreter type (Ex: "bash", "python") or
+	 *        	absolute path (Ex: "/bin/sh")
 	 * @throws \InvalidArgumentException
 	 * @return $this
 	 */
-	public function interpreter($name)
+	public function interpreter($interpreter)
 	{
 		unset($this->cache);
-		if (!\is_string($name))
+		if (!\is_string($interpreter))
 			throw new \InvalidArgumentException('string expected');
+		if (\strpos($interpreter, '#!') === 0)
+			$interpreter = \substr($interpreter, 2);
 		$this->interpreter = $interpreter;
 		return $this;
 	}
@@ -91,8 +112,15 @@ class ScriptBuilder
 
 		if (!\is_file($functions))
 		{
-			$functions = __DIR__ . '/../../../ns/xsh/lib/' . $functions .
-				'.xsh';
+			foreach ($this->searchPaths as $searchPath)
+			{
+				$path = $searchPath . '/' . $functions . '.xsh';
+				if (\file_exists($path))
+				{
+					$functions = $path;
+					break;
+				}
+			}
 		}
 
 		if (!\file_exists($functions))
@@ -138,9 +166,10 @@ class ScriptBuilder
 		$interpreter = isset($this->interpreter) ? $this->interpreter : 'bash';
 		$parameters = [];
 
-		$impl = new \DOMImplementation();
+		$implementation = new \DOMImplementation();
 
-		$script = $impl->createDocument(self::XSH_NAMESPACE_URI);
+		$script = $implementation->createDocument(
+			self::XSH_NAMESPACE_URI);
 		$program = $script->createElementNS(self::XSH_NAMESPACE_URI,
 			'xsh:program');
 		$functions = $script->createElementNS(self::XSH_NAMESPACE_URI,
@@ -153,7 +182,7 @@ class ScriptBuilder
 
 		if ($this->flags & self::SHEBANG)
 		{
-			if (\preg_match('/[a-z_-]+/i', $interpreter))
+			if (\preg_match(self::PATTERN_INTERPRETER_TYPE, $interpreter))
 				$program->setAttribute('interpreterType', $interpreter);
 			else
 				$program->setAttribute('interpreterCommand',
@@ -242,23 +271,40 @@ class ScriptBuilder
 	 */
 	public function render()
 	{
-		$impl = new \DOMImplementation();
+		$implementation = new \DOMImplementation();
 
-		$stylesheet = $impl->createDocument(self::XSLT_NAMESPACE_URI);
+		$stylesheet = $implementation->createDocument(
+			self::XSLT_NAMESPACE_URI);
 		$stylesheet->load(__DIR__ . '/../../xsl/languages/xsh.xsl');
 		$stylesheet->xinclude();
 
 		$processor = new \XSLTProcessor();
 		$processor->importStylesheet($stylesheet);
 
+		if (($this->flags & self::SHEBANG) != self::SHEBANG)
+			$processor->setParameter('', 'xsh.printShebang', 'no');
+
 		$result = $processor->transformToDoc($this->build());
 		return $result->textContent . PHP_EOL;
 	}
 
+	/**
+	 * Render script
+	 *
+	 * @return string
+	 */
 	public function __invoke()
 	{
 		return $this->render();
 	}
+
+	const PATTERN_INTERPRETER_TYPE = '/^[a-z0-9][a-z0-9_-]*$/i';
+
+	/**
+	 *
+	 * @var string[]
+	 */
+	private $searchPaths;
 
 	/**
 	 *
