@@ -94,7 +94,7 @@ class ScriptBuilder
 	 *        	definition(s)
 	 * @param string|array|NULL $names
 	 *        	A list of function names to it from $functions
-	 * @throws \InvalidArgument
+	 * @throws \InvalidArgumentException
 	 * @return $this
 	 */
 	public function functions($functions, $names = null)
@@ -124,7 +124,7 @@ class ScriptBuilder
 		}
 
 		if (!\file_exists($functions))
-			throw new \InvalidArgument(
+			throw new \InvalidArgumentException(
 				'File, DOMElement or function library identifier expected.');
 
 		$functions = \realpath($functions);
@@ -168,14 +168,10 @@ class ScriptBuilder
 
 		$implementation = new \DOMImplementation();
 
-		$script = $implementation->createDocument(
-			self::XSH_NAMESPACE_URI);
-		$program = $script->createElementNS(self::XSH_NAMESPACE_URI,
-			'xsh:program');
-		$functions = $script->createElementNS(self::XSH_NAMESPACE_URI,
-			'xsh:functions');
-		$code = $script->createElementNS(self::XSH_NAMESPACE_URI,
-			'xsh:code');
+		$script = $implementation->createDocument(self::XSH_NAMESPACE_URI);
+		$program = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:program');
+		$functions = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:functions');
+		$code = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:code');
 		$program->appendChild($functions);
 		$program->appendChild($code);
 		$script->appendChild($program);
@@ -185,8 +181,7 @@ class ScriptBuilder
 			if (\preg_match(self::PATTERN_INTERPRETER_TYPE, $interpreter))
 				$program->setAttribute('interpreterType', $interpreter);
 			else
-				$program->setAttribute('interpreterCommand',
-					$interpreter);
+				$program->setAttribute('interpreterCommand', $interpreter);
 		}
 
 		$files = [];
@@ -197,7 +192,9 @@ class ScriptBuilder
 			$names = $entry['names'];
 			if (\is_string($names))
 			{
-				$names = [ $names ];
+				$names = [
+					$names
+				];
 			}
 
 			if (!\is_array($names))
@@ -229,8 +226,7 @@ class ScriptBuilder
 					$dom->xinclude();
 
 					$xpath = new \DOMXPath($dom);
-					$xpath->registerNamespace('xsh',
-						self::XSH_NAMESPACE_URI);
+					$xpath->registerNamespace('xsh', self::XSH_NAMESPACE_URI);
 
 					$files[$file] = $xpath;
 				}
@@ -242,7 +238,9 @@ class ScriptBuilder
 				}, $names);
 			if (empty($selectors))
 			{
-				$selectors = [ '//xsh:function' ];
+				$selectors = [
+					'//xsh:function'
+				];
 			}
 
 			foreach ($selectors as $selector)
@@ -273,8 +271,7 @@ class ScriptBuilder
 	{
 		$implementation = new \DOMImplementation();
 
-		$stylesheet = $implementation->createDocument(
-			self::XSLT_NAMESPACE_URI);
+		$stylesheet = $implementation->createDocument(self::XSLT_NAMESPACE_URI);
 		$stylesheet->load(__DIR__ . '/../../xsl/languages/xsh.xsl');
 		$stylesheet->xinclude();
 
