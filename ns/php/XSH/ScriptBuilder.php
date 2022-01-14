@@ -48,9 +48,10 @@ class ScriptBuilder
 	}
 
 	/**
+	 * Enable/Disable Shebang output
 	 *
 	 * @param boolean|string $value
-	 *        	If string. Set interpreter to this value.
+	 *        	If string. Set interpreter to this value at the same time.
 	 * @return $this
 	 */
 	public function shebang($value)
@@ -168,10 +169,14 @@ class ScriptBuilder
 
 		$implementation = new \DOMImplementation();
 
-		$script = $implementation->createDocument(self::XSH_NAMESPACE_URI);
-		$program = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:program');
-		$functions = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:functions');
-		$code = $script->createElementNS(self::XSH_NAMESPACE_URI, 'xsh:code');
+		$script = $implementation->createDocument(
+			self::XSH_NAMESPACE_URI);
+		$program = $script->createElementNS(self::XSH_NAMESPACE_URI,
+			'xsh:program');
+		$functions = $script->createElementNS(self::XSH_NAMESPACE_URI,
+			'xsh:functions');
+		$code = $script->createElementNS(self::XSH_NAMESPACE_URI,
+			'xsh:code');
 		$program->appendChild($functions);
 		$program->appendChild($code);
 		$script->appendChild($program);
@@ -181,7 +186,8 @@ class ScriptBuilder
 			if (\preg_match(self::PATTERN_INTERPRETER_TYPE, $interpreter))
 				$program->setAttribute('interpreterType', $interpreter);
 			else
-				$program->setAttribute('interpreterCommand', $interpreter);
+				$program->setAttribute('interpreterCommand',
+					$interpreter);
 		}
 
 		$files = [];
@@ -226,7 +232,8 @@ class ScriptBuilder
 					$dom->xinclude();
 
 					$xpath = new \DOMXPath($dom);
-					$xpath->registerNamespace('xsh', self::XSH_NAMESPACE_URI);
+					$xpath->registerNamespace('xsh',
+						self::XSH_NAMESPACE_URI);
 
 					$files[$file] = $xpath;
 				}
@@ -271,7 +278,8 @@ class ScriptBuilder
 	{
 		$implementation = new \DOMImplementation();
 
-		$stylesheet = $implementation->createDocument(self::XSLT_NAMESPACE_URI);
+		$stylesheet = $implementation->createDocument(
+			self::XSLT_NAMESPACE_URI);
 		$stylesheet->load(__DIR__ . '/../../xsl/languages/xsh.xsl');
 		$stylesheet->xinclude();
 
@@ -283,6 +291,22 @@ class ScriptBuilder
 
 		$result = $processor->transformToDoc($this->build());
 		return $result->textContent . PHP_EOL;
+	}
+
+	/**
+	 *
+	 * @return boolean|string Shebang string or FALSE if shebang is disabled.
+	 */
+	public function getShebang()
+	{
+		if (!($this->flags & self::SHEBANG))
+			return false;
+
+		if (\preg_match(self::PATTERN_INTERPRETER_TYPE,
+			$this->interpreter))
+			return '#!/usb/bin/env ' . $this->interpreter;
+
+		return '#!' . $this->interpreter;
 	}
 
 	/**

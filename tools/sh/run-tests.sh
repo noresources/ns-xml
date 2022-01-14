@@ -1370,10 +1370,17 @@ projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"
 rm -f "${logFile}"
 
-# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
-NORMAL_COLOR="$(tput sgr0)"
-ERROR_COLOR="$(tput setaf 1)"
-SUCCESS_COLOR="$(tput setaf 2)"
+NORMAL_COLOR==''
+ERROR_COLOR=''
+SUCCESS_COLOR=''
+
+if [ ! -z "${TERM}" ]
+then 
+	# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+	NORMAL_COLOR="$(tput sgr0)"
+	ERROR_COLOR="$(tput setaf 1)"
+	SUCCESS_COLOR="$(tput setaf 2)"
+fi
 
 log()
 {
@@ -2124,40 +2131,62 @@ EOF
 	exit ${count}
 elif [ "${parser_subcommand}" = 'php' ]
 then
-	phpTestsPathBase="${projectPath}/tests/php"
 	if ! ns_which -s php
 	then
 		echo "warning: No PHP interpreter found" 1>&2
 		exit 0
 	fi
+	
+	phpunitPath="${projectPath}/vendor/bin/phpunit"
+	phpunitBootstrapPath="${projectPath}/vendor/autoload.php"
+	if [ ! -x "${phpunitPath}" ]
+	then
+		if ns_which -s composer
+		then
+			cd "${projectPath}" \
+			&& composer install
+		fi
+	fi
+	
+	if [ ! -x "${phpunitPath}" ]
+	then
+		echo 'warning: phpunit not found' 1>&2
+		exit 0
+	fi
+	
+	phpTestsPathBase="${projectPath}/tests/php"
 	phpTestResult=0
+	unset phpFailedTestResultFiles
+	phpFailedTestResultFiles=()
 	testResultFormat="%-40.40s | %-8s\n"
 	
 	printf "${testResultFormat}" 'TEST' 'RESULT'
 	
-	while read expectedFile
+	while read testFile
 	do
-		testFile="${expectedFile%expected}php"
-		[ -f "${testFile}" ] || continue
+		testName="$(basename "${testFile}" Test.php)"
+		resultFile="${testFile%php}result"
 		
-		testName="${testFile#${phpTestsPathBase}/}"
-		testName="${testName%.php}"
-		resultFile="${expectedFile%expected}result"
-		php "${testFile}" > "${resultFile}"
-		
-		if diff -q "${expectedFile}" "${resultFile}"
+		if "${phpunitPath}" \
+			--bootstrap "${phpunitBootstrapPath}" \
+			"${testFile}" \
+			>"${resultFile}"
 		then
 			testResultString="${SUCCESS_COLOR}passed${NORMAL_COLOR}"
 			${keepTemporaryFiles} || rm -f "${resultFile}"
 		else
 			testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
 			phpTestResult=$(expr ${phpTestResult} + 1)
+			phpFailedTestResultFiles=(\
+				"${phpFailedTestResultFiles[@]}" \
+				"${resultFile}" \
+			)
 		fi
 		
 		printf "${testResultFormat}" "${testName}" "${testResultString}"
 		
 	done << EOF
-$(find "${phpTestsPathBase}" -name '*.expected')
+$(find "${phpTestsPathBase}" -name '*Test.php')
 EOF
 
 [ ${phpTestResult} -eq 0 ] \
@@ -2165,6 +2194,12 @@ EOF
 || testResultString="${ERROR_COLOR}PAILED${NORMAL_COLOR}"
 
 	printf "${testResultFormat}" "$(printf '%.0s-' {1..40})" "${testResultString}"
+
+	if [ ${phpTestResult} -gt 0 ]
+	then
+		cat "${phpFailedTestResultFiles[@]}"
+	fi
+
 	exit ${phpTestResult}
 
 elif [ "${parser_subcommand}" = 'xsh' ]

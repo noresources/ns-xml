@@ -1,0 +1,15 @@
+PHPUnit 8.5.22 by Sebastian Bergmann and contributors.
+
+F.                                                                  2 / 2 (100%)
+
+Time: 23 ms, Memory: 4.00 MB
+
+There was 1 failure:
+
+1) ScriptBuilderTest::testShebang
+Failed asserting that false is true.
+
+/home/renaud/Projects/ns-xml/tests/php/ScriptBuilderTest.php:16
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 1.
