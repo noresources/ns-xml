@@ -4,7 +4,7 @@
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>new-xsh</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
-	<prg:version>2.0.2</prg:version>
+	<prg:version>2.1.0</prg:version>
 	<prg:copyright>Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:license>Distributed under the terms of the MIT License, see LICENSE</prg:license>
 	<prg:documentation>
@@ -98,9 +98,10 @@
 						<prg:variable>programContentFunctions</prg:variable>
 					</prg:databinding>
 					<prg:documentation>
-						<prg:abstract>Predefined function libraries</prg:abstract>
+						<prg:abstract>Functions to include from built-in library or user defined XSH file</prg:abstract>
 						<prg:details>
-							Short path of XSH library resources
+							Arguments can be a short path of XSH library resource
+							or an arbitrary XSH file
 							<prg:endl />
 							Exemple: text/sed to include ns/xsh/lib/text/sed.xsh file
 						</prg:details>

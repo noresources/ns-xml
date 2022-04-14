@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 2.0.2
+# Version: 2.1.0
 # 
 # A script to create XSH (XML + SH) files
 #
@@ -23,8 +23,10 @@ Usage:
       -O, --options: Predefined options  
         The argument have to be one of the following:  
           help or version
-      -F, --functions: Predefined function libraries
-        Short path of XSH library resources
+      -F, --functions: Functions to include from built-in library or user 
+      defined XSH file
+        Arguments can be a short path of XSH library resource or an arbitrary 
+        XSH file
         Exemple: text/sed to include ns/xsh/lib/text/sed.xsh file
     
     --help: Display program usage
@@ -38,7 +40,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="2.0.2"
+parser_program_version="2.1.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -1067,10 +1069,10 @@ xml_validate()
 	return 0
 }
 # Global variables
+cwd="$(pwd)"
 scriptFilePath="$(ns_realpath "${0}")"
 scriptPath="$(dirname "${scriptFilePath}")"
 scriptName="$(basename "${scriptFilePath}")"
-nsPath="$(ns_realpath "${scriptPath}/../..")/ns"
 programSchemaVersion="2.0"
 
 tmpPath="/tmp"
@@ -1104,14 +1106,14 @@ ${displayVersion} && echo "${parser_program_version}" && exit 0
 #######################################
 
 [ -d "${nsxmlPath}" ] || nsxmlPath="${scriptPath}/../.."
-
 [ ! -d "${nsxmlPath}" ] && ns_error "ns-xml path path not found"
-
 nsxmlPath="$(ns_realpath "${nsxmlPath}")"
 
 mkdir -p "${outputPath}" || ns_error "Failed to create output path"
+
 outputPath="$(ns_realpath "${outputPath}")"
 
+xshSchemaFile="${nsxmlPath}/ns/xsd/xsh/1.0/xsh.xsd"
 xshFile="${outputPath}/${xshName}.xsh"
 xmlFile="${outputPath}/${xshName}.xml"
 shFile="${outputPath}/${xshName}.body.sh"
@@ -1139,7 +1141,24 @@ then
 	echo '	<xsh:functions>' >> "${tmpFile}"
 	for resource in "${programContentFunctions[@]}"
 	do
-		resourcePath="${nsxmlPath}/ns/xsh/lib/${resource}.xsh"
+		cd "${cwd}"
+		resourcePath=''
+		if [ -r "${resource}" ]
+		then
+			xmllint --noout \
+				--schema "${xshSchemaFile}" \
+				"${resource}" \
+				1>/dev/null 2>&1 \
+			|| ns_error "Invalid XSH file ${resource}"
+
+			resourcePath="$(ns_realpath "${resource}")"
+		else
+			resourcePath="${nsxmlPath}/ns/xsh/lib/${resource}.xsh"
+		fi
+		
+		[ -f "${resourcePath}" ] \
+			|| ns_error "Function file not found: ${resourcePath}" 
+
 		if ${programContentEmbed}
 		then
 			xmllint --xpath \
@@ -1147,8 +1166,8 @@ then
 				"${resourcePath}" \
 				>> "${tmpFile}"
 		else
-			resourcePath="$(ns_relativepath "${resourcePath}" "${outputPath}")"
-			echo "		<xi:include href="\"${resourcePath}"\" xpointer=\"xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)\" />" >> "${tmpFile}"
+			relativePath="$(ns_relativepath "${resourcePath}" "${outputPath}")"
+			echo "		<xi:include href="\"${relativePath}"\" xpointer=\"xmlns(xsh=http://xsd.nore.fr/xsh) xpointer(//xsh:function)\" />" >> "${tmpFile}"
 		fi
 	done 
 	echo '	</xsh:functions>' >> "${tmpFile}"		
