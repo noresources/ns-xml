@@ -6,6 +6,7 @@
 /package-lock.json
 
 # Unittests temporary files
+*.result
 *.result-bash
 *.result-ksh
 *.result-zsh
