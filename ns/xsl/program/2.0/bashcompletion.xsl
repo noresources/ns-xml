@@ -266,12 +266,16 @@
 				<xsl:value-of select="$str.unix.endl" />
 				<xsl:text>local res=''</xsl:text>
 				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>local permPrefix='/'</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
+				<xsl:text>[ "$(uname -s)"  = 'Darwin' ] &amp;&amp; permPrefix='+'</xsl:text>
+				<xsl:value-of select="$str.unix.endl" />
 				<xsl:call-template name="sh.while">
 					<xsl:with-param name="condition">
 						<xsl:text>[ ! -z "${access}" ]</xsl:text>
 					</xsl:with-param>
 					<xsl:with-param name="do">
-						<xsl:text>res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"</xsl:text>
+						<xsl:text>res="${res} -perm ${permPrefix}u=${access:0:1},g=${access:0:1},o=${access:0:1}"</xsl:text>
 						<xsl:value-of select="$str.unix.endl" />
 						<xsl:text>access="${access:1}"</xsl:text>
 					</xsl:with-param>

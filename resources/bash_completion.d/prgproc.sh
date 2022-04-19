@@ -25,9 +25,11 @@ __prgproc_getfindpermoptions()
 {
 	local access="${1}"
 	local res=''
+	local permPrefix='/'
+	[ "$(uname -s)"  = 'Darwin' ] && permPrefix='+'
 	while [ ! -z "${access}" ]
 	do
-		res="${res} -perm /u=${access:0:1},g=${access:0:1},o=${access:0:1}"
+		res="${res} -perm ${permPrefix}u=${access:0:1},g=${access:0:1},o=${access:0:1}"
 		access="${access:1}"
 	done
 	echo "${res}"
