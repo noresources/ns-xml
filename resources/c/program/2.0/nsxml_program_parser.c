@@ -1513,8 +1513,8 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 	nsxml_message *msg = NULL;
 	size_t message_size = (strlen(format) * 2) + 1;
 	int printed = 0;
-	nsxml_message *msg2;
-	nsxml_message *parent;
+	nsxml_message *msg2 = NULL;
+	nsxml_message *parent = NULL;
 	va_list list;
 #if NSXML_DBG
 	va_list dbg;
@@ -1539,7 +1539,11 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 	{
 		printed = 0;
 		va_start(list, format);
+#if defined(_MSC_VER)
+		printed += vsnprintf_s(msg->message, message_size, _TRUNCATE, format, list);
+#else
 		printed += vsnprintf(msg->message, message_size, format, list);
+#endif
 		va_end(list);
 		
 		if (printed <= 0)
@@ -1547,10 +1551,12 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 			msg->message[0] = '\0';
 			break;
 		}
-		else if ((size_t)printed >= message_size)
+		
+		if ((size_t)printed >= message_size)
 		{
 			message_size = (size_t)(printed + 1);
 			msg->message = (char *) realloc(msg->message, sizeof(char) * (message_size + 1));
+			printed = 0;
 		}
 	}
 	while (printed == 0);
