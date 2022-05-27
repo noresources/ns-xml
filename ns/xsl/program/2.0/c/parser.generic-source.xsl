@@ -1297,11 +1297,8 @@ int nsxml_argument_type_to_value_type(int argument_type)
 	switch (argument_type)
 	{
 		case nsxml_argument_type_number:
-		{
 			return ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_value_type_float"/><![CDATA[;
-		}
-		break;
-		
+			
 		case nsxml_argument_type_string:
 		case nsxml_argument_type_path:
 		case nsxml_argument_type_mixed:
@@ -1951,8 +1948,6 @@ const char *nsxml_usage_option_argument_type_string(int argument_type)
 		default:
 			return ("?");
 	}
-	
-	return ("?");
 }
 
 size_t nsxml_usage_path_type_count(int fs_type)
@@ -2663,19 +2658,59 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 
 /* Hidden API declarations */
 
-struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index);
-struct nsxml_option_binding *nsxml_parse_find_option_by_name(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name);
-int nsxml_parse_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
-int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_positional_argument_info *info, size_t positional_argument_number, const char *value);
-int nsxml_parse_option_expected(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_binding *option);
-int nsxml_parse_option_required(struct nsxml_parser_state *state, struct nsxml_program_result *result, const struct nsxml_option_binding *option);
-void nsxml_parse_mark_option(struct nsxml_parser_state *state, struct nsxml_program_result *result, struct nsxml_option_binding *option, int is_set);
-void nsxml_parse_unset_active_option(struct nsxml_parser_state *state, struct nsxml_program_result *result);
-int nsxml_parse_active_option_accepts_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result);
-void nsxml_parse_append_option_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
-void nsxml_parse_process_positional_argument(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *value);
-size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state, struct nsxml_program_result *result);
-size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state, struct nsxml_program_result *result);
+
+struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(
+    struct nsxml_parser_state *state, struct nsxml_program_result *result,
+    const char *name,
+    int group_index);
+struct nsxml_option_binding *nsxml_parse_find_option_by_info_at(
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    const struct nsxml_option_info *info,
+    int group_index);
+struct nsxml_option_binding *nsxml_parse_find_option_by_name(struct nsxml_parser_state *state,
+        struct nsxml_program_result *result,
+        const char *name);
+struct nsxml_option_binding *nsxml_parse_find_option_by_info(
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    const struct nsxml_option_info *info);
+int nsxml_parse_argument_validates(struct nsxml_parser_state *state,
+                                   struct nsxml_program_result *result,
+                                   const char *value);
+int nsxml_parse_positional_argument_validates(struct nsxml_parser_state *state,
+        struct nsxml_program_result *result,
+        const struct nsxml_positional_argument_info *info,
+        size_t positional_argument_number,
+        const char *value);
+int nsxml_parse_option_expected(struct nsxml_parser_state *state,
+                                struct nsxml_program_result *result,
+                                const struct nsxml_option_binding *option);
+int nsxml_parse_option_required(struct nsxml_parser_state *state,
+                                struct nsxml_program_result *result,
+                                const struct nsxml_option_binding *option);
+void nsxml_parse_mark_option(struct nsxml_parser_state *state,
+                             struct nsxml_program_result *result,
+                             struct nsxml_option_binding *option,
+                             int is_set);
+void nsxml_parse_unset_active_option(struct nsxml_parser_state *state,
+                                     struct nsxml_program_result *result);
+int nsxml_parse_active_option_accepts_argument(struct nsxml_parser_state *state,
+        struct nsxml_program_result *result);
+void nsxml_parse_append_option_argument(struct nsxml_parser_state *state,
+                                        struct nsxml_program_result *result,
+                                        const char *value);
+void nsxml_parse_process_positional_argument(struct nsxml_parser_state *state,
+        struct nsxml_program_result *result, const char *value);
+size_t nsxml_parse_option_postprocess_option(
+    struct nsxml_parser_state *state,
+    struct nsxml_program_result *result,
+    struct nsxml_option_binding *binding,
+    int force_set);
+size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
+                                      struct nsxml_program_result *result);
+size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
+        struct nsxml_program_result *result);
 
 /* Definitions */
 
@@ -3141,8 +3176,7 @@ size_t nsxml_parse_option_postprocess_option(
     struct nsxml_parser_state *state,
     struct nsxml_program_result *result,
     struct nsxml_option_binding *binding,
-    int force_set
-)
+    int force_set)
 {
 	const struct nsxml_option_info *i = binding->info_ref;
 	
@@ -3156,7 +3190,7 @@ size_t nsxml_parse_option_postprocess_option(
 	}
 	else if (i->option_type == nsxml_option_type_group)
 	{
-		struct nsxml_group_option_info *group_info = (struct nsxml_group_option_info *)i;
+		const struct nsxml_group_option_info *group_info = (const struct nsxml_group_option_info *)i;
 		
 		if ((binding->result_ref->is_set == 0)
 		        && (force_set || nsxml_parse_option_required(state, result, binding))

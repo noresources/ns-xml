@@ -6,8 +6,8 @@
  ***************************************************************************************
  */
 
-#if !defined(__NSXML_PROGRAM_PARSER_H__)
-#define __NSXML_PROGRAM_PARSER_H__
+#if !defined(NSXML_PROGRAM_PARSER_H__)
+#define NSXML_PROGRAM_PARSER_H__
 
 #if defined(__cplusplus)
 #	define NSXML_EXTERNC_BEGIN extern "C" {
@@ -71,9 +71,9 @@ NSXML_EXTERNC_BEGIN
  *
  * @param output Output buffer
  * @param output_length Output buffer length
- * @param offset Where to append @param append
- * @param append String to append to @param output
- * @return Number of character appended to @param output
+ * @param offset Where to append @c append
+ * @param append String to append to @c output
+ * @return Number of character appended to @c output
  *
  * If the
  */
@@ -85,7 +85,7 @@ size_t nsxml_util_append(char **output, size_t *output_length, size_t offset, co
  * @param output_length Output buffer size
  * @param input Input string to copy
  * @param input_length Maximum length to copy
- * The @param output parameter will always ends with a null-character. If @param input_length is greater than @c[ output_length + 1},
+ * The @c output parameter will always ends with a null-character. If @c input_length is greater than @c[ output_length + 1},
  * the result will be truncated
  * @return  Difference between @p input_length and the real number of character copied
  */
@@ -94,7 +94,7 @@ NSXMLAPI int nsxml_util_strncpy(char *output, size_t output_length, const char *
 /** Duplicate a string */
 /**
  * @param input String to copy
- * @return A new buffer containing @param input
+ * @return A new buffer containing @c input
  */
 NSXMLAPI char *nsxml_util_strdup(const char *input);
 
@@ -104,13 +104,13 @@ NSXMLAPI char *nsxml_util_strdup(const char *input);
  * @param output Output buffer
  * @param output_length Output buffer size
  * @param input Input string to copy
- * @param input_length Maximum length to copy
  *
  * Same as nsxml_util_strncpy with an input string length set to @c strlen(input)
  *
  * @return  Copied characters
  */
-NSXMLAPI int nsxml_util_strcpy(char *output, size_t output_length, const char *input);
+NSXMLAPI int nsxml_util_strcpy(char *output, size_t output_length,
+                               const char *input);
 
 /** Append text */
 /**
@@ -130,23 +130,23 @@ NSXMLAPI size_t nsxml_util_strcat(char **output, size_t *output_length, size_t o
  * @param format String format
  * @return Printed characters
  *
- * Parameters @param output and @param output_length will be modified if the printed strings
- * is taller than @param output_length
+ * Parameters @c output and @c output_length will be modified if the printed strings
+ * is taller than @c output_length
  */
 NSXMLAPI size_t nsxml_util_asnprintf(char **output, size_t *output_length, size_t offset, const char *format, ...);
 
 /** Indicates if a string begins with a given character sequence */
 /**
- * @param haystack
- * @param needle
- * @return A non-zero valueif @param haystack starts with the string @param needle
+ * @param haystack Input string
+ * @param needle Text to search in @c haystack
+ * @return A non-zero valueif @c haystack starts with the string @c needle
  */
 NSXMLAPI int nsxml_util_string_starts_with(const char *haystack, const char *needle);
 
 /** Test a file system path permission */
 /**
- * @path Path
- * @flag access function flags
+ * @param path Path
+ * @param flag access function flags
  */
 NSXMLAPI int nsxml_util_path_access_check(const char *path, int flag);
 
@@ -170,7 +170,7 @@ NSXMLAPI struct _nsxml_util_text_wrap_options
 	/**
 	 * End-of line character(s)
 	 */
-	char eol[3];
+	char eol[4];
 };
 
 typedef struct _nsxml_util_text_wrap_options nsxml_util_text_wrap_options;
@@ -284,8 +284,8 @@ struct nsxml_item_name *nsxml_item_names_new(const char *, ...);
 
 /** Get the nth item name in a item_name list */
 /**
- * @param list
- * @param item_index
+ * @param list Iten name table
+ * @param item_index name table index
  * @return Item name
  */
 const char *nsxml_item_name_get(const struct nsxml_item_name *list, int item_index);
@@ -673,7 +673,7 @@ void nsxml_parser_state_allocate_name_bindings(struct nsxml_parser_state *state,
 
 /**
  * Destroy the given parser state and set the pointer to NULL
- * @param state
+ * @param state Parser state to free
  */
 void nsxml_parser_state_free(struct nsxml_parser_state *state);
 
@@ -845,4 +845,4 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 
 NSXML_EXTERNC_END
 
-#endif /* __NSXML_PROGRAM_PARSER_H__ */
+#endif /* NSXML_PROGRAM_PARSER_H__ */

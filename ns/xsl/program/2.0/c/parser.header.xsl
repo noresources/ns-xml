@@ -11,7 +11,6 @@
 	<xsl:output method="text" encoding="utf-8" />
 	<xsl:param name="prg.c.parser.header.filePath" select="'cmdline.h'" />
 	<xsl:variable name="prg.c.parser.header.preprocessorFileDefine">
-		<xsl:text>__</xsl:text>
 		<xsl:call-template name="c.validIdentifierName">
 			<xsl:with-param name="name" select="translate(normalize-space($prg.c.parser.prefix),'-','_')" />
 		</xsl:call-template>
