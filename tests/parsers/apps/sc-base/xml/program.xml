@@ -3,7 +3,7 @@
 <prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<prg:name>sc-base</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
-	<prg:version>1.0</prg:version>
+	<prg:version>1.0.1</prg:version>
 	<prg:documentation>
 		<prg:abstract>Test application (simple subcommand behavior)</prg:abstract>
 	</prg:documentation>
@@ -101,6 +101,11 @@
 				</prg:other>
 			</prg:values>
 		</prg:subcommand>
+		
+		<!-- help -->
+		<xi:include href="../../../../../ns/xsh/lib/subcommands/subcommands.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'prg.subcommand.displayHelp'])" />
+		
+		
 	</prg:subcommands>
 	<prg:values>
 		<prg:value>

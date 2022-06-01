@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr) -->
+<!-- Distributed under the terms of the MIT License, see LICENSE -->
+
+<!-- A set of very common options -->
+<prg:subcommands xmlns:prg="http://xsd.nore.fr/program">
+	<prg:subcommand id="prg.subcommand.displayHelp">
+		<prg:name>help</prg:name>
+		<prg:documentation>
+			<prg:abstract>Display program usage</prg:abstract>
+		</prg:documentation>
+	</prg:subcommand>
+</prg:subcommands>
