@@ -190,7 +190,7 @@
 								<xsl:value-of select="$str.unix.endl" />
 								<xsl:text>[ -d "${p}" ] &amp;&amp; p="${p%/}/"</xsl:text>
 								<xsl:value-of select="$str.unix.endl" />
-								<xsl:text>temporaryRepliesArray[$i]="${p}"</xsl:text>
+								<xsl:text>temporaryRepliesArray[$i]="${p} "</xsl:text>
 								<xsl:value-of select="$str.unix.endl" />
 							</xsl:with-param>
 						</xsl:call-template>
