@@ -2467,6 +2467,12 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	
 	abstract_length += 2; /* \n and \0 */
 	
+	if (abstract_length > *text_buffer_length_ptr)
+	{
+		*text_buffer_ptr = (char *) realloc(*text_buffer_ptr, abstract_length);
+		*text_buffer_length_ptr = abstract_length;
+	}
+	
 	/* Positional argument number & abstract */
 	text_ptr = *text_buffer_ptr;
 	
