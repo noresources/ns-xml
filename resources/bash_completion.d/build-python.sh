@@ -64,7 +64,7 @@ __build_python_appendfsitems()
 			local p="${temporaryRepliesArray[$i]}"
 			[ "${d}" != "." ] && p="${d}/$(basename "${p}")"
 			[ -d "${p}" ] && p="${p%/}/"
-			temporaryRepliesArray[$i]="${p}"
+			temporaryRepliesArray[$i]="${p} "
 		done
 		for ((i=0;${i}<${#temporaryRepliesArray[*]};i++))
 		do
