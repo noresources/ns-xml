@@ -50,6 +50,13 @@ NSXML_EXTERNC_BEGIN
 #	define NSXML_DEBUG 0
 #endif
 
+#if defined(NSXML_ASSERT)
+#	undef NSXML_ASSERT
+#	define NSXML_ASSERT 1
+#else
+#	define NSXML_ASSERT 0
+#endif
+
 /** An option name (without '-' or '--' prefix) */
 #define NSXML_MAX_OPTION_NAME_LENGTH 61
 /** An option name (with '-' or '--' prefix) */

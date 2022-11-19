@@ -1460,7 +1460,7 @@ then
 	
 	if [ -z "${CFLAGS}" ]
 	then
-		cflags=(-Wall -pedantic -Wextra -Wconversion -g -O0)
+		cflags=(-Wall -pedantic -Wextra -Wconversion -g -O0 -DNSXML_ASSERT)
 	else
 		cflags=(${CFLAGS})
 	fi

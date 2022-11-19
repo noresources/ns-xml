@@ -50,13 +50,11 @@
 #	endif
 #endif
 
-#define NSXML_DBG 0
-
 #if defined(__cplusplus)
 #	include <cstdio>
 #	include <cstdlib>
 #	include <cstring>
-#	if NSXML_DBG
+#	if NSXML_ASSERT
 #		include <cassert>
 #	endif
 #	include <cctype>
@@ -65,7 +63,7 @@ NSXML_EXTERNC_BEGIN
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <string.h>
-#	if NSXML_DBG
+#	if NSXML_ASSERT
 #		include <assert.h>
 #	endif
 #	include <ctype.h>
@@ -1523,21 +1521,11 @@ void nsxml_program_result_add_messagef(struct nsxml_program_result *result, int 
 	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *msg2 = NULL;
 	]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *parent = NULL;
 	va_list list;
-#if NSXML_DBG
-	va_list dbg;
-#endif
 	
 	if ((type < 0) || (type >= ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_count"/><![CDATA[))
 	{
 		return;
 	}
-	
-#if NSXML_DBG
-	printf("%d: ", type);
-	va_start(dbg, format);
-	vprintf(format, dbg);
-	va_end(dbg);
-#endif
 	
 	msg = (]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[ *) malloc(sizeof(]]><xsl:value-of select="$prg.c.parser.structName.nsxml_message"/><![CDATA[));
 	msg->message = (char *) malloc(sizeof(char) * message_size + 1);
@@ -1721,7 +1709,14 @@ const char *nsxml_usage_path_access_string(int fs_access);
 size_t nsxml_usage_path_access_count(int fs_);
 size_t nsxml_usage_option_argument_type(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, int argumenttype, int short_name);
 size_t nsxml_usage_option_inline_details(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t offset, const struct nsxml_option_info *info, int short_name);
-void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t text_length, const struct nsxml_rootitem_info *info, int info_index, int *visited);
+void nsxml_usage_option_root_short(
+    char **text_buffer_ptr,
+    size_t *text_buffer_length_ptr,
+    size_t text_length,
+    const struct nsxml_rootitem_info *info,
+    int info_index,
+    int *visited,
+    size_t visited_count);
 void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_info *info, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
 void nsxml_usage_option_detailed(FILE *stream, const struct nsxml_option_info *info, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
 void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_positional_argument_info *info, size_t index, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap, size_t level, char **text_buffer_ptr, size_t *text_buffer_length_ptr);
@@ -2152,22 +2147,33 @@ void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_in
 		}
 		
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, "Options:");
-		nsxml_usage_option_root_short(text_buffer_ptr, text_buffer_length_ptr, text_length, &info->rootitem_info, -1, visited);
+		nsxml_usage_option_root_short(
+		    text_buffer_ptr,
+		    text_buffer_length_ptr,
+		    text_length,
+		    &info->rootitem_info, -1,
+		    visited, c);
 		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, *text_buffer_ptr, wrap, level + 1);
 		
 		free(visited);
 	}
 }
 
-void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_length_ptr, size_t text_length, const struct nsxml_rootitem_info *info, int info_index, int *visited)
+void nsxml_usage_option_root_short(
+    char **text_buffer_ptr,
+    size_t *text_buffer_length_ptr,
+    size_t text_length,
+    const struct nsxml_rootitem_info *info,
+    int info_index,
+    int *visited, size_t visited_count)
 {
 	int is_first = 1;
-	size_t i;
+	size_t i = 0;
 	size_t c = info->option_info_count;
 	size_t pac = info->positional_argument_info_count;
-	const char *n;
+	const char *n = NULL;
 	const struct nsxml_group_option_info *parent = NULL;
-	const void *ptr;
+	const void *ptr = NULL;
 	
 	if (info_index >= 0)
 	{
@@ -2178,6 +2184,10 @@ void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_l
 	/* First pass, switch options with short names */
 	if (!(parent && (parent->group_type == nsxml_group_option_exclusive)))
 	{
+#if NSXML_ASSERT
+		assert(visited_count >= c);
+#endif /* NSXML_ASSERT */
+		
 		for (i = 0; i < c; ++i)
 		{
 			const struct nsxml_option_info *o = info->option_infos[i];
@@ -2240,7 +2250,12 @@ void nsxml_usage_option_root_short(char **text_buffer_ptr, size_t *text_buffer_l
 			else if (o->option_type == nsxml_option_type_group)
 			{
 				text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, "(");
-				nsxml_usage_option_root_short(text_buffer_ptr, text_buffer_length_ptr, text_length, info, (int) i, visited);
+				nsxml_usage_option_root_short(
+				    text_buffer_ptr,
+				    text_buffer_length_ptr,
+				    text_length,
+				    info, (int) i,
+				    visited, visited_count);
 				text_length = strlen(*text_buffer_ptr);
 				text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, ")");
 			}
@@ -2534,11 +2549,16 @@ void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_
 	}
 }
 
-void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsxml_program_result *result, int format, const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *user_wrap)
+void nsxml_usage(
+    FILE *stream,
+    const struct nsxml_program_info *info,
+    struct nsxml_program_result *result,
+    int format,
+    const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *user_wrap)
 {
 	size_t i;
 	size_t option_count = info->rootitem_info.option_info_count;
-	int *visited = (int *) malloc(sizeof(int) * option_count);
+	int *visited = NULL;
 	struct nsxml_subcommand_info *scinfo = NULL;
 	const ]]><xsl:value-of select="$prg.c.parser.structName.nsxml_util_text_wrap_options"/><![CDATA[ *wrap;
 	size_t text_length = 0;
@@ -2551,11 +2571,6 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 	if (!user_wrap)
 	{
 		wrap = &default_wrap;
-	}
-	
-	for (i = 0; i < option_count; ++i)
-	{
-		visited[i] = 0;
 	}
 	
 	if (result && result->subcommand_name)
@@ -2575,16 +2590,38 @@ void nsxml_usage(FILE *stream, const struct nsxml_program_info *info, struct nsx
 	
 	if (scinfo)
 	{
+		option_count += scinfo->rootitem_info.option_info_count;
+	}
+	
+	visited = (int *) malloc(sizeof(int) * option_count);
+	
+	for (i = 0; i < option_count; ++i)
+	{
+		visited[i] = 0;
+	}
+	
+	if (scinfo)
+	{
 		size_t c = scinfo->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s %s%s", info->name, result->subcommand_name, (c ? " " : ""));
-		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &scinfo->rootitem_info, -1, visited);
+		nsxml_usage_option_root_short(
+		    &text_buffer,
+		    &text_buffer_length,
+		    strlen(text_buffer),
+		    &scinfo->rootitem_info, -1,
+		    visited, option_count);
 		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, (size_t)0);
 	}
 	else
 	{
 		size_t c = info->rootitem_info.option_info_count;
 		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
-		nsxml_usage_option_root_short(&text_buffer, &text_buffer_length, strlen(text_buffer), &info->rootitem_info, -1, visited);
+		nsxml_usage_option_root_short(
+		    &text_buffer,
+		    &text_buffer_length,
+		    strlen(text_buffer),
+		    &info->rootitem_info, -1,
+		    visited, option_count);
 		]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_text_wrap_fprint"/><![CDATA[(stream, text_buffer, wrap, (size_t)0);
 	}
 	
