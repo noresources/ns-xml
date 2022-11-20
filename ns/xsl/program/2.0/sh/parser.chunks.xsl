@@ -1163,7 +1163,9 @@
 				<xsl:choose>
 					<xsl:when test="$shortOption">
 						<xsl:for-each select="$optionNode/prg:names/prg:short">
+							<xsl:text>'</xsl:text>
 							<xsl:value-of select="." />
+							<xsl:text>'</xsl:text>
 							<xsl:if test="position() != last()">
 								<xsl:text> | </xsl:text>
 							</xsl:if>

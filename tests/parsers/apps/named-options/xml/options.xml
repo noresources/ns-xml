@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prg:options xmlns:prg="http://xsd.nore.fr/program">
+	<prg:group name="prg.options.groupA">
+		<prg:databinding>
+			<prg:variable>groupA</prg:variable>
+		</prg:databinding>
+		<prg:options>
+			<prg:group name="prg.options.groupB">
+				<prg:databinding>
+					<prg:variable>groupB</prg:variable>
+				</prg:databinding>
+				<prg:options>
+					<prg:argument name="prg.options.named.na">
+						<prg:databinding>
+							<prg:variable>na</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>na</prg:long>
+						</prg:names>
+						<prg:select>
+							<prg:option>a</prg:option>
+							<prg:option>b</prg:option>
+							<prg:option>c</prg:option>
+							<prg:option>d</prg:option>
+						</prg:select>
+					</prg:argument>
+
+					<prg:argument name="prg.options.named.nb">
+						<prg:databinding>
+							<prg:variable>nb</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>nb</prg:long>
+						</prg:names>
+					</prg:argument>
+
+					<prg:argument name="prg.options.named.nc">
+						<prg:databinding>
+							<prg:variable>nc</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>nc</prg:long>
+						</prg:names>
+					</prg:argument>
+
+					<prg:argument name="prg.options.named.nd">
+						<prg:databinding>
+							<prg:variable>nd</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>nd</prg:long>
+						</prg:names>
+					</prg:argument>
+
+					<prg:multiargument name="prg.options.named.ne">
+						<prg:databinding>
+							<prg:variable>ne</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>ne</prg:long>
+						</prg:names>
+					</prg:multiargument>
+				</prg:options>
+			</prg:group>
+
+			<prg:argument name="prg.options.named.nf">
+				<prg:databinding>
+					<prg:variable>nf</prg:variable>
+				</prg:databinding>
+				<prg:names>
+					<prg:long>nf</prg:long>
+				</prg:names>
+			</prg:argument>
+
+			<prg:multiargument name="prg.options.named.ng">
+				<prg:databinding>
+					<prg:variable>ng</prg:variable>
+				</prg:databinding>
+				<prg:names>
+					<prg:long>ng</prg:long>
+				</prg:names>
+			</prg:multiargument>
+
+			<prg:group name="prg.options.groupC">
+				<prg:databinding>
+					<prg:variable>groupC</prg:variable>
+				</prg:databinding>
+				<prg:options>
+					<prg:argument name="prg.options.named.nh">
+						<prg:databinding>
+							<prg:variable>nh</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>nh</prg:long>
+						</prg:names>
+					</prg:argument>
+					<prg:argument>
+						<prg:databinding>
+							<prg:variable>ni</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>ni</prg:long>
+						</prg:names>
+						<prg:type>
+							<prg:number min="1" max="65535" />
+						</prg:type>
+					</prg:argument>
+
+					<prg:argument name="prg.options.named.nj">
+						<prg:databinding>
+							<prg:variable>nj</prg:variable>
+						</prg:databinding>
+						<prg:names>
+							<prg:long>nj</prg:long>
+						</prg:names>
+					</prg:argument>
+				</prg:options>
+			</prg:group>
+		</prg:options>
+	</prg:group>
+</prg:options>

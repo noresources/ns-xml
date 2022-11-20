@@ -1092,7 +1092,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		b)
+		'b')
 			! parse_setoptionpresence G_1_g_1_g_1_g_1_base && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_1_g_1_g_1_g && return ${PARSER_ERROR}
@@ -1105,7 +1105,7 @@ parse_process_option()
 			generationMode='generateProgramIndependent'
 			
 			;;
-		x)
+		'x')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1154,7 +1154,7 @@ parse_process_option()
 			generationMode='generateProgramDependant'
 			
 			;;
-		S)
+		'S')
 			! parse_setoptionpresence G_1_g_1_g_2_g_2_skip_validation && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_1_g_1_g_2_g && return ${PARSER_ERROR}
@@ -1167,7 +1167,7 @@ parse_process_option()
 			generationMode='generateProgramDependant'
 			
 			;;
-		e)
+		'e')
 			! parse_setoptionpresence G_1_g_1_g_2_g_3_g_1_embed && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_1_g_1_g_2_g_3_g && return ${PARSER_ERROR}
@@ -1183,7 +1183,7 @@ parse_process_option()
 			generateProgramDependantMode='generateEmbedded'
 			
 			;;
-		i)
+		'i')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1235,7 +1235,7 @@ parse_process_option()
 			generateProgramDependantMode='generateInclude'
 			
 			;;
-		p)
+		'p')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1267,7 +1267,7 @@ parse_process_option()
 			prefix="${parser_item}"
 			
 			;;
-		o)
+		'o')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1311,7 +1311,7 @@ parse_process_option()
 			outputPath="${parser_item}"
 			
 			;;
-		f)
+		'f')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -1343,7 +1343,7 @@ parse_process_option()
 			outputFileBase="${parser_item}"
 			
 			;;
-		u)
+		'u')
 			! parse_setoptionpresence G_2_g_3_overwrite && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_2_g && return ${PARSER_ERROR}

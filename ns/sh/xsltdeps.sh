@@ -432,19 +432,19 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		i)
+		'i')
 			! parse_setoptionpresence G_2_add_input && return ${PARSER_ERROR}
 			
 			addInputFiles=true
 			
 			;;
-		d)
+		'd')
 			! parse_setoptionpresence G_4_debug && return ${PARSER_ERROR}
 			
 			debugMode=true
 			
 			;;
-		a)
+		'a')
 			! parse_setoptionpresence G_1_g_1_absolute && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
@@ -453,7 +453,7 @@ parse_process_option()
 			parser_option_G_1_g='absolutePath'
 			
 			;;
-		r)
+		'r')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}

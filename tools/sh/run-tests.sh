@@ -509,7 +509,7 @@ parse_process_subcommand_option()
 			fi
 			
 			case "${parser_option}" in
-			1)
+			'1')
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item=${parser_optiontail}
@@ -539,7 +539,7 @@ parse_process_subcommand_option()
 				xsh_stdout="${parser_item}"
 				
 				;;
-			2)
+			'2')
 				if [ ! -z "${parser_optiontail}" ]
 				then
 					parser_item=${parser_optiontail}
@@ -773,7 +773,7 @@ parse_process_subcommand_option()
 			fi
 			
 			case "${parser_option}" in
-			p)
+			'p')
 				parser_item=''
 				${parser_optionhastail} && parser_item=${parser_optiontail}
 				
@@ -833,7 +833,7 @@ parse_process_subcommand_option()
 				done
 				
 				;;
-			a)
+			'a')
 				parser_item=''
 				${parser_optionhastail} && parser_item=${parser_optiontail}
 				
@@ -881,7 +881,7 @@ parse_process_subcommand_option()
 				done
 				
 				;;
-			t)
+			't')
 				parser_item=''
 				${parser_optionhastail} && parser_item=${parser_optiontail}
 				
@@ -929,7 +929,7 @@ parse_process_subcommand_option()
 				done
 				
 				;;
-			C)
+			'C')
 				! parse_setoptionpresence SC_3_parsers_4_comments && return ${PARSER_SC_ERROR}
 				
 				parsers_debugComments=true
@@ -1028,7 +1028,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		T)
+		'T')
 			! parse_setoptionpresence G_1_temp && return ${PARSER_ERROR}
 			
 			keepTemporaryFiles=true

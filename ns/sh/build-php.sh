@@ -738,7 +738,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		x)
+		'x')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -782,7 +782,7 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			
 			;;
-		S)
+		'S')
 			! parse_setoptionpresence G_1_g_2_skip_validation && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_1_g && return ${PARSER_ERROR}
@@ -790,7 +790,7 @@ parse_process_option()
 			skipValidation=true
 			
 			;;
-		b)
+		'b')
 			! parse_setoptionpresence G_2_g_1_g_1_base && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_2_g_1_g && return ${PARSER_ERROR}
@@ -801,7 +801,7 @@ parse_process_option()
 			generationMode='generateBase'
 			
 			;;
-		i)
+		'i')
 			! parse_setoptionpresence G_2_g_1_g_2_info && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_2_g_1_g && return ${PARSER_ERROR}
@@ -812,7 +812,7 @@ parse_process_option()
 			generationMode='generateInfo'
 			
 			;;
-		e)
+		'e')
 			! parse_setoptionpresence G_2_g_1_g_3_embed && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_2_g_1_g && return ${PARSER_ERROR}
@@ -823,7 +823,7 @@ parse_process_option()
 			generationMode='generateEmbedded'
 			
 			;;
-		m)
+		'm')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -858,7 +858,7 @@ parse_process_option()
 			generationMode='generateMerge'
 			
 			;;
-		c)
+		'c')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -890,7 +890,7 @@ parse_process_option()
 			programInfoClassname="${parser_item}"
 			
 			;;
-		o)
+		'o')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}

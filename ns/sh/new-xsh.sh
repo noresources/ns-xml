@@ -590,7 +590,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		n)
+		'n')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -620,7 +620,7 @@ parse_process_option()
 			xshName="${parser_item}"
 			
 			;;
-		o)
+		'o')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -668,7 +668,7 @@ parse_process_option()
 			outputPath="${parser_item}"
 			
 			;;
-		e)
+		'e')
 			! parse_setoptionpresence G_3_g_1_embed && return ${PARSER_ERROR}
 			
 			! parse_setoptionpresence G_3_g && return ${PARSER_ERROR}
@@ -676,7 +676,7 @@ parse_process_option()
 			programContentEmbed=true
 			
 			;;
-		O)
+		'O')
 			parser_item=''
 			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
@@ -738,7 +738,7 @@ parse_process_option()
 			done
 			
 			;;
-		F)
+		'F')
 			parser_item=''
 			${parser_optionhastail} && parser_item=${parser_optiontail}
 			

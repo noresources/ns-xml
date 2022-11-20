@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
+<prg:program version="2.0" xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<prg:name>named-options</prg:name>
+	<prg:author>Renaud Guillard</prg:author>
+	<prg:version>1.0.0</prg:version>
+	<prg:documentation>
+		<prg:abstract>Testing duplicated named option inclusion</prg:abstract>
+	</prg:documentation>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>sc_a</prg:name>
+			<prg:options>
+				<xi:include href="./options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@name = 'prg.options.groupA'])" />
+			</prg:options>
+			<prg:values>
+				<prg:value>
+				</prg:value>
+			</prg:values>
+		</prg:subcommand>
+		
+		<prg:subcommand>
+			<prg:name>sc_b</prg:name>
+			<prg:options>
+				<xi:include href="./options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@name = 'prg.options.groupB'])" />
+			</prg:options>
+			<prg:values>
+				<prg:value>
+				</prg:value>
+			</prg:values>
+		</prg:subcommand>
+		
+		<prg:subcommand>
+			<prg:name>sc_c</prg:name>
+			<prg:options>
+				<xi:include href="./options.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@name = 'prg.options.groupC'])" />
+			</prg:options>
+			<prg:values>
+				<prg:value>
+				</prg:value>
+			</prg:values>
+		</prg:subcommand>
+		<!-- help -->
+		<xi:include href="../../../../../ns/xsh/lib/subcommands/subcommands.xml" xpointer="xmlns(prg=http://xsd.nore.fr/program)xpointer(//*[@id = 'prg.subcommand.displayHelp'])" />
+	</prg:subcommands>
+	<prg:values>
+		<prg:value>
+			<prg:documentation>
+				<prg:abstract>First positional argument</prg:abstract>
+				<prg:details>Parser test special command or simply the first
+					positional argument of the program
+				</prg:details>
+			</prg:documentation>
+		</prg:value>
+		<prg:other>
+			<prg:documentation>
+				<prg:abstract>Whatever you want</prg:abstract>
+			</prg:documentation>
+		</prg:other>
+	</prg:values>
+</prg:program>

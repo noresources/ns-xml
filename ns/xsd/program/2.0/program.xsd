@@ -275,6 +275,7 @@
 		</xsd:all>
 		<xsd:attribute ref="xml:base" />
 		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute name="name" type="xsd:string" use="optional" />
 		<xsd:attribute name="mode" type="prg:switchOptionModeEnum" use="optional" default="boolean" />
 	</xsd:complexType>
 
@@ -286,7 +287,6 @@
 		</xsd:annotation>
 		<xsd:simpleContent>
 			<xsd:extension base="prg:nonEmptyString">
-				<!-- <attribute name="id" type="prg:itemIdType" /> -->
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -328,6 +328,7 @@
 				</xsd:all>
 				<xsd:attribute ref="xml:base" />
 				<xsd:attribute name="id" type="xsd:ID" use="optional" />
+				<xsd:attribute name="name" type="xsd:string" use="optional" />
 				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
 			</xsd:extension>
 		</xsd:complexContent>
@@ -350,6 +351,7 @@
 				</xsd:all>
 				<xsd:attribute ref="xml:base" />
 				<xsd:attribute name="id" type="xsd:ID" use="optional" />
+				<xsd:attribute name="name" type="xsd:string" use="optional" />
 				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
 				<xsd:attribute name="min" use="optional" default="1">
 					<xsd:annotation>
@@ -421,6 +423,7 @@
 				</xsd:all>
 				<xsd:attribute ref="xml:base" />
 				<xsd:attribute name="id" type="xsd:ID" use="optional" />
+				<xsd:attribute name="name" type="xsd:string" use="optional" />
 				<xsd:attribute name="type" type="prg:actionGroupTypeEnum" use="optional" />
 				<xsd:attribute name="required" type="prg:literalTrueType" use="optional" />
 			</xsd:extension>
@@ -439,6 +442,7 @@
 					<xsd:element name="select" type="prg:argumentProposedValueType" maxOccurs="1" minOccurs="0" />
 				</xsd:all>
 				<xsd:attribute name="id" type="xsd:ID" use="optional" />
+				<xsd:attribute name="name" type="xsd:string" use="optional" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -510,6 +514,7 @@
 		</xsd:all>
 		<xsd:attribute ref="xml:base" />
 		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute name="name" type="xsd:string" use="optional" />
 	</xsd:complexType>
 
 	<xsd:complexType name="databindingType">
@@ -533,7 +538,7 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:length value="1" />
 			<xsd:whiteSpace value="collapse" />
-			<xsd:pattern value="[a-zA-Z0-9]" />
+			<xsd:pattern value="[a-zA-Z0-9@#]" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -614,6 +619,7 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute name="name" type="xsd:string" use="optional" />
 	</xsd:complexType>
 
 	<xsd:complexType name="subcommandsType">
@@ -628,6 +634,7 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="id" type="xsd:ID" use="optional" />
+		<xsd:attribute name="name" type="xsd:string" use="optional" />
 	</xsd:complexType>
 
 	<xsd:complexType name="windowProgramUISpecsType">

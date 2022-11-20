@@ -1,0 +1,7 @@
+CLI: "using arobace", "-@", "works", "now"
+Value count: 3
+Values: "using arobace", "works", "now"
+Error count: 0
+Subcommand: 
+switchA=True
+argumentB=

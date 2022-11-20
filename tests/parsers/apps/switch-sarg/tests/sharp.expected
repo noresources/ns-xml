@@ -1,0 +1,7 @@
+CLI: "Sharp", "-#", "is also valid"
+Value count: 1
+Values: "Sharp"
+Error count: 0
+Subcommand: 
+switchA=False
+argumentB=is also valid

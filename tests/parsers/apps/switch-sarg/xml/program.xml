@@ -19,6 +19,7 @@
 			</prg:documentation>
 			<prg:names>
 				<prg:short>a</prg:short>
+				<prg:short>@</prg:short>
 				<prg:long>switch-a</prg:long>
 			</prg:names>
 			<prg:ui mode="disabled" />
@@ -35,6 +36,7 @@
 			<prg:names>
 				<prg:long>argument-b</prg:long>
 				<prg:short>b</prg:short>
+				<prg:short>#</prg:short>
 			</prg:names>
 		</prg:argument>
 	</prg:options>

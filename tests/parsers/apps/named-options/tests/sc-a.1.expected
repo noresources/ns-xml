@@ -1,0 +1,18 @@
+CLI: "sc_a", "--na", "foo", "--nb", "bar"
+Value count: 0
+Values: 
+Error count: 0
+Subcommand: sc_a
+sc_a_groupA=
+sc_a_groupB=
+sc_a_na=foo
+sc_a_nb=bar
+sc_a_nc=
+sc_a_nd=
+sc_a_ne=
+sc_a_nf=
+sc_a_ng=
+sc_a_groupC=
+sc_a_nh=
+sc_a_ni=
+sc_a_nj=

@@ -609,7 +609,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		x)
+		'x')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -651,7 +651,7 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			
 			;;
-		t)
+		't')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -687,7 +687,7 @@ parse_process_option()
 			xslName="${parser_item}"
 			
 			;;
-		o)
+		'o')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -729,7 +729,7 @@ parse_process_option()
 			output="${parser_item}"
 			
 			;;
-		p)
+		'p')
 			parser_item=''
 			${parser_optionhastail} && parser_item=${parser_optiontail}
 			
@@ -777,7 +777,7 @@ parse_process_option()
 			done
 			
 			;;
-		s)
+		's')
 			parser_item=''
 			${parser_optionhastail} && parser_item=${parser_optiontail}
 			

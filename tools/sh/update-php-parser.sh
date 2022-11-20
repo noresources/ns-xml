@@ -342,7 +342,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		v)
+		'v')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}

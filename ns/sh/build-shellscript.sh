@@ -664,7 +664,7 @@ parse_process_option()
 		fi
 		
 		case "${parser_option}" in
-		s)
+		's')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -706,7 +706,7 @@ parse_process_option()
 			xmlShellFileDescriptionPath="${parser_item}"
 			
 			;;
-		x)
+		'x')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -748,19 +748,19 @@ parse_process_option()
 			xmlProgramDescriptionPath="${parser_item}"
 			
 			;;
-		S)
+		'S')
 			! parse_setoptionpresence G_3_skip_validation && return ${PARSER_ERROR}
 			
 			skipValidation=true
 			
 			;;
-		p)
+		'p')
 			! parse_setoptionpresence G_6_prefix_sc_variables && return ${PARSER_ERROR}
 			
 			prefixSubcommandBoundVariableName=true
 			
 			;;
-		o)
+		'o')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -790,7 +790,7 @@ parse_process_option()
 			outputScriptFilePath="${parser_item}"
 			
 			;;
-		i)
+		'i')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
@@ -823,7 +823,7 @@ parse_process_option()
 			defaultInterpreter='defaultInterpreterType'
 			
 			;;
-		I)
+		'I')
 			if [ ! -z "${parser_optiontail}" ]
 			then
 				parser_item=${parser_optiontail}
