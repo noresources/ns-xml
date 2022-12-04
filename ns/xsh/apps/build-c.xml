@@ -176,6 +176,7 @@
 							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
+								<prg:option>PascalCase</prg:option>
 								<prg:option>CamelCase</prg:option>
 								<prg:option>none</prg:option>
 							</prg:select>
@@ -197,6 +198,7 @@
 							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
+								<prg:option>PascalCase</prg:option>
 								<prg:option>CamelCase</prg:option>
 								<prg:option>none</prg:option>
 							</prg:select>
@@ -218,6 +220,7 @@
 							<prg:select restrict="true">
 								<prg:option>underscore</prg:option>
 								<prg:option>camelCase</prg:option>
+								<prg:option>PascalCase</prg:option>
 								<prg:option>CamelCase</prg:option>
 								<prg:option>none</prg:option>
 							</prg:select>

@@ -18,8 +18,9 @@
 				<xsl:value-of select="$prg.c.parser.functionName.program_parse" />
 			</xsl:with-param>
 			<xsl:with-param name="parameters">
+				<xsl:text>const </xsl:text>
 				<xsl:value-of select="$prg.c.parser.structName.program_info" />
-				<xsl:text> *info, int argc, const char **argv, int start_index</xsl:text>
+				<xsl:text> *info, int argc, const char * const *argv, int start_index</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -34,6 +35,7 @@
 			</xsl:with-param>
 			<xsl:with-param name="parameters">
 				<xsl:text>FILE *stream, </xsl:text>
+				<xsl:text>const </xsl:text>
 				<xsl:value-of select="$prg.c.parser.structName.program_info" />
 				<xsl:text> *info, </xsl:text>
 				<xsl:value-of select="$prg.c.parser.structName.program_result" />

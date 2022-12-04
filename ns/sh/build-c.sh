@@ -62,18 +62,18 @@ Usage:
         --struct-style, --struct: Structs naming convention
           Generate struct names according the given naming convention  
           The argument have to be one of the following:  
-            underscore, camelCase, CamelCase or none
+            underscore, camelCase, PascalCase, CamelCase or none
           Default value: none
         --function-style, --function, --func: Functions naming convention
           Generate function names according the given naming convention  
           The argument have to be one of the following:  
-            underscore, camelCase, CamelCase or none
+            underscore, camelCase, PascalCase, CamelCase or none
           Default value: none
         --variable-style, --variable, --var: Variables naming convention
           Generate variable and enum names according the given naming 
           convention  
           The argument have to be one of the following:  
-            underscore, camelCase, CamelCase or none
+            underscore, camelCase, PascalCase, CamelCase or none
           Default value: none
       
     
@@ -844,7 +844,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'PascalCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -884,7 +884,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'PascalCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -924,7 +924,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
+			if ! ([ "${parser_item}" = 'underscore' ] || [ "${parser_item}" = 'camelCase' ] || [ "${parser_item}" = 'PascalCase' ] || [ "${parser_item}" = 'CamelCase' ] || [ "${parser_item}" = 'none' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				

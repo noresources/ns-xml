@@ -1325,7 +1325,7 @@ enum nsxml_parser_state_flags
 	nsxml_parser_state_abort = (1 << 2)
 };
 
-struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char **argv, int start_index)
+struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char *const *argv, int start_index)
 {
 	struct nsxml_parser_state *state = (struct nsxml_parser_state *) malloc(sizeof(struct nsxml_parser_state));
 	

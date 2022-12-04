@@ -90,9 +90,9 @@
 	<xsl:template name="code.identifierNamingStyle">
 		<!-- Identifier to transform -->
 		<xsl:param name="identifier" />
-		<!-- Current naming style of the identifier. Possible values: 'auto' (recommended), 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'mixed' -->
+		<!-- Current naming style of the identifier. Possible values: 'auto' (recommended), 'PascalCase', 'camelCase', 'underscore', 'hyphen', 'mixed' -->
 		<xsl:param name="from" select="'auto'" />
-		<!-- Targeted naming style. Possible values: 'CamelCase', 'camelCase', 'underscore', 'hyphen', 'none' -->
+		<!-- Targeted naming style. Possible values: 'PascalCase', 'camelCase', 'underscore', 'hyphen', 'none' -->
 		<xsl:param name="to" select="'camelCase'" />
 		<!-- A string that will never appear in an identifier string -->
 		<xsl:param name="transitionalChar" select="'&#10;'" />
@@ -142,8 +142,8 @@
 					<xsl:with-param name="prefix" select="$prefixTo" />
 				</xsl:call-template>
 			</xsl:when>
-			<!-- CamelCase styles -->
-			<xsl:when test="($to = 'camelCase') or ($to = 'CamelCase')">
+			<!-- PascalCase styles -->
+			<xsl:when test="($to = 'camelCase') or ($to = 'PascalCase') or ($to = 'CamelCase')">
 				<xsl:variable name="separator">
 					<xsl:choose>
 						<xsl:when test="($from = 'underscore')">
@@ -234,7 +234,7 @@
 						<xsl:text>camelCase</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text>CamelCase</xsl:text>
+						<xsl:text>PascalCase</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:otherwise>

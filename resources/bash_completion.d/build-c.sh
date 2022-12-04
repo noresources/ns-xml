@@ -133,7 +133,7 @@ __build_c_bashcompletion()
 			;;
 		"struct-style" | "struct")
 			COMPREPLY=()
-			for e in "underscore" "camelCase" "CamelCase" "none"
+			for e in "underscore" "camelCase" "PascalCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
 				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
@@ -143,7 +143,7 @@ __build_c_bashcompletion()
 			;;
 		"function-style" | "function" | "func")
 			COMPREPLY=()
-			for e in "underscore" "camelCase" "CamelCase" "none"
+			for e in "underscore" "camelCase" "PascalCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
 				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
@@ -153,7 +153,7 @@ __build_c_bashcompletion()
 			;;
 		"variable-style" | "variable" | "var")
 			COMPREPLY=()
-			for e in "underscore" "camelCase" "CamelCase" "none"
+			for e in "underscore" "camelCase" "PascalCase" "CamelCase" "none"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
 				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "
