@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2022 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2023 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
@@ -3677,26 +3677,34 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	 */
 	{
 		size_t change_count = 0;
+#if NSXML_DEBUG
 		int pass = 0;
+#endif
 		
 		do
 		{
 #if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "Post process pass %d\n", pass);
+			nsxml_program_result_add_messagef(result,
+			                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0,
+			                                  "Post process pass %d\n",
+			                                  pass);
 #endif /* NSXML_DEBUG */
-			
+			                                  
 			change_count = nsxml_parse_option_postprocess(state, result);
 			
 #if NSXML_DEBUG
 			
 			if (change_count > 0)
 			{
-				nsxml_program_result_add_messagef(result, ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0, "Post process pass %d produces %d changes\n", pass, change_count);
+				nsxml_program_result_add_messagef(result,
+				                                  ]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_message_type_debug"/><![CDATA[, 0,
+				                                  "Post process pass %d produces %d changes\n",
+				                                  pass, change_count);
 			}
 			
-#endif /* NSXML_DEBUG */
-			
 			++pass;
+			
+#endif /* NSXML_DEBUG */
 		}
 		
 		while (change_count > 0);

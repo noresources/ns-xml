@@ -3667,26 +3667,34 @@ void nsxml_parse_core(struct nsxml_parser_state *state, struct nsxml_program_res
 	 */
 	{
 		size_t change_count = 0;
+#if NSXML_DEBUG
 		int pass = 0;
+#endif
 		
 		do
 		{
 #if NSXML_DEBUG
-			nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Post process pass %d\n", pass);
+			nsxml_program_result_add_messagef(result,
+			                                  nsxml_message_type_debug, 0,
+			                                  "Post process pass %d\n",
+			                                  pass);
 #endif /* NSXML_DEBUG */
-			
+			                                  
 			change_count = nsxml_parse_option_postprocess(state, result);
 			
 #if NSXML_DEBUG
 			
 			if (change_count > 0)
 			{
-				nsxml_program_result_add_messagef(result, nsxml_message_type_debug, 0, "Post process pass %d produces %d changes\n", pass, change_count);
+				nsxml_program_result_add_messagef(result,
+				                                  nsxml_message_type_debug, 0,
+				                                  "Post process pass %d produces %d changes\n",
+				                                  pass, change_count);
 			}
 			
-#endif /* NSXML_DEBUG */
-			
 			++pass;
+			
+#endif /* NSXML_DEBUG */
 		}
 		
 		while (change_count > 0);
