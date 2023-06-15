@@ -3,7 +3,7 @@
 <prg:program xmlns:prg="http://xsd.nore.fr/program" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0">
 	<prg:name>xsltdeps</prg:name>
 	<prg:author>Renaud Guillard</prg:author>
-	<prg:version>1.0</prg:version>
+	<prg:version>1.0.0</prg:version>
 	<prg:copyright>Copyright © 2018 - 2021 by Renaud Guillard (dev@nore.fr)</prg:copyright>
 	<prg:documentation>
 		<prg:abstract>List file dependencies of the given XSLT files</prg:abstract>

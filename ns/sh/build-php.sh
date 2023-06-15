@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud Guillard
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 1.0
+# Version: 1.1.0
 # 
 # ...
 #
@@ -55,7 +55,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="1.0"
+parser_program_version="1.1.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -1288,6 +1288,16 @@ then
 	fi
 fi
 
+
+# Process xsh file
+xsltprocArgs=(--xinclude)
+for option in maxdepth maxvars maxparserdepth
+do
+	variable=NSXML_XSLTPROC_$(tr '[a-z]' '[A-Z]' <<< "${option}")
+	[ -z "${!variable}" ] && continue
+	xsltprocArgs=("${xsltprocArgs[@]}" --${option} "${!variable}")
+done
+
 buildphpXsltPath="${nsPath}/xsl/program/${programSchemaVersion}/php"
 buildphpXsltprocOptions=(--xinclude)
 buildphpForceNamespace=false
@@ -1339,7 +1349,7 @@ buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
 	"${buildphpXsltPath}/${buildphpXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
+xsltproc "${xsltprocArgs[@]}" "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then

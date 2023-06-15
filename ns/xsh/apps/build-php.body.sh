@@ -49,7 +49,7 @@ buildphpXsltprocOptions=("${buildphpXsltprocOptions[@]}" \
 	"${buildphpXsltPath}/${buildphpXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
+xsltproc "${xsltprocArgs[@]}" "${buildphpXsltprocOptions[@]}" || ns_error 2 "Failed to generate php classes file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then

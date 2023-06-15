@@ -17,8 +17,6 @@ then
 	fi
 fi
 
-# Process xsh file
-xsltprocArgs=(--xinclude)
 if ${debugTrace}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--param"

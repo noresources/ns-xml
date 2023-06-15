@@ -5,7 +5,7 @@
 # 		LICENSE
 # 	
 # Author: Renaud Guillard
-# Version: 2.0
+# Version: 2.1.0
 # 
 # Shell script builder which use program interface XML definition file to automatically generate command line processing and help messages
 #
@@ -58,7 +58,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="2.0"
+parser_program_version="2.1.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
@@ -1143,6 +1143,16 @@ then
 	fi
 fi
 
+
+# Process xsh file
+xsltprocArgs=(--xinclude)
+for option in maxdepth maxvars maxparserdepth
+do
+	variable=NSXML_XSLTPROC_$(tr '[a-z]' '[A-Z]' <<< "${option}")
+	[ -z "${!variable}" ] && continue
+	xsltprocArgs=("${xsltprocArgs[@]}" --${option} "${!variable}")
+done
+
 # Check required XSLT files
 xshXslTemplatePath="${nsPath}/xsl/program/${programSchemaVersion}/xsh.xsl"
 if [ ! -f "${xshXslTemplatePath}" ]
@@ -1162,8 +1172,6 @@ then
 	fi
 fi
 
-# Process xsh file
-xsltprocArgs=(--xinclude)
 if ${debugTrace}
 then
 	xsltprocArgs[${#xsltprocArgs[*]}]="--param"

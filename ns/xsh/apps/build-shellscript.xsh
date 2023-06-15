@@ -12,6 +12,6 @@
 	</xsh:functions>
 	<xsh:code>
 		<xi:include href="build-xxx.body.init.sh" parse="text"/>
-		<xi:include href="build-shellscript.body.process.sh" parse="text"/>
+		<xi:include href="build-shellscript.body.sh" parse="text"/>
 	</xsh:code>
 </xsh:program>

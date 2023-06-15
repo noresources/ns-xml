@@ -58,3 +58,13 @@ then
 		exit 4
 	fi
 fi
+
+
+# Process xsh file
+xsltprocArgs=(--xinclude)
+for option in maxdepth maxvars maxparserdepth
+do
+	variable=NSXML_XSLTPROC_$(tr '[a-z]' '[A-Z]' <<< "${option}")
+	[ -z "${!variable}" ] && continue
+	xsltprocArgs=("${xsltprocArgs[@]}" --${option} "${!variable}")
+done

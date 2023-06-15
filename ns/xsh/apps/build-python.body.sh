@@ -40,7 +40,7 @@ buildpythonXsltprocOptions=("${buildpythonXsltprocOptions[@]}" \
 	"${buildpythonXsltPath}/${buildpythonXsltStylesheet}" \
 	"${xmlProgramDescriptionPath}")  
 
-xsltproc "${buildpythonXsltprocOptions[@]}" || ns_error 2 "Failed to generate python module file"
+xsltproc "${xsltprocArgs[@]}" "${buildpythonXsltprocOptions[@]}" || ns_error 2 "Failed to generate python module file"
 
 if [ "${generationMode}" = "generateMerge" ]
 then

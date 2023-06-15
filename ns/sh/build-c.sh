@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud Guillard
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: Renaud Guillard
-# Version: 1.0
+# Version: 1.0.0
 # 
 # Create a customized Command line argument parser in C
 #
@@ -97,7 +97,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="Renaud Guillard"
-parser_program_version="1.0"
+parser_program_version="1.0.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"

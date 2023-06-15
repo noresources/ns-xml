@@ -14,6 +14,6 @@
 	<sh:code>
 		<!-- Include shell script code -->
 		<xi:include href="build-xxx.body.init.sh" parse="text"/>
-		<xi:include href="build-php.body.process.sh" parse="text"/>
+		<xi:include href="build-php.body.sh" parse="text"/>
 	</sh:code>
 </sh:program>

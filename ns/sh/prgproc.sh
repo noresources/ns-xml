@@ -3,7 +3,7 @@
 # Copyright © 2018 - 2021 by Renaud GUillard (dev@nore.fr)
 # Distributed under the terms of the MIT License, see LICENSE
 # Author: renaud
-# Version: 1.0
+# Version: 1.0.0
 # 
 # Process a program interface XML definition with one of the available XSLT stylesheets
 #
@@ -41,7 +41,7 @@ EOFUSAGE
 
 # Program parameter parsing
 parser_program_author="renaud"
-parser_program_version="1.0"
+parser_program_version="1.0.0"
 if [ -r /proc/$$/exe ]
 then
 	parser_shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
