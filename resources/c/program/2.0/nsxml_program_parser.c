@@ -2524,7 +2524,11 @@ void nsxml_usage_positional_argument_detailed(FILE *stream, const struct nsxml_p
 	
 }
 
-void nsxml_usage_option_root_detailed(FILE *stream, const struct nsxml_rootitem_info *info, int format, const nsxml_util_text_wrap_options *wrap, char **text_buffer_ptr, size_t *text_buffer_length_ptr)
+void nsxml_usage_option_root_detailed(FILE *stream,
+                                      const struct nsxml_rootitem_info *info,
+                                      int format,
+                                      const nsxml_util_text_wrap_options *wrap, char **text_buffer_ptr,
+                                      size_t *text_buffer_length_ptr)
 {
 	size_t i;
 	
@@ -2590,10 +2594,16 @@ void nsxml_usage(
 		visited[i] = 0;
 	}
 	
+	/* Short usage */
 	if (scinfo)
 	{
 		size_t c = scinfo->rootitem_info.option_info_count;
-		text_length += nsxml_util_asnprintf(&text_buffer, &text_buffer_length, text_length, "%s %s%s", info->name, result->subcommand_name, (c ? " " : ""));
+		text_length += nsxml_util_asnprintf(&text_buffer,
+		                                    &text_buffer_length, text_length,
+		                                    "%s %s%s",
+		                                    info->name,
+		                                    result->subcommand_name, (c ? " " : ""));
+		                                    
 		nsxml_usage_option_root_short(
 		    &text_buffer,
 		    &text_buffer_length,
@@ -2615,16 +2625,33 @@ void nsxml_usage(
 		nsxml_util_text_wrap_fprint(stream, text_buffer, wrap, (size_t)0);
 	}
 	
+	/* Abstract text */
 	if ((format & nsxml_usage_format_abstract) == nsxml_usage_format_abstract)
 	{
 		if (scinfo) /* Selected subcommand */
 		{
-			if (scinfo->rootitem_info.option_info_count)
+			/* Subcommand abstract */
+			if (scinfo->rootitem_info.item_info.abstract)
 			{
-				nsxml_util_text_wrap_fprint(stream, "Subcommand options:", wrap, (size_t)1);
-				nsxml_usage_option_root_detailed(stream, &scinfo->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
+				fprintf(stream, "%s", wrap->eol);
+				nsxml_util_text_wrap_fprint(stream,
+				                            scinfo->rootitem_info.item_info.abstract,
+				                            wrap, (size_t) 1);
+				fprintf(stream, "%s", wrap->eol);
 			}
 			
+			/* Subcommand options */
+			if (scinfo->rootitem_info.option_info_count)
+			{
+				nsxml_util_text_wrap_fprint(stream,
+				                            "Subcommand options:",
+				                            wrap, (size_t)1);
+				nsxml_usage_option_root_detailed(stream,
+				                                 &scinfo->rootitem_info, format,
+				                                 wrap, &text_buffer, &text_buffer_length);
+			}
+			
+			/* Program options */
 			if (info->rootitem_info.option_info_count)
 			{
 				if (scinfo->rootitem_info.option_info_count)
@@ -2632,12 +2659,27 @@ void nsxml_usage(
 					fprintf(stream, "%s", wrap->eol);
 				}
 				
-				nsxml_util_text_wrap_fprint(stream, "Program options:", wrap, (size_t)1);
-				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
+				nsxml_util_text_wrap_fprint(stream,
+				                            "Program options:",
+				                            wrap, (size_t)1);
+				                            
+				nsxml_usage_option_root_detailed(stream,
+				                                 &info->rootitem_info,
+				                                 format, wrap,
+				                                 &text_buffer, &text_buffer_length);
 			}
 		}
 		else /* Main program */
 		{
+			if (info->rootitem_info.item_info.abstract)
+			{
+				fprintf(stream, "%s", wrap->eol);
+				nsxml_util_text_wrap_fprint(stream,
+				                            info->rootitem_info.item_info.abstract,
+				                            wrap, (size_t) 1);
+				fprintf(stream, "%s", wrap->eol);
+			}
+			
 			if (info->subcommand_info_count > 0)
 			{
 				size_t a;
@@ -2652,7 +2694,9 @@ void nsxml_usage(
 			if (info->rootitem_info.option_info_count)
 			{
 				nsxml_util_text_wrap_fprint(stream, "\nOptions:", wrap, (size_t)0);
-				nsxml_usage_option_root_detailed(stream, &info->rootitem_info, format, wrap, &text_buffer, &text_buffer_length);
+				nsxml_usage_option_root_detailed(stream,
+				                                 &info->rootitem_info, format, wrap,
+				                                 &text_buffer, &text_buffer_length);
 			}
 		}
 		
@@ -2678,6 +2722,31 @@ void nsxml_usage(
 					pai = &rootinfo->positional_argument_infos[i];
 					nsxml_usage_positional_argument_detailed(stream, pai, i, format, wrap, (size_t)1, &text_buffer, &text_buffer_length);
 				}
+			}
+		}
+	}
+	
+	/* Detailed documentation */
+	if ((format & nsxml_usage_format_details) == nsxml_usage_format_details)
+	{
+		if (scinfo) /* Selected subcommand */
+		{
+			if (scinfo->rootitem_info.item_info.details)
+			{
+				fprintf(stream, "%s", wrap->eol);
+				nsxml_util_text_wrap_fprint(stream,
+				                            scinfo->rootitem_info.item_info.details,
+				                            wrap, (size_t) 1);
+			}
+		}
+		else
+		{
+			if (info->rootitem_info.item_info.details)
+			{
+				fprintf(stream, "%s", wrap->eol);
+				nsxml_util_text_wrap_fprint(stream,
+				                            info->rootitem_info.item_info.details,
+				                            wrap, (size_t) 1);
 			}
 		}
 	}

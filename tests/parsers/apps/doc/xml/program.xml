@@ -5,8 +5,34 @@
 	<prg:author>Renaud Guillard</prg:author>
 	<prg:version>1.0</prg:version>
 	<prg:documentation>
-		<prg:abstract>Test application ()</prg:abstract>
+		<prg:abstract>Test application (documentation output)</prg:abstract>
+		<prg:details>This test application demonstrates how program usage is rendered.
+		There is no real autmated test since output is not consistent acros parsers</prg:details>
 	</prg:documentation>
+	<prg:subcommands>
+		<prg:subcommand>
+			<prg:name>lonely-subcommand</prg:name>
+			<prg:documentation>
+				<prg:abstract>Lonely subcommand</prg:abstract>
+				<prg:details>A lonely subcommend doesn't have any option or positional argument</prg:details>
+			</prg:documentation>
+		</prg:subcommand>
+		<prg:subcommand>
+			<prg:name>sub-options</prg:name>
+			<prg:documentation>
+						<prg:abstract>Sub options sub command</prg:abstract>
+						<prg:details>A subcommand with one swith option</prg:details>
+					</prg:documentation>
+			<prg:options>
+				<prg:switch>
+					<prg:databinding><prg:variable>subOption</prg:variable></prg:databinding>
+					<prg:names>
+						<prg:long>switch</prg:long>
+					</prg:names>
+				</prg:switch>
+			</prg:options>
+		</prg:subcommand>
+	</prg:subcommands>
 	<prg:options>
 		<prg:switch>
 			<prg:databinding><prg:variable>backslashes</prg:variable></prg:databinding>

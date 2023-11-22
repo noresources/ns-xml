@@ -914,9 +914,9 @@ NSXMLAPI size_t nsxml_program_result_message_count(
  */
 NSXMLAPI enum nsxml_usage_format
 {
-	nsxml_usage_format_short = 1, /**!< Short form */
-	nsxml_usage_format_abstract = 2,/**!<  */
-	nsxml_usage_format_details = 7 /**!< Full description */
+	nsxml_usage_format_short = 0x01, /**!< Short form */
+	nsxml_usage_format_abstract = 0x02,/**!<  Abstract-only description */
+	nsxml_usage_format_details = 0x07 /**!< Full description */
 };
 
 NSXMLAPI void nsxml_usage(

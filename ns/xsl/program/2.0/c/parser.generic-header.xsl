@@ -924,9 +924,9 @@ NSXMLAPI size_t nsxml_program_result_message_count(
  */
 NSXMLAPI enum nsxml_usage_format
 {
-	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_short"/><![CDATA[ = 1, /**!< Short form */
-	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[ = 2,/**!<  */
-	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[ = 7 /**!< Full description */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_short"/><![CDATA[ = 0x01, /**!< Short form */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_abstract"/><![CDATA[ = 0x02,/**!<  Abstract-only description */
+	]]><xsl:value-of select="$prg.c.parser.variableName.nsxml_usage_format_details"/><![CDATA[ = 0x07 /**!< Full description */
 };
 
 NSXMLAPI void nsxml_usage(
