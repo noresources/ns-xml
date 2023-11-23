@@ -23,6 +23,7 @@ tests/parsers/apps/*/program.ksh
 tests/parsers/apps/*/program.zsh
 tests/parsers/apps/*/Parser.py
 tests/parsers/apps/*/ProgramInfo.py
+tests/parsers/derived/
 tests/data
 run-tests.sh.log
 __pycache__

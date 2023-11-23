@@ -57,6 +57,7 @@ check_zsh()
 }
 
 [ -z "${TRAVIS}" ] && TRAVIS=false
+platform="$(uname -s)"
 
 if [ "${parser_subcommand}" = 'parsers' ]
 then
@@ -120,7 +121,13 @@ then
 	else
 		cflags=(${CFLAGS})
 	fi
-	cflags=("${cflags[@]}" -Werror)
+
+	sharedLibraryCFlags='-shared'
+	[ "${platform}" = 'Darwin' ] \
+		&& sharedLibraryCflags='-dynamiclib'
+	cflags=("${cflags[@]}" \
+	-fvisibility=hidden \
+		-Werror)
 	
 	# Test groups
 	if [ ${#apps[@]} -eq 0 ]
@@ -248,7 +255,7 @@ EOF
 		
 			testValgrind=true
 			valgrindArgs=("--tool=memcheck" "--leak-check=full" "--undef-value-errors=yes" "--xml=yes")
-			if [ "$(uname -s)" = 'Darwin' ]
+			if [ "${platform}" = 'Darwin' ]
 			then
 				valgrindArgs=("${valgrindArgs[@]}" \
 					"--dsymutil=yes" \
@@ -283,6 +290,46 @@ EOF
 	echo "Apps: ${selectedApps[@]}"
 	echo "Parsers: ${parserNames[@]}"
 	
+	if ${testC}
+	then
+		echo 'C flags:' "${cflags[@]}"
+		cParserLibraryName='parser-lib'
+		cParserLibraryExtension='so'
+		[ "${platform}" = 'Darwin' ] \
+			&& cParserLibraryExtension='dylib'
+		
+		cParserSourcePath="${parserTestsPathBase}/derived/src"
+		mkdir -p "${cParserSourcePath}" \
+			|| ns_error 'Failed to create C parser source path'
+		
+		cParserDerivedPath="${parserTestsPathBase}/derived/lib"
+		mkdir -p "${cParserDerivedPath}" \
+			|| ns_error 'Failed to create C parser derived path'
+			
+		log 'Create C parser base library'
+		"${projectPath}/ns/sh/build-c.sh" \
+			--base \
+			--overwrite \
+			--output "${cParserSourcePath}" \
+			--file-base "${cParserLibraryName}" \
+			|| ns_error 'Failed to create C parser library files'
+			
+			
+			
+			log 'Build C parser base library'
+			libraryFileArguments=(\
+				"${cParserSourcePath}/${cParserLibraryName}.c")
+			[ "${platform}" != 'Darwin' ] \
+				&& libraryFileArguments=(\
+					-c \
+					"${libraryFileArguments[@]}")
+			${cc} \
+				"${cflags[@]}" \
+				-o "${cParserDerivedPath}/lib${cParserLibraryName}.${cParserLibraryExtension}" \
+				${sharedLibraryCflags} \
+				"${libraryFileArguments[@]}" \
+			|| ns_error 'Failed to build C parser base library'
+	fi
 	
 	# Testing ...
 	for app in "${selectedApps[@]}"
@@ -416,15 +463,20 @@ EOF
 				"${parserTestsPathBase}/lib/c-unittestprogram.xsl" \
 				"${xmlDescription}" || ns_error "Failed to create ${cProgram} source"
 			
-			log 'Create C files'
-			"${projectPath}/ns/sh/build-c.sh" -eu \
+			log 'Create C program parser'
+			"${projectPath}/ns/sh/build-c.sh" \
+				--overwrite \
+				--include "${cParserSourcePath}/parser-lib.h" \
 				-x "${xmlDescription}" \
-				-o "$(dirname "${tmpScriptBasename}")" \
-				-f "$(basename "${cParserBase}")" \
-				-p 'app' || ns_error 'Failed to generated C parser'
+				--output "$(dirname "${tmpScriptBasename}")" \
+				--file-base "$(basename "${cParserBase}")" \
+				--prefix 'app' || ns_error 'Failed to generated C parser'
 				
 			log 'Build C program'
 			${cc} "${cflags[@]}" \
+				-I"${cParserSourcePath}" \
+				-L"${cParserDerivedPath}" \
+				-l"${cParserLibraryName}" \
 				-o "${cProgram}" \
 				"${cProgram}.c" "${cParserBase}.c" \
 			|| ns_error 'Failed to build C program'
@@ -759,7 +811,13 @@ EOFSH
 		fi
 	done
 	
-	${testC} && ${testValgrind} && (${keepTemporaryFiles} || rm -f "${valgrindOutputXslFile}")
+	${testC} && 
+if ${testC} && ! ${keepTemporaryFiles}
+then
+	${testValgrind} && rm -f "${valgrindOutputXslFile}"
+	rm -fr "${cParserSourcePath}"
+	rm -fr "${cParserDerivedPath}" 
+fi	
 	
 	count=0
 	while read result
