@@ -1,4 +1,7 @@
 # The script assumes to be located in the .git/hooks directory
+
+[ ! -z "${NO_PRECOMMIT_HOOK}" ] && exit 0
+
 projectPath="$(dirname "${0}")/../.."
 "${projectPath}/tools/sh/update-sh.sh" \
 && "${projectPath}/tools/sh/update-c-parser.sh" \
