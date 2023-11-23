@@ -30,7 +30,13 @@ NSXML_EXTERNC_BEGIN
 /* Macros ****************************************/
 
 #if !defined (NSXMLAPI)
-#	define NSXMLAPI
+#	if defined (__GNUC__)
+/** @brief C API exposition macro */
+#		define NSXMLAPI __attribute__((visibility("default")))
+#	else
+/** @brief C API exposition macro */
+#		define NSXMLAPI
+#	endif
 #endif
 
 #if defined(NSXML_DEBUG)
@@ -84,7 +90,7 @@ NSXML_EXTERNC_BEGIN
  *
  * If the
  */
-size_t nsxml_util_append(
+NSXMLAPI size_t nsxml_util_append(
     char **output,
     size_t *output_length,
     size_t offset,
@@ -182,7 +188,7 @@ NSXMLAPI int nsxml_util_path_access_check(
 /**
  * Options for text wrapping
  */
-NSXMLAPI struct _nsxml_util_text_wrap_options
+struct _nsxml_util_text_wrap_options
 {
 	/**
 	 * Size of one indentation
@@ -207,7 +213,7 @@ typedef struct _nsxml_util_text_wrap_options nsxml_util_text_wrap_options;
 /**
  * Text wrapping indentation modes
  */
-NSXMLAPI enum nsxml_util_text_indent_mode
+enum nsxml_util_text_indent_mode
 {
 	nsxml_util_text_wrap_indent_none = 0,/**!< Do not indent */
 	nsxml_util_text_wrap_indent_first, /**!< Indent first line */
@@ -217,7 +223,7 @@ NSXMLAPI enum nsxml_util_text_indent_mode
 /**
  * End of line character(s) to use while wrapping text
  */
-NSXMLAPI enum nsxml_util_text_wrap_eol
+enum nsxml_util_text_wrap_eol
 {
 	nsxml_util_text_wrap_eol_cr = 1, /**!< MacOS < X end-of-line */
 	nsxml_util_text_wrap_eol_lf = 2, /**!< Unix end-of-line */
@@ -256,7 +262,7 @@ NSXMLAPI void nsxml_util_text_wrap_fprint(
 /**
  * Message severity
  */
-NSXMLAPI enum nsxml_message_type
+enum nsxml_message_type
 {
 	nsxml_message_type_debug = 0, /**!< Debug messages */
 	nsxml_message_type_warning, /**!< Non-critical problem */
@@ -266,7 +272,7 @@ NSXMLAPI enum nsxml_message_type
 	nsxml_message_type_count
 };
 
-NSXMLAPI enum nsxml_message_warning
+enum nsxml_message_warning
 {
 	nsxml_message_warning_ignore_endofarguments = 1
 };
@@ -274,7 +280,7 @@ NSXMLAPI enum nsxml_message_warning
 /**
  * Error list
  */
-NSXMLAPI enum nsxml_message_error
+enum nsxml_message_error
 {
 	nsxml_message_error_invalid_option_argument = 1,
 	nsxml_message_error_invalid_pa_argument = 2,
@@ -291,7 +297,7 @@ NSXMLAPI enum nsxml_message_error
 	nsxml_message_error_option_argument_not_allowed = 13
 };
 
-NSXMLAPI enum nsxml_message_fatal_error
+enum nsxml_message_fatal_error
 {
 	nsxml_message_fatal_error_unknown_option = 1
 };
@@ -299,7 +305,7 @@ NSXMLAPI enum nsxml_message_fatal_error
 /**
  * A message from the parser
  */
-NSXMLAPI struct _nsxml_message
+struct _nsxml_message
 {
 	int type;
 	int code;
@@ -312,13 +318,13 @@ typedef struct _nsxml_message nsxml_message;
 NSXMLAPI size_t nsxml_message_count(
     const nsxml_message *list);
 
-nsxml_message *nsxml_message_new_ref(nsxml_message *ref);
+NSXMLAPI nsxml_message *nsxml_message_new_ref(nsxml_message *ref);
 
 /* Item names *************************************/
 
 struct nsxml_item_name;
 
-struct nsxml_item_name *nsxml_item_names_new(const char *, ...);
+NSXMLAPI struct nsxml_item_name *nsxml_item_names_new(const char *, ...);
 
 /** Get the nth item name in a item_name list */
 /**
@@ -326,7 +332,7 @@ struct nsxml_item_name *nsxml_item_names_new(const char *, ...);
  * @param item_index name table index
  * @return Item name
  */
-const char *nsxml_item_name_get(
+NSXMLAPI const char *nsxml_item_name_get(
     const struct nsxml_item_name *list,
     int item_index);
 
@@ -381,12 +387,13 @@ struct nsxml_value_validator
 	int flags;
 };
 
-void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags);
-void nsxml_value_validator_add(struct nsxml_value_validator **list, struct nsxml_value_validator *validator);
+NSXMLAPI void nsxml_value_validator_init(struct nsxml_value_validator *validator, nsxml_value_validator_validation_callback *callback, nsxml_value_validator_cleanup_callback *cleanup, nsxml_value_validator_usage_callback *usage_cb, int flags);
+NSXMLAPI void nsxml_value_validator_add(struct nsxml_value_validator **list, struct nsxml_value_validator *validator);
 
-int nsxml_value_validator_validate_path(
+NSXMLAPI int nsxml_value_validator_validate_path(
     const void *self, struct nsxml_parser_state *state, struct nsxml_program_result *, struct nsxml_validated_item *item, const char *value);
-size_t nsxml_value_validator_usage_path(
+
+NSXMLAPI size_t nsxml_value_validator_usage_path(
     const void *self, struct nsxml_validated_item *item, char **output, size_t *output_length);
 
 struct nsxml_value_validator_number
@@ -396,13 +403,14 @@ struct nsxml_value_validator_number
 	float max_value;
 	size_t decimal_count;
 };
-int nsxml_value_validator_validate_number(
+NSXMLAPI int nsxml_value_validator_validate_number(
     const void *self,
     struct nsxml_parser_state *state,
     struct nsxml_program_result *result,
     struct nsxml_validated_item *item,
     const char *value);
-size_t nsxml_value_validator_usage_number(
+
+NSXMLAPI size_t nsxml_value_validator_usage_number(
     const void *self,
     struct nsxml_validated_item *item,
     char **output,
@@ -413,14 +421,16 @@ struct nsxml_value_validator_enum
 	struct nsxml_value_validator validator;
 	struct nsxml_item_name *values;
 };
-int nsxml_value_validator_validate_enum(
+NSXMLAPI int nsxml_value_validator_validate_enum(
     const void *self,
     struct nsxml_parser_state *state,
     struct nsxml_program_result *result,
     struct nsxml_validated_item *item,
     const char *value);
-void nsxml_value_validator_cleanup_enum(void *self);
-size_t nsxml_value_validator_usage_enum(
+
+NSXMLAPI void nsxml_value_validator_cleanup_enum(void *self);
+
+NSXMLAPI size_t nsxml_value_validator_usage_enum(
     const void *self,
     struct nsxml_validated_item *item,
     char **output,
@@ -454,7 +464,15 @@ struct nsxml_item_info
 	int item_type;
 };
 
-void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *abstract, const char *details);
+/**
+ * Initialize item info properties
+ *
+ * @param info Item info
+ * @param type Item type
+ * @param abstract Abstract documentation
+ * @param details Detailed documentation
+ */
+NSXMLAPI void nsxml_item_info_init(struct nsxml_item_info *info, int type, const char *abstract, const char *details);
 
 /** Option types */
 enum nsxml_option_type
@@ -468,7 +486,7 @@ enum nsxml_option_type
 };
 
 /** Type of option or positional argument value */
-NSXMLAPI enum nsxml_value_type
+enum nsxml_value_type
 {
 	nsxml_value_type_unset = -1,/**!< Undefined value type */
 	nsxml_value_type_null, /**!< Null value */
@@ -507,7 +525,17 @@ struct nsxml_option_info
 	struct nsxml_value_validator *validators;
 };
 
-void nsxml_option_info_init(
+/**
+ * Initialize option descriptor
+ *
+ * @param info Option descriptor
+ * @param type Option type
+ * @param flags Option flags
+ * @param var_name Bound variable name
+ * @param names Option long and short names
+ * @param parent Option parent
+ */
+NSXMLAPI void nsxml_option_info_init(
     struct nsxml_option_info *info,
     int type,
     int flags,
@@ -564,7 +592,7 @@ struct nsxml_group_option_info
 	int default_option_info_index;
 };
 
-NSXMLAPI enum nsxml_positional_argument_flags
+enum nsxml_positional_argument_flags
 {
 	nsxml_positional_argument_required = (1 << 0)
 };
@@ -582,7 +610,15 @@ struct nsxml_positional_argument_info
 	struct nsxml_value_validator *validators;
 };
 
-void nsxml_positional_argument_info_init(
+/**
+ * Initialize positional argument descriptor
+ *
+ * @param info Positional argument descriptor
+ * @param flags Positional argument flags
+ * @param arg_type
+ * @param max_arg Maximum number of arguments
+ */
+NSXMLAPI void nsxml_positional_argument_info_init(
     struct nsxml_positional_argument_info *info,
     int flags,
     int arg_type,
@@ -604,7 +640,7 @@ struct nsxml_subcommand_info
 	struct nsxml_item_name *names;
 };
 
-NSXMLAPI struct nsxml_program_info
+struct nsxml_program_info
 {
 	struct nsxml_rootitem_info rootitem_info;
 	const char *name;
@@ -613,12 +649,21 @@ NSXMLAPI struct nsxml_program_info
 	struct nsxml_subcommand_info *subcommand_infos;
 };
 
+/**
+ * Cleanup program descriptor memory
+ * @param info Program descriptor
+ */
 NSXMLAPI void nsxml_program_info_cleanup(struct nsxml_program_info *info);
+/**
+ * Free program descriptor
+ *
+ * @param info Program descriptor
+ */
 NSXMLAPI void nsxml_program_info_free(struct nsxml_program_info *info);
 
 /* Program option argument or positional argument value */
 
-NSXMLAPI struct _nsxml_value
+struct _nsxml_value
 {
 	int type;
 	const char *string_value;
@@ -744,9 +789,15 @@ struct nsxml_parser_state
  * @param start_index First argument to consider
  * @return A new @c nsxml_parser_state
  */
-struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char *const *argv, int start_index);
+NSXMLAPI struct nsxml_parser_state *nsxml_parser_state_new(const struct nsxml_program_info *info, int argc, const char *const *argv, int start_index);
 
-void nsxml_parser_state_allocate_name_bindings(
+/**
+ * Allocate option name <-> Option descriptor binding
+ * @param state Parser state
+ * @param option_binding_group_count
+ * @param option_binding_counts
+ */
+NSXMLAPI void nsxml_parser_state_allocate_name_bindings(
     struct nsxml_parser_state *state,
     size_t option_binding_group_count,
     size_t *option_binding_counts);
@@ -755,7 +806,7 @@ void nsxml_parser_state_allocate_name_bindings(
  * Destroy the given parser state and set the pointer to NULL
  * @param state Parser state to free
  */
-void nsxml_parser_state_free(struct nsxml_parser_state *state);
+NSXMLAPI void nsxml_parser_state_free(struct nsxml_parser_state *state);
 
 /* Parser results ********************************/
 
@@ -862,11 +913,37 @@ struct nsxml_group_option_result
 	const char *selected_option_name;
 };
 
-void nsxml_switch_option_result_init(struct nsxml_switch_option_result *option);
-void nsxml_argument_option_result_init(struct nsxml_argument_option_result *option);
-void nsxml_multiargument_option_result_init(struct nsxml_multiargument_option_result *option);
-void nsxml_group_option_result_init(struct nsxml_group_option_result *option);
-void nsxml_option_result_cleanup(void *option_result_ptr);
+/**
+ * Initialize switch ption result properties.
+ *
+ * @param option Swith option descriptor
+ */
+NSXMLAPI void nsxml_switch_option_result_init(struct nsxml_switch_option_result *option);
+
+/**
+ * Initialize argument option result properties.
+ * @param option Argument option result
+ */
+NSXMLAPI void nsxml_argument_option_result_init(struct nsxml_argument_option_result *option);
+
+/**
+ * Initialize multi-argument option properties
+ * @param option Argument option result
+ */
+NSXMLAPI void nsxml_multiargument_option_result_init(struct nsxml_multiargument_option_result *option);
+
+/**
+ * Initialize group option result properties.
+ *
+ * @param option Option group result
+ */
+NSXMLAPI void nsxml_group_option_result_init(struct nsxml_group_option_result *option);
+
+/**
+ * Clear ption result
+ * @param option_result_ptr
+ */
+NSXMLAPI void nsxml_option_result_cleanup(void *option_result_ptr);
 
 struct nsxml_program_result
 {
@@ -899,9 +976,23 @@ struct nsxml_program_result
 	nsxml_value *values;
 };
 
-void nsxml_program_result_init(void *result_ptr);
-void nsxml_program_result_cleanup(void *result_ptr);
-void nsxml_program_result_free(struct nsxml_program_result *result);
+/**
+ * Initialize program parser result properties.
+ * @param result_ptr Program parser result
+ */
+NSXMLAPI void nsxml_program_result_init(void *result_ptr);
+
+/**
+ * Cleanup program parser result
+ * @param result_ptr Program parser result
+ */
+NSXMLAPI void nsxml_program_result_cleanup(void *result_ptr);
+
+/**
+ * Free program parser result
+ * @param result Program result
+ */
+NSXMLAPI void nsxml_program_result_free(struct nsxml_program_result *result);
 
 NSXMLAPI size_t nsxml_program_result_message_count(
     const struct nsxml_program_result *,
@@ -912,13 +1003,22 @@ NSXMLAPI size_t nsxml_program_result_message_count(
 /**
  * Usage display format
  */
-NSXMLAPI enum nsxml_usage_format
+enum nsxml_usage_format
 {
 	nsxml_usage_format_short = 0x01, /**!< Short form */
 	nsxml_usage_format_abstract = 0x02,/**!<  Abstract-only description */
 	nsxml_usage_format_details = 0x07 /**!< Full description */
 };
 
+/**
+ * Program usage output
+ *
+ * @param stream Output stream
+ * @param info Program descriptor
+ * @param result Command line parsing result
+ * @param format Presentation format
+ * @param wrap Text wrapping options
+ */
 NSXMLAPI void nsxml_usage(
     FILE *stream,
     const struct nsxml_program_info *info,
@@ -928,7 +1028,13 @@ NSXMLAPI void nsxml_usage(
 
 /* Parser Functions ******************************/
 
-void nsxml_parse_core(
+/**
+ * Cre command line parser
+ *
+ * @param state Parsing state output
+ * @param result Program result
+ */
+NSXMLAPI void nsxml_parse_core(
     struct nsxml_parser_state *state,
     struct nsxml_program_result *result);
 
