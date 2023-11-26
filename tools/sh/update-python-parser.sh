@@ -10,8 +10,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 update-python-parser: 
+
 Usage: 
   update-python-parser [--help] [-v <...>]
+  
   Options:
     --help: Display program usage
     -v, --version: Program schema version  

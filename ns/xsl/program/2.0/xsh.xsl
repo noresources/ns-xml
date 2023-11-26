@@ -91,6 +91,7 @@
 															<!-- Subcommand option details -->
 															<xsl:if test="./prg:options">
 																<xsl:value-of select="$sh.endl" />
+																<xsl:value-of select="$sh.endl" />
 																<xsl:text>Subcommand options:</xsl:text>
 																<xsl:call-template name="code.block">
 																	<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
@@ -114,6 +115,7 @@
 															</xsl:if>
 															<!-- Global Option descritption -->
 															<xsl:if test="$programNode/prg:options">
+																<xsl:value-of select="$sh.endl" />
 																<xsl:value-of select="$sh.endl" />
 																<xsl:text>Program options</xsl:text>
 																<xsl:text>:</xsl:text>
@@ -141,7 +143,21 @@
 																	</xsl:with-param>
 																</xsl:call-template>
 															</xsl:if>
+														</xsl:if> <!-- / subcommand options or values -->
+														<!-- Subcommand detailed documentation -->
+														<xsl:if test="./prg:documentation/prg:details">
+															<xsl:value-of select="$sh.endl" />
+															<xsl:value-of select="$sh.endl" />
+															<xsl:call-template name="str.prependLine">
+																<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
+																<xsl:with-param name="wrap" select="$prg.usage.wrap" />
+																<xsl:with-param name="lineMaxLength" select="$prg.usage.lineMaxLength - string-length($prg.usage.indentChar)" />
+																<xsl:with-param name="text">
+																	<xsl:apply-templates select="./prg:documentation/prg:details" />
+																</xsl:with-param>
+															</xsl:call-template>
 														</xsl:if>
+														<xsl:value-of select="$sh.endl" />
 													</xsl:with-param>
 												</xsl:call-template>
 												<xsl:value-of select="$sh.endl" />
@@ -164,6 +180,7 @@
 				<xsl:call-template name="prg.usage.descriptionDisplay">
 					<xsl:with-param name="textNode" select="$programNode/prg:documentation/prg:abstract" />
 				</xsl:call-template>
+				<xsl:value-of select="$sh.endl" />
 				<xsl:value-of select="$sh.endl" />
 				<xsl:text>Usage: </xsl:text>
 				<xsl:call-template name="code.block">
@@ -195,6 +212,7 @@
 						</xsl:if>
 						<!-- subcommands short descriptions -->
 						<xsl:if test="$programNode/prg:subcommands">
+							<xsl:value-of select="$sh.endl" />
 							<xsl:value-of select="$sh.endl" />
 							<xsl:text>With subcommand:</xsl:text>
 							<xsl:call-template name="code.block">
@@ -233,6 +251,7 @@
 						<!-- Global Option descritption -->
 						<xsl:if test="$programNode/prg:options">
 							<xsl:value-of select="$sh.endl" />
+							<xsl:value-of select="$sh.endl" />
 							<xsl:text>Options:</xsl:text>
 							<xsl:call-template name="code.block">
 								<xsl:with-param name="indentChar" select="$prg.sh.usage.indentChar" />
@@ -263,6 +282,7 @@
 				<!-- Program documentation & details -->
 				<!-- Indent level = +1 -->
 				<xsl:if test="$programNode/prg:documentation/prg:details">
+					<xsl:value-of select="$sh.endl" />
 					<xsl:call-template name="str.prependLine">
 						<xsl:with-param name="prependedText" select="$prg.usage.indentChar" />
 						<xsl:with-param name="wrap" select="$prg.usage.wrap" />
@@ -271,6 +291,7 @@
 							<xsl:apply-templates select="$programNode/prg:documentation/prg:details" />
 						</xsl:with-param>
 					</xsl:call-template>
+					<xsl:value-of select="$sh.endl" />
 					<xsl:value-of select="$sh.endl" />
 				</xsl:if>
 				<xsl:text>EOFUSAGE</xsl:text>

@@ -10,8 +10,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 update-php-parser: 
+
 Usage: 
   update-php-parser [--help] [-v <...>]
+  
   Options:
     --help: Display program usage
     -v, --version: Program schema version  

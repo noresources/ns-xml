@@ -12,8 +12,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 prgproc: Process a program interface XML definition with one of the available XSLT stylesheets
+
 Usage: 
   prgproc [-x <path>] -t <...> [-o <path>] [-p <...  [ ... ]>] [-s <...  [ ... ]>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
+  
   Options:
     -x, --xml-description: Program description file
       If the program description file is provided, the xml file will be 
@@ -34,8 +36,10 @@ Usage:
       --ns-xml-path-relative: ns source path is relative this program path
     
     --help: Display program usage
+
   This tool automatically select the good version of the XSLT stylesheet 
   according to the @version attribute of the given XML file.
+
 EOFUSAGE
 }
 

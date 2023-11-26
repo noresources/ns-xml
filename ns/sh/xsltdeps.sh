@@ -11,8 +11,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 xsltdeps: List file dependencies of the given XSLT files
+
 Usage: 
   xsltdeps [-id] [([-a] -r <path>)] [--help] [XSLT files ...]
+  
   Options:
     Path presentation
       -a, --absolute: Print absolute paths

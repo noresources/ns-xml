@@ -49,6 +49,7 @@ do
 done
 if ${displayHelp}
 then
+	echo
 	usage "${parser_subcommand}"
 	exit 0
 fi

@@ -12,8 +12,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 update-doc: Rebuild C Parser XSLT from C source code
+
 Usage: 
   update-doc [--help] [-v <...>]
+  
   Options:
     --help: Display program usage
     -v, --version: Program schema version  

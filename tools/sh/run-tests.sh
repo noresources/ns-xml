@@ -25,11 +25,13 @@ cat << EOFSCUSAGE
 xsh: XSH function library tests
 Usage:
   run-tests xsh [-1 <...>] [-2 <...>] [Tests ...]
+  
   Subcommand options:
     -1, --stdout: Standard output for test program  
       Default value: /dev/null
     -2, --stderr: Error output for test program  
       Default value: /dev/null
+  
   Program options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
@@ -45,6 +47,7 @@ cat << EOFSCUSAGE
 parsers: Parsers tests
 Usage:
   run-tests parsers [-C] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
+  
   Subcommand options:
     -p, --parsers: Parser to test  
       The argument have to be one of the following:  
@@ -52,6 +55,7 @@ Usage:
     -a, --apps: Test groups to run
     -t, --tests: Test id(s) to run
     -C, --comments: Add debug comments in generated test programs
+  
   Program options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
@@ -64,6 +68,7 @@ cat << EOFSCUSAGE
 xslt: XSLT tests
 Usage:
   run-tests xslt [Test names ...]
+  
   Program options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
@@ -90,8 +95,10 @@ return 0
 fi
 cat << 'EOFUSAGE'
 run-tests: Run ns-xml tests
+
 Usage: 
   run-tests <subcommand [subcommand option(s)]> [-T] [--help]
+  
   With subcommand:
     php: PHP utilities
     xsh: XSH function library tests
@@ -100,12 +107,15 @@ Usage:
       options: [-C] [-p <...  [ ... ]>] [-a <...  [ ... ]>] [-t <...  [ ... ]>]
     xslt, xsl: XSLT tests
     xsd, schema: XML schema validation tests
+  
   Options:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+
   This program is used as a part of the git pre-commit hook of this project
     see tools/sh/git/hooks/pre-commit
+
 EOFUSAGE
 }
 

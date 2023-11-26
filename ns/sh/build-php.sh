@@ -12,8 +12,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 build-php: ...
+
 Usage: 
   build-php [[-S] -x <path>] [([-bie] -m <...>) --parser-namespace <...> --program-namespace <...> -c <...>] [-o <path>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
+  
   Options:
     Input
       -x, --xml-description: Program description file

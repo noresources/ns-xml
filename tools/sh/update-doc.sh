@@ -12,8 +12,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 update-doc: Documentation builder
+
 Usage: 
   update-doc [--vcs <...> --xsl-output <path> --xsl-css <path> --stylesheet-abstract (--no-index | --index-url <...> --relative-index-url | --index <path> --index-name <...> --copy-anywhere)] [--html-output <path> --nme-easylink <...>] [--html-body-only] [--help] [Things to update ...]
+  
   Options:
     XSLT documentation
       --vcs: Generate documentation for versionned XSLT files  

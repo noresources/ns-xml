@@ -12,8 +12,10 @@ usage()
 {
 cat << 'EOFUSAGE'
 build-python: ...
+
 Usage: 
   build-python [[-S] -x <path>] [([-be] -i <...> | -m <...>) -c <...>] [-o <path>] [--ns-xml-path <path> --ns-xml-path-relative] [--help]
+  
   Options:
     Input
       -x, --xml-description: Program description file
