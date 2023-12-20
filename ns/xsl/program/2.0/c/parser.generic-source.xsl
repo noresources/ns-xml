@@ -1184,7 +1184,10 @@ void nsxml_value_set(]]><xsl:value-of select="$prg.c.parser.structName.nsxml_val
 	{
 		if (value)
 		{
-			item->int_value = (int)(atof(value) + (double) 0.5F);
+			double f = atof(value);
+			item->int_value = (int)((f >= 0.5)
+			                        ? (f + 0.5)
+			                        : (f - 0.5));
 		}
 		else
 		{
@@ -1205,7 +1208,9 @@ void nsxml_value_set(]]><xsl:value-of select="$prg.c.parser.structName.nsxml_val
 			item->float_value = 0.F;
 		}
 		
-		item->int_value = (int)(item->float_value + 0.5F);
+		item->int_value = (int)((item->float_value >= 0.F)
+		                        ? (item->float_value + 0.5F)
+		                        : (item->float_value - 0.5F));
 	}
 }
 

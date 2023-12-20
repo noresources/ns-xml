@@ -1174,7 +1174,10 @@ void nsxml_value_set(nsxml_value *item, int value_type, const char *value)
 	{
 		if (value)
 		{
-			item->int_value = (int)(atof(value) + (double) 0.5F);
+			double f = atof(value);
+			item->int_value = (int)((f >= 0.5)
+			                        ? (f + 0.5)
+			                        : (f - 0.5));
 		}
 		else
 		{
@@ -1195,7 +1198,9 @@ void nsxml_value_set(nsxml_value *item, int value_type, const char *value)
 			item->float_value = 0.F;
 		}
 		
-		item->int_value = (int)(item->float_value + 0.5F);
+		item->int_value = (int)((item->float_value >= 0.F)
+		                        ? (item->float_value + 0.5F)
+		                        : (item->float_value - 0.5F));
 	}
 }
 
