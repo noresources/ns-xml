@@ -66,6 +66,11 @@ if errorCount > 0:
 		if arg == "__msg__":
 			print (u.array_to_string(messages, " - ", "", "\n"))
             
+if displaySubcommandList:
+	print ("Subcommand names:")
+	for n in info.subcommandNames():
+		print (n)
+	exit (0)
 if result.subcommand:
 	print ("Subcommand: " + result.subcommandName)
 else:
@@ -94,11 +99,6 @@ if displayHelp:
 	print ("Help")
 	usg = Parser.UsageFormat()
 	print (info.usage(usg))
-	
-if displaySubcommandList:
-	print ("Subcommand names")
-	for n in info.subcommandNames():
-		print (n)
 ]]></template>
 
 	<template name="prg.unittest.python.variablePrefix">

@@ -77,6 +77,7 @@ parser_option=''
 parser_optiontail=''
 parser_subcommand=''
 parser_subcommand_expected=false
+parser_subcommand_names=()
 PARSER_OK=0
 PARSER_ERROR=1
 PARSER_SC_OK=0
