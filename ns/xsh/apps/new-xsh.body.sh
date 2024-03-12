@@ -137,6 +137,9 @@ then
 			help)
 				optionIdentifier='prg.option.displayHelp'
 				;;
+			subcommand-names)
+				optionIdentifier='prg.option.displaySubcommandNames'
+				;;
 			version)
 				optionIdentifier='prg.option.displayVersion'
 				;;
@@ -194,6 +197,17 @@ then
 	\${displayHelp} && usage "\${parser_subcommand}" && exit 0
 EOF
 fi
+if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+	if \${displaySubcommandNames}; then
+		for n in "\${parser_subcomomand_names[@]}"; do
+			echo "\${n}"
+		done
+		exit 0
+	fi 
+EOF
+fi
 if ns_array_contains version "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
@@ -209,6 +223,18 @@ if ns_array_contains help "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
 \${displayHelp} && usage "\${parser_subcommand}" && exit 0
+EOF
+fi
+
+if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+if \${displaySubcommandNames}; then
+	for n in "\${parser_subcomomand_names[@]}"; do
+		echo "\${n}"
+	done
+	exit 0
+fi 
 EOF
 fi
 if ns_array_contains version "${programContentOptions[@]}"
