@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2023 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2024 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- List of variable, structs and function names which can be modified by the user -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

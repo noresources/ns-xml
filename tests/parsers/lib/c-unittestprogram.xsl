@@ -153,6 +153,7 @@ int main(int argc, const char **argv)
 	int first = 1;
 	int display_messages = 0;
 	int display_help = 0;
+	int display_sc = 0;
 	int i;
 	app_info info;
 	app_result *result;
@@ -177,6 +178,10 @@ int main(int argc, const char **argv)
 		{
 			display_help = 1;
 		}
+		else if (strcmp(argv[i], "__scn__") == 0)
+		{
+			display_sc = 1;
+		}
 	}
 	printf("\n");
 	
@@ -186,6 +191,11 @@ int main(int argc, const char **argv)
 	{
 		app_usage(stdout, &info, result, nsxml_usage_format_details, NULL);
 		goto app_end;
+	}
+	
+	if (display_sc)
+	{
+		nsxml_program_info_display_subcommand_names(stdout, &info);
 	}
 		
 	/* Positional arguments */

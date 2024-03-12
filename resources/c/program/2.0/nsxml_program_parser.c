@@ -1131,6 +1131,27 @@ void nsxml_program_info_free(struct nsxml_program_info *info)
 	free(info);
 }
 
+void nsxml_program_info_display_subcommand_names
+(FILE *stream,
+ const struct nsxml_program_info *info)
+{
+	size_t a = 0;
+	const struct nsxml_item_name *n;
+	
+	if (info->subcommand_info_count == 0)
+	{
+		return;
+	}
+	
+	for (a = 0; a < info->subcommand_info_count; ++a)
+	{
+		for (n = info->subcommand_infos[a].names; n; n = n->next_name)
+		{
+			fprintf(stream, "%s\n", n->name);
+		}
+	}
+}
+
 /* Option argument or positional argument value ***/
 
 /* Hidden API declarations */
