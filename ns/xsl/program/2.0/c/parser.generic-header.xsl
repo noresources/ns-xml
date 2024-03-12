@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2023 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2024 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
@@ -670,6 +670,15 @@ NSXMLAPI void nsxml_program_info_cleanup(struct nsxml_program_info *info);
  * @param info Program descriptor
  */
 NSXMLAPI void nsxml_program_info_free(struct nsxml_program_info *info);
+
+/**
+ * Prints all subcommand names and aliases
+ * @param stream Output stream
+ * @param info Program descriptor
+ */
+NSXMLAPI void nsxml_program_info_display_subcommand_names
+(FILE *stream,
+ const struct nsxml_program_info *info);
 
 /* Program option argument or positional argument value */
 

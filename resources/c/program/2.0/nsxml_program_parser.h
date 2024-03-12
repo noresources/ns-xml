@@ -661,6 +661,15 @@ NSXMLAPI void nsxml_program_info_cleanup(struct nsxml_program_info *info);
  */
 NSXMLAPI void nsxml_program_info_free(struct nsxml_program_info *info);
 
+/**
+ * Prints all subcommand names and aliases
+ * @param stream Output stream
+ * @param info Program descriptor
+ */
+NSXMLAPI void nsxml_program_info_display_subcommand_names
+(FILE *stream,
+ const struct nsxml_program_info *info);
+
 /* Program option argument or positional argument value */
 
 struct _nsxml_value

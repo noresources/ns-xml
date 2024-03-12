@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2023 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2024 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
@@ -1139,6 +1139,27 @@ void nsxml_program_info_free(struct nsxml_program_info *info)
 {
 	nsxml_program_info_cleanup(info);
 	free(info);
+}
+
+void nsxml_program_info_display_subcommand_names
+(FILE *stream,
+ const struct nsxml_program_info *info)
+{
+	size_t a = 0;
+	const struct nsxml_item_name *n;
+	
+	if (info->subcommand_info_count == 0)
+	{
+		return;
+	}
+	
+	for (a = 0; a < info->subcommand_info_count; ++a)
+	{
+		for (n = info->subcommand_infos[a].names; n; n = n->next_name)
+		{
+			fprintf(stream, "%s\n", n->name);
+		}
+	}
 }
 
 /* Option argument or positional argument value ***/
