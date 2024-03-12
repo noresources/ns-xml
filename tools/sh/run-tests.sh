@@ -141,6 +141,13 @@ parser_option=''
 parser_optiontail=''
 parser_subcommand=''
 parser_subcommand_expected=true
+parser_subcommand_names=(php \
+	xsh \
+	parsers \
+	xslt \
+	xsl \
+	xsd \
+	schema)
 PARSER_OK=0
 PARSER_ERROR=1
 PARSER_SC_OK=0

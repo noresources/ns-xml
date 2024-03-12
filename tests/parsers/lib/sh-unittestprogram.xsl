@@ -55,13 +55,6 @@ then
 	usage "${parser_subcommand}"
 	exit 0
 fi
-if ${displaySubcommandList}
-then
-	for n in "${parser_subcommand_names[@]}"
-	do
-		echo ${n}
-	done
-fi
 echo ""
 echo "Value count: ${#parser_values[*]}"
 cpt="${#parser_values[*]}"
@@ -95,6 +88,16 @@ then
 	do
 		echo " - ${e}"
 	done
+fi
+
+if ${displaySubcommandList}
+then
+  echo "Subcommand names:"
+	for n in "${parser_subcommand_names[@]}"
+	do
+		echo ${n}
+	done
+  exit 0
 fi
 echo "Subcommand: ${parser_subcommand}"
 ]]></xsl:text>

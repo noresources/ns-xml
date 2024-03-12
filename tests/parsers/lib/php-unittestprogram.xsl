@@ -82,6 +82,13 @@ if ($errorCount > 0) {
 			}
 		}
 	}
+}
+if ($displaySubcommandList) {
+	echo ("Subcommand names:" . PHP_EOL);
+	\array_map (function ($name) {
+		echo ($name . PHP_EOL);
+	}, $info->subcommandNames());
+	exit (0);
 } 
 echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : ''));  
 ]]></text>
@@ -110,12 +117,6 @@ echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : '')
 	$usage = new UsageFormat;
 	$usage->format = UsageFormat::DETAILED_TEXT;
 	echo ($info->usage($usage, $result->subcommandName));
-	exit (0);
-}
-if ($displaySubcommandList) {
-	\array_map (function ($name) {
-		echo ($name . PHP_EOL);
-	}, $info->subcommandNames());
 	exit (0);
 }]]>
 	</template>
