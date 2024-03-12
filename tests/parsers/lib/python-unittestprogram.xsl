@@ -44,6 +44,7 @@ info = ProgramInfo.TestProgramInfo()
 parser = Parser.Parser(info)
 result = parser.parse(sys.argv, 1)
 displayHelp = False
+displaySubcommandList = False
 
 print ("CLI: " + u.array_to_string(sys.argv[1:len(sys.argv)], "\"", "\"", ", "))
 print ("Value count: " + str(result.valueCount()))
@@ -51,13 +52,19 @@ print ("Values: " + u.array_to_string(result, "\"", "\"", ", "))
 messages = result.getMessages(Parser.Message.ERROR)
 errorCount = len(messages)
 print ("Error count: " + str(errorCount))
+
+for index in range(len(sys.argv)):
+	arg = sys.argv[index]
+	if arg == "__help__":
+		displayHelp = True
+	if arg == "__sc__":
+		displaySubcommandList = True
+
 if errorCount > 0:
 	for index in range(len(sys.argv)):
 		arg = sys.argv[index]
 		if arg == "__msg__":
 			print (u.array_to_string(messages, " - ", "", "\n"))
-		if arg == "__help__":
-			displayHelp = True
             
 if result.subcommand:
 	print ("Subcommand: " + result.subcommandName)
@@ -87,6 +94,11 @@ if displayHelp:
 	print ("Help")
 	usg = Parser.UsageFormat()
 	print (info.usage(usg))
+	
+if displaySubcommandList:
+	print ("Subcommand names")
+	for n in info.subcommandNames():
+		print (n)
 ]]></template>
 
 	<template name="prg.unittest.python.variablePrefix">
