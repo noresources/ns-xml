@@ -54,9 +54,14 @@ $result = $parser->parse($_SERVER['argv']);
 $args = $_SERVER['argv'];
 array_shift($args);
 $displayHelp = false;
+$displaySubcommandList = false;
 foreach ($args as $arg) {
 	if ($arg == '__help__') {
 		$displayHelp = true;
+		break;
+	}
+	if ($arg == '__sc__') {
+		$displaySubcommandList = true;
 		break;
 	}
 }
@@ -105,6 +110,12 @@ echol ('Subcommand: ' . ($result->subcommandName ? $result->subcommandName : '')
 	$usage = new UsageFormat;
 	$usage->format = UsageFormat::DETAILED_TEXT;
 	echo ($info->usage($usage, $result->subcommandName));
+	exit (0);
+}
+if ($displaySubcommandList) {
+	\array_map (function ($name) {
+		echo ($name . PHP_EOL);
+	}, $info->subcommandNames());
 	exit (0);
 }]]>
 	</template>
