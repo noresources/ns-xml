@@ -38,11 +38,13 @@ echo -n "CLI: "
 cpt="${#}"
 debugMode=false
 displayHelp=false
+displaySubcommandList=false
 i=1
 for argv in "${@}"
 do
 	[ "${argv}" = '__msg__' ] && debugMode=true
 	[ "${argv}" = '__help__' ] && displayHelp=true
+	[ "${argv}" = '__sc__' ] && displaySubcommandList=true
 	[ ${i} -gt 1 ] && echo -n ", "
 	echo -n "\"${argv}\""
 	i=$(expr ${i} + 1)
@@ -52,6 +54,13 @@ then
 	echo
 	usage "${parser_subcommand}"
 	exit 0
+fi
+if ${displaySubcommandList}
+then
+	for n in "${parser_subcommand_names[@]}"
+	do
+		echo ${n}
+	done
 fi
 echo ""
 echo "Value count: ${#parser_values[*]}"

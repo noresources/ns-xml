@@ -1941,6 +1941,19 @@
 				<xsl:text>false</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
+		
+		<xsl:value-of select="$sh.endl" />
+		<xsl:value-of select="$prg.sh.parser.vName_subcommand_names" />
+		<xsl:text>=(</xsl:text>
+		<xsl:for-each select="$programNode/prg:subcommands/*/prg:name|$programNode/prg:subcommands/*/prg:aliases/prg:alias">
+			<xsl:if test="position() != 1">
+				<xsl:text> \</xsl:text>
+		<xsl:value-of select="$sh.endl" />
+		<xsl:text>&#9;</xsl:text>
+			</xsl:if>
+			<xsl:value-of select="." />
+		</xsl:for-each>
+		<xsl:text>)</xsl:text>
 
 		<xsl:value-of select="$sh.endl" />
 		<xsl:value-of select="$prg.sh.parser.vName_OK" />
