@@ -628,6 +628,14 @@ class ProgramInfo(RootItemInfo):
                 text += usage.wrap(root.details, UsageFormat.INDENTOFFSET_OTHER, 0)
         return text
 
+    def subcommandNames(self):
+        list = []
+        for s in self.subcommands:
+        	list.append (s.name)
+        	for n in s.aliases:
+        		list.append (n)
+        return list
+    
     def appendSubcommand(self, subcommandInfo):
         self.subcommands.append(subcommandInfo)
         return subcommandInfo
