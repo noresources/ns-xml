@@ -177,11 +177,21 @@
 			<xsl:with-param name="quoted" select="true()" />
 		</xsl:call-template>
 	</xsl:variable>
+	
 	<xsl:variable name="prg.sh.parser.vName_subcommand_expected">
 		<xsl:call-template name="prg.prefixedName">
 			<xsl:with-param name="name">
 				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
 				<xsl:text>subcommand_expected</xsl:text>
+			</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+		<xsl:variable name="prg.sh.parser.vName_subcommand_names">
+		<xsl:call-template name="prg.prefixedName">
+			<xsl:with-param name="name">
+				<xsl:value-of select="$prg.sh.parser.variableNamePrefix" />
+				<xsl:text>subcommand_names</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:variable>
