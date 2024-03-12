@@ -16,6 +16,7 @@
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>
+
 	<prg:switch id="prg.option.displayVersion">
 		<prg:databinding>
 			<prg:variable>displayVersion</prg:variable>
@@ -25,6 +26,19 @@
 		</prg:documentation>
 		<prg:names>
 			<prg:long>version</prg:long>
+		</prg:names>
+		<prg:ui mode="disabled" />
+	</prg:switch>
+
+	<prg:switch id="prg.option.displaySubcommandNames">
+		<prg:databinding>
+			<prg:variable>displaySubcommandNames</prg:variable>
+		</prg:databinding>
+		<prg:documentation>
+			<prg:abstract>Display program subcommand names</prg:abstract>
+		</prg:documentation>
+		<prg:names>
+			<prg:long>subcommand-names</prg:long>
 		</prg:names>
 		<prg:ui mode="disabled" />
 	</prg:switch>

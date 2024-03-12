@@ -91,6 +91,7 @@
 					<prg:select restrict="true">
 						<prg:option>help</prg:option>
 						<prg:option>version</prg:option>
+						<prg:option>subcommand-names</prg:option>
 					</prg:select>
 				</prg:multiargument>
 				<prg:multiargument>

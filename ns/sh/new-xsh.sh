@@ -24,7 +24,7 @@ Usage:
       -e, --embed: Embed pre-defined content
       -O, --options: Predefined options  
         The argument have to be one of the following:  
-          help or version
+          help, version or subcommand-names
       -F, --functions: Functions to include from built-in library or user 
       defined XSH file
         Arguments can be a short path of XSH library resource or an arbitrary 
@@ -480,7 +480,7 @@ parse_process_option()
 			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ])
+				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ] || [ "${parser_item}" = 'subcommand-names' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -502,7 +502,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ])
+				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ] || [ "${parser_item}" = 'subcommand-names' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -695,7 +695,7 @@ parse_process_option()
 			unset parser_ma_values
 			if [ ! -z "${parser_item}" ]
 			then
-				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ])
+				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ] || [ "${parser_item}" = 'subcommand-names' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -717,7 +717,7 @@ parse_process_option()
 				parser_index=$(expr ${parser_index} + 1)
 				parser_item="${parser_input[${parser_index}]}"
 				[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ])
+				if ! ([ "${parser_item}" = 'help' ] || [ "${parser_item}" = 'version' ] || [ "${parser_item}" = 'subcommand-names' ])
 				then
 					parse_adderror "Invalid value for option \"${parser_option}\""
 					
@@ -1214,6 +1214,9 @@ then
 			help)
 				optionIdentifier='prg.option.displayHelp'
 				;;
+			subcommand-names)
+				optionIdentifier='prg.option.displaySubcommandNames'
+				;;
 			version)
 				optionIdentifier='prg.option.displayVersion'
 				;;
@@ -1271,6 +1274,14 @@ then
 	\${displayHelp} && usage "\${parser_subcommand}" && exit 0
 EOF
 fi
+if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+	\${displaySubcommandNames}; \\
+		&& for n in "\${parser_subcomomand_names[@]}"; do echo "\${n}"; done \\
+		&& exit 0
+EOF
+fi
 if ns_array_contains version "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
@@ -1286,6 +1297,15 @@ if ns_array_contains help "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
 \${displayHelp} && usage "\${parser_subcommand}" && exit 0
+EOF
+fi
+
+if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
+then
+	cat >> "${shFile}" << EOF
+\${displaySubcommandNames}; \\
+	&& for n in "\${parser_subcomomand_names[@]}"; do echo "\${n}"; done \\
+	&& exit 0 
 EOF
 fi
 if ns_array_contains version "${programContentOptions[@]}"
