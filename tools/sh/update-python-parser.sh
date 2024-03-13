@@ -553,7 +553,9 @@ ns_relativepath()
 	do
 		res="${res}/.."
 	done
-	res="${res}${from#${sub}}"
+	[ "${sub}" != '/' ] \
+		&& res="${res}${from#${sub}}" \
+		|| res="${res}${from}"
 	res="${res#./}"
 	[ -z "${res}" ] && res='.'
 	echo "${res}"
