@@ -200,9 +200,18 @@ fi
 if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
+<<<<<<< HEAD
 	\${displaySubcommandNames} \\
 		&& for n in "\${parser_subcommand_names[@]}"; do echo "\${n}"; done \\
 		&& exit 0
+=======
+	if \${displaySubcommandNames}; then
+		for n in "\${parser_subcomomand_names[@]}"; do
+			echo "\${n}"
+		done
+		exit 0
+	fi 
+>>>>>>> 07eb13c749fac3fd859c2d936793db8e000f1466
 EOF
 fi
 if ns_array_contains version "${programContentOptions[@]}"
@@ -226,9 +235,18 @@ fi
 if ns_array_contains 'subcommand-names' "${programContentOptions[@]}"
 then
 	cat >> "${shFile}" << EOF
+<<<<<<< HEAD
 \${displaySubcommandNames} \\
 	&& for n in "\${parser_subcommand_names[@]}"; do echo "\${n}"; done \\
 	&& exit 0 
+=======
+if \${displaySubcommandNames}; then
+	for n in "\${parser_subcomomand_names[@]}"; do
+		echo "\${n}"
+	done
+	exit 0
+fi 
+>>>>>>> 07eb13c749fac3fd859c2d936793db8e000f1466
 EOF
 fi
 if ns_array_contains version "${programContentOptions[@]}"
