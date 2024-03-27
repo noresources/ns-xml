@@ -6,21 +6,21 @@ cwd="$(pwd)"
 
 if ! parse "${@}"
 then
-	if ${displayHelp}
-	then
-		usage "${parser_subcommand}"
-		exit 0
-	fi
+	${displayHelp} \
+		&& usage "${parser_subcommand}"&& exit 0
+
+	${displaySubcommandNames} \
+		&& for n in "${parser_subcommand_names[@]}"; do echo "${n}"; done \
+		&& exit 0
 	
 	parse_displayerrors
 	exit 1
 fi
 
-if ${displayHelp}
-then
-	usage "${parser_subcommand}"
-	exit 0
-fi
+${displayHelp} && usage "${parser_subcommand}" && exit 0
+${displaySubcommandNames} \
+	&& for n in "${parser_subcommand_names[@]}"; do echo "${n}"; done \
+	&& exit 0
 
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"

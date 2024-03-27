@@ -36,6 +36,7 @@ Usage:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+    --subcommand-names: Display program subcommand names
   Positional arguments:
     1. Tests
       List of test names
@@ -60,6 +61,7 @@ Usage:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+    --subcommand-names: Display program subcommand names
 
 EOFSCUSAGE
 ;;
@@ -73,6 +75,7 @@ Usage:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+    --subcommand-names: Display program subcommand names
   Positional arguments:
     1. Test names
       Test subset to run.
@@ -99,7 +102,7 @@ cat << 'EOFUSAGE'
 run-tests: Run ns-xml tests
 
 Usage: 
-  run-tests <subcommand [subcommand option(s)]> [-T] [--help]
+  run-tests <subcommand [subcommand option(s)]> [-T] [--help] [--subcommand-names]
   
   With subcommand:
     php: PHP utilities
@@ -114,6 +117,7 @@ Usage:
     -T, --temp: Keep temporary files
       Don't remove temporary files even if test passed
     --help: Display program usage
+    --subcommand-names: Display program subcommand names
 
   This program is used as a part of the git pre-commit hook of this project
     see tools/sh/git/hooks/pre-commit
@@ -163,6 +167,7 @@ parser_index=${parser_startindex}
 parsers_debugComments=false
 keepTemporaryFiles=false
 displayHelp=false
+displaySubcommandNames=false
 xsh_stdout=
 xsh_stderr=
 
@@ -1030,6 +1035,18 @@ parse_process_option()
 			displayHelp=true
 			
 			;;
+		subcommand-names)
+			! parse_setoptionpresence G_3_subcommand_names && return ${PARSER_ERROR}
+			
+			if ${parser_optionhastail} && [ ! -z "${parser_optiontail}" ]
+			then
+				parse_adderror "Option --${parser_option} does not allow an argument"
+				parser_optiontail=''
+				return ${PARSER_ERROR}
+			fi
+			displaySubcommandNames=true
+			
+			;;
 		*)
 			parse_addfatalerror "Unknown option \"${parser_option}\""
 			return ${PARSER_ERROR}
@@ -1371,21 +1388,21 @@ cwd="$(pwd)"
 
 if ! parse "${@}"
 then
-	if ${displayHelp}
-	then
-		usage "${parser_subcommand}"
-		exit 0
-	fi
+	${displayHelp} \
+		&& usage "${parser_subcommand}"&& exit 0
+
+	${displaySubcommandNames} \
+		&& for n in "${parser_subcommand_names[@]}"; do echo "${n}"; done \
+		&& exit 0
 	
 	parse_displayerrors
 	exit 1
 fi
 
-if ${displayHelp}
-then
-	usage "${parser_subcommand}"
-	exit 0
-fi
+${displayHelp} && usage "${parser_subcommand}" && exit 0
+${displaySubcommandNames} \
+	&& for n in "${parser_subcommand_names[@]}"; do echo "${n}"; done \
+	&& exit 0
 
 projectPath="$(ns_realpath "${scriptPath}/../..")"
 logFile="${projectPath}/${scriptName}.log"
