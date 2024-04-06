@@ -3,11 +3,11 @@
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <xsh:functions xmlns:xsh="http://xsd.nore.fr/xsh">
 
-	<xsh:function name="ns_print_error">
+	<xsh:function name="ns_print_colored_message">
 		<!-- Print error message to stderr -->
+		<xsh:parameter name="_ns_message_color">${NSXML_ERROR_COLOR}</xsh:parameter>
 		<xsh:body>
 			<xsh:local name="shell">$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")</xsh:local>
-			<xsh:local name="errorColor">${NSXML_ERROR_COLOR}</xsh:local>
 			<xsh:local name="useColor" type="boolean">false</xsh:local><![CDATA[
 for s in bash zsh ash
 do
@@ -17,15 +17,22 @@ do
 		break
 	fi
 done
+[ ! -z "${NO_COLOR}" ] && [ "${NO_COLOR}" != '0' ] && useColor=false
+[ ! -z "${NO_ANSI}" ] && [ "${NO_ANSI}" != '0' ] && useColor=false
 if ${useColor} 
 then
-	[ -z "${errorColor}" ] && errorColor="31" 
-	echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
+	[ -z "${_ns_message_color}" ] && _ns_message_color="31" 
+	echo -e "\e[${_ns_message_color}m${@}\e[0m" 
 else
-	echo "${@}" 1>&2
-fi]]></xsh:body>
+	echo "${@}"
+fi
+return 0]]></xsh:body>
 	</xsh:function>
-	
+
+	<xsh:function name="ns_print_error">
+		<xsh:body><![CDATA[ns_print_colored_message "${NSXML_ERROR_COLOR}" "${@}" 1>&2]]></xsh:body>
+	</xsh:function>
+
 	<xsh:function name="ns_error">
 		<!-- Print error message and exit -->
 		<!-- requires: ns_print_error -->
@@ -42,6 +49,16 @@ ns_print_error "${message}"
 exit ${errno}
 		]]></xsh:body>
 	</xsh:function>
+
+	<!-- Print warning message on standard error stream -->
+	<xsh:function name="ns_warn">
+		<xsh:body>
+		<xsh:local name="_ns_warn_color">${NSXML_WARNING_COLOR}</xsh:local>
+		<![CDATA[
+		[ -z "${_ns_warn_color}" ] && _ns_warn_color=33
+		ns_print_colored_message "${_ns_warn_color}" "${@}" 1>&2; return 0]]></xsh:body>
+	</xsh:function>
+
 	<xsh:function name="nsxml_installpath">
 		<!-- Find ns-xml resources installation path -->
 		<!-- User-defined paths can be specified -->

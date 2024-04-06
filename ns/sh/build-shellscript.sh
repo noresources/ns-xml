@@ -913,10 +913,17 @@ parse()
 	return ${parser_errorcount}
 }
 
-ns_print_error()
+ns_print_colored_message()
 {
+	local _ns_message_color=
+	if [ $# -gt 0 ]
+	then
+		_ns_message_color="${1}"
+		shift
+	else
+		_ns_message_color="${NSXML_ERROR_COLOR}"
+	fi
 	local shell="$(readlink /proc/$$/exe | sed "s/.*\/\([a-z]*\)[0-9]*/\1/g")"
-	local errorColor="${NSXML_ERROR_COLOR}"
 	local useColor=false
 	for s in bash zsh ash
 	do
@@ -926,13 +933,20 @@ ns_print_error()
 			break
 		fi
 	done
+	[ ! -z "${NO_COLOR}" ] && [ "${NO_COLOR}" != '0' ] && useColor=false
+	[ ! -z "${NO_ANSI}" ] && [ "${NO_ANSI}" != '0' ] && useColor=false
 	if ${useColor} 
 	then
-		[ -z "${errorColor}" ] && errorColor="31" 
-		echo -e "\e[${errorColor}m${@}\e[0m"  1>&2
+		[ -z "${_ns_message_color}" ] && _ns_message_color="31" 
+		echo -e "\e[${_ns_message_color}m${@}\e[0m" 
 	else
-		echo "${@}" 1>&2
+		echo "${@}"
 	fi
+	return 0
+}
+ns_print_error()
+{
+	ns_print_colored_message "${NSXML_ERROR_COLOR}" "${@}" 1>&2
 }
 ns_error()
 {
@@ -952,6 +966,12 @@ ns_error()
 	fi
 	ns_print_error "${message}"
 	exit ${errno}
+}
+ns_warn()
+{
+	local _ns_warn_color="${NSXML_WARNING_COLOR}"
+	[ -z "${_ns_warn_color}" ] && _ns_warn_color=33
+			ns_print_colored_message "${_ns_warn_color}" "${@}" 1>&2; return 0
 }
 nsxml_installpath()
 {

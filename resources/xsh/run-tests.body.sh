@@ -847,7 +847,7 @@ elif [ "${parser_subcommand}" = 'php' ]
 then
 	if ! ns_which -s php
 	then
-		echo "warning: No PHP interpreter found" 1>&2
+		ns_warn "warning: No PHP interpreter found"
 		exit 0
 	fi
 	
@@ -864,7 +864,7 @@ then
 	
 	if [ ! -x "${phpunitPath}" ]
 	then
-		echo 'warning: phpunit not found' 1>&2
+		ns_warn 'warning: phpunit not found'
 		exit 0
 	fi
 	
