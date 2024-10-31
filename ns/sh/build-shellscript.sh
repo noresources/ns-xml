@@ -32,11 +32,11 @@ Usage:
     Default interpreter
       -i, --interpreter: Default shell interpreter type
         The interpreter family to use if the XSH file does not define one.  
-        The argument can be one the following :  
+        The argument can be one of the following :  
           bash, zsh or ksh
       -I, --interpreter-cmd: Default shell interpreter invocation directive
         This value if used if the XSH file does not define one  
-        The argument can be one the following :  
+        The argument can be one of the following :  
           /usr/bin/env bash, /bin/bash, /usr/bin/env zsh or /bin/zsh
     
     --force-interpreter: 

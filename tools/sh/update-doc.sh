@@ -52,7 +52,7 @@ Usage:
   Positional arguments:
     1. Things to update
       One or more key representing the different documentation modules  
-      The argument can be one the following :  
+      The argument can be one of the following :  
         html, xsl or creole
 EOFUSAGE
 }
