@@ -38,11 +38,11 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:value-of select="$sh.endl" />
-		<xsl:text>NORMAL_COLOR="$(tput sgr0)"</xsl:text>
+		<xsl:text>NORMAL_COLOR="$(tput -Txterm-basic sgr0)"</xsl:text>
 		<xsl:value-of select="$sh.endl" />
-		<xsl:text>ERROR_COLOR="$(tput setaf 1)"</xsl:text>
+		<xsl:text>ERROR_COLOR="$(tput -Txterm-basic setaf 1)"</xsl:text>
 		<xsl:value-of select="$sh.endl" />
-		<xsl:text>SUCCESS_COLOR="$(tput setaf 2)"</xsl:text>
+		<xsl:text>SUCCESS_COLOR="$(tput -Txterm-basic setaf 2)"</xsl:text>
 		<xsl:value-of select="$sh.endl" />
 		<xsl:text>testResultFormat="%-40.40s | %-8s\n"</xsl:text>
 		<xsl:value-of select="$sh.endl" />

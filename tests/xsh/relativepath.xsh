@@ -45,6 +45,10 @@ do
 		then
 			echo 'warning: ' "${target} does not exists" 1>&2
 			continue
+		elif [ "${target}" != "$(ns_realpath "${target}")" ]
+		then
+			echo "warning: Could not use symbolic link ${target} as target" 1>&2
+			continue
 		fi
 		
 		if [ "${source:0:1}" != '/' ]

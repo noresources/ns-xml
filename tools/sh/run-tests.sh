@@ -1395,13 +1395,10 @@ NORMAL_COLOR==''
 ERROR_COLOR=''
 SUCCESS_COLOR=''
 
-if [ ! -z "${TERM}" ]
-then 
-	# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
-	NORMAL_COLOR="$(tput sgr0)"
-	ERROR_COLOR="$(tput setaf 1)"
-	SUCCESS_COLOR="$(tput setaf 2)"
-fi
+# http://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+NORMAL_COLOR="$(tput -Txterm-basic sgr0)"
+ERROR_COLOR="$(tput -Txterm-basic setaf 1)"
+SUCCESS_COLOR="$(tput -Txterm-basic setaf 2)"
 
 log()
 {
