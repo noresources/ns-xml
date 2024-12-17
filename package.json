@@ -1,6 +1,6 @@
 {
 	"name": "@noresources/ns-xml", 
-	"version": "1.6.3", 
+	"version": "1.0.4", 
 	"description": "", 
 	"main": "index.js", 
 	"directories": [
