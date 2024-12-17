@@ -16,7 +16,13 @@ php)
 cat << EOFSCUSAGE
 php: PHP utilities
 Usage:
-  run-tests php
+  run-tests php 
+  
+  Program options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
+    --help: Display program usage
+    --subcommand-names: Display program subcommand names
 
 EOFSCUSAGE
 ;;
@@ -88,7 +94,13 @@ xsd | schema)
 cat << EOFSCUSAGE
 xsd: XML schema validation tests
 Usage:
-  run-tests xsd
+  run-tests xsd 
+  
+  Program options:
+    -T, --temp: Keep temporary files
+      Don't remove temporary files even if test passed
+    --help: Display program usage
+    --subcommand-names: Display program subcommand names
   
     Check if the given files should validate (or not) a XML schema definition
 

@@ -70,7 +70,7 @@
 														<xsl:value-of select="normalize-space(../../prg:name)" />
 														<xsl:text> </xsl:text>
 														<xsl:value-of select="normalize-space(./prg:name)" />
-														<xsl:if test="./prg:options | prg:values">
+														<xsl:if test="./prg:options | prg:values | $programNode/prg:options">
 															<xsl:text> </xsl:text>
 															<xsl:if test="./prg:options">
 																<xsl:call-template name="prg.usage.optionListInline">
