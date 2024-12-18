@@ -1,11 +1,9 @@
 {
 	"name": "@noresources/ns-xml", 
-	"version": "1.0.4", 
-	"description": "", 
-	"main": "index.js", 
+	"version": "1.6.4", 
+	"description": "A collection of XML-based tools to generate source code and programs", 
 	"directories": [
 		"ns", 
-		"tests", 
 		"resources"
 	], 
 	"scripts": {
