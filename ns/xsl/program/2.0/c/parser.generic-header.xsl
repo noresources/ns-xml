@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2024 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2025 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
@@ -413,6 +413,7 @@ struct nsxml_value_validator_number
 	float max_value;
 	size_t decimal_count;
 };
+
 NSXMLAPI int nsxml_value_validator_validate_number(
     const void *self,
     struct nsxml_parser_state *state,
@@ -431,6 +432,7 @@ struct nsxml_value_validator_enum
 	struct nsxml_value_validator validator;
 	struct nsxml_item_name *values;
 };
+
 NSXMLAPI int nsxml_value_validator_validate_enum(
     const void *self,
     struct nsxml_parser_state *state,

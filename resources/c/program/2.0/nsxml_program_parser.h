@@ -403,6 +403,7 @@ struct nsxml_value_validator_number
 	float max_value;
 	size_t decimal_count;
 };
+
 NSXMLAPI int nsxml_value_validator_validate_number(
     const void *self,
     struct nsxml_parser_state *state,
@@ -421,6 +422,7 @@ struct nsxml_value_validator_enum
 	struct nsxml_value_validator validator;
 	struct nsxml_item_name *values;
 };
+
 NSXMLAPI int nsxml_value_validator_validate_enum(
     const void *self,
     struct nsxml_parser_state *state,
