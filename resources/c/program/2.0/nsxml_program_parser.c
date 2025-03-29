@@ -782,10 +782,10 @@ int nsxml_value_validator_validate_path(const void *self, struct nsxml_parser_st
 			if (typeFound == 0)
 			{
 				nsmxl_value_validator_add_standard_error(self,
-				    state,
-				    result,
-				    item,
-				    value);
+				        state,
+				        result,
+				        item,
+				        value);
 				return 0;
 			}
 		}
@@ -2839,7 +2839,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
                                       struct nsxml_program_result *result);
 size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
         struct nsxml_program_result *result);
-        
+
 /* Definitions */
 
 struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)
@@ -3310,8 +3310,8 @@ size_t nsxml_parse_option_postprocess_option(
 	const struct nsxml_option_info *i = binding->info_ref;
 	
 	if (i->option_type == nsxml_option_type_switch
-	                      && (force_set)
-	&& (binding->result_ref->is_set == 0)
+	        && (force_set)
+	        && (binding->result_ref->is_set == 0)
 	   )
 	{
 		nsxml_parse_mark_option(state, result, binding, 1);
