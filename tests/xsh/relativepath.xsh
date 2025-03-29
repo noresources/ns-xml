@@ -35,6 +35,12 @@ do
 		source="$(cut -f 2 -d':' <<< "${t}")"
 		expected="$(cut -f 3 -d':' <<< "${t}")"
 		
+		if which realpath 1>/dev/null 2>/dev/null
+		then
+			absoluteSource="$(realpath "$[source]")"
+			[ "${absoluteSource}" = "${source}" ] || continue
+		fi
+		
 		if [ "${target:0:1}" != '/' ]
 		then
 			mkdir -p "${ns_testsuite_relativepath_root}/${target}" \
