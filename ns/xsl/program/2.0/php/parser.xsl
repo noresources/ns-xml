@@ -119,6 +119,7 @@ class OptionNameList extends \ArrayObject
 	 * @param string $k
 	 * @param string $v
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($k, $v)
 	{
 		parent::offsetSet($k, $v);
@@ -760,12 +761,12 @@ class OptionInfo extends ItemInfo
 
 	public $validators;
 
-	public function __construct($variableName = null, $names = null,
+	public function __construct($variableName = '', $names = null,
 		$flags = 0)
 	{
 		parent::__construct();
 		$this->optionFlags = $flags;
-		$this->variableName = $variableName;
+		$this->variableName = empty($variableName) ? null : $variableName;
 		$this->optionNames = new OptionNameList();
 		if ($names)
 		{
@@ -836,7 +837,7 @@ class OptionInfo extends ItemInfo
 class SwitchOptionInfo extends OptionInfo
 {
 
-	public function __construct($variableName = null, $names = null,
+	public function __construct($variableName = '', $names = null,
 		$flags = 0)
 	{
 		parent::__construct($variableName, $names, $flags);
@@ -899,7 +900,7 @@ class ArgumentOptionInfo extends OptionInfo
 	 */
 	public $defaultValue;
 
-	public function __construct($variableName = null, $names = null,
+	public function __construct($variableName = '', $names = null,
 		$flags = 0)
 	{
 		parent::__construct($variableName, $names, $flags);
@@ -932,7 +933,7 @@ class MultiArgumentOptionInfo extends OptionInfo
 	 */
 	public $maxArgumentCount;
 
-	public function __construct($variableName = null, $names = null,
+	public function __construct($variableName = '', $names = null,
 		$flags = 0)
 	{
 		parent::__construct($variableName, $names, $flags);
@@ -960,12 +961,12 @@ class OptionContainerOptionInfo extends OptionInfo
 	 * @param number $flags
 	 * @param OptionInfo $dflt
 	 */
-	public function __construct($variableName = null, $flags = 0,
-		OptionInfo $dflt = null)
+	public function __construct($variableName = '', $flags = 0,
+		$dflt = false)
 	{
 		parent::__construct($variableName, null, $flags);
 		$this->options = array();
-		$this->defaultOption = $dflt;
+		$this->defaultOption = ($dflt) ? $dflt : null;
 	}
 
 	/**
@@ -1223,7 +1224,7 @@ class GroupOptionInfo extends OptionContainerOptionInfo
 	 */
 	public $groupType;
 
-	public function __construct($variableName = null,
+	public function __construct($variableName = '',
 		$groupType = self::TYPE_NORMAL, $flags = 0)
 	{
 		parent::__construct($variableName, $flags);
@@ -1732,6 +1733,7 @@ class MultiArgumentOptionResult extends OptionResult implements
 		$this->arguments = array();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return $this->isSet ? count($this->arguments) : 0;
@@ -2045,6 +2047,7 @@ class RootItemResult implements ItemResult, \ArrayAccess
 	 * @param OptionResult $result
 	 * @throws \InvalidArgumentException
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($variableName, $result)
 	{
 		if ($this->offsetExists($variableName))
@@ -2064,6 +2067,7 @@ class RootItemResult implements ItemResult, \ArrayAccess
 	/**
 	 * N/A
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($variableName)
 	{}
 
@@ -2072,6 +2076,7 @@ class RootItemResult implements ItemResult, \ArrayAccess
 	 *
 	 * @param string $variableName
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($variableName)
 	{
 		return array_key_exists($variableName, $this->options);
@@ -2083,6 +2088,7 @@ class RootItemResult implements ItemResult, \ArrayAccess
 	 * @throws \InvalidArgumentException
 	 * @return OptionResult if found
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($variableName)
 	{
 		if (array_key_exists($variableName, $this->options))
@@ -2212,6 +2218,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	 * @param mixed $result
 	 *        	Positional argument value
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($item, $result)
 	{
 		if (is_integer($item))
@@ -2234,6 +2241,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	 * @param mixed $item
 	 * @return boolean
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($item)
 	{
 		if (is_integer($item))
@@ -2252,6 +2260,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	 * @param mixed $item
 	 * @return ItemResult
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($item)
 	{
 		if (is_integer($item))
@@ -2270,6 +2279,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Current positional argument index
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->valueIterator;
@@ -2278,6 +2288,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Current positional argument value
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->valid() ? $this->values[$this->valueIterator] : null;
@@ -2286,6 +2297,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Move to next positional argument
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		$this->valueIterator++;
@@ -2294,6 +2306,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * true if a positional argument is set at the given index
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return array_key_exists($this->valueIterator, $this->values);
@@ -2302,6 +2315,7 @@ class ProgramResult extends RootItemResult implements \Iterator
 	/**
 	 * Rewind positional argument iterator
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		return $this->valueIterator = 0;
@@ -2421,7 +2435,7 @@ class OptionNameBinding
 		$this->name = $n;
 		$this->info = $i;
 		$this->result = null;
-		$this->parentResult = $parentResults;
+		$this->parentResults = $parentResults;
 	}
 }
 
