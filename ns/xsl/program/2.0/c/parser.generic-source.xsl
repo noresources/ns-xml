@@ -2153,7 +2153,7 @@ void nsxml_usage_subcommand_short(FILE *stream, const struct nsxml_subcommand_in
 		if (info->rootitem_info.item_info.abstract)
 		{
 			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, ": ");
-			text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, info->rootitem_info.item_info.abstract);
+			/* text_length +=  */ ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_append"/><![CDATA[(text_buffer_ptr, text_buffer_length_ptr, text_length, info->rootitem_info.item_info.abstract);
 		}
 	}
 	
@@ -2218,7 +2218,10 @@ void nsxml_usage_option_root_short(
 		{
 			const struct nsxml_option_info *o = info->option_infos[i];
 			
-			if ((visited[i] == 0) && (o->parent == parent) && (o->option_type == nsxml_option_type_switch))
+			if ((i < visited_count)
+			        && (visited[i] == 0)
+			        && (o->parent == parent)
+			        && (o->option_type == nsxml_option_type_switch))
 			{
 				n = nsxml_usage_get_first_short_name(o);
 				
@@ -2634,12 +2637,12 @@ void nsxml_usage(
 	if (scinfo)
 	{
 		size_t c = scinfo->rootitem_info.option_info_count;
-		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer,
-		                                    &text_buffer_length, text_length,
-		                                    "%s %s%s",
-		                                    info->name,
-		                                    result->subcommand_name, (c ? " " : ""));
-		                                    
+		/* text_length += */ ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer,
+		        &text_buffer_length, text_length,
+		        "%s %s%s",
+		        info->name,
+		        result->subcommand_name, (c ? " " : ""));
+		        
 		nsxml_usage_option_root_short(
 		    &text_buffer,
 		    &text_buffer_length,
@@ -2651,7 +2654,7 @@ void nsxml_usage(
 	else
 	{
 		size_t c = info->rootitem_info.option_info_count;
-		text_length += ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
+		/* text_length += */ ]]><xsl:value-of select="$prg.c.parser.functionName.nsxml_util_asnprintf"/><![CDATA[(&text_buffer, &text_buffer_length, text_length, "%s%s%s", info->name, (info->subcommand_info_count ? " [subcommand name]" : ""), (c ? " " : ""));
 		nsxml_usage_option_root_short(
 		    &text_buffer,
 		    &text_buffer_length,

@@ -69,9 +69,8 @@
 				</xsl:if>
 			</xsl:if>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator));</xsl:text>
+			<xsl:text>validator = malloc(sizeof(struct nsxml_value_validator));</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text> validator_ptr = validator;</xsl:text>
 			<xsl:value-of select="$str.endl" />
 			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_path, NULL, &amp;nsxml_value_validator_usage_path, validator_flags);</xsl:text>
 			<xsl:value-of select="$str.endl" />
@@ -96,13 +95,12 @@
 				<xsl:text>validator_flags |= nsxml_value_validator_checkmax;</xsl:text>
 			</xsl:if>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_number));</xsl:text>
+			<xsl:text>validator = malloc(sizeof(struct nsxml_value_validator_number));</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text> validator_ptr = validator;</xsl:text>
 			<xsl:value-of select="$str.endl" />
 			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_number, NULL, &amp;nsxml_value_validator_usage_number, validator_flags);</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;decimal_count = </xsl:text>
+			<xsl:text>((struct nsxml_value_validator_number *)(validator))-&gt;decimal_count = </xsl:text>
 			<xsl:choose>
 				<xsl:when test="$numberNode/@decimal">
 					<xsl:value-of select="$numberNode/@decimal"></xsl:value-of>
@@ -113,7 +111,7 @@
 			</xsl:choose>
 			<xsl:text>;</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;min_value = </xsl:text>
+			<xsl:text>((struct nsxml_value_validator_number *)(validator))-&gt;min_value = </xsl:text>
 			<xsl:choose>
 				<xsl:when test="$numberNode/@min">
 					<xsl:value-of select="$numberNode/@min" />
@@ -128,7 +126,7 @@
 			</xsl:choose>
 			<xsl:text>;</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>((struct nsxml_value_validator_number *)(validator_ptr))-&gt;max_value = </xsl:text>
+			<xsl:text>((struct nsxml_value_validator_number *)(validator))-&gt;max_value = </xsl:text>
 			<xsl:choose>
 				<xsl:when test="$numberNode/@max">
 					<xsl:value-of select="$numberNode/@max" />
@@ -160,13 +158,11 @@
 				<xsl:text>validator_flags |= nsxml_value_validator_enum_strict;</xsl:text>
 			</xsl:if>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>validator = (struct nsxml_value_validator *)malloc(sizeof(struct nsxml_value_validator_enum));</xsl:text>
-			<xsl:value-of select="$str.endl" />
-			<xsl:text> validator_ptr = validator;</xsl:text>
+			<xsl:text>validator = malloc(sizeof(struct nsxml_value_validator_enum));</xsl:text>
 			<xsl:value-of select="$str.endl" />
 			<xsl:text>nsxml_value_validator_init(validator, &amp;nsxml_value_validator_validate_enum, &amp;nsxml_value_validator_cleanup_enum, &amp;nsxml_value_validator_usage_enum, validator_flags);</xsl:text>
 			<xsl:value-of select="$str.endl" />
-			<xsl:text>((struct nsxml_value_validator_enum *)(validator_ptr))-&gt;values = nsxml_item_names_new(</xsl:text>
+			<xsl:text>((struct nsxml_value_validator_enum *)(validator))-&gt;values = nsxml_item_names_new(</xsl:text>
 			<xsl:for-each select="$selectNode/prg:option">
 				<xsl:text>"</xsl:text>
 				<xsl:apply-templates select="." />
@@ -585,7 +581,7 @@
 						<xsl:value-of select="$str.endl" />
 						<xsl:variable name="haveConfigurableOptions" select="count ( $rootNode/prg:options//prg:group | $rootNode/prg:options//prg:argument | $rootNode/prg:options//prg:multiargument) &gt; 0" />
 						<xsl:if test="$haveConfigurableOptions">
-							<xsl:text>void *o_ptr = NULL;</xsl:text>
+							<xsl:text>void *o_ptr = NULL;(void)o_ptr;</xsl:text>
 						</xsl:if>
 						<xsl:value-of select="$str.endl" />
 						<xsl:variable name="containerVariable">
@@ -614,13 +610,13 @@
 							<xsl:text> = </xsl:text>
 							<xsl:choose>
 								<xsl:when test="./self::prg:switch">
-									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_switch_option_info));</xsl:text>
+									<xsl:text>&amp;((struct nsxml_switch_option_info*) malloc(sizeof(struct nsxml_switch_option_info)))-&gt;option_info;</xsl:text>
 									<xsl:value-of select="$str.endl" />
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
 									<xsl:if test="$haveConfigurableOptions">
-										<xsl:text>o_ptr = o;</xsl:text>
+										<xsl:text>o_ptr = o;(void) o_ptr;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.switch_optionItemInfoInit">
@@ -635,13 +631,13 @@
 									</xsl:call-template>
 								</xsl:when>
 								<xsl:when test="./self::prg:argument">
-									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_argument_option_info));</xsl:text>
+									<xsl:text>&amp;((struct nsxml_argument_option_info*) malloc(sizeof(struct nsxml_argument_option_info)))->option_info;</xsl:text>
 									<xsl:value-of select="$str.endl" />
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
 									<xsl:if test="$haveConfigurableOptions">
-										<xsl:text>o_ptr = o;</xsl:text>
+										<xsl:text>o_ptr = o;(void)o_ptr;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.argumentOptionItemInfoInit">
@@ -656,13 +652,13 @@
 									</xsl:call-template>
 								</xsl:when>
 								<xsl:when test="./self::prg:multiargument">
-									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_multiargument_option_info));</xsl:text>
+									<xsl:text>&amp;((struct nsxml_multiargument_option_info*) malloc(sizeof(struct nsxml_multiargument_option_info)))->option_info;</xsl:text>
 									<xsl:value-of select="$str.endl" />
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
 									<xsl:if test="$haveConfigurableOptions">
-										<xsl:text>o_ptr = o;</xsl:text>
+										<xsl:text>o_ptr = o;(void)o_ptr;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.multiargumentOptionItemInfoInit">
@@ -677,13 +673,13 @@
 									</xsl:call-template>
 								</xsl:when>
 								<xsl:when test="./self::prg:group">
-									<xsl:text>(struct nsxml_option_info*) malloc(sizeof(struct nsxml_group_option_info));</xsl:text>
+									<xsl:text>&amp;((struct nsxml_group_option_info*) malloc(sizeof(struct nsxml_group_option_info)))->option_info;</xsl:text>
 									<xsl:value-of select="$str.endl" />
 									<xsl:text>o = </xsl:text>
 									<xsl:value-of select="$optionVariable" />
 									<xsl:text>;</xsl:text>
 									<xsl:if test="$haveConfigurableOptions">
-										<xsl:text>o_ptr = o;</xsl:text>
+										<xsl:text>o_ptr = o;(void)o_ptr;</xsl:text>
 									</xsl:if>
 									<xsl:value-of select="$str.endl" />
 									<xsl:call-template name="prg.c.parser.group_optionItemInfoInit">
@@ -715,7 +711,7 @@
 							<xsl:value-of select="$optionIndex" />
 							<xsl:text>];</xsl:text>
 							<xsl:if test="$haveConfigurableOptions">
-								<xsl:text>o_ptr = o;</xsl:text>
+								<xsl:text>o_ptr = o;(void) o_ptr;</xsl:text>
 							</xsl:if>
 							<xsl:value-of select="$str.endl" />
 							<xsl:for-each select="$groupNode/prg:options/*">
@@ -882,16 +878,13 @@
 				<xsl:text> *info</xsl:text>
 			</xsl:with-param>
 			<xsl:with-param name="content">
-				<xsl:text>struct nsxml_value_validator *validator;</xsl:text>
-				<xsl:text> void *validator_ptr;</xsl:text>
+				<xsl:text>void *validator;</xsl:text>
 				<xsl:value-of select="$str.endl" />
 				<xsl:text>int validator_flags;</xsl:text>
 				<xsl:value-of select="$str.endl" />
-				<xsl:text>validator = NULL;</xsl:text>
+				<xsl:text>validator = NULL;(void)validator;  </xsl:text>
 				<xsl:value-of select="$str.endl" />
-				<xsl:text> validator_ptr = validator;</xsl:text>
-				<xsl:value-of select="$str.endl" />
-				<xsl:text>validator_flags = 0;</xsl:text>
+				<xsl:text>validator_flags = 0;(void)validator_flags;</xsl:text>
 				<xsl:value-of select="$str.endl" />
 				<!-- nsxml_program_info member -->
 				<xsl:value-of select="$infoParam" />
@@ -957,13 +950,7 @@
 					</xsl:with-param>
 				</xsl:call-template>
 				<xsl:value-of select="$str.endl" />
-				<xsl:text>/*shut up compiler */</xsl:text>
 				<xsl:value-of select="$str.endl" />
-				<xsl:text>validator_flags = (int)sizeof(validator);</xsl:text>
-				<xsl:value-of select="$str.endl" />
-				<xsl:text>validator_ptr = &amp;validator_flags;</xsl:text>
-				<xsl:value-of select="$str.endl" />
-				<xsl:text> validator = (struct nsxml_value_validator *)validator_ptr;</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>

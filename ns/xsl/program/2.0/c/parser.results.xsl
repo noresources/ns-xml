@@ -504,14 +504,20 @@
 					<xsl:with-param name="then">
 						<xsl:text>size_t len = (m-&gt;message) ? strlen(m-&gt;message) : 0;</xsl:text>
 						<xsl:value-of select="$str.endl" />
-						<xsl:text>fprintf(stream, "%s%s", ((line_prefix) ? line_prefix : ""), m-&gt;message);</xsl:text>
-						<xsl:value-of select="$str.endl" />
 						<xsl:call-template name="c.if">
-							<xsl:with-param name="condition">
-								<xsl:text>m-&gt;message[len - 1] != '\n'</xsl:text>
-							</xsl:with-param>
+							<xsl:with-param name="condition" select="'len'" />
 							<xsl:with-param name="then">
-								<xsl:text>fprintf(stream, "%s", "\n");</xsl:text>
+								<xsl:text>fprintf(stream, "%s%s", ((line_prefix) ? line_prefix : ""), m-&gt;message);</xsl:text>
+								<xsl:value-of select="$str.endl" />
+
+								<xsl:call-template name="c.if">
+									<xsl:with-param name="condition">
+										<xsl:text>m-&gt;message[len - 1] != '\n'</xsl:text>
+									</xsl:with-param>
+									<xsl:with-param name="then">
+										<xsl:text>fprintf(stream, "%s", "\n");</xsl:text>
+									</xsl:with-param>
+								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:with-param>
