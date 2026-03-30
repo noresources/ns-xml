@@ -2839,7 +2839,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
                                       struct nsxml_program_result *result);
 size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
         struct nsxml_program_result *result);
-
+        
 /* Definitions */
 
 struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)

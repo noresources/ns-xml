@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright © 2012-2025 by Renaud Guillard (dev@nore.fr) -->
+<!-- Copyright © 2012-2026 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
 <!-- C Source code in customizable XSLT form -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns:prg="http://xsd.nore.fr/program">
@@ -2849,7 +2849,7 @@ size_t nsxml_parse_option_postprocess(struct nsxml_parser_state *state,
                                       struct nsxml_program_result *result);
 size_t nsxml_parse_positional_argument_process(struct nsxml_parser_state *state,
         struct nsxml_program_result *result);
-
+        
 /* Definitions */
 
 struct nsxml_option_binding *nsxml_parse_find_option_by_name_at(struct nsxml_parser_state *state, struct nsxml_program_result *result, const char *name, int group_index)
