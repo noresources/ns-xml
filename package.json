@@ -1,37 +1,37 @@
 {
-	"name": "@noresources/ns-xml", 
-	"version": "1.6.5", 
-	"description": "A collection of XML-based tools to generate source code and programs", 
+	"name": "@noresources/ns-xml",
+	"version": "1.6.6",
+	"description": "A collection of XML-based tools to generate source code and programs",
 	"directories": [
-		"ns", 
+		"ns",
 		"resources"
-	], 
+	],
 	"scripts": {
 		"test": "echo No test available"
-	}, 
+	},
 	"repository": {
-		"type": "git", 
+		"type": "git",
 		"url": "git+https://github.com/noresources/ns-xml.git"
-	}, 
+	},
 	"keywords": [
-		"XML", 
-		"XSD", 
+		"XML",
+		"XSD",
 		"XSLT"
-	], 
-	"author": "Renaud Guillard", 
-	"license": "MIT", 
+	],
+	"author": "Renaud Guillard",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/noresources/ns-xml/issues"
-	}, 
-	"homepage": "http://ns-xml.nore.fr", 
+	},
+	"homepage": "http://ns-xml.nore.fr",
 	"bin": [
-		"ns/sh/build-php.sh", 
-		"ns/sh/build-python.sh", 
-		"ns/sh/xsltdeps.sh", 
-		"ns/sh/sampleapp.sh", 
-		"ns/sh/prgproc.sh", 
-		"ns/sh/build-shellscript.sh", 
-		"ns/sh/new-xsh.sh", 
+		"ns/sh/build-php.sh",
+		"ns/sh/build-python.sh",
+		"ns/sh/xsltdeps.sh",
+		"ns/sh/sampleapp.sh",
+		"ns/sh/prgproc.sh",
+		"ns/sh/build-shellscript.sh",
+		"ns/sh/new-xsh.sh",
 		"ns/sh/build-c.sh"
 	]
 }
