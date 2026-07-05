@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright © 2011 - 2021 by Renaud Guillard (dev@nore.fr) -->
 <!-- Distributed under the terms of the MIT License, see LICENSE -->
-<schema targetNamespace="http://xsd.nore.fr/bash" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:prg="http://xsd.nore.fr/program" xmlns:sh="http://xsd.nore.fr/bash">
+<schema targetNamespace="http://xsd.nore.fr/bash" elementFormDefault="qualified" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+	xmlns:sh="http://xsd.nore.fr/bash">
 
 	<import namespace="http://xsd.nore.fr/program" schemaLocation="program/2.0/program.xsd" />
 	<import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="www.w3.org/XML/1998/namespace.xsd" />
@@ -68,13 +71,6 @@
 			<documentation xml:lang="en">A bash shell script</documentation>
 		</annotation>
 		<sequence>
-			<element name="info" minOccurs="0" maxOccurs="1">
-				<complexType>
-					<sequence>
-						<element ref="prg:program" />
-					</sequence>
-				</complexType>
-			</element>
 			<element ref="sh:functions" minOccurs="0" maxOccurs="1" />
 			<element name="code" type="sh:plainCodeType" minOccurs="1" maxOccurs="1" />
 		</sequence>
