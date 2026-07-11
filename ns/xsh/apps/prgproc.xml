@@ -33,6 +33,7 @@
 				<prg:option>bashcompletion</prg:option>
 				<prg:option>c-gengetopt</prg:option>
 				<prg:option>docbook-usage</prg:option>
+				<prg:option>get-programinfo</prg:option>
 				<prg:option>wikicreole-usage</prg:option>
 			</prg:select>
 		</prg:argument>

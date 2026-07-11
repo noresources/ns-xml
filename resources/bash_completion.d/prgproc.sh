@@ -105,7 +105,7 @@ __prgproc_bashcompletion()
 			;;
 		"xslt" | "xsl" | "t")
 			COMPREPLY=()
-			for e in "bashcompletion" "c-gengetopt" "docbook-usage" "wikicreole-usage"
+			for e in "bashcompletion" "c-gengetopt" "docbook-usage" "get-programinfo" "wikicreole-usage"
 			do
 				local res="$(compgen -W "${e}" -- "${current}")"
 				[ ! -z "${res}" ] && COMPREPLY[${#COMPREPLY[*]}]="\"${e}\" "

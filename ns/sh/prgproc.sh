@@ -22,7 +22,8 @@ Usage:
       validated before any XSLT processing
     -t, --xslt, --xsl: XSL transformation to apply  
       The argument have to be one of the following:  
-        bashcompletion, c-gengetopt, docbook-usage or wikicreole-usage
+        bashcompletion, c-gengetopt, docbook-usage, get-programinfo or 
+        wikicreole-usage
     -o, --output: Output file
       If no output file is provided, the transformation result will be sent to 
       the standard output.
@@ -390,7 +391,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
+			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'get-programinfo' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
@@ -681,7 +682,7 @@ parse_process_option()
 			parser_optiontail=''
 			parser_optionhastail=false
 			[ "${parser_item:0:2}" = "\-" ] && parser_item="${parser_item:1}"
-			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'wikicreole-usage' ])
+			if ! ([ "${parser_item}" = 'bashcompletion' ] || [ "${parser_item}" = 'c-gengetopt' ] || [ "${parser_item}" = 'docbook-usage' ] || [ "${parser_item}" = 'get-programinfo' ] || [ "${parser_item}" = 'wikicreole-usage' ])
 			then
 				parse_adderror "Invalid value for option \"${parser_option}\""
 				
