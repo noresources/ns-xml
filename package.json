@@ -1,6 +1,6 @@
 {
 	"name": "@noresources/ns-xml",
-	"version": "1.6.6",
+	"version": "1.6.7",
 	"description": "A collection of XML-based tools to generate source code and programs",
 	"directories": [
 		"ns",
